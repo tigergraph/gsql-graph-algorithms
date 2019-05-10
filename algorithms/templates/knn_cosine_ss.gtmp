@@ -42,8 +42,11 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
                 chosenLabel = label;
             END;
         END;
-        
-        PRINT chosenLabel;
-        RETURN chosenLabel;
-
+ 
+*ATTR*  Start = SELECT s
+*ATTR*          FROM Start:s
+*ATTR*          POST-ACCUM s.*vStrAttr* = chosenLabel;       
+*ACCM*  PRINT chosenLabel;
+*ACCM*  RETURN chosenLabel;
+*FILE*  f.println(chosenLabel);
 }

@@ -39,7 +39,7 @@ fi
 finished=false
 while [ !$finished ]; do
 	echo; echo "Please enter the index of the algorithm you want to create or EXIT:"
-	select algo in "EXIT" "Closeness Centrality" "Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors Cosine Neighbor Similarity"; do
+	select algo in "EXIT" "Closeness Centrality" "Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors Cosine Neighbor Similarity (single vertex)" "k-Nearest Neighbors Cosine Neighbor Similarity (batch)"; do
     	case $algo in
 			"Closeness Centrality" )
 				algoName="closeness_cent"
@@ -125,9 +125,9 @@ while [ !$finished ]; do
                                 algoName="knn_cosine_ss"
                                 echo "  knn_cosine_ss() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
                                 break;;
-                        'k-Nearest Neighbors Cosine Neighbor Similarity (single vertex)' )
-                                algoName="knn_cosine_ss"
-                                echo "  knn_cosine_ss() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
+                        'k-Nearest Neighbors Cosine Neighbor Similarity (batch)' )
+                                algoName="knn_cosine_all"
+                                echo "  knn_cosine_all() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
                                 break;;
 			"EXIT" )
 				finished=true
@@ -144,7 +144,7 @@ while [ !$finished ]; do
 
 	# Copy the algorithm template file to the destination file.
 	templPath="./templates"
-	genPath="./examples"
+	genPath="./generated"
 	cp ${templPath}/${algoName}.gtmp ${genPath}/${algoName}_tmp.gsql;
 
 	# Replace *graph* placeholder
@@ -162,7 +162,7 @@ while [ !$finished ]; do
 	# 3. Ask for vertex types. Replace *vertex-types* placeholder. For similarity algos, only take one vertex type.
 	read -p 'Vertex types: ' vts
 	vts=${vts//[[:space:]]/}
-	if [[ $algoName == cosine* ]] || [[ $algoName == jaccard* ]]; then 
+	if [[ $algoName == *cosine* ]] || [[ $algoName == *jaccard* ]]; then 
 		sed -i "s/\*vertex-types\*/$vts/g" ${genPath}/${algoName}_tmp.gsql
 	elif [ "${vts}" == "" ]; then
 		vts="ANY"
@@ -219,7 +219,7 @@ while [ !$finished ]; do
 	sed -i "s/\*edge-types\*/$egs/g" ${genPath}/${algoName}_tmp.gsql
 
 	# 4.2 Ask for reverse edge type for similarity algos. 
-        if [[ $algoName == cosine* ]] || [[ $algoName == jaccard* ]]; then
+        if [[ $algoName == *cosine* ]] || [[ $algoName == *jaccard* ]]; then
 		read -p 'Second Hop Edge type: ' edge2
                 edge2=${edge2//[[:space:]]/}
 		sed -i "s/\*sec-edge-types\*/$edge2/g" ${genPath}/${algoName}_tmp.gsql
@@ -239,7 +239,7 @@ while [ !$finished ]; do
 		done
         fi
 
-        if [[ ${algoName} == cosine* ]]; then
+        if [[ ${algoName} == *cosine* ]]; then
         	while true; do
 	        	read -p "Edge attribute that stores FLOAT weight, leave blank if no such attribute:"  weight
                         weight=${weight//[[:space:]]/}
@@ -253,6 +253,19 @@ while [ !$finished ]; do
                                 echo " *** Edge attribute name not found. Try again."
                         fi
 		done
+        fi
+
+        # 6. Ask for vertex label attribute name. Replace *vertex-label* placeholder.
+        if [[ ${algoName} == knn_cosine* ]]; then
+                while true; do
+                        read -p "Vertex attribute that stores STRING label:"  label
+                        if [[ $(countVertexAttr $label) > 0 ]]; then
+                                sed -i "s/\*vertex-label\*/$label/g" ${genPath}/${algoName}_tmp.gsql
+                                break;
+                        else
+                                echo " *** Vertex attribute name not found. Try again."
+                        fi
+                done
         fi
 
 : <<'END'
@@ -299,6 +312,7 @@ END
 				sed -i 's/\*EXT\*//g' ${genPath}/${algoName}.gsql;
 				sed -i '/^\*ATTR\*/ d' ${genPath}/${algoName}.gsql;  # Delete lines with *ATTR*
                                 sed -i 's/\*ACCM\*CREATE/CREATE/g' ${genPath}/${algoName}.gsql;
+                                sed -i 's/\*ACCM\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
                                 sed -i 's/\*ACCM\*/      /g' ${genPath}/${algoName}.gsql;  # Cut the *ACCM* string, replace by 6 spaces
                                 sed -i '/^\*FILE\*/ d' ${genPath}/${algoName}.gsql; # Delete lines with *FILE*
 				gsql -g $grph "DROP QUERY ${algoName}"
@@ -309,7 +323,7 @@ END
 					gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
 				fi
                 		# Finalize the JSON (ACCMulator) version of the query
-        			sed -i 's/      \*SUB\* //g' ${genPath}/${algoName}.gsql;   # Cut the *SUB* string
+        			sed -i 's/\*SUB\* //g' ${genPath}/${algoName}.gsql;   # Cut the *SUB* string
         			echo; echo "gsql -g $grph ${genPath}/${algoName}.gsql"
         			gsql -g $grph ${genPath}/${algoName}.gsql
                                 break;;
@@ -325,6 +339,7 @@ END
 					sed -i '/^\*ATTR\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ATTR* lines
 					sed -i '/^\*ACCM\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ACCM* lines
                                         sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}.gsql; # Cut *FILE* string
+                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
 					sed -i 's/\*FILE\*/      /g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string in query body
 					gsql -g $grph "DROP QUERY ${algoName}$fExt"
 					subqueryClue="\*SUB\* CREATE QUERY"
@@ -334,7 +349,7 @@ END
 						gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
 					fi
 
-					sed -i 's/      \*SUB\*/ /g' ${genPath}/${algoName}$fExt.gsql;   # Cut the *SUB* string
+					sed -i 's/\*SUB\* //g' ${genPath}/${algoName}$fExt.gsql;   # Cut the *SUB* string
 					echo; echo gsql -g $grph ${genPath}/${algoName}$fExt.gsql
 					gsql -g $grph ${genPath}/${algoName}$fExt.gsql
 				fi
@@ -432,6 +447,7 @@ END
 					fi
 					sed -i "s/\*EXT\*/$aExt/g" $attrQuery; # *EXT* > $aExt
                                         sed -i 's/\*ATTR\*CREATE/CREATE/g' $attrQuery;  # Cut *ATTR* string
+                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
 					sed -i 's/\*ATTR\*/      /g' $attrQuery;  # Cut *ATTR* string in query body
 					sed -i '/^\*ACCM\*/ d' $attrQuery;  # Del *ACCM* lines
 					sed -i '/^\*FILE\*/ d' $attrQuery;  # Del *FILE*lines
@@ -442,7 +458,7 @@ END
 						subqueryWords=( $subqueryLine )
 						gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
 					fi				
-					sed -i 's/      \*SUB\*/ /g' ${genPath}/${algoName}$aExt.gsql;   # Cut the *SUB* string
+					sed -i 's/\*SUB\* //g' ${genPath}/${algoName}$aExt.gsql;   # Cut the *SUB* string
 					echo gsql -g $grph $attrQuery;
 					gsql -g $grph $attrQuery;
 				  ;;
@@ -455,6 +471,7 @@ END
                                 sed -i 's/\*EXT\*//g' ${genPath}/${algoName}.gsql;
                                 sed -i '/^\*ATTR\*/ d' ${genPath}/${algoName}.gsql;  # Delete lines with *ATTR*
                                 sed -i 's/\*ACCM\*CREATE/CREATE/g' ${genPath}/${algoName}.gsql;
+                                sed -i 's/\*ACCM\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
                                 sed -i 's/\*ACCM\*/      /g' ${genPath}/${algoName}.gsql;  # Cut the *ACCM* string, replace by 6 spaces
                                 sed -i '/^\*FILE\*/ d' ${genPath}/${algoName}.gsql; # Delete lines with *FILE*
                                 gsql -g $grph "DROP QUERY ${algoName}"
@@ -465,7 +482,7 @@ END
                                         gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
                                 fi
                                 # Finalize the JSON (ACCMulator) version of the query
-                                sed -i 's/      \*SUB\* //g' ${genPath}/${algoName}.gsql;   # Cut the *SUB* string
+                                sed -i 's/\*SUB\* //g' ${genPath}/${algoName}.gsql;   # Cut the *SUB* string
                                 echo; echo "gsql -g $grph ${genPath}/${algoName}.gsql"
                                 gsql -g $grph ${genPath}/${algoName}.gsql
                         
@@ -480,6 +497,7 @@ END
                                         sed -i '/^\*ATTR\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ATTR* lines
                                         sed -i '/^\*ACCM\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ACCM* lines
                                         sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}.gsql; # Cut *FILE* string
+                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
                                         sed -i 's/\*FILE\*/      /g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string in query body
                                         gsql -g $grph "DROP QUERY ${algoName}$fExt"
                                         subqueryClue="\*SUB\* CREATE QUERY"
@@ -489,7 +507,7 @@ END
                                                 gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
                                         fi
 
-                                        sed -i 's/      \*SUB\*/ /g' ${genPath}/${algoName}$fExt.gsql;   # Cut the *SUB* string
+                                        sed -i 's/\*SUB\* //g' ${genPath}/${algoName}$fExt.gsql;   # Cut the *SUB* string
                                         echo; echo gsql -g $grph ${genPath}/${algoName}$fExt.gsql
                                         gsql -g $grph ${genPath}/${algoName}$fExt.gsql
                                 fi
@@ -586,6 +604,7 @@ END
                                         fi
                                         sed -i "s/\*EXT\*/$aExt/g" $attrQuery; # *EXT* > $aExt
                                         sed -i 's/\*ATTR\*CREATE/CREATE/g' $attrQuery;  # Cut *ATTR* string
+                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
                                         sed -i 's/\*ATTR\*/      /g' $attrQuery;  # Cut *ATTR* string in query body
                                         sed -i '/^\*ACCM\*/ d' $attrQuery;  # Del *ACCM* lines
                                         sed -i '/^\*FILE\*/ d' $attrQuery;  # Del *FILE*lines
@@ -596,7 +615,7 @@ END
                                                 subqueryWords=( $subqueryLine )
                                                 gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
                                         fi
-                                        sed -i 's/      \*SUB\*/ /g' ${genPath}/${algoName}$aExt.gsql;   # Cut the *SUB* string
+                                        sed -i 's/\*SUB\* //g' ${genPath}/${algoName}$aExt.gsql;   # Cut the *SUB* string
                                         echo gsql -g $grph $attrQuery;
                                         gsql -g $grph $attrQuery;
                                   ;;
