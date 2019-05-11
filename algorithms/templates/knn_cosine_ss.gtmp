@@ -21,7 +21,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 
         Neighbours = SELECT t
                      FROM Subjects:s -(*sec-edge-types*:e)-> *vertex-types*:t
-                     WHERE t != source
+                     WHERE t != source AND t.*vertex-label* != ""    # only consider the neighbours with known label
                      ACCUM t.@numerator += s.@numerator * e.*edge-weight*;
 
         kNN = SELECT s
@@ -29,7 +29,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
               ACCUM s.@norm2 += pow(e.*edge-weight*, 2)
               POST-ACCUM s.@similarity = s.@numerator/sqrt(@@norm1 * s.@norm2)
               ORDER BY s.@similarity DESC
-              LIMIT topK;
+              LIMIT topK; 
 
         #predict label
         kNN = SELECT s
