@@ -1,0 +1,103 @@
+CREATE QUERY knn_cosine_cv_sub (VERTEX source, INT minK, INT maxK) FOR GRAPH movie RETURNS (ListAccum<STRING>) { 
+        TYPEDEF TUPLE <label STRING, similarity FLOAT> labelScore;
+        HeapAccum<labelScore>(maxK, similarity DESC) @@topLabels;  # heap stores the (label, similarity) tuple, order by similarity score
+        SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
+        MapAccum<STRING, INT> @@count;
+        ListAccum<STRING> @@predictedLabels;  # list of predicted labels to return
+        INT maxCount = 0;
+        STRING chosenLabel;   # chosen label in each iteration
+        INT k;
+
+        IF maxK < minK OR maxK < 1 THEN
+            RETURN @@predictedLabels;
+        END;
+        # calculate similarity and find the top k nearest neighbors
+        Start = {source};
+        Subjects = SELECT t
+                   FROM Start:s -(Rates:e)-> :t
+                   ACCUM t.@numerator = e.weight,
+                         @@norm1 += pow(e.weight, 2);
+
+        Neighbours = SELECT t
+                     FROM Subjects:s -(reverse_Rates:e)-> :t
+                     WHERE t != source AND t.knownLabel != ""    # only consider the neighbors with known label
+                     ACCUM t.@numerator += s.@numerator * e.weight;
+
+        kNN = SELECT s
+              FROM Neighbours:s -(Rates:e)-> :t
+              ACCUM s.@norm2 += pow(e.weight, 2)
+              POST-ACCUM @@topLabels += labelScore(s.knownLabel, s.@numerator/sqrt(@@norm1 * s.@norm2));
+
+        k = 1;
+        FOREACH item IN @@topLabels DO
+                @@count += (item.label -> 1);
+                IF @@count.get(item.label) > maxCount THEN
+                         maxCount = @@count.get(item.label);
+                         chosenLabel = item.label;
+                END;
+                IF k >= minK THEN
+                         @@predictedLabels += chosenLabel;
+                END;
+                k = k+1;
+        END;
+      
+        PRINT @@predictedLabels;
+        RETURN @@predictedLabels;
+}
+
+
+CREATE QUERY knn_cosine_cv (INT minK, INT maxK) FOR GRAPH movie RETURNS (INT){
+/* Leave-one-out cross validation for selecting optimal k
+   When one vertex has no neighbor with known label, the prediction is considered false
+*/
+        ListAccum<FLOAT> @@correctRate;
+        ListAccum<INT> @isCorrect; 
+        ListAccum<STRING> @predictedLabel;
+        SumAccum<FLOAT> @@avgScore;
+        INT n, k, bestK=1;
+        FLOAT maxRate=0;
+  
+        IF maxK < minK OR maxK < 1 THEN
+                RETURN 0;
+        END;
+        Start = {Person.*};
+  
+        n = Start.size();
+  
+        Start = SELECT s
+                FROM Start:s 
+                WHERE s.knownLabel != ""  // label is known
+                ACCUM s.@predictedLabel = knn_cosine_cv_sub(s, minK, maxK)
+                POST-ACCUM FOREACH label IN s.@predictedLabel DO
+                                   IF s.knownLabel == label THEN  # *vStrAttrOld*  means no neighbor with label
+                                           s.@isCorrect += 1
+                                   ELSE
+                                           s.@isCorrect += 0
+                                   END                   
+                           END;
+        PRINT Start;
+  
+        k = 0;  # index starts from 0
+        WHILE k < maxK-minK+1 DO
+                @@avgScore = 0;
+                Start = SELECT s
+                        FROM Start:s 
+                        ACCUM IF s.@isCorrect.size()==0 THEN
+                                      @@avgScore += 0  # no neighbor is considered incorrect prediction
+                              ELSE IF k >= s.@isCorrect.size() THEN
+                                      @@avgScore += s.@isCorrect.get(s.@isCorrect.size()-1)   # use all neighbors it has when it is not enough  
+                              ELSE 
+                                      @@avgScore += s.@isCorrect.get(k)
+                              END;
+                @@correctRate += @@avgScore / n;
+                IF @@avgScore / n > maxRate THEN
+                        maxRate = @@avgScore / n;
+                        bestK = k+1;
+                END;
+                k = k+1;
+        END;
+
+        PRINT @@correctRate;
+        PRINT bestK;
+        RETURN bestK;
+}
