@@ -46,16 +46,21 @@ CREATE QUERY knn_cosine_cv_sub(VERTEX source, INT minK, INT maxK) FOR GRAPH movi
 
 }
 
-CREATE QUERY knn_cv(INT minK, INT maxK) FOR GRAPH movie { 
+
+CREATE QUERY knn_cv(INT minK, INT maxK) FOR GRAPH movie RETURNS (INT){ 
 # leave-one-out cross validation for selecting optimal k
   
-  MapAccum<STRING, INT> @@labelDist;
+  MapAccum<STRING, INT> @@labelDist;  # label distribution in the whole graph
   ListAccum<FLOAT> @@correctRate;
   ListAccum<INT> @isCorrect; 
   ListAccum<STRING> @predictedLabel;
   SumAccum<FLOAT> @@avgScore;
-  INT n, k;
+  INT n, k, bestK=1;
+  FLOAT maxRate=0;
   
+  IF maxK < minK OR maxK < 1 THEN
+      RETURN 0;
+  END;
   Start = {Person.*};  // *vertex-types*
   
   Start = SELECT s
@@ -67,7 +72,8 @@ CREATE QUERY knn_cv(INT minK, INT maxK) FOR GRAPH movie {
   Start = SELECT s
            FROM Start:s 
            WHERE s.known_label != ""  // label is known
-           ACCUM s.@predictedLabel = knn_cosine_cv_sub(s, minK, maxK), 
+           ACCUM s.@predictedLabel = knn_cosine_cv_sub(s, minK, maxK)
+           POST-ACCUM
                  FOREACH label IN s.@predictedLabel DO
                    IF s.known_label == label THEN  # *vStrAttrOld*  means no neighbor with label
                       s.@isCorrect += 1
@@ -77,18 +83,27 @@ CREATE QUERY knn_cv(INT minK, INT maxK) FOR GRAPH movie {
                  END;
   PRINT Start;
   
-  k = 1;
+  k = 0;  # index starts from 0
   WHILE k < maxK-minK+1 DO
+    @@avgScore = 0;
     Start = SELECT s
             FROM Start:s 
-            ACCUM IF s.@isCorrect.size() == 0 THEN
-                      @@avgScore += (@@labelDist.get(s.known_label)-1)/n   # the probability that a random label from all other vertices is correct
+            ACCUM IF s.@isCorrect.size()==0 THEN
+                      @@avgScore += 0  # no neighbor is considered incorrect prediction
+                  ELSE IF k >= s.@isCorrect.size() THEN
+                      @@avgScore += s.@isCorrect.get(s.@isCorrect.size()-1)//(@@labelDist.get(s.known_label)-1)*1.0/n   # the probability that a random label from all other vertices is correct
                   ELSE 
                       @@avgScore += s.@isCorrect.get(k)
                   END;
     @@correctRate += @@avgScore / n;
+    IF @@avgScore / n > maxRate THEN
+         maxRate = @@avgScore / n;
+         bestK = k+1;
+    END;
     k = k+1;
   END;
 
   PRINT @@correctRate;
+  PRINT bestK;
+  RETURN bestK;
   }
