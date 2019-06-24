@@ -1,6 +1,4 @@
-*ATTR*CREATE QUERY knn_cosine_ss*EXT* (VERTEX source, INT topK) FOR GRAPH *graph* {
-*ACCM*CREATE QUERY knn_cosine_ss*EXT* (VERTEX source, INT topK) FOR GRAPH *graph* RETURNS (STRING) {
-*FILE*CREATE QUERY knn_cosine_ss*EXT* (VERTEX source, INT topK, FILE f) FOR GRAPH *graph* {
+CREATE QUERY knn_cosine_ss_attr (VERTEX source, INT topK) FOR GRAPH movie {
 /* This query is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
 Cosine similarity = A \dot B / ||A|| \dot ||B||
 1. The JSON and FILE version keeps the top k pairs of vertices. The result in FILE version is not in order.
@@ -15,18 +13,18 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
         # calculate similarity and find the top k nearest neighbors
         Start = {source};
         Subjects = SELECT t
-                   FROM Start:s -(*edge-types*:e)-> :t
-                   ACCUM t.@numerator = e.*edge-weight*,
-                         @@norm1 += pow(e.*edge-weight*, 2);
+                   FROM Start:s -(Likes:e)-> :t
+                   ACCUM t.@numerator = e.weight,
+                         @@norm1 += pow(e.weight, 2);
 
         Neighbours = SELECT t
-                     FROM Subjects:s -(*sec-edge-types*:e)-> *vertex-types*:t
-                     WHERE t != source AND t.*vertex-label* != ""    # only consider the neighbours with known label
-                     ACCUM t.@numerator += s.@numerator * e.*edge-weight*;
+                     FROM Subjects:s -(Reverse_Likes:e)-> Person:t
+                     WHERE t != source AND t.known_label != ""    # only consider the neighbours with known label
+                     ACCUM t.@numerator += s.@numerator * e.weight;
 
         kNN = SELECT s
-              FROM Neighbours:s -(*edge-types*:e)-> :t
-              ACCUM s.@norm2 += pow(e.*edge-weight*, 2)
+              FROM Neighbours:s -(Likes:e)-> :t
+              ACCUM s.@norm2 += pow(e.weight, 2)
               POST-ACCUM s.@similarity = s.@numerator/sqrt(@@norm1 * s.@norm2)
               ORDER BY s.@similarity DESC
               LIMIT topK; 
@@ -34,7 +32,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
         #predict label
         kNN = SELECT s
               FROM kNN:s
-              ACCUM @@count += (s.*vertex-label* -> 1);
+              ACCUM @@count += (s.known_label -> 1);
         
         FOREACH (label, cnt) IN @@count DO
             IF cnt > maxCount THEN
@@ -43,10 +41,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
             END;
         END;
  
-*ATTR*  Start = SELECT s
-*ATTR*          FROM Start:s
-*ATTR*          POST-ACCUM s.*vStrAttr* = chosenLabel;       
-*ACCM*  PRINT chosenLabel;
-*ACCM*  RETURN chosenLabel;
-*FILE*  f.println(chosenLabel);
+        Start = SELECT s
+                FROM Start:s
+                POST-ACCUM s.predicted_label = chosenLabel;       
 }

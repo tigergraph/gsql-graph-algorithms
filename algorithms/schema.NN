@@ -1,0 +1,26 @@
+---- Graph NN
+Vertex Types: 
+  - VERTEX inputLayer(PRIMARY_ID id STRING, xvalue LIST<DOUBLE>, name STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+  - VERTEX hiddenLayer(PRIMARY_ID id STRING, w LIST<DOUBLE>, name STRING) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+  - VERTEX outputLayer(PRIMARY_ID id STRING, yvalue LIST<DOUBLE>, w LIST<DOUBLE>) WITH STATS="OUTDEGREE_BY_EDGETYPE"
+Edge Types: 
+  - DIRECTED EDGE input_hidden(FROM inputLayer, TO hiddenLayer) WITH REVERSE_EDGE="hidden_input"
+  - DIRECTED EDGE hidden_input(FROM hiddenLayer, TO inputLayer) WITH REVERSE_EDGE="input_hidden"
+  - DIRECTED EDGE hidden_hidden(FROM hiddenLayer, TO hiddenLayer) WITH REVERSE_EDGE="rev_hidden"
+  - DIRECTED EDGE rev_hidden(FROM hiddenLayer, TO hiddenLayer) WITH REVERSE_EDGE="hidden_hidden"
+  - DIRECTED EDGE hidden_output(FROM hiddenLayer, TO outputLayer) WITH REVERSE_EDGE="output_hidden"
+  - DIRECTED EDGE output_hidden(FROM outputLayer, TO hiddenLayer) WITH REVERSE_EDGE="hidden_output"
+
+Graphs: 
+  - Graph NN(inputLayer:v, hiddenLayer:v, outputLayer:v, input_hidden:e, hidden_input:e, hidden_hidden:e, rev_hidden:e, hidden_output:e, output_hidden:e)
+Jobs: 
+  - CREATE LOADING JOB loader FOR GRAPH NN {
+      LOAD "$sys.data_root/dataY.csv" TO VERTEX outputLayer VALUES($0, SPLIT($1, " "), _) USING SEPARATOR=",", HEADER="false", EOL="\n";
+    }
+
+Queries: 
+  - shallow_nn() (installed v2)
+
+
+
+

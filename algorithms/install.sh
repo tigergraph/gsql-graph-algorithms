@@ -39,7 +39,7 @@ fi
 finished=false
 while [ !$finished ]; do
 	echo; echo "Please enter the index of the algorithm you want to create or EXIT:"
-	select algo in "EXIT" "Closeness Centrality" "Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)" "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do
+	select algo in "EXIT" "Closeness Centrality" "Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)" "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)"
     	case $algo in
 			"Closeness Centrality" )
 				algoName="closeness_cent"
@@ -97,14 +97,14 @@ while [ !$finished ]; do
 				algoName="tri_count_fast"
 				echo "  tri_count_fast() works on undirected graphs"
 				break;;
-                        'Cosine Similarity (single vertex)' )
-                                algoName="cosine_ss"
-                                echo "  cosine_ss() calculates the similarity between one given vertex and all other vertices. You need to have a subquery called collect_feature_cosine returning MapAccum<STRING, FLOAT> installed before installing this algorithm."
-                                break;;
-                        'Jaccard Similarity (single vertex)' )
-                                algoName="jaccard_ss"
-                                echo "  jaccard_ss() calculates the similarity between one given vertex and all other vertices. You need to have a subquery called collect_feature_jaccard returning SetAccum<STRING> installed before installing this algorithm."
-                                break;;
+                        #'Cosine Similarity (single vertex)' )
+                        #        algoName="cosine_ss"
+                        #        echo "  cosine_ss() calculates the similarity between one given vertex and all other vertices. You need to have a subquery called collect_feature_cosine returning MapAccum<STRING, FLOAT> installed before installing this algorithm."
+                        #        break;;
+                        #'Jaccard Similarity (single vertex)' )
+                        #        algoName="jaccard_ss"
+                        #        echo "  jaccard_ss() calculates the similarity between one given vertex and all other vertices. You need to have a subquery called collect_feature_jaccard returning SetAccum<STRING> installed before installing this algorithm."
+                        #        break;;
 			'Cosine Neighbor Similarity (single vertex)' )
 				algoName="cosine_nbor_ss"
                                 echo "  cosine_nbor_ss() calculates the similarity between one given vertex and all other vertices"
