@@ -1,0 +1,43 @@
+      CREATE QUERY knn_cosine_ss_file (VERTEX source, INT topK, FILE f) FOR GRAPH movie {
+/* This query is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
+Cosine similarity = A \dot B / ||A|| \dot ||B||
+The output is the predicted label for the source vertex, which is the majority label of its k-nearest neighbors. 
+*/
+        SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
+        MapAccum<STRING, INT> @@mapCountLabels;
+        INT maxCount = 0;
+        STRING chosenLabel;
+
+        # calculate similarity and find the top k nearest neighbors
+        Start = {source};
+        Subjects = SELECT t
+                   FROM Start:s -(Likes:e)-> :t
+                   ACCUM t.@numerator = e.weight,
+                         @@norm1 += pow(e.weight, 2);
+
+        Neighbours = SELECT t
+                     FROM Subjects:s -(Reverse_Likes:e)-> Person:t
+                     WHERE t != source AND t.known_label != ""    # only consider the neighbours with known label
+                     ACCUM t.@numerator += s.@numerator * e.weight;
+
+        kNN = SELECT s
+              FROM Neighbours:s -(Likes:e)-> :t
+              ACCUM s.@norm2 += pow(e.weight, 2)
+              POST-ACCUM s.@similarity = s.@numerator/sqrt(@@norm1 * s.@norm2)
+              ORDER BY s.@similarity DESC
+              LIMIT topK; 
+
+        #predict label
+        kNN = SELECT s
+              FROM kNN:s
+              ACCUM @@mapCountLabels += (s.known_label -> 1);
+        
+        FOREACH (label, cnt) IN @@mapCountLabels DO
+            IF cnt > maxCount THEN
+                maxCount = cnt;
+                chosenLabel = label;
+            END;
+        END;
+ 
+        f.println(source, chosenLabel);
+}
