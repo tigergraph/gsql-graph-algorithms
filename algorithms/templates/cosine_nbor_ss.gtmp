@@ -30,16 +30,13 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 *ATTR*  neighbours = SELECT s
 *ATTR*               FROM neighbours:s
 *ATTR*               POST-ACCUM insert into *insert-edge-name* values(source, s, s.@similarity);
-
 *ACCM*  PRINT neighbours.@similarity;
 *ACCM*  neighbours = SELECT s
 *ACCM*               FROM neighbours:s
 *ACCM*               ACCUM @@topK_result += (s -> s.@similarity);
 *ACCM*  return @@topK_result;
-
 *FILE*  neighbours = SELECT s 
 *FILE*               FROM neighbours:s
 *FILE*               POST-ACCUM f.println(source, s, s.@similarity);
-
 }
 

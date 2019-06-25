@@ -25,13 +25,10 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
                      ORDER BY s.@similarity DESC
                      LIMIT topK;
 
-
         PRINT neighbours.@similarity;
         neighbours = SELECT s
                      FROM neighbours:s
                      ACCUM @@topK_result += (s -> s.@similarity);
         return @@topK_result;
-
-
 }
 

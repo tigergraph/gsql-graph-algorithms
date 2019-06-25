@@ -4,7 +4,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 The output is the predicted label for the source vertex, which is the majority label of its k-nearest neighbors. 
 */
         SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
-        MapAccum<STRING, INT> @@count;
+        MapAccum<STRING, INT> @@mapCountLabels;
         INT maxCount = 0;
         STRING chosenLabel;
 
@@ -30,14 +30,14 @@ The output is the predicted label for the source vertex, which is the majority l
         #predict label
         kNN = SELECT s
               FROM kNN:s
-              ACCUM @@count += (s.known_label -> 1);
+              ACCUM @@mapCountLabels += (s.known_label -> 1);
         
-        FOREACH (label, cnt) IN @@count DO
+        FOREACH (label, cnt) IN @@mapCountLabels DO
             IF cnt > maxCount THEN
                 maxCount = cnt;
                 chosenLabel = label;
             END;
         END;
  
-        f.println(chosenLabel);
+        f.println(source, chosenLabel);
 }

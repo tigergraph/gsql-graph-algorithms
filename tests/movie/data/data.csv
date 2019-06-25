@@ -1,16 +1,16 @@
-Person, Score, Movie, Label
-Alex, 10, Free Solo, a
-Alex, 8, The Dawn Wall,a
-Alex, 3, A Quiet Place,a
-Jing, 9, Project Gutenberg,
-Jing, 6, Free Solo,
-Kat, 8, Crazy Rich Asians,b
-Kat, 7, Incredibles 2,b
-Neil, 5, Crazy Rich Asians,
-Neil, 9, Incredibles 2,
-Neil, 6, Searching,
-Neil, 8, Project Gutenberg,
-Kevin, 8, A Quiet Place,a
-Kevin, 6, Crazy Rich Asians,a
-Kevin, 8, Searching,a
-Elena, 7, One Cut of the Dead,
+Person,Score,Movie,Label
+Alex,10,Free Solo,a
+Alex,8,The Dawn Wall,a
+Alex,3,A Quiet Place,a
+Jing,9,Project Gutenberg,
+Jing,6,Free Solo,
+Kat,8,Crazy Rich Asians,b
+Kat,7,Incredibles2,b
+Neil,5,Crazy Rich Asians,
+Neil,9,Incredibles2,
+Neil,6,Searching,
+Neil,8,Project Gutenberg,
+Kevin,8,A Quiet Place,a
+Kevin,6,Crazy Rich Asians,a
+Kevin,8,Searching,a
+Elena,7,One Cut of the Dead,

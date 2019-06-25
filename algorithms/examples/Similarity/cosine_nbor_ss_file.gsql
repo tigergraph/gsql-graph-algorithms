@@ -24,11 +24,8 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
                      ORDER BY s.@similarity DESC
                      LIMIT topK;
 
-
-
         neighbours = SELECT s 
                      FROM neighbours:s
                      POST-ACCUM f.println(source, s, s.@similarity);
-
 }
 
