@@ -1,6 +1,4 @@
-*ATTR*CREATE QUERY scc*EXT* (INT iter = 500, INT iter_wcc = 5) FOR GRAPH *graph*{ //INT iter_end_trim = 3 
-*ACCM*CREATE QUERY scc*EXT* (INT iter = 500, INT iter_wcc = 5) FOR GRAPH *graph*{ //INT iter_end_trim = 3
-*FILE*CREATE QUERY scc*EXT* (INT iter = 500, INT iter_wcc = 5, FILE f) FOR GRAPH *graph*{ //INT iter_end_trim = 3
+CREATE QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) FOR GRAPH baidu{ //INT iter_end_trim = 3
 /* This query detects strongly connected components based on the following papers:
    https://www.sandia.gov/~apinar/papers/irreg00.pdf
    https://www.sciencedirect.com/science/article/pii/S0743731505000535
@@ -19,7 +17,7 @@
         SumAccum<STRING> @flag;
         MapAccum<INT, MinAccum<INT>> @@f_cid_map, @@b_cid_map, @@n_cid_map, @@s_cid_map;
         INT i = 1;
-        v_all = {*vertex-types*};
+        v_all = {User.*, Person.*};
   
         active = SELECT s
                 FROM v_all:s
@@ -33,12 +31,12 @@
                 //IF i < iter_end_trim THEN
                 WHILE TRUE DO   
                         tmp =  SELECT s
-                               FROM active:s -(*edge-types*:e) -> :t
+                               FROM active:s -((link_to|link_to2|link_to3):e) -> :t
                                WHERE t.@detached == FALSE AND s.@cid == t.@cid
                                ACCUM s.@has_pos_outdegree = TRUE;
   
                         tmp =  SELECT s
-                               FROM active:s -(*reverse-edge-types*:e) -> :t
+                               FROM active:s -((reverse_link_to|reverse_link_to2|reverse_link_to3):e) -> :t
                                WHERE t.@detached == FALSE AND s.@cid == t.@cid
                                ACCUM s.@has_pos_indegree = TRUE;
                         trim_set = SELECT s
@@ -70,7 +68,7 @@
                         curr = active;
                         WHILE (curr.size()>0) DO
                                 curr = SELECT t
-                                       FROM curr:s -(*edge-types*|*reverse-edge-types*:e)-> :t
+                                       FROM curr:s -((link_to|link_to2|link_to3|reverse_link_to|reverse_link_to2|reverse_link_to3):e)-> :t
                                        WHERE s.@cid == t.@cid AND t.@detached == FALSE
                                        ACCUM t.@wcc_id_curr += s.@wcc_id_prev // If s has a smaller id than t, copy the id to t
                                        POST-ACCUM
@@ -98,7 +96,7 @@
                 curr = pivots;
                 WHILE curr.size()>0 DO
                         curr = SELECT t 
-                               FROM curr:s -(*edge-types*:e)->:t  // edge
+                               FROM curr:s -((link_to|link_to2|link_to3):e)->:t  // edge
                                WHERE t.@detached == FALSE AND t.@is_forward == FALSE AND s.@cid == t.@cid // not traversed
                                ACCUM t.@is_forward = TRUE;
                 END;
@@ -107,7 +105,7 @@
                 curr = pivots;
                 WHILE curr.size()>0 DO
                         curr = SELECT t 
-                               FROM curr:s -(*reverse-edge-types*:e)->:t  // reverse edge
+                               FROM curr:s -((reverse_link_to|reverse_link_to2|reverse_link_to3):e)->:t  // reverse edge
                                WHERE t.@detached == FALSE AND t.@is_backward == FALSE AND s.@cid == t.@cid // not traversed
                                ACCUM t.@is_backward = TRUE;
                 END;
@@ -166,14 +164,8 @@
 	END;
         PRINT @@cluster_dist_heap;
 
-*ATTR*  v_all = SELECT s
-*ATTR*          FROM v_all:s 
-*ATTR*          POST-ACCUM s.*vIntAttr* = s.@cid;
 
-*ACCM*  PRINT v_all.@cid;
+        PRINT v_all.@cid;
 
-*FILE*  f.println("Vertex_ID","Component_ID");
-*FILE*  v_all = SELECT s FROM v_all:s
-*FILE*          POST-ACCUM f.println(s, s.@cid);
 
 }
