@@ -1,6 +1,6 @@
-*ATTR*CREATE QUERY scc*EXT* (INT iter = 500, INT iter_wcc = 5) FOR GRAPH *graph*{ //INT iter_end_trim = 3 
-*ACCM*CREATE QUERY scc*EXT* (INT iter = 500, INT iter_wcc = 5) FOR GRAPH *graph*{ //INT iter_end_trim = 3
-*FILE*CREATE QUERY scc*EXT* (INT iter = 500, INT iter_wcc = 5, FILE f) FOR GRAPH *graph*{ //INT iter_end_trim = 3
+*ATTR*CREATE QUERY scc*EXT* (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) FOR GRAPH *graph*{ //INT iter_end_trim = 3 
+*ACCM*CREATE QUERY scc*EXT* (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) FOR GRAPH *graph*{ //INT iter_end_trim = 3
+*FILE*CREATE QUERY scc*EXT* (INT iter = 500, INT iter_wcc = 5, INT top_k_dist, FILE f) FOR GRAPH *graph*{ //INT iter_end_trim = 3
 /* This query detects strongly connected components based on the following papers:
    https://www.sandia.gov/~apinar/papers/irreg00.pdf
    https://www.sciencedirect.com/science/article/pii/S0743731505000535
@@ -12,7 +12,7 @@
 */
         TYPEDEF TUPLE <INT csize, INT num> cluster_num;
         MapAccum<INT, INT> @@cluster_size_map, @@cluster_dist_map;
-        HeapAccum<cluster_num>(topK, csize DESC) @@cluster_dist_heap;
+        HeapAccum<cluster_num>(top_k_dist, csize DESC) @@cluster_dist_heap;
         OrAccum @is_forward, @is_backward, @detached, @has_pos_indegree, @has_pos_outdegree, @wcc_active;
         SumAccum<INT> @cid, @vid;
         MinAccum<INT> @@min_vid, @wcc_id_curr, @wcc_id_prev;
