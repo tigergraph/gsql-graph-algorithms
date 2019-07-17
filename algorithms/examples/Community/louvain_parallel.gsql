@@ -93,7 +93,7 @@ CREATE QUERY louvain_parallel(INT iter1 = 10, INT iter2 = 10, INT iter3 = 10, IN
         Iter1 = iter1 - 1;
               
         WHILE (iteration < 2 OR @@modularity - last_modularity > epsilon) LIMIT Iter1 DO
-                iteration += 1;
+                iteration = iteration + 1;
                 loop = 0;
                 WHILE (loop < partitions) DO 
                         S = SELECT s 
@@ -139,7 +139,7 @@ CREATE QUERY louvain_parallel(INT iter1 = 10, INT iter2 = 10, INT iter3 = 10, IN
 # Phase 2 --  Merge     
         iteration2 = 0;
         WHILE (iteration2 < 2 OR @@modularity2 - last_modularity2 > epsilon) LIMIT iter2 DO
-                iteration2 += 1;
+                iteration2 = iteration2 + 1;
                 Start = SELECT s
                         FROM Start:s
                         ACCUM s.@uid = s.@cid;      
@@ -168,7 +168,7 @@ CREATE QUERY louvain_parallel(INT iter1 = 10, INT iter2 = 10, INT iter3 = 10, IN
                 @@modularity = 0;
      
                 WHILE (iteration < 2 OR @@modularity - last_modularity > epsilon) limit iter1 DO
-                        iteration += 1;
+                        iteration = iteration + 1;
         
                         # Calculate.weight incident from vertex to cluster in coarsened graph; change every interation
                         S = SELECT s
@@ -241,7 +241,7 @@ CREATE QUERY louvain_parallel(INT iter1 = 10, INT iter2 = 10, INT iter3 = 10, IN
         iteration = 0;
         @@modularity = 0;
         WHILE (iteration < 2 OR @@modularity - last_modularity > epsilon) LIMIT iter3 DO
-                iteration += 1;
+                iteration = iteration + 1;
                 S = SELECT s 
                     FROM Start:s -(Coworker:e)-> :t
                     WHERE abs(s.@weight - @@totIncidentCluster.get(s.@cid)) > epsilon OR abs(t.@weight - @@totIncidentCluster.get(t.@cid)) > epsilon OR (abs(s.@weight - @@totIncidentCluster.get(s.@cid)) < epsilon AND abs(t.@weight - @@totIncidentCluster.get(t.@cid)) < epsilon AND s.@cid > t.@cid)   # at least one cluster not only itself, or use smaller label
