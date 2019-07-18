@@ -27,8 +27,5 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
         neighbours = SELECT s
                      FROM neighbours:s
                      POST-ACCUM insert into Similarity values(source, s, s.@similarity);
-
-
-
 }
 
