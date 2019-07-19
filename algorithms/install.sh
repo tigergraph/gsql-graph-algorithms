@@ -51,7 +51,7 @@ while [ !$finished ]; do
 				break;;
 			"Strongly Connected Components" )
                                 algoName="scc"
-                                echo "  scc() works on directed edges with reverse edges. Distributed query mode not supported"
+                                echo "  scc() works on directed edges with reverse edges. Distributed query mode currently not supported"
                                 break;;
 			"Label Propagation" )
 				algoName="label_prop"
@@ -242,6 +242,7 @@ while [ !$finished ]; do
                 	edge3="(${edge3})"
         	fi
                 sed -i "s/\*reverse-edge-types\*/$edge3/g" ${genPath}/${algoName}_tmp.gsql
+		sed -i "s/)|(/|/g" ${genPath}/${algoName}_tmp.gsql
         fi
 
      	# 5. Ask for edge weight name. Replace *edge-weight* placeholder.
