@@ -51,7 +51,7 @@ while [ !$finished ]; do
 				break;;
 			"Strongly Connected Components" )
                                 algoName="scc"
-                                echo "  scc() works on directed edges with reverse edges. Distributed query mode currently not supported"
+                                echo "  scc() works on directed edges with reverse edges. DISTRIBUTED QUERY mode for this query is supported from TG 2.4"
                                 break;;
 			"Label Propagation" )
 				algoName="label_prop"
