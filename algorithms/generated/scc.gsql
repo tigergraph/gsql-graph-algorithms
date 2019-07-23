@@ -9,7 +9,7 @@ CREATE DISTRIBUTED QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) 
    iter_wcc: find wcc in this iteration; usually a small number(3 to 10)
    top_k_dist: top k result in scc distribution
 
-   DISTRIBUTED QUERY mode is not supported.
+   DISTRIBUTED QUERY mode for this query is supported from TG 2.4.
 */
         TYPEDEF TUPLE <INT csize, INT num> cluster_num;
         MapAccum<INT, INT> @@cluster_size_map, @@cluster_dist_map;
