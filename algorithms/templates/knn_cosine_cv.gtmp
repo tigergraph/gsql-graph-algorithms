@@ -1,0 +1,107 @@
+*ACCM**SUB* CREATE QUERY knn_cosine_cv_sub*EXT* (VERTEX source, INT min_k, INT max_k) FOR GRAPH *graph* RETURNS (ListAccum<STRING>) {
+/* This subquery returns a list of predicted label for a source vertex with respect to different k within a given range. 
+*/ 
+        TYPEDEF TUPLE <label STRING, similarity FLOAT> Label_Score;
+        HeapAccum<Label_Score>(max_k, similarity DESC) @@top_labels_heap;  # heap stores the (label, similarity) tuple, order by similarity score
+        SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
+        MapAccum<STRING, INT> @@count;
+        ListAccum<STRING> @@predicted_label_lists;  # list of predicted labels to return
+        INT max_count = 0;
+        STRING chosen_label;   # chosen label in each iteration
+        INT k;
+
+        IF max_k < min_k OR max_k < 1 THEN
+            RETURN @@predicted_label_lists;
+        END;
+
+        # calculate similarity and find the top k nearest neighbors
+        start = {source};
+        subjects = SELECT t
+                   FROM start:s -(*edge-types*:e)-> :t
+                   ACCUM t.@numerator = e.*edge-weight*,
+                         @@norm1 += pow(e.*edge-weight*, 2);
+
+        neighbours = SELECT t
+                     FROM subjects:s -(*sec-edge-types*:e)-> :t
+                     WHERE t != source AND t.*vertex-label* != ""    # only consider the neighbors with known label
+                     ACCUM t.@numerator += s.@numerator * e.*edge-weight*;
+
+        kNN = SELECT s
+              FROM neighbours:s -(*edge-types*:e)-> :t
+              ACCUM s.@norm2 += pow(e.*edge-weight*, 2)
+              POST-ACCUM @@top_labels_heap += Label_Score(s.*vertex-label*, s.@numerator/sqrt(@@norm1 * s.@norm2)); # store the label and similarity score in a heap 
+
+	# iterate the heap and calculate label count for different k
+        k = 1;
+        FOREACH item IN @@top_labels_heap DO  
+                @@count += (item.label -> 1);   # count is a map, key is the label, value is the count of the label
+                IF @@count.get(item.label) > max_count THEN
+                         max_count = @@count.get(item.label);
+                         chosen_label = item.label;
+                END;
+                IF k >= min_k THEN
+                         @@predicted_label_lists += chosen_label;  # list of predicted labels
+                END;
+                k = k+1;
+        END;
+      
+        PRINT @@predicted_label_lists;
+        RETURN @@predicted_label_lists;
+}
+
+
+*ACCM*CREATE QUERY knn_cosine_cv*EXT* (INT min_k, INT max_k) FOR GRAPH *graph* RETURNS (INT){
+/* Leave-one-out cross validation for selecting optimal k. 
+   The input is a range of k, output is the k with highest correct prediction rate.
+   Note: When one vertex has no neighbor with known label, the prediction is considered false
+*/
+        ListAccum<FLOAT> @@correct_rate_list; 
+        ListAccum<INT> @is_correct_list; 
+        ListAccum<STRING> @predicted_label_list;
+        SumAccum<FLOAT> @@total_score;
+        INT n, k, best_k=1;
+        FLOAT max_rate=0;
+  
+        IF max_k < min_k OR max_k < 1 THEN  // terminate if the range is invalid
+                RETURN 0;
+        END;
+        start = {*vertex-types*.*};
+        n = start.size();
+  
+        start = SELECT s
+                FROM start:s 
+                WHERE s.*vertex-label* != ""  // get the vertices with known label
+                ACCUM s.@predicted_label_list = knn_cosine_cv_sub(s, min_k, max_k)  // get a list of predicted label wrt different k
+                POST-ACCUM FOREACH label IN s.@predicted_label_list DO
+                                   IF s.*vertex-label* == label THEN  # *vStrAttrOld*  means no neighbor with label
+                                           s.@is_correct_list += 1
+                                   ELSE
+                                           s.@is_correct_list += 0
+                                   END                   
+                           END;
+#       PRINT start;
+  
+        k = 0;  # index starts from 0
+        WHILE k < max_k-min_k+1 DO
+                @@total_score = 0;
+                start = SELECT s
+                        FROM start:s 
+                        ACCUM IF s.@is_correct_list.size()==0 THEN
+                                      @@total_score += 0  # if there is no neighbor, it is considered incorrect prediction
+                              ELSE IF k >= s.@is_correct_list.size() THEN
+                                      @@total_score += s.@is_correct_list.get(s.@is_correct_list.size()-1)   # use all neighbors it has when it is not enough  
+                              ELSE 
+                                      @@total_score += s.@is_correct_list.get(k)
+                              END;
+                @@correct_rate_list += @@total_score / n;
+                IF @@total_score / n > max_rate THEN
+                        max_rate = @@total_score / n;  # store the max correct rate in max_rate
+                        best_k = k+1;
+                END;
+                k = k+1;
+        END;
+
+        PRINT @@correct_rate_list;
+        PRINT best_k;
+        RETURN best_k;
+}
