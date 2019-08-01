@@ -1,4 +1,4 @@
-*ACCM**SUB* CREATE QUERY knn_cosine_cv_sub*EXT* (VERTEX source, INT max_k) FOR GRAPH *graph* RETURNS (ListAccum<STRING>) {
+CREATE QUERY knn_cosine_cv_sub (VERTEX source, INT max_k) FOR GRAPH movie RETURNS (ListAccum<STRING>) {
 /* This subquery returns a list of predicted label for a source vertex with respect to different k within a given range. 
 */ 
         TYPEDEF TUPLE <label STRING, similarity FLOAT> Label_Score;
@@ -13,19 +13,19 @@
         # calculate similarity and find the top k nearest neighbors
         start = {source};
         subjects = SELECT t
-                   FROM start:s -(*edge-types*:e)-> :t
-                   ACCUM t.@numerator = e.*edge-weight*,
-                         @@norm1 += pow(e.*edge-weight*, 2);
+                   FROM start:s -(Likes:e)-> :t
+                   ACCUM t.@numerator = e.weight,
+                         @@norm1 += pow(e.weight, 2);
 
         neighbours = SELECT t
-                     FROM subjects:s -(*sec-edge-types*:e)-> :t
-                     WHERE t != source AND t.*vertex-label* != ""    # only consider the neighbors with known label
-                     ACCUM t.@numerator += s.@numerator * e.*edge-weight*;
+                     FROM subjects:s -(Reverse_Likes:e)-> :t
+                     WHERE t != source AND t.known_label != ""    # only consider the neighbors with known label
+                     ACCUM t.@numerator += s.@numerator * e.weight;
 
         kNN = SELECT s
-              FROM neighbours:s -(*edge-types*:e)-> :t
-              ACCUM s.@norm2 += pow(e.*edge-weight*, 2)
-              POST-ACCUM @@top_labels_heap += Label_Score(s.*vertex-label*, s.@numerator/sqrt(@@norm1 * s.@norm2)); # store the label and similarity score in a heap 
+              FROM neighbours:s -(Likes:e)-> :t
+              ACCUM s.@norm2 += pow(e.weight, 2)
+              POST-ACCUM @@top_labels_heap += Label_Score(s.known_label, s.@numerator/sqrt(@@norm1 * s.@norm2)); # store the label and similarity score in a heap 
 
 	# iterate the heap and calculate label count for different k
         k = 1;
@@ -44,7 +44,7 @@
 }
 
 
-*ACCM*CREATE QUERY knn_cosine_cv*EXT* (INT min_k, INT max_k) FOR GRAPH *graph* RETURNS (INT){
+CREATE QUERY knn_cosine_cv (INT min_k, INT max_k) FOR GRAPH movie RETURNS (INT){
 /* Leave-one-out cross validation for selecting optimal k. 
    The input is a range of k, output is the k with highest correct prediction rate.
    Note: When one vertex has no neighbor with known label, the prediction is considered false
@@ -59,14 +59,14 @@
         IF max_k < min_k OR max_k < 1 THEN  // terminate if the range is invalid
                 RETURN 0;
         END;
-        start = {*vertex-types*.*};
+        start = {Person.*};
   
         start = SELECT s
                 FROM start:s 
-                WHERE s.*vertex-label* != ""  // get the vertices with known label
+                WHERE s.known_label != ""  // get the vertices with known label
                 ACCUM s.@predicted_label_list = knn_cosine_cv_sub(s, max_k)  // get a list of predicted label wrt different k
                 POST-ACCUM FOREACH label IN s.@predicted_label_list DO
-                                   IF s.*vertex-label* == label THEN  # *vStrAttrOld*  means no neighbor with label
+                                   IF s.known_label == label THEN  # *vStrAttrOld*  means no neighbor with label
                                            s.@is_correct_list += 1
                                    ELSE
                                            s.@is_correct_list += 0
