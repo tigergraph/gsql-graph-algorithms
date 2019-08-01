@@ -1,5 +1,5 @@
 # Single vertex type, single edge type
-CREATE QUERY conn_comp (string v_type, string e_type) FOR GRAPH <placeholder> {
+CREATE QUERY conn_comp (STRING v_type, STRING e_type) FOR GRAPH <placeholder> {
     MinAccum<int> @cc_id = 0;
     SumAccum<int> @old_id = 0;
     OrAccum @active;
