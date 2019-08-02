@@ -1,0 +1,55 @@
+CREATE QUERY cc_subquery (VERTEX source, INT num_vert, INT max_hops, STRING v_type, STRING e_type) FOR GRAPH <placeholder> RETURNS (FLOAT) {
+# Subquery returns closeness centrality for vertex source in graph with num_vert vertices    
+    SumAccum<INT> @@curr_dist, @@total_dist;
+    OrAccum @visited;
+
+    # Initialize: Set the input vertex source as the starting point
+    start = {source};
+    start = SELECT s FROM start:s
+        ACCUM s.@visited += true;
+
+    # total_dist = sum (distance between vertex s and all connected neighbors)
+    WHILE (start.size() > 0) LIMIT max_hops DO
+        @@curr_dist += 1;
+        # Move FROM the current start set to the neighboring set of unvisited vertices
+        start = SELECT t FROM start:s -(e_type:e)-> :t
+                WHERE t.@visited == false AND t != s
+                POST-ACCUM t.@visited += true;
+
+        @@total_dist += start.size() * @@curr_dist;
+    END;
+    IF @@total_dist > 0 THEN
+        RETURN ((num_vert - 1) * 1.0) / (@@total_dist * 1.0);
+    ELSE
+        RETURN (-1.0);
+    END;   
+}
+
+CREATE QUERY closeness_cent (STRING v_type, STRING e_type, BOOL display, INT output_limit) FOR GRAPH <placeholder> {
+    TYPEDEF TUPLE<VERTEX vertex_id, FLOAT score> VERTEX_SCORE;
+    HeapAccum<VERTEX_SCORE>(output_limit, score DESC) @@top_scores_heap;
+
+    SumAccum<FLOAT> @score;
+    SetAccum<EDGE> @@edge_set;
+
+    INT num_vert;
+    INT max_hops = 10; # measure distance for vertices up to 10 hops away
+
+    start = {v_type.*};
+    
+    # Total number of vertices considered in graph
+    num_vert = start.size();
+
+    # get closeness centrality for each vertex
+    start = SELECT s FROM start:s
+            POST-ACCUM s.@score = cc_subquery(s, num_vert, max_hops, v_type, e_type),
+                       @@top_scores_heap += VERTEX_SCORE(s, cc_subquery(s, num_vert, max_hops, v_type, e_type));
+
+    PRINT @@top_scores_heap;
+    IF display THEN
+        PRINT start[start.@score];
+        start = SELECT s FROM start:s -(e_type:e)-> :t
+                ACCUM @@edge_set += e;
+        PRINT @@edge_set;
+    END;    
+}
