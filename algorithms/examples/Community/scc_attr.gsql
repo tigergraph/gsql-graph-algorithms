@@ -1,16 +1,16 @@
-CREATE DISTRIBUTED QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) FOR GRAPH baidu{ //INT iter_end_trim = 3
+CREATE QUERY scc_attr (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) FOR GRAPH social{ //INT iter_end_trim = 3 
 /* This query detects strongly connected components based on the following papers:
-   https://www.sandia.gov/~apinar/papers/irreg00.pdf
-   https://www.sciencedirect.com/science/article/pii/S0743731505000535
-   https://stanford-ppl.github.io/website/papers/sc13-hong.pdf
+ * https://www.sandia.gov/~apinar/papers/irreg00.pdf
+ * https://www.sciencedirect.com/science/article/pii/S0743731505000535
+ * https://stanford-ppl.github.io/website/papers/sc13-hong.pdf
 
-   iter: number of iteration of the algorithm
-   iter_end_trim: stop trimming from this iteration, usually a small number(3 to 10)
-   iter_wcc: find wcc in this iteration; usually a small number(3 to 10)
-   top_k_dist: top k result in scc distribution
+ * iter: number of iteration of the algorithm
+ * iter_end_trim: stop trimming from this iteration as there will not be many vertices to trim; usually a small number(3 to 10)
+ * iter_wcc: find weakly connected components for the active vertices in this iteration, since the largest sccs are already found after several iterations; usually a small number(3 to 10)
+ * top_k_dist: top k result in scc distribution
 
-   DISTRIBUTED QUERY mode for this query is supported from TG 2.4.
-*/
+ * DISTRIBUTED QUERY mode for this query is supported from TG 2.4.
+ */
         TYPEDEF TUPLE <INT csize, INT num> cluster_num;
         MapAccum<INT, INT> @@cluster_size_map, @@cluster_dist_map;
         HeapAccum<cluster_num>(top_k_dist, csize DESC) @@cluster_dist_heap;
@@ -20,8 +20,9 @@ CREATE DISTRIBUTED QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) 
         SumAccum<STRING> @flag;
         MapAccum<INT, MinAccum<INT>> @@f_cid_map, @@b_cid_map, @@n_cid_map, @@s_cid_map;
         INT i = 1;
-        v_all = {User.*, Person.*};
-  
+        v_all = {Person.*};
+  	tmp(ANY) ={};
+
         active = SELECT s
                 FROM v_all:s
                 ACCUM s.@vid = getvid(s),
@@ -34,12 +35,12 @@ CREATE DISTRIBUTED QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) 
                 //IF i < iter_end_trim THEN
                 WHILE TRUE DO   
                         tmp =  SELECT s
-                               FROM active:s -((link_to|link_to2|link_to3):e) -> :t
+                               FROM active:s -((Friend):e) -> :t
                                WHERE t.@detached == FALSE AND s.@cid == t.@cid
                                ACCUM s.@has_pos_outdegree = TRUE;
   
                         tmp =  SELECT s
-                               FROM active:s -((reverse_link_to|reverse_link_to2|reverse_link_to3):e) -> :t
+                               FROM active:s -((Also_Friend):e) -> :t
                                WHERE t.@detached == FALSE AND s.@cid == t.@cid
                                ACCUM s.@has_pos_indegree = TRUE;
                         trim_set = SELECT s
@@ -71,7 +72,7 @@ CREATE DISTRIBUTED QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) 
                         curr = active;
                         WHILE (curr.size()>0) DO
                                 curr = SELECT t
-                                       FROM curr:s -((link_to|link_to2|link_to3|reverse_link_to|reverse_link_to2|reverse_link_to3):e)-> :t
+                                       FROM curr:s -((Friend|Also_Friend):e)-> :t
                                        WHERE s.@cid == t.@cid AND t.@detached == FALSE
                                        ACCUM t.@wcc_id_curr += s.@wcc_id_prev // If s has a smaller id than t, copy the id to t
                                        POST-ACCUM
@@ -99,7 +100,7 @@ CREATE DISTRIBUTED QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) 
                 curr = pivots;
                 WHILE curr.size()>0 DO
                         curr = SELECT t 
-                               FROM curr:s -((link_to|link_to2|link_to3):e)->:t  // edge
+                               FROM curr:s -((Friend):e)->:t  // edge
                                WHERE t.@detached == FALSE AND t.@is_forward == FALSE AND s.@cid == t.@cid // not traversed
                                ACCUM t.@is_forward = TRUE;
                 END;
@@ -108,7 +109,7 @@ CREATE DISTRIBUTED QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) 
                 curr = pivots;
                 WHILE curr.size()>0 DO
                         curr = SELECT t 
-                               FROM curr:s -((reverse_link_to|reverse_link_to2|reverse_link_to3):e)->:t  // reverse edge
+                               FROM curr:s -((Also_Friend):e)->:t  // reverse edge
                                WHERE t.@detached == FALSE AND t.@is_backward == FALSE AND s.@cid == t.@cid // not traversed
                                ACCUM t.@is_backward = TRUE;
                 END;
@@ -116,20 +117,15 @@ CREATE DISTRIBUTED QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) 
                 active = SELECT s
                          FROM active:s 
                          ACCUM IF s.@is_forward == TRUE AND s.@is_backward == TRUE THEN  // scc
-                                     s.@detached = TRUE,
-                                     @@s_cid_map += (s.@cid -> s.@vid)
-                               END,
-                               IF s.@is_forward == TRUE THEN
-                                       IF s.@is_backward == FALSE THEN   // forward set
-                                             @@f_cid_map += (s.@cid -> s.@vid)
-                                       END
-                               ELSE
-                                       IF s.@is_backward == TRUE THEN    // backward set
-                                               @@b_cid_map += (s.@cid -> s.@vid)
-                                       ELSE 
-                                               @@n_cid_map += (s.@cid -> s.@vid)   // null set
-                                       END
-                               END
+                                       s.@detached = TRUE,
+                                       @@s_cid_map += (s.@cid -> s.@vid)
+                               ELSE IF s.@is_forward == TRUE THEN  // forward set   
+			               @@f_cid_map += (s.@cid -> s.@vid)
+			       ELSE IF s.@is_backward == TRUE THEN    // backward set
+				       @@b_cid_map += (s.@cid -> s.@vid)
+			       ELSE 
+			               @@n_cid_map += (s.@cid -> s.@vid)   // null set
+		               END	
                           POST-ACCUM IF s.@is_forward == TRUE AND s.@is_backward == TRUE THEN  // scc
                                              s.@cid = @@s_cid_map.get(s.@cid)
                                      END,
@@ -167,8 +163,10 @@ CREATE DISTRIBUTED QUERY scc (INT iter = 500, INT iter_wcc = 5, INT top_k_dist) 
 	END;
         PRINT @@cluster_dist_heap;
 
+        v_all = SELECT s
+                FROM v_all:s 
+                POST-ACCUM s.score = s.@cid;
 
-        PRINT v_all.@cid;
 
 
 }

@@ -220,10 +220,10 @@ while [ !$finished ]; do
 		edgeFuncProc outdegree t_outdegrees + t;
 	#esac
 
-	if [[ $egs = *","* ]]; then
+	#if [[ $egs = *","* ]]; then
 		egs=${egs//,/|}
 		egs="(${egs})"
-	fi
+	#fi
 	sed -i "s/\*edge-types\*/$egs/g" ${genPath}/${algoName}_tmp.gsql
 
 	# 4.2 Ask for reverse edge type for similarity algos. 
@@ -237,10 +237,10 @@ while [ !$finished ]; do
         if [[ $algoName == scc ]]; then
                 read -p 'Reverse Edge Type: ' edge3
                 edge3=${edge3//[[:space:]]/}
-		if [[ $edge3 = *","* ]]; then
+		#if [[ $edge3 = *","* ]]; then
                 	edge3=${edge3//,/|}
                 	edge3="(${edge3})"
-        	fi
+        	#fi
                 sed -i "s/\*reverse-edge-types\*/$edge3/g" ${genPath}/${algoName}_tmp.gsql
 		sed -i "s/)|(/|/g" ${genPath}/${algoName}_tmp.gsql
         fi
