@@ -5,7 +5,6 @@
  * https://stanford-ppl.github.io/website/papers/sc13-hong.pdf
 
  * iter: number of iteration of the algorithm
- * iter_end_trim: stop trimming from this iteration as there will not be many vertices to trim; usually a small number(3 to 10)
  * iter_wcc: find weakly connected components for the active vertices in this iteration, since the largest sccs are already found after several iterations; usually a small number(3 to 10)
  * top_k_dist: top k result in scc distribution
 
