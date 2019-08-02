@@ -1,4 +1,4 @@
-CREATE QUERY jaccard_nbor_ss (VERTEX source, STRING v_type, STRING e_type1, STRING e_type2, INT top_k, FILE f) FOR GRAPH <placeholder> {
+CREATE QUERY jaccard_nbor_ss_file (VERTEX source, STRING v_type, STRING e_type1, STRING e_type2, INT top_k, FILE f) FOR GRAPH <placeholder> {
 /* This query calculates the Jaccard Similarity between a given vertex and every other vertex.
 Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
 1. The JSON and FILE version keeps the top k pairs of vertices. The result in FILE version is not in order.

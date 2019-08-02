@@ -1,4 +1,4 @@
-CREATE QUERY pageRank_pers (SET<VERTEX> source, FLOAT max_change, INT max_iter, FLOAT damping, STRING v_type, STRING e_type, INT output_limit) FOR GRAPH <placeholder> {
+CREATE QUERY pageRank_pers_json (SET<VERTEX> source, FLOAT max_change, INT max_iter, FLOAT damping, STRING v_type, STRING e_type, INT output_limit) FOR GRAPH <placeholder> {
     TYPEDEF TUPLE<VERTEX vertex_id, FLOAT score> VERTEX_SCORE;
     HeapAccum<VERTEX_SCORE>(output_limit, score DESC) @@top_scores_heap;
     MaxAccum<FLOAT> @@max_diff = 9999;

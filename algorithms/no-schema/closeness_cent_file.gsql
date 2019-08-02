@@ -1,4 +1,4 @@
-CREATE QUERY cc_subquery (VERTEX source, INT num_vert, INT max_hops, STRING v_type, STRING e_type) FOR GRAPH <placeholder> RETURNS (FLOAT) {
+CREATE QUERY cc_subquery_file (VERTEX source, INT num_vert, INT max_hops, STRING v_type, STRING e_type) FOR GRAPH <placeholder> RETURNS (FLOAT) {
 # Subquery returns closeness centrality for vertex source in graph with num_vert vertices    
     SumAccum<INT> @@curr_dist, @@total_dist;
     OrAccum @visited;
@@ -25,7 +25,7 @@ CREATE QUERY cc_subquery (VERTEX source, INT num_vert, INT max_hops, STRING v_ty
     END;   
 }
 
-CREATE QUERY closeness_cent (STRING v_type, STRING e_type, FILE f) FOR GRAPH <placeholder> {
+CREATE QUERY closeness_cent_file (STRING v_type, STRING e_type, FILE f) FOR GRAPH <placeholder> {
     SumAccum<FLOAT> @score;
 
     INT num_vert;
@@ -39,6 +39,6 @@ CREATE QUERY closeness_cent (STRING v_type, STRING e_type, FILE f) FOR GRAPH <pl
     # get closeness centrality for each vertex
     f.println("Vertex_ID", "Closeness");
     start = SELECT s FROM start:s
-            POST-ACCUM s.@score = cc_subquery(s, num_vert, max_hops, v_type, e_type),
-                       f.println(s, cc_subquery(s, num_vert, max_hops, v_type, e_type));
+            POST-ACCUM s.@score = cc_subquery_file(s, num_vert, max_hops, v_type, e_type),
+                       f.println(s, cc_subquery_file(s, num_vert, max_hops, v_type, e_type));
 }
