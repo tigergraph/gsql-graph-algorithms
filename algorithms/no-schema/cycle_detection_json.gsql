@@ -1,0 +1,41 @@
+CREATE QUERY cycle_detection (STRING v_type, STRING e_type, INT depth) FOR GRAPH <placeholder> {
+/* Rocha-Thatte cycle detection algorithm
+This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
+Stop passing the sequence (v1,v2,v3, ...) when:
+1. v = v1. If v has the minimum label in the sequence, report the cycle
+2. v = vi (i!=1). Do not report since this cycle is already reported in an earlier iteration
+*/
+    ListAccum<ListAccum<VERTEX>> @curr_list, @new_list;
+    ListAccum<ListAccum<VERTEX>> @@cycles;
+    SumAccum<INT> @uid;
+
+    # initialization
+    active = {v_type.*};
+    active = SELECT s FROM active:s ACCUM s.@curr_list = [s];
+
+    WHILE active.size() > 0 LIMIT depth DO
+        active = SELECT t FROM active:s -(e_type:e)-> :t
+                 ACCUM BOOL t_is_min = TRUE,
+                     FOREACH sequence IN s.@curr_list DO
+                        IF t == sequence.get(0) THEN # cycle detected
+                            FOREACH v IN sequence DO
+                                IF getvid(v) < getvid(t) THEN
+                                    t_is_min = FALSE,
+                                    BREAK
+                                END
+                            END,
+                            IF t_is_min == TRUE THEN # if it has the minimal label in the list, report
+                                @@cycles += sequence
+                            END
+                        ELSE IF sequence.contains(t) == FALSE THEN # discard the sequences containing t
+                            t.@new_list += [sequence + [t]] # store sequences in @new_list to avoid conflict with @curr_list
+                        END
+                    END
+                POST-ACCUM s.@curr_list.clear(),
+                           t.@curr_list = t.@new_list,
+                           t.@new_list.clear()
+                HAVING t.@curr_list.size() > 0; # IF receive no sequences, deactivate it
+    END;
+
+    PRINT @@cycles;
+}
