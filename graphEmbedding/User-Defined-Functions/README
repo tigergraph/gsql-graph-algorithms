@@ -1,0 +1,5 @@
+
+
+1. Put function code in UDF file into ~/tigergraph/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp
+2. Copy word2vec.h file into "~/tigergraph/dev/gdk/gsql/src/QueryUdf/" dictionary
+2. Add #include "word2vec.h" into  ~/tigergraph/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp
