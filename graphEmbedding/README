@@ -1,0 +1,13 @@
+This project implemented DeepWalk and Node2Vec using GSQL.
+
+Usage:
+1. Add User-Defined Functions into TigerGraph Platform. See details in User-Defined-Functions folder 
+2. Install graph data like Karate. See details in Benchmark-data folder
+3. Install deepWalk.gsql query and randomWalk.gsql query
+4. Install node2vec.gsql query
+
+'''
+test
+
+
+'''
