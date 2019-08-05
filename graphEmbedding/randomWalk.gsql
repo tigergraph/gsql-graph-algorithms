@@ -4,7 +4,12 @@ DROP QUERY random_walk
 DROP QUERY random_walk_sub
 
 CREATE QUERY random_walk_sub(VERTEX source, INT length, INT walk_num, FILE f) FOR GRAPH Blog { 
-        SetAccum<VERTEX> @@pick;
+/* This query impletemented random walk in Node2vec paper. Link: https://cs.stanford.edu/~jure/pubs/node2vec-kdd16.pdf
+   Input: source vertex, random walk length, walk times for each vertex, output file
+   Output: random walk sequence
+*/
+
+	SetAccum<VERTEX> @@pick;
         ListAccum<FLOAT> @@prob;
         ListAccum<VERTEX> @@candidates;
         ListAccum<VERTEX>@@path;

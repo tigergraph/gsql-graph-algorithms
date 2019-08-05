@@ -1,12 +1,16 @@
 
-
-
 USE GRAPH Blog
 DROP QUERY DeepWalk_Sub
 DROP QUERY DeepWalk
 
 
 CREATE QUERY DeepWalk_Sub(VERTEX source, INT length, INT walk_num, FILE f) FOR GRAPH Blog { 
+/* This query implemented deep walk process in paper:http://www.perozzi.net/publications/14_kdd_deepwalk.pdf
+   Each vertex will generate a set of walk sequences that start from this vertex.
+   Every time, we will random selected a connected vertex to walk.
+   Input: source vertex, walk sequence length, walk time for each vertex, output file
+   Output: walk sequence
+*/
         ListAccum<VERTEX> @@walk;
         OrAccum @visited;
         ListAccum<vertex> @path;

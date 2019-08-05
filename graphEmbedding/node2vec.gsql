@@ -2,6 +2,10 @@ USE GRAPH Blog
 DROP QUERY graphEmbedding
 
 CREATE QUERY graphEmbedding() for GRAPH Blog{
+/* This query shows an example how to call node2vec function in GSQL.
+   Input parameter: embedding dimension, input source file(random sequence), output file (vectors)
+   After training, it will generated a embedding file, each vertex will be represented as a vector.
+*/
 
  node2vec(128,"/home/tigergraph/randomWalk_blog.txt","/home/tigergraph/vectors_randomWalk_blog.txt");
 
