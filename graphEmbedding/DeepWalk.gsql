@@ -1,0 +1,50 @@
+
+
+
+USE GRAPH Blog
+DROP QUERY DeepWalk_Sub
+DROP QUERY DeepWalk
+
+
+CREATE QUERY DeepWalk_Sub(VERTEX source, INT length, INT walk_num, FILE f) FOR GRAPH Blog { 
+        ListAccum<VERTEX> @@walk;
+        OrAccum @visited;
+        ListAccum<vertex> @path;
+        SetAccum<VERTEX> @@pick;
+        ListAccum<VERTEX> @@friends;
+        INT rand;
+        Start = {source};
+
+
+        FOREACH i IN RANGE[0,walk_num-1] DO
+                @@walk += source;
+                WHILE(Start.size() >0) LIMIT length DO
+                        Start = SELECT t        
+                                FROM Start:s-(Friendship:e)-:t
+                                ACCUM   @@friends +=t;
+                        rand = random_range(0,@@friends.size());
+                        @@walk += @@friends.get(rand);
+                        @@pick += @@friends.get(rand);
+                        Start = @@pick;
+                        print @@pick;
+                        @@pick.clear();
+                        @@friends.clear();
+                END;
+                f.println(@@walk);
+                print(@@walk);
+                @@walk.clear();
+        END;
+}
+
+
+CREATE QUERY DeepWalk() FOR GRAPH Blog { 
+        FILE f ("/home/tigergraph/deepWalk_blog.txt");
+        Start = {User.*};
+        Start = SELECT s
+                FROM Start:s
+                ACCUM DeepWalk_Sub(s,80,10,f);
+                                
+}
+
+INSTALL QUERY DeepWalk_Sub
+INSTALL QUERY DeepWalk
