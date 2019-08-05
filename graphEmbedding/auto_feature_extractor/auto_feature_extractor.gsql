@@ -1,0 +1,77 @@
+
+CREATE QUERY Auto_Feature_Extractor(BOOL embedding_deepwalk, BOOL embedding_node2vec, BOOL neighbor_count, SET<STRING> vertex_attributes_set, BOOL page_rank_score) FOR GRAPH Blog { 
+        // feature output file
+        FILE output_path ("/home/tigergraph/test.csv");
+        // embedding output file
+        FILE embedding_randomWalk_output ("/home/tigergraph/randomWalk_blog.txt");
+        FILE embedding_deepWalk_output ("/home/tigergraph/deepWalk_blog.txt");
+	
+	
+        ListAccum<ListAccum<STRING>> @@feature_list;
+        ListAccum<STRING>@@feature;
+        MaxAccum<INT> @outdegree;
+        MaxAccum<FLOAT> @rankScore;
+	
+/*******************************************************/
+/********* Page rank function***************************/	
+/*******************************************************/
+        // define variables for page rank.
+        MaxAccum<float> @@maxDiff = 9999;
+        SumAccum<float> @received_score = 0; # sum of scores each vertex receives FROM neighbors
+        SumAccum<float> @score = 1;   # Initial score for every vertex is 1.
+        FLOAT maxChange = 0.01;
+        INT maxIter = 10;
+        FLOAT damping = 0.7;
+	      
+	
+        Start = {User.*};
+	
+        // Calculation pagerank score
+        IF page_rank_score THEN
+                Start_pagerank = {ANY};   #  Start with all vertices of specified type(s)
+                WHILE @@maxDiff > maxChange LIMIT maxIter DO
+                        @@maxDiff = 0;
+                        V = SELECT s
+                                FROM Start_pagerank:s -(Friendship:e)- :t
+                                ACCUM
+                                        t.@received_score += s.@score/(s.outdegree("Friendship")) 
+                                POST-ACCUM      
+                                        s.@score = (1.0-damping) + damping * s.@received_score,
+                                        s.@received_score = 0,
+                                        @@maxDiff += abs(s.@score - s.@score');
+                END; # END WHILE loop
+        END;
+        
+        // calculate embedding vectors based on node2vec
+        IF embedding_node2vec THEN
+                Start = SELECT s
+                        FROM Start:s
+                        ACCUM DeepWalk_Sub(s,32,3,embedding_randomWalk_output);
+        END;
+	
+        // calculate embedding vectors based deepwalk
+        IF embedding_deepwalk THEN
+                Start = SELECT s
+                        FROM Start:s
+                        ACCUM random_walk_sub(s,32,3,embedding_deepWalk_output);
+        END;
+	
+        
+        neighbor = SELECT s
+                FROM Start:s
+                ACCUM   
+                        IF page_rank_score THEN
+                                s.@rankScore += s.@score
+                        END,							
+                        IF neighbor_count THEN
+                                s.@outdegree += s.outdegree()
+                        END;
+        // write header to .csv
+        PRINT "rankScore","neighbor_count" TO_CSV output_path;
+        neighbor = SELECT s
+                FROM Start:s
+                ACCUM output_path.println(s.@rankScore,s.@outdegree);
+	
+}
+
+

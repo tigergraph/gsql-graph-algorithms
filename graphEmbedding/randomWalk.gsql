@@ -44,10 +44,10 @@ CREATE QUERY random_walk_sub(VERTEX source, INT length, INT walk_num, FILE f) FO
                                 ACCUM t.@d_tx = 2, s.@d_tx = 0
                                 POST-ACCUM @@prob +=t.@score, @@candidates +=t;
                          
-	                        IF candidates.size() == 0 THEN
-	                              @@path += source;
-	                              continue;
-	                        END;
+			IF candidates.size() == 0 THEN
+		  		@@path += source;
+	    			continue;
+    			END;
 	  		// generate prob value based on weight distribution
                         Prob = random_distribution(@@prob);
                         //print Prob;
