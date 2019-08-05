@@ -1,0 +1,12 @@
+USE GRAPH Blog
+DROP QUERY graphEmbedding
+
+CREATE QUERY graphEmbedding() for GRAPH Blog{
+
+ node2vec(128,"/home/tigergraph/randomWalk_blog.txt","/home/tigergraph/vectors_randomWalk_blog.txt");
+
+}
+
+INSTALL QUERY graphEmbedding
+
+
