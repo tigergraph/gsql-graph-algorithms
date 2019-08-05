@@ -1,0 +1,21 @@
+CREATE QUERY tri_count_fast(STRING v_type, STRING e_type) FOR GRAPH <placeholder> {
+# Compute the total number of triangles in the graph.
+# Uses an algorithm which is fast but requires additional memory for temporary storage
+    SumAccum<INT> @@cnt;
+    SetAccum<INT> @neighbors_set;
+
+    start = {v_type.*};
+
+# We build up our neighbor lists manually because we'll only build them up on the the 2 smaller vertices on a triangle.
+    t0 = SELECT t FROM start:s -(e_type:e)-> :t
+         WHERE (s.outdegree() > t.outdegree()) OR (s.outdegree() == t.outdegree() AND getvid(s) > getvid(t))
+         ACCUM t.@neighbors_set += getvid(s);
+
+# Here we compute the intersection for 2 points on the triangle.
+    t1 = SELECT t
+         FROM start:s -(e_type:e)-> :t
+         ACCUM @@cnt += COUNT(s.@neighbors_set INTERSECT t.@neighbors_set);
+
+# Divide by 2 because every triangle was counted twice
+    PRINT @@cnt/2 AS num_triangles;
+}
