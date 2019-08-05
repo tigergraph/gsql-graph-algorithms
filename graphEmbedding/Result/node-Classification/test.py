@@ -18,24 +18,10 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from scipy.sparse import coo_matrix
 
 
-# define OneVsRest classifer
-class TopKRanker(OneVsRestClassifier):
-    def predict(self, X, top_k_list):
-        assert X.shape[0] == len(top_k_list)
-        probs = np.asarray(super(TopKRanker, self).predict_proba(X))
-        all_labels = []
-        for i, k in enumerate(top_k_list):
-            probs_ = probs[i, :]
-            labels = self.classes_[probs_.argsort()[-k:]].tolist()
-            all_labels.append(labels)
-        return all_labels
-
-
-
 # read ground truth file and embedding file
-label = pd.read_csv("BlogCatalog-dataset 2/data/group-edges.csv","r",delimiter = ",", header = None);
+label = pd.read_csv("./group-edges.csv","r",delimiter = ",", header = None);
 label.columns = ["blog","class"];
-embedding =pd.read_csv("Results/Blog/vectors_randomWalk_blog_0724.txt","r", delimiter = " ", header = None);
+embedding =pd.read_csv("../vectors_randomWalk_blog.txt","r", delimiter = " ", header = None);
 
 list_index = embedding[0].tolist()
 
@@ -63,12 +49,26 @@ features_matrix = np.asarray(embedding);
 labels_matrix = coo_matrix(label_np);
 labels_count = labels_matrix.shape[1]
 mlb = MultiLabelBinarizer(range(labels_count))
+
+
+# define OneVsRest classifer
+class TopKRanker(OneVsRestClassifier):
+    def predict(self, X, top_k_list):
+        assert X.shape[0] == len(top_k_list)
+        probs = np.asarray(super(TopKRanker, self).predict_proba(X))
+        all_labels = []
+        for i, k in enumerate(top_k_list):
+            probs_ = probs[i, :]
+            labels = self.classes_[probs_.argsort()[-k:]].tolist()
+            all_labels.append(labels)
+        return all_labels
+
+
 shuffles = []
 for x in range(10):
     shuffles.append(skshuffle(features_matrix, labels_matrix))
 
 all_results = defaultdict(list)
-
 
 # define training percentage
 training_percents = [0.9]
