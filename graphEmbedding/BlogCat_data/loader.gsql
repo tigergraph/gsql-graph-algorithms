@@ -1,0 +1,14 @@
+USE GRAPH Blog
+CLEAR GRAPH STORE -HARD
+DROP JOB loader
+
+SET sys.data_root = "./"
+
+
+CREATE LOADING JOB loader FOR GRAPH Blog{
+
+//LOAD "$sys.data_root/nodes.csv" TO VERTEX User VALUES($0,_);
+LOAD "$sys.data_root/edges.csv" TO EDGE Friendship VALUES($0,$1);
+}
+
+RUN LOADING JOB loader

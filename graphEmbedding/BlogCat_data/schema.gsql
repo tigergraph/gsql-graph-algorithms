@@ -1,0 +1,7 @@
+drop all
+
+CREATE VERTEX User(PRIMARY_ID user_id INT, score FLOAT)
+CREATE UNDIRECTED EDGE Friendship(FROM User, TO User)
+
+create graph Blog(*)
+

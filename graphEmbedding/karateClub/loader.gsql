@@ -1,0 +1,14 @@
+USE GRAPH Karate
+CLEAR GRAPH STORE -HARD
+DROP JOB loader
+
+SET sys.data_root = "./"
+
+
+CREATE LOADING JOB loader FOR GRAPH Karate{
+
+LOAD "$sys.data_root/edge.csv" TO EDGE Friendship VALUES($0,$1)
+        Using Separator = " ";
+}
+
+RUN LOADING JOB loader
