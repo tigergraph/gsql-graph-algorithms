@@ -1,4 +1,9 @@
 This project implemented DeepWalk and Node2Vec using GSQL.
+```
+[1] Perozzi, Bryan, Rami Al-Rfou, and Steven Skiena. "Deepwalk: Online learning of social representations." Proceedings of the 20th ACM SIGKDD international conference on Knowledge discovery and data mining. ACM, 2014.
+[2] Grover, Aditya, and Jure Leskovec. "node2vec: Scalable feature learning for networks." Proceedings of the 22nd ACM SIGKDD international conference on Knowledge discovery and data mining. ACM, 2016.
+```
+
 
 Usage:
 1. Add User-Defined Functions into TigerGraph Platform. See details in User-Defined-Functions folder 
