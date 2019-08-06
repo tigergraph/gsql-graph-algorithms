@@ -6,8 +6,6 @@ Usage:
 3. Install deepWalk.gsql query and randomWalk.gsql query
 4. Install node2vec.gsql query
 
-'''
+```
 test
-
-
-'''
+```
