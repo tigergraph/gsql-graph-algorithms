@@ -1,77 +1,90 @@
+USE GRAPH Karate
+DROP QUERY Auto_Feature_Extractor
 
-CREATE QUERY Auto_Feature_Extractor(BOOL embedding_deepwalk, BOOL embedding_node2vec, BOOL neighbor_count, SET<STRING> vertex_attributes_set, BOOL page_rank_score) FOR GRAPH Blog { 
-        // feature output file
-        FILE output_path ("/home/tigergraph/test.csv");
-        // embedding output file
-        FILE embedding_randomWalk_output ("/home/tigergraph/randomWalk_blog.txt");
-        FILE embedding_deepWalk_output ("/home/tigergraph/deepWalk_blog.txt");
+CREATE QUERY Auto_Feature_Extractor(BOOL embedding_deepwalk, BOOL embedding_node2vec, BOOL neighbor_count, SET<STRING> vertex_attributes_set, BOOL page_rank_score, BOOL cycle_detection, STRING output_path) FOR GRAPH Karate { 
+	
+		//STRING output_path = "/home/tigergraph/test.csv";
+		//STRING randomWalk_output_path = "/home/tigergraph/randomWalk_karate.txt";
+		//STRING deepWalk_output_path = "/home/tigergraph/deepWalk_karate.txt";
+		//STRING embedding_randomWalk_vector_output_path = "/home/tigergraph/vectors_randomWalk_karate.txt";
+		//STRING embedding_deepWalk_vector_output_path = "/home/tigergraph/vectors_deepWalk_karate.txt";
+		// feature output file
+		FILE feature_output (output_path);
+		// embedding output file
+		FILE randomWalk_output ("/home/tigergraph/randomWalk_karate.txt");
+		FILE deepWalk_output ("/home/tigergraph/deepWalk_karate.txt");
+		FILE embedding_randomWalk_vector_output ("/home/tigergraph/vectors_randomWalk_karate.txt");
+		FILE embedding_deepWalk_vector_output ("/home/tigergraph/vectors_deepWalk_karate.txt");
 	
 	
-        ListAccum<ListAccum<STRING>> @@feature_list;
-        ListAccum<STRING>@@feature;
-        MaxAccum<INT> @outdegree;
-        MaxAccum<FLOAT> @rankScore;
+		ListAccum<ListAccum<STRING>> @@feature_list;
+		ListAccum<STRING>@@feature;
+		MaxAccum<INT> @outdegree;
+		MaxAccum<FLOAT> @rankScore;
+
+		MapAccum<VERTEX, STRING>@@page_rank, @@cycle_detection, @@neighbor_count;
+	  MapAccum<VERTEX, ListAccum<STRING>> @@features;
+	  ListAccum<STRING> @@feature_index;
+	  MapAccum<VERTEX,STRING> @@attributes;
+
 	
-/*******************************************************/
-/********* Page rank function***************************/	
-/*******************************************************/
-        // define variables for page rank.
-        MaxAccum<float> @@maxDiff = 9999;
-        SumAccum<float> @received_score = 0; # sum of scores each vertex receives FROM neighbors
-        SumAccum<float> @score = 1;   # Initial score for every vertex is 1.
-        FLOAT maxChange = 0.01;
-        INT maxIter = 10;
-        FLOAT damping = 0.7;
+    Start = {User.*};
+
+		IF page_rank_score THEN
+				@@page_rank = page_rank(0.01,10,0.7);
+	      @@features += @@page_rank;
+	      @@feature_index +="page_rank_score";
+		END;
+
+		IF cycle_detection THEN
+				@@cycle_detection = cycle_detection(5);
+	      @@features += @@cycle_detection;
+	      @@feature_index +="cycle_detection";
+		END;
+	
+		// calculate embedding vectors based on node2vec
+		IF embedding_node2vec THEN
+						Start = SELECT s
+										FROM Start:s
+										ACCUM random_walk_sub(s,80,5,randomWalk_output);
+		  node2vec(128,"/home/tigergraph/randomWalk_karate.txt","/home/tigergraph/vectors_randomWalk_karate.txt");
+
+		END;
+	
+		// calculate embedding vectors based deepwalk
+		IF embedding_deepwalk THEN
+						Start = SELECT s
+										FROM Start:s
+										ACCUM DeepWalk_Sub(s,80,5,deepWalk_output);
+					 node2vec(128,"/home/tigergraph/deepWalk_karate.txt","/home/tigergraph/vectors_deepWalk_karate.txt");
+		END;
+
+	
+	
+	IF neighbor_count THEN
+		neighbor = SELECT s
+						FROM Start:s
+						ACCUM  @@neighbor_count += (s->to_string(s.outdegree()));
+	
+	  @@feature_index +="neighbor_count";
+	  @@features +=@@neighbor_count;
+	END;
+	
+	FOREACH attri IN vertex_attributes_set DO
+	    @@feature_index +=attri;
+	END;
+	
 	      
+		// write header to .csv
+	  feature_output.println("vertex",@@feature_index);
 	
-        Start = {User.*};
-	
-        // Calculation pagerank score
-        IF page_rank_score THEN
-                Start_pagerank = {ANY};   #  Start with all vertices of specified type(s)
-                WHILE @@maxDiff > maxChange LIMIT maxIter DO
-                        @@maxDiff = 0;
-                        V = SELECT s
-                                FROM Start_pagerank:s -(Friendship:e)- :t
-                                ACCUM
-                                        t.@received_score += s.@score/(s.outdegree("Friendship")) 
-                                POST-ACCUM      
-                                        s.@score = (1.0-damping) + damping * s.@received_score,
-                                        s.@received_score = 0,
-                                        @@maxDiff += abs(s.@score - s.@score');
-                END; # END WHILE loop
-        END;
+	  FOREACH (v,val) in @@features DO
+	      feature_output.println(v,val);
+	  END;
         
-        // calculate embedding vectors based on node2vec
-        IF embedding_node2vec THEN
-                Start = SELECT s
-                        FROM Start:s
-                        ACCUM DeepWalk_Sub(s,32,3,embedding_randomWalk_output);
-        END;
-	
-        // calculate embedding vectors based deepwalk
-        IF embedding_deepwalk THEN
-                Start = SELECT s
-                        FROM Start:s
-                        ACCUM random_walk_sub(s,32,3,embedding_deepWalk_output);
-        END;
-	
-        
-        neighbor = SELECT s
-                FROM Start:s
-                ACCUM   
-                        IF page_rank_score THEN
-                                s.@rankScore += s.@score
-                        END,							
-                        IF neighbor_count THEN
-                                s.@outdegree += s.outdegree()
-                        END;
-        // write header to .csv
-        PRINT "rankScore","neighbor_count" TO_CSV output_path;
-        neighbor = SELECT s
-                FROM Start:s
-                ACCUM output_path.println(s.@rankScore,s.@outdegree);
+
 	
 }
 
 
+INSTALL QUERY Auto_Feature_Extractor
