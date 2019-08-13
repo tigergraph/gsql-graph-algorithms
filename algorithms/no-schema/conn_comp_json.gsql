@@ -1,0 +1,36 @@
+# Single vertex type, single edge type
+CREATE QUERY conn_comp_json (STRING v_type, STRING e_type) FOR GRAPH <placeholder> {
+    MinAccum<int> @cc_id = 0;
+    SumAccum<int> @old_id = 0;
+    OrAccum @active;
+    MapAccum<int, int> @@comp_sizes_map;
+
+    Start = {v_type.*};
+
+    # Initialize: Label each ertex with its own internal ID
+    S = SELECT x FROM Start:x
+        POST-ACCUM x.@cc_id = getvid(x),
+                   x.@old_id = getvid(x)
+        ;
+
+    WHILE (Start.size() > 0) DO
+        Start = SELECT t FROM Start:s-(e_type:e)-> :t
+                ACCUM t.@cc_id += s.@cc_id # If s has a smaller id than t, copy the id to t
+                POST-ACCUM
+                    CASE WHEN t.@old_id != t.@cc_id THEN
+                        t.@old_id = t.@cc_id,
+                        t.@active = true
+                    ELSE
+                        t.@active = false
+                    END
+                HAVING t.@active == true
+                ;
+    END;
+
+    Start = {v_type.*};
+
+    Start = SELECT s FROM Start:s
+            POST-ACCUM @@comp_sizes_map += (s.@cc_id -> 1);
+    PRINT @@comp_sizes_map;
+    PRINT Start.@cc_id;
+}
