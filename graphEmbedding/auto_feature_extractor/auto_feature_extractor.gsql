@@ -1,90 +1,379 @@
-USE GRAPH Karate
-DROP QUERY Auto_Feature_Extractor
+USE GRAPH Blog
+DROP QUERY auto_feature_extractor
+DROP QUERY deepWalk_sub
+DROP QUERY page_rank
+DROP QUERY randomWalk_sub
+DROP QUERY conn_conmp
+DROP QUERY label_propo
+DROP QUERY tri_count
 
-CREATE QUERY Auto_Feature_Extractor(BOOL embedding_deepwalk, BOOL embedding_node2vec, BOOL neighbor_count, SET<STRING> vertex_attributes_set, BOOL page_rank_score, BOOL cycle_detection, STRING output_path) FOR GRAPH Karate { 
-	
-		//STRING output_path = "/home/tigergraph/test.csv";
-		//STRING randomWalk_output_path = "/home/tigergraph/randomWalk_karate.txt";
-		//STRING deepWalk_output_path = "/home/tigergraph/deepWalk_karate.txt";
-		//STRING embedding_randomWalk_vector_output_path = "/home/tigergraph/vectors_randomWalk_karate.txt";
-		//STRING embedding_deepWalk_vector_output_path = "/home/tigergraph/vectors_deepWalk_karate.txt";
-		// feature output file
-		FILE feature_output (output_path);
-		// embedding output file
-		FILE randomWalk_output ("/home/tigergraph/randomWalk_karate.txt");
-		FILE deepWalk_output ("/home/tigergraph/deepWalk_karate.txt");
-		FILE embedding_randomWalk_vector_output ("/home/tigergraph/vectors_randomWalk_karate.txt");
-		FILE embedding_deepWalk_vector_output ("/home/tigergraph/vectors_deepWalk_karate.txt");
-	
-	
-		ListAccum<ListAccum<STRING>> @@feature_list;
-		ListAccum<STRING>@@feature;
-		MaxAccum<INT> @outdegree;
-		MaxAccum<FLOAT> @rankScore;
 
-		MapAccum<VERTEX, STRING>@@page_rank, @@cycle_detection, @@neighbor_count;
-	  MapAccum<VERTEX, ListAccum<STRING>> @@features;
-	  ListAccum<STRING> @@feature_index;
-	  MapAccum<VERTEX,STRING> @@attributes;
+CREATE QUERY tri_count(/* Parameters here */) FOR GRAPH Blog RETURNS(MapAccum<VERTEX,STRING>) { 
+# Compute the total number of triangles in the GRAPH. No input parameters are needed.
+# Use an algorithm which is fast but use additional memory for temporary storage
+        SumAccum<int> @@cnt;
+        SetAccum<int> @neighbors;
+	      SumAccum<int> @tri_count;
+        MapAccum<VERTEX,STRING> @@map;
+        Start = {ANY};
+  
+# We build up our neighbor lists manually because we'll only build them up on the 2 smaller vertices on a triangle. 
+        T0 = SELECT t
+             FROM Start:s-()-> :t
+             WHERE (s.outdegree()) > (t.outdegree()) OR ((s.outdegree()) == (t.outdegree()) AND getvid(s) > getvid(t))
+             ACCUM t.@neighbors += getvid(s);
+  
+# Here we compute the intersection for 2 points on the triangle.
+        T1 = SELECT t
+             FROM Start:s-(:e)-> :t
+             ACCUM s.@tri_count += COUNT(s.@neighbors INTERSECT t.@neighbors);
 
-	
-    Start = {User.*};
+        Start = SELECT s
+                FROM Start:s
+                ACCUM @@map += (s->to_string(s.@tri_count));
+	      print @@map;
+        return @@map;
+}
 
-		IF page_rank_score THEN
-				@@page_rank = page_rank(0.01,10,0.7);
-	      @@features += @@page_rank;
-	      @@feature_index +="page_rank_score";
-		END;
 
-		IF cycle_detection THEN
-				@@cycle_detection = cycle_detection(5);
-	      @@features += @@cycle_detection;
-	      @@feature_index +="cycle_detection";
-		END;
-	
-		// calculate embedding vectors based on node2vec
-		IF embedding_node2vec THEN
-						Start = SELECT s
-										FROM Start:s
-										ACCUM random_walk_sub(s,80,5,randomWalk_output);
-		  node2vec(128,"/home/tigergraph/randomWalk_karate.txt","/home/tigergraph/vectors_randomWalk_karate.txt");
 
-		END;
-	
-		// calculate embedding vectors based deepwalk
-		IF embedding_deepwalk THEN
-						Start = SELECT s
-										FROM Start:s
-										ACCUM DeepWalk_Sub(s,80,5,deepWalk_output);
-					 node2vec(128,"/home/tigergraph/deepWalk_karate.txt","/home/tigergraph/vectors_deepWalk_karate.txt");
-		END;
 
-	
-	
-	IF neighbor_count THEN
-		neighbor = SELECT s
-						FROM Start:s
-						ACCUM  @@neighbor_count += (s->to_string(s.outdegree()));
-	
-	  @@feature_index +="neighbor_count";
-	  @@features +=@@neighbor_count;
-	END;
-	
-	FOREACH attri IN vertex_attributes_set DO
-	    @@feature_index +=attri;
-	END;
-	
-	      
-		// write header to .csv
-	  feature_output.println("vertex",@@feature_index);
-	
-	  FOREACH (v,val) in @@features DO
-	      feature_output.println(v,val);
-	  END;
-        
 
+CREATE QUERY label_propo(INT maxIter) FOR GRAPH Blog RETURNS(MapAccum<VERTEX,STRING>){ 
+	# Partition the vertices into communities, according to the Label Propagation method.
+# Indicate community membership by assigning each vertex a community ID.
+
+        OrAccum @@changed = true;
+        MapAccum<int, int> @map;     # <communityId, numNeighbors>
+        MapAccum<int, int> @@commSizes;   # <communityId, members>
+        SumAccum<int> @label, @num;   
+	      MapAccum<VERTEX,STRING> @@res;
+        Start = {ANY};
+
+# Assign unique labels to each vertex
+        Start = SELECT s FROM Start:s ACCUM s.@label = getvid(s);
+
+# Propagate labels to neighbors until labels converge or the max iterations is reached
+        WHILE @@changed == true LIMIT maxIter DO
+                @@changed = false;
+                Start = SELECT s 
+                        FROM Start:s -(Friendship:e)-:t
+                        ACCUM t.@map += (s.@label -> 1)  # count the occurrences of neighbor's labels
+                        POST-ACCUM
+                                INT maxV = 0,
+                                INT label = 0,
+                                # Iterate over the map to get the neighbor label that occurs most often
+                                FOREACH (k,v) IN t.@map DO
+                                        CASE WHEN v > maxV THEN
+                                                maxV = v,
+                                                label = k
+                                        END
+                                END,
+                                # When the neighbor search finds a label AND it is a new label
+                                # AND the label's count has increased, update the label.
+                                CASE WHEN label != 0 AND t.@label != label AND maxV > t.@num THEN
+                                        @@changed += true,
+                                        t.@label = label,
+                                        t.@num = maxV
+                                END,
+                                t.@map.clear();
+        END;
+
+        Start = {ANY};
+        Start = SELECT s
+                FROM Start:s
+                ACCUM @@res += (s->to_string(s.@label));
+        return @@res;
 	
 }
 
 
-INSTALL QUERY Auto_Feature_Extractor
+
+
+CREATE QUERY conn_comp(/* Parameters here */) FOR GRAPH Blog RETURNS (MapAccum<VERTEX,STRING>) { 
+# This query identifies the Connected Components (undirected edges)
+
+        MinAccum<int> @cc_id = 0;       //each vertex's tentative component id
+        SumAccum<int> @old_id = 0;
+        OrAccum<bool> @active;
+        MapAccum<int, int> @@compSizes;
+	      MapAccum<VERTEX,STRING> @@map;
+  
+        Start = {ANY};
+
+# Initialize: Label each vertex with its own internal ID
+        S = SELECT x 
+            FROM Start:x
+            POST-ACCUM x.@cc_id = getvid(x),
+                       x.@old_id = getvid(x)        
+            ;
+
+# Propagate smaller internal IDs until no more ID changes can be DOne
+        WHILE (Start.size()>0) DO
+                Start = SELECT t
+                        FROM Start:s -(:e)-> :t
+                        ACCUM t.@cc_id += s.@cc_id // If s has a smaller id than t, copy the id to t
+                        POST-ACCUM
+                                CASE WHEN t.@old_id != t.@cc_id THEN // If t's id has changed
+                                        t.@old_id = t.@cc_id,
+                                        t.@active = true
+                                ELSE 
+                                        t.@active = false
+                                END
+                        HAVING t.@active == true
+                        ;
+        END;
+	
+        Start = {ANY};
+        Start = SELECT s
+                FROM Start:s
+                ACCUM @@map += (s->to_string(s.@cc_id));
+        return @@map;
+}
+
+
+
+
+
+CREATE QUERY deepWalk_sub(VERTEX source, INT length, INT walk_num, FILE f) FOR GRAPH Blog {
+/* This query implemented deep walk process in paper:http://www.perozzi.net/publications/14_kdd_deepwalk.pdf
+   Each vertex will generate a set of walk sequences that start from this vertex.
+   Every time, we will random selected a connected vertex to walk.
+   Input: source vertex, walk sequence length, walk time for each vertex, output file
+   Output: walk sequence
+*/
+        ListAccum<VERTEX> @@walk;
+        OrAccum @visited;
+        ListAccum<vertex> @path;
+        SetAccum<VERTEX> @@pick;
+        ListAccum<VERTEX> @@friends;
+        INT rand;
+        Start = {source};
+
+
+        FOREACH i IN RANGE[0,walk_num-1] DO
+                @@walk += source;
+                WHILE(Start.size() >0) LIMIT length DO
+                        Start = SELECT t
+                                FROM Start:s-(Friendship:e)-:t
+                                ACCUM   @@friends +=t;
+                        rand = random_range(0,@@friends.size());
+                        @@walk += @@friends.get(rand);
+                        @@pick += @@friends.get(rand);
+                        Start = @@pick;
+                        print @@pick;
+                        @@pick.clear();
+                        @@friends.clear();
+                END;
+                f.println(@@walk);
+                print(@@walk);
+                @@walk.clear();
+        END;
+}
+
+
+
+
+
+CREATE QUERY page_rank(FLOAT maxChange, INT maxIter, FLOAT damping) FOR GRAPH Blog RETURNS (MapAccum<VERTEX,STRING>){
+        MaxAccum<float> @@maxDiff = 9999; # max score change in an iteration
+        SumAccum<float> @received_score = 0; # sum of scores each vertex receives FROM neighbors
+        SumAccum<float> @score = 1;   # Initial score for every vertex is 1.
+        MapAccum<VERTEX,STRING> @@map;
+        Start = {User.*};   #  Start with all vertices of specified type(s)
+        WHILE @@maxDiff > maxChange LIMIT maxIter DO
+                @@maxDiff = 0;
+                V = SELECT s
+                    FROM Start:s -(Friendship:e)-:t
+                    ACCUM t.@received_score += s.@score/(s.outdegree("Friendship"))
+                    POST-ACCUM s.@score = (1.0-damping) + damping * s.@received_score,
+                               s.@received_score = 0,
+                               @@maxDiff += abs(s.@score - s.@score');
+
+        END; # END WHILE loop
+
+        Start = SELECT s
+                FROM Start:s
+                ACCUM @@map += (s->to_string(s.@score));
+        return @@map;
+}
+
+
+
+CREATE QUERY randomWalk_sub(VERTEX source, INT length, INT walk_num, FILE f) FOR GRAPH Blog {
+/* This query impletemented random walk in Node2vec paper. Link: https://cs.stanford.edu/~jure/pubs/node2vec-kdd16.pdf
+   Input: source vertex, random walk length, walk times for each vertex, output file
+   Output: random walk sequence
+*/
+
+        SetAccum<VERTEX> @@pick;
+        ListAccum<FLOAT> @@prob;
+        ListAccum<VERTEX> @@candidates;
+        ListAccum<VERTEX>@@path;
+        FLOAT Prob;
+        FLOAT p = 1;
+        FLOAT q = 1;
+        SumAccum<INT> @d_tx=2;
+        SumAccum<FLOAT>@score;
+
+
+        FOREACH i in RANGE[0,walk_num-1] DO
+                // add source vertex into path
+                @@path += source;
+                Start = {source};
+
+                WHILE(Start.size()>=0 ) LIMIT length DO
+                        // Calculate transition probability
+                        Start = SELECT s
+                                FROM Start:s-(Friendship:e)-:t
+                                POST-ACCUM
+                                        IF t.@d_tx ==0 THEN
+                                                t.@score = (1/p) *t.score
+                                        ELSE IF t.@d_tx == 1 THEN
+                                                t.@score = t.score
+                                        ELSE
+                                                t.@score = (1/q) * t.score
+                                        END;
+                        // Reset candidates @d_tx =2, start vertex @d_dx = 0
+                        // store score and vertex of candidates
+                        candidates = SELECT t
+                                FROM Start:s-(Friendship:e)-:t
+                                ACCUM t.@d_tx = 2, s.@d_tx = 0
+                                POST-ACCUM @@prob +=t.@score, @@candidates +=t;
+
+                        IF candidates.size() == 0 THEN
+                                @@path += source;
+                                continue;
+                        END;
+                        // generate prob value based on weight distribution
+                        Prob = random_distribution(@@prob);
+                        //print Prob;
+                        // pick vertex that generated by random function
+                        @@path += @@candidates.get(Prob);
+                        @@pick += @@candidates.get(Prob);
+
+                        //print @@pick;
+                        // select the vertex that connected with @@pick in candidates and set @d_tx=1
+                        sel = SELECT s
+                                FROM candidates:s-(Friendship:e)-:t
+                                WHERE t == @@candidates.get(Prob)
+                                POST-ACCUM s.@d_tx =1;
+
+                        // select @@pick as the next start vertex
+                        Start = @@pick;
+
+                        // clear accumulators to start next iteration
+                        @@pick.clear();
+                        @@prob.clear();
+                        @@candidates.clear();
+                END;
+                print @@path;
+                f.println(@@path);
+                @@path.clear();
+        END;
+
+
+}
+
+
+
+
+CREATE QUERY auto_feature_extractor(BOOL embedding_deepwalk, BOOL embedding_node2vec, BOOL neighbor_count, SET<STRING> vertex_attributes_set, BOOL page_rank_score, BOOL conn_comp, BOOL tri_count, BOOL label_propo, STRING output_path) FOR GRAPH Blog { 
+	// feature output file
+        FILE feature_output (output_path);
+        // embedding output file
+        FILE randomWalk_output ("/home/tigergraph/randomWalk_blog.txt");
+        FILE deepWalk_output ("/home/tigergraph/deepWalk_blog.txt");
+        FILE embedding_randomWalk_vector_output ("/home/tigergraph/vectors_randomWalk_blog.txt");
+        FILE embedding_deepWalk_vector_output ("/home/tigergraph/vectors_deepWalk_blog.txt");
+	
+
+        ListAccum<ListAccum<STRING>> @@feature_list;
+        ListAccum<STRING>@@feature;
+        MaxAccum<INT> @outdegree;
+        MaxAccum<FLOAT> @rankScore;
+
+        MapAccum<VERTEX, STRING>@@page_rank, @@conn_comp, @@neighbor_count, @@tri_count, @@label_propo;
+        MapAccum<VERTEX, ListAccum<STRING>> @@features;
+        ListAccum<STRING> @@feature_index;
+        MapAccum<VERTEX,STRING> @@attributes;
+
+	
+        Start = {User.*};
+
+        IF page_rank_score THEN
+                @@page_rank = page_rank(0.01,10,0.7);
+                @@features += @@page_rank;
+                @@feature_index +="page_rank_score";
+	              print "Complete page_rank_score";
+        END;
+        
+		
+        IF conn_comp THEN
+              @@conn_comp = conn_comp();
+	            @@features += @@conn_comp;
+	            @@feature_index +="conn_comp";
+	            print "complete conn_comp";
+        END;
+	        
+	      IF tri_count THEN
+	          @@tri_count = tri_count();
+	          @@features += @@tri_count;
+	          @@feature_index +="tri_count";
+	          print "complete tri_count";
+	      END;
+	      
+	      IF label_propo THEN
+	          @@label_propo = label_propo(5);
+	          @@features += @@label_propo;
+	          @@feature_index += "label_propo";
+	          print "complete label_propo";
+	      END;
+	
+        // calculate embedding vectors based on node2vec
+        IF embedding_node2vec THEN
+                Start = SELECT s
+                        FROM Start:s
+                        ACCUM randomWalk_sub(s,80,5,randomWalk_output);
+                node2vec(128,"/home/tigergraph/randomWalk_karate.txt","/home/tigergraph/vectors_randomWalk_blog.txt");
+                print "complete node2vec embedding";
+        END;
+	
+        // calculate embedding vectors based deepwalk
+        IF embedding_deepwalk THEN
+                Start = SELECT s
+                        FROM Start:s
+                        ACCUM deepWalk_sub(s,80,5,deepWalk_output);
+                node2vec(128,"/home/tigergraph/deepWalk_karate.txt","/home/tigergraph/vectors_deepWalk_blog.txt");
+        print "complete deepWalk embedding";
+	      END;
+
+		
+	      IF neighbor_count THEN
+		            neighbor = SELECT s
+                        FROM Start:s
+                        ACCUM  @@neighbor_count += (s->to_string(s.outdegree()));
+	
+                @@feature_index +="neighbor_count";
+	              @@features +=@@neighbor_count;
+	              print "complete neighbor count";
+	      END;
+	
+	      print "Start writing to .csv file";
+        // write header to .csv
+        feature_output.println("vertex",@@feature_index);
+	
+        FOREACH (v,val) in @@features DO
+                feature_output.println(v,val);
+        END;	
+
+
+}
+
+INSTALL QUERY conn_conp
+INSTALL QUERY label_propo
+INSTALL QUERY tri_count
+INSTALL QUERY page_rank
+INSTALL QUERY deepWalk_sub
+INSTALL QUERY randomWalk_sub
+INSTALL QUERY auto_feature_extractor
