@@ -39,9 +39,13 @@ fi
 finished=false
 while [ !$finished ]; do
 	echo; echo "Please enter the index of the algorithm you want to create or EXIT:"
-	select algo in "EXIT" "Closeness Centrality" "Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)"   "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"
+	select algo in "EXIT" "Betweenness Centrality" "Closeness Centrality" "Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)"   "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"
     	case $algo in
-			"Closeness Centrality" )
+            		"Betweenness Centrality" )
+                		algoName="betweenness_cent"
+                		echo "  betweenness_cent() works on undirected edges"
+                		break;;
+            		"Closeness Centrality" )
 				algoName="closeness_cent"
 				echo "  closeness_cent() works on undirected edges"
 				break;;
