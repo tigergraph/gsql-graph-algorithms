@@ -1,6 +1,6 @@
-*ATTR*CREATE QUERY msf*EXT* (INT max_iter) FOR GRAPH *graph* {
-*ACCM*CREATE QUERY msf*EXT* (INT max_iter) FOR GRAPH *graph* {
-*FILE*CREATE QUERY msf*EXT* (FILE f, INT max_iter) FOR GRAPH *graph* {
+*ATTR*CREATE QUERY msf*EXT* () FOR GRAPH *graph* {
+*ACCM*CREATE QUERY msf*EXT* () FOR GRAPH *graph* {
+*FILE*CREATE QUERY msf*EXT* (FILE f) FOR GRAPH *graph* {
 /*
  * This query identifies minimum spanning trees using the algorithm in section 6.2 of Qin et al. 2014:
  * http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf.
@@ -36,7 +36,7 @@
 *FILE*              @@mst += v.@ew_heap.top()
             ;
 
-        WHILE @@parent_changed_count > 0 LIMIT max_iter DO
+        WHILE @@parent_changed_count > 0 DO
             ### BREAK CYCLES ###
             break_cycles =  SELECT v FROM all_v:v
                             POST-ACCUM
