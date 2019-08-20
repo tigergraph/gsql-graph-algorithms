@@ -89,7 +89,7 @@ while [ !$finished ]; do
                                 algoName="mst"
                                 echo "  mst() works on weighted undirected edges"
                                 break;;
-                       	"Minimum Spanning Forest" )
+                       	"Minimum Spanning Forest (MSF)" )
 				algoName="msf"
 				echo " msf() works on weighted undirected edges"
 				break;;
@@ -239,7 +239,7 @@ while [ !$finished ]; do
 
 
      	# 5. Ask for edge weight name. Replace *edge-weight* placeholder.
-	if [ "${algoName}" == "shortest_ss_pos_wt" ] || [ "${algoName}" == "shortest_ss_any_wt" ] || [ "${algoName}" == "pageRank_wt" ] || [ "${algoName}" == "mst" ] || [ "${algoName}" == "louvain_parallel" ]; then
+	if [ "${algoName}" == "shortest_ss_pos_wt" ] || [ "${algoName}" == "shortest_ss_any_wt" ] || [ "${algoName}" == "pageRank_wt" ] || [ "${algoName}" == "mst" ] || [ "${algoName}" == "msf" ] || [ "${algoName}" == "louvain_parallel" ]; then
 		while true; do
                 	read -p "Edge attribute that stores FLOAT weight:"  weight
 			if [[ $(countEdgeAttr $weight) > 0 ]]; then
