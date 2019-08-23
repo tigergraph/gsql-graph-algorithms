@@ -18,6 +18,7 @@
         
         HeapAccum<EDGE_WEIGHT>(1, weight ASC, to_v ASC) @ew_heap;
         MinAccum<vertex> @parent; # Given a vertex v, we need to be able to send its outgoing edge info to its parent, which is only posible if we store the parent in a local accumulator.
+        OrAccum @ignore;
 
         all_v = {*vertex-types*};
 
@@ -30,24 +31,33 @@
 *FILE*              v.@ew_heap += EDGE_WEIGHT(e.*edge-weight*, v, u)
                 POST-ACCUM
                     @@parents_map += (v -> v.@ew_heap.top().to_v),
-                    @@parent_changed_count += 1,
-*ATTR*              @@mst += v.@ew_heap.top().e
-*ACCM*              @@mst += v.@ew_heap.top().e
-*FILE*              @@mst += v.@ew_heap.top()
+                    @@parent_changed_count += 1
             ;
 
         WHILE @@parent_changed_count > 0 DO
             ### BREAK CYCLES ###
-            break_cycles =  SELECT v FROM all_v:v
-                            POST-ACCUM
-                                VERTEX p = @@parents_map.get(v),
-                                VERTEX gp = @@parents_map.get(p),
-                                IF v != p AND v == gp THEN
-                                    IF (getvid(v) < getvid(p)) THEN
-                                        @@parents_map += (v -> v)
-                                    END
-                                END
-                            ;
+            all_v = SELECT v
+                    FROM all_v:v
+                    POST-ACCUM v.@ignore = false;
+            all_v = SELECT v FROM all_v:v
+                    POST-ACCUM
+                        VERTEX p = @@parents_map.get(v),
+                        VERTEX gp = @@parents_map.get(p),
+                        IF v != p AND v == gp THEN
+                            IF (getvid(v) < getvid(p)) THEN
+                                @@parents_map += (v -> v),
+                                v.@ignore = TRUE
+                            END
+                        END
+                    ;
+
+            # only add edges to MST after breaking cycles to avoid double counting edges
+            add_edges = SELECT v FROM all_v:v WHERE v.@ignore == false AND v.@ew_heap.size() > 0
+                        POST-ACCUM
+*ATTR*                      @@mst += v.@ew_heap.top().e
+*ACCM*                      @@mst += v.@ew_heap.top().e
+*FILE*                      @@mst += v.@ew_heap.top()
+                        ;
 
             ### UPDATE PARENT POINTERS ###
             @@parent_changed_count = 0;
@@ -113,10 +123,7 @@
                                     WHERE
                                         @@star_map.get(v) == true AND @@parents_map.get(v) == v AND v.@ew_heap.size() > 0
                                     POST-ACCUM
-                                        @@parents_map += (v -> @@parents_map.get(v.@ew_heap.top().to_v)),
-*ATTR*                                  @@mst += v.@ew_heap.top().e
-*ACCM*                                  @@mst += v.@ew_heap.top().e
-*FILE*                                  @@mst += v.@ew_heap.top()
+                                        @@parents_map += (v -> @@parents_map.get(v.@ew_heap.top().to_v))
                                     ;
         END;
 *ATTR*  all_v = SELECT v FROM all_v:v -(*edge-types*:e)-> :u
