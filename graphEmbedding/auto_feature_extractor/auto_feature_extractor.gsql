@@ -3,7 +3,7 @@ DROP QUERY auto_feature_extractor
 DROP QUERY deepWalk_sub
 DROP QUERY page_rank
 DROP QUERY randomWalk_sub
-DROP QUERY conn_conmp
+DROP QUERY conn_comp
 DROP QUERY label_propo
 DROP QUERY tri_count
 
@@ -370,7 +370,7 @@ CREATE QUERY auto_feature_extractor(BOOL embedding_deepwalk, BOOL embedding_node
 
 }
 
-INSTALL QUERY conn_conp
+INSTALL QUERY conn_comp
 INSTALL QUERY label_propo
 INSTALL QUERY tri_count
 INSTALL QUERY page_rank
