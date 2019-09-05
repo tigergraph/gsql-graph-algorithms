@@ -5,7 +5,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
         SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
         MapAccum<STRING, INT> @@count;
         INT maxCount = 0;
-        STRING chosenLabel;
+        STRING predictedLabel;
 
         # calculate similarity and find the top k nearest neighbors
         Start = {source};
@@ -34,12 +34,12 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
         FOREACH (label, cnt) IN @@count DO
             IF cnt > maxCount THEN
                 maxCount = cnt;
-                chosenLabel = label;
+                predictedLabel = label;
             END;
         END;
 
-        PRINT chosenLabel;
-        RETURN chosenLabel;
+        PRINT predictedLabel;
+        RETURN predictedLabel;
 
 }
 
