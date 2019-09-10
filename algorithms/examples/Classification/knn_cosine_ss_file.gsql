@@ -4,24 +4,24 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 The output is the predicted label for the source vertex, which is the majority label of its k-nearest neighbors. 
 */
         SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
-        MapAccum<STRING, INT> @@mapCountLabels;
-        INT maxCount = 0;
-        STRING chosenLabel;
+        MapAccum<STRING, INT> @@labels_count_map;
+        INT max_count = 0;
+        STRING predicted_label;
 
         # calculate similarity and find the top k nearest neighbors
-        Start = {source};
-        Subjects = SELECT t
-                   FROM Start:s -(Likes:e)-> :t
+        start = {source};
+        subjects = SELECT t
+                   FROM start:s -((Likes):e)-> :t
                    ACCUM t.@numerator = e.weight,
                          @@norm1 += pow(e.weight, 2);
 
-        Neighbours = SELECT t
-                     FROM Subjects:s -(Reverse_Likes:e)-> Person:t
+        neighbours = SELECT t
+                     FROM subjects:s -(Reverse_Likes:e)-> Person:t
                      WHERE t != source AND t.known_label != ""    # only consider the neighbours with known label
                      ACCUM t.@numerator += s.@numerator * e.weight;
 
         kNN = SELECT s
-              FROM Neighbours:s -(Likes:e)-> :t
+              FROM neighbours:s -((Likes):e)-> :t
               ACCUM s.@norm2 += pow(e.weight, 2)
               POST-ACCUM s.@similarity = s.@numerator/sqrt(@@norm1 * s.@norm2)
               ORDER BY s.@similarity DESC
@@ -30,14 +30,14 @@ The output is the predicted label for the source vertex, which is the majority l
         #predict label
         kNN = SELECT s
               FROM kNN:s
-              ACCUM @@mapCountLabels += (s.known_label -> 1);
+              ACCUM @@labels_count_map += (s.known_label -> 1);
         
-        FOREACH (label, cnt) IN @@mapCountLabels DO
-            IF cnt > maxCount THEN
-                maxCount = cnt;
-                chosenLabel = label;
+        FOREACH (label, cnt) IN @@labels_count_map DO
+            IF cnt > max_count THEN
+                max_count = cnt;
+                predicted_label = label;
             END;
         END;
  
-        f.println(source, chosenLabel);
+        f.println(source, predicted_label);
 }

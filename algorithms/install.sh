@@ -39,7 +39,7 @@ fi
 finished=false
 while [ !$finished ]; do
 	echo; echo "Please enter the index of the algorithm you want to create or EXIT:"
-	select algo in "EXIT" "Closeness Centrality" "Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)"   "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"
+        select algo in "EXIT" "Closeness Centrality" "Connected Components" "Strongly Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)" "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)"
     	case $algo in
 			"Closeness Centrality" )
 				algoName="closeness_cent"
@@ -49,6 +49,10 @@ while [ !$finished ]; do
 				algoName="conn_comp"
 				echo "  conn_comp() works on undirected edges"
 				break;;
+			"Strongly Connected Components" )
+                                algoName="scc"
+                                echo "  scc() works on directed edges with reverse edges. DISTRIBUTED QUERY mode for this query is supported from TG 2.4"
+                                break;;
 			"Label Propagation" )
 				algoName="label_prop"
 				echo "  label_prop() works on undirected edges"
@@ -125,14 +129,14 @@ while [ !$finished ]; do
                                 algoName="knn_cosine_ss"
                                 echo "  knn_cosine_ss() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
                                 break;;
-                       # 'k-Nearest Neighbors (Cosine Neighbor Similarity, batch)' )
-                       #         algoName="knn_cosine_all"
-                       #         echo "  knn_cosine_all() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
-                       #         break;;
-                       # 'k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)' )
-                       #         algoName="knn_cosine_cv"
-                       #         echo "  knn_cosine_cv() returns an estimated best choice of k in a range, based on cosine neighbor similarity"
-                       #         break;;
+                       'k-Nearest Neighbors (Cosine Neighbor Similarity, batch)' )
+                                algoName="knn_cosine_all"
+                                echo "  knn_cosine_all() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
+                                break;;
+                       'k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)' )
+                                algoName="knn_cosine_cv"
+                                echo "  knn_cosine_cv() returns an estimated best choice of k in a range, based on cosine neighbor similarity"
+                                break;;
 			"EXIT" )
 				finished=true
 				break;;
@@ -216,10 +220,10 @@ while [ !$finished ]; do
 		edgeFuncProc outdegree t_outdegrees + t;
 	#esac
 
-	if [[ $egs = *","* ]]; then
+	#if [[ $egs = *","* ]]; then
 		egs=${egs//,/|}
 		egs="(${egs})"
-	fi
+	#fi
 	sed -i "s/\*edge-types\*/$egs/g" ${genPath}/${algoName}_tmp.gsql
 
 	# 4.2 Ask for reverse edge type for similarity algos. 
@@ -229,6 +233,17 @@ while [ !$finished ]; do
 		sed -i "s/\*sec-edge-types\*/$edge2/g" ${genPath}/${algoName}_tmp.gsql
 	fi
 
+	# 4.3 Ask for reverse edge type for directed edges.
+        if [[ $algoName == scc ]]; then
+                read -p 'Reverse Edge Type: ' edge3
+                edge3=${edge3//[[:space:]]/}
+		#if [[ $edge3 = *","* ]]; then
+                	edge3=${edge3//,/|}
+                	edge3="(${edge3})"
+        	#fi
+                sed -i "s/\*reverse-edge-types\*/$edge3/g" ${genPath}/${algoName}_tmp.gsql
+		sed -i "s/)|(/|/g" ${genPath}/${algoName}_tmp.gsql
+        fi
 
      	# 5. Ask for edge weight name. Replace *edge-weight* placeholder.
 	if [ "${algoName}" == "shortest_ss_pos_wt" ] || [ "${algoName}" == "shortest_ss_any_wt" ] || [ "${algoName}" == "pageRank_wt" ] || [ "${algoName}" == "mst" ] || [ "${algoName}" == "louvain_parallel" ]; then
