@@ -1,5 +1,5 @@
 README for GSQL Algorithm Library
-9/5/19
+9/12/19
 
 The GSQL Graph Algorithm Library is a collection of high-performance GSQL queries,
 each of which implements a standard graph algorithm. Each algorithm is ready to be
@@ -19,6 +19,11 @@ well-suited for graph algorithms:
 * Open-Source. Users can study the GSQL implementations to learn by
   example, and they can develop and submit additions to the library.
 
+
+Compatibility Table
+-----------------
+v1.2 compatible with TG2.4 or higher
+v1.1 compatible with TG2.4 or higher
 
 Library Structure
 -----------------
