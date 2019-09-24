@@ -153,6 +153,7 @@ while [ !$finished ]; do
 	# Copy the algorithm template file to the destination file.
 	templPath="./templates"
 	genPath="./generated"
+	mkdir -p ./generated;
 	cp ${templPath}/${algoName}.gtmp ${genPath}/${algoName}_tmp.gsql;
 
 	# Replace *graph* placeholder
@@ -357,8 +358,8 @@ END
                 			sed -i "s/\*EXT\*/$fExt/g" ${genPath}/${algoName}$fExt.gsql;  # *EXT* -> $fExt
 					sed -i '/^\*ATTR\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ATTR* lines
 					sed -i '/^\*ACCM\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ACCM* lines
-                                        sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}.gsql; # Cut *FILE* string
-                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
+                                        sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string
+                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}$fExt.gsql;
 					sed -i 's/\*FILE\*/      /g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string in query body
 					gsql -g $grph "DROP QUERY ${algoName}$fExt"
 					subqueryClue="\*SUB\* CREATE QUERY"
@@ -466,18 +467,18 @@ END
 					fi
 					sed -i "s/\*EXT\*/$aExt/g" $attrQuery; # *EXT* > $aExt
                                         sed -i 's/\*ATTR\*CREATE/CREATE/g' $attrQuery;  # Cut *ATTR* string
-                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
+                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' $attrQuery;
 					sed -i 's/\*ATTR\*/      /g' $attrQuery;  # Cut *ATTR* string in query body
 					sed -i '/^\*ACCM\*/ d' $attrQuery;  # Del *ACCM* lines
 					sed -i '/^\*FILE\*/ d' $attrQuery;  # Del *FILE*lines
 					gsql -g $grph "DROP QUERY ${algoName}$aExt"
 					subqueryClue="\*SUB\* CREATE QUERY"
-					subqueryLine=$(grep "$subqueryClue" ${genPath}/${algoName}$aExt.gsql)
-					if [[ $(grep -c "$subqueryClue" ${genPath}/${algoName}$aExt.gsql) > 0 ]]; then
+					subqueryLine=$(grep "$subqueryClue" $attrQuery)
+					if [[ $(grep -c "$subqueryClue" $attrQuery) > 0 ]]; then
 						subqueryWords=( $subqueryLine )
 						gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
 					fi				
-					sed -i 's/\*SUB\* //g' ${genPath}/${algoName}$aExt.gsql;   # Cut the *SUB* string
+					sed -i 's/\*SUB\* //g' $attrQuery;   # Cut the *SUB* string
 					echo gsql -g $grph $attrQuery;
 					gsql -g $grph $attrQuery;
 				  ;;
@@ -515,8 +516,8 @@ END
                                         sed -i "s/\*EXT\*/$fExt/g" ${genPath}/${algoName}$fExt.gsql;  # *EXT* -> $fExt
                                         sed -i '/^\*ATTR\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ATTR* lines
                                         sed -i '/^\*ACCM\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ACCM* lines
-                                        sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}.gsql; # Cut *FILE* string
-                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
+                                        sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string
+                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}$fExt.gsql;
                                         sed -i 's/\*FILE\*/      /g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string in query body
                                         gsql -g $grph "DROP QUERY ${algoName}$fExt"
                                         subqueryClue="\*SUB\* CREATE QUERY"
@@ -549,7 +550,7 @@ END
                                           while true; do
                                                 read -p "Vertex attribute to store INT result (e.g. component ID): " vIntAttr
                                                 if [[ $(countVertexAttr $vIntAttr) > 0 ]]; then
-                                                        sed -i "s/\*vIntAttr\*/$vIntAttr/g" ${genPath}/${algoName}$aExt.gsql;
+                                                        sed -i "s/\*vIntAttr\*/$vIntAttr/g" $attrQuery;
                                                         break;
                                                 else
                                                         echo " *** Vertex attribute name not found. Try again."
@@ -562,7 +563,7 @@ END
                                           while true; do
                                                 read -p "Vertex attribute to store BOOL result (e.g. in_cycle): " vBoolAttr
                                                 if [[ $(countVertexAttr $vBoolAttr) > 0 ]]; then
-                                                        sed -i "s/\*vBoolAttr\*/$vBoolAttr/g" ${genPath}/${algoName}$aExt.gsql;
+                                                        sed -i "s/\*vBoolAttr\*/$vBoolAttr/g" $attrQuery;
                                                         break;
                                                 else
                                                         echo " *** Vertex attribute name not found. Try again."
@@ -623,18 +624,18 @@ END
                                         fi
                                         sed -i "s/\*EXT\*/$aExt/g" $attrQuery; # *EXT* > $aExt
                                         sed -i 's/\*ATTR\*CREATE/CREATE/g' $attrQuery;  # Cut *ATTR* string
-                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
+                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' $attrQuery;
                                         sed -i 's/\*ATTR\*/      /g' $attrQuery;  # Cut *ATTR* string in query body
                                         sed -i '/^\*ACCM\*/ d' $attrQuery;  # Del *ACCM* lines
                                         sed -i '/^\*FILE\*/ d' $attrQuery;  # Del *FILE*lines
                                         gsql -g $grph "DROP QUERY ${algoName}$aExt"
                                         subqueryClue="\*SUB\* CREATE QUERY"
-                                        subqueryLine=$(grep "$subqueryClue" ${genPath}/${algoName}$aExt.gsql)
-                                        if [[ $(grep -c "$subqueryClue" ${genPath}/${algoName}$aExt.gsql) > 0 ]]; then
+                                        subqueryLine=$(grep "$subqueryClue" $attrQuery)
+                                        if [[ $(grep -c "$subqueryClue" $attrQuery) > 0 ]]; then
                                                 subqueryWords=( $subqueryLine )
                                                 gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
                                         fi
-                                        sed -i 's/\*SUB\* //g' ${genPath}/${algoName}$aExt.gsql;   # Cut the *SUB* string
+                                        sed -i 's/\*SUB\* //g' $attrQuery;   # Cut the *SUB* string
                                         echo gsql -g $grph $attrQuery;
                                         gsql -g $grph $attrQuery;
                                   ;;
