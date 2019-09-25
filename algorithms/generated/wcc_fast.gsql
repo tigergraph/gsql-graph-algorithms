@@ -1,6 +1,4 @@
-*ATTR*CREATE QUERY wcc_fast*EXT*() FOR GRAPH *graph* {
-*ACCM*CREATE QUERY wcc_fast*EXT*() FOR GRAPH *graph* {
-*FILE*CREATE QUERY wcc_fast*EXT*(FILE f) FOR GRAPH *graph* {
+CREATE QUERY wcc_fast() FOR GRAPH social {
 /*
  * This query identifies connected components using the algorithm found in section 5.2 of Qin et al.
  * 2014: http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf
@@ -12,9 +10,9 @@
         SumAccum<INT> @@parent_changed_count;
 
         MapAccum<INT, INT> @@comp_sizes_map; # we'll compile component sizes here. each component has 1 parent, which will be key in map
-*ACCM*  MinAccum<INT> @cid = 0;   # community id for PRINT
+        MinAccum<INT> @cid = 0;   # community id for PRINT
 
-        all_v = {*vertex-types*};
+        all_v = {Person.*};
 
         #### FOREST INITIALIZATION ####
         # Step 1: For each node v, let parent p(v) = min ID of v and each of its neighbors.
@@ -25,7 +23,7 @@
                 ;
 
         # This SELECT will not return isolated singletons because they won't have any edges
-        T1 =    SELECT v FROM all_v:v -(*edge-types*:e)-> :u
+        T1 =    SELECT v FROM all_v:v -(Coworker:e)-> :u
                 ACCUM
                     @@temp_parents_map += (v -> u)
                 ;
@@ -33,7 +31,7 @@
         @@parents_map += @@temp_parents_map;
 
         # Step 2: For each node v, count the number of its subnodes u such that u != v and p(u) = v. Let c(v) = the number of subnodes of vertex v.
-        T1 =    SELECT v FROM all_v:v -(*edge-types*:e)-> :u
+        T1 =    SELECT v FROM all_v:v -(Coworker:e)-> :u
                 ACCUM
                     IF (@@parents_map.get(u) == v) THEN
                         v.@subnode_count += 1
@@ -42,7 +40,7 @@
 
         # Step 3: Eliminate non-isolated singletons - that is, all vertices v such that p(v) = v and c(v) = 0, and there exists another vertex u such that (u, v) is an edge in the graph
         @@temp_parents_map.clear();
-        non_iso_singletons =    SELECT v FROM all_v:v -(*edge-types*:e)-> :u
+        non_iso_singletons =    SELECT v FROM all_v:v -(Coworker:e)-> :u
                                 WHERE
                                     @@parents_map.get(v) == v AND v.@subnode_count == 0
                                 ACCUM
@@ -89,7 +87,7 @@
             # Step 1: Conditional star hooking
             @@temp_parents_map.clear();
 
-            connected_nodes =   SELECT v FROM all_v:v -(*edge-types*:e)-> :u
+            connected_nodes =   SELECT v FROM all_v:v -(Coworker:e)-> :u
                                 ACCUM
                                     VERTEX v_parent = @@parents_map.get(v),
                                     VERTEX u_parent = @@parents_map.get(u),
@@ -132,7 +130,7 @@
             # We can also start from original values instead of all_v because each of these values should be a subset of the previous vset.
             @@temp_parents_map.clear();
 
-            connected_nodes =   SELECT v FROM all_v:v -(*edge-types*:e)-> :u
+            connected_nodes =   SELECT v FROM all_v:v -(Coworker:e)-> :u
                                 ACCUM
                                     VERTEX v_parent = @@parents_map.get(v),
                                     VERTEX u_parent = @@parents_map.get(u),
@@ -177,20 +175,15 @@
                     ;
         END;
 
-*ATTR*  all_v = SELECT v FROM all_v:v
-*ATTR*          POST-ACCUM v.*vIntAttr* = getvid(@@parents_map.get(v));
 
-*ACCM*  all_v = SELECT v FROM all_v:v
-*ACCM*          POST-ACCUM
-*ACCM*		    v.@cid = getvid(@@parents_map.get(v)),
-*ACCM*              @@comp_sizes_map += (getvid(@@parents_map.get(v)) -> 1)
-*ACCM*          ;
-*ACCM*  PRINT @@comp_sizes_map.size() AS num_components, @@comp_sizes_map AS comp_sizes;
-*ACCM*  PRINT all_v.@cid;
+        all_v = SELECT v FROM all_v:v
+                POST-ACCUM
+      		    v.@cid = getvid(@@parents_map.get(v)),
+                    @@comp_sizes_map += (getvid(@@parents_map.get(v)) -> 1)
+                ;
+        PRINT @@comp_sizes_map.size() AS num_components, @@comp_sizes_map AS comp_sizes;
+        PRINT all_v.@cid;
 
-*FILE*  f.println("Vertex_ID", "Component_ID");
-*FILE*  all_v = SELECT v FROM all_v:v
-*FILE*          POST-ACCUM f.println(v, getvid(@@parents_map.get(v)));
 }
 
 
