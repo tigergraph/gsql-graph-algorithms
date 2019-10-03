@@ -1,0 +1,34 @@
+# Single vertex type, single edge type
+CREATE QUERY conn_comp_file (FILE f, STRING v_type, STRING e_type) FOR GRAPH <placeholder> {
+    MinAccum<int> @cc_id = 0;
+    SumAccum<int> @old_id = 0;
+    OrAccum @active;
+
+    start = {v_type.*};
+
+    # Initialize: Label each ertex with its own internal ID
+    S = SELECT x FROM start:x
+        POST-ACCUM x.@cc_id = getvid(x),
+                   x.@old_id = getvid(x)
+        ;
+
+    WHILE (start.size() > 0) DO
+        start = SELECT t FROM start:s-(e_type:e)-> :t
+                ACCUM t.@cc_id += s.@cc_id # If s has a smaller id than t, copy the id to t
+                POST-ACCUM
+                    CASE WHEN t.@old_id != t.@cc_id THEN
+                        t.@old_id = t.@cc_id,
+                        t.@active = true
+                    ELSE
+                        t.@active = false
+                    END
+                HAVING t.@active == true
+                ;
+    END;
+
+    start = {v_type.*};
+
+    f.println("Vertex_ID", "Component_ID");
+    start = SELECT s FROM start:s
+            POST-ACCUM f.println(s, s.@cc_id);
+}

@@ -39,7 +39,15 @@ fi
 finished=false
 while [ !$finished ]; do
 	echo; echo "Please enter the index of the algorithm you want to create or EXIT:"
-        select algo in "EXIT" "Closeness Centrality" "Connected Components" "Strongly Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)" "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)"
+
+	select algo in "EXIT" "Closeness Centrality" "Connected Components" "Connected Components (Fast)" "Strongly Connected Components" 
+  "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" 
+  "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" 
+  "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" 
+  "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" 
+  "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)"
+  "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" 
+
     	case $algo in
 			"Closeness Centrality" )
 				algoName="closeness_cent"
@@ -49,10 +57,14 @@ while [ !$finished ]; do
 				algoName="conn_comp"
 				echo "  conn_comp() works on undirected edges"
 				break;;
+      "Connected Components (Fast)" )
+        algoName="wcc_fast"
+        echo "  wcc_fast() works on undirected edges"
+        break;;
 			"Strongly Connected Components" )
-                                algoName="scc"
-                                echo "  scc() works on directed edges with reverse edges. DISTRIBUTED QUERY mode for this query is supported from TG 2.4"
-                                break;;
+        algoName="scc"
+        echo "  scc() works on directed edges with reverse edges. DISTRIBUTED QUERY mode for this query is supported from TG 2.4"
+        break;;
 			"Label Propagation" )
 				algoName="label_prop"
 				echo "  label_prop() works on undirected edges"
@@ -65,14 +77,14 @@ while [ !$finished ]; do
 				algoName="pageRank"
 				echo "  pageRank() works on directed edges"
 				break;;
-                        "Weighted PageRank" )
-                                algoName="pageRank_wt"
-                                echo "  pageRank_wt() works on directed edges"
-                                break;;
-                        "Personalized PageRank" )
-                                algoName="pageRank_pers"
-                                echo "  pageRank_pers() works on directed edges"
-                                break;;
+      "Weighted PageRank" )
+        algoName="pageRank_wt"
+        echo "  pageRank_wt() works on directed edges"
+        break;;
+      "Personalized PageRank" )
+        algoName="pageRank_pers"
+        echo "  pageRank_pers() works on directed edges"
+        break;;
 			"Shortest Path, Single-Source, No Weight" )
                                 algoName="shortest_ss_no_wt"
                                 echo "  shortest_ss_no_wt() works on directed or undirected edges without weight"
