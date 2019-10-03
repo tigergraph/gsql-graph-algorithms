@@ -10,7 +10,7 @@ CREATE QUERY wcc_fast(STRING v_type, STRING e_type) FOR GRAPH MyGraph {
     SumAccum<INT> @@parent_changed_count;
 
     MapAccum<VERTEX, INT> @@comp_sizes_map; # we'll compile component sizes here. each component has 1 parent, which will be key in map
-
+    MinAccum<INT> @cid = 0;   # community id for PRINT
 
     all_v = {v_type.*};
 
@@ -171,11 +171,13 @@ CREATE QUERY wcc_fast(STRING v_type, STRING e_type) FOR GRAPH MyGraph {
     END;
 
     all_v = SELECT v FROM all_v:v
-            POST-ACCUM
+            POST-ACCUM 
+		v.@cid = getvid(@@parents_map.get(v)),
                 @@comp_sizes_map += (@@parents_map.get(v) -> 1)
             ;
 
     PRINT @@comp_sizes_map.size() AS num_components, @@comp_sizes_map AS comp_sizes;
+    PRINT all_v.@cid;
 }
 
 
