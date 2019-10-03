@@ -1,5 +1,5 @@
 README for GSQL Algorithm Library
-6/26/19
+9/12/19
 
 The GSQL Graph Algorithm Library is a collection of high-performance GSQL queries,
 each of which implements a standard graph algorithm. Each algorithm is ready to be
@@ -19,6 +19,11 @@ well-suited for graph algorithms:
 * Open-Source. Users can study the GSQL implementations to learn by
   example, and they can develop and submit additions to the library.
 
+
+Compatibility
+-----------------
+v1.2 compatible with TG2.4 or higher
+v1.1 compatible with TG2.4 or higher
 
 Library Structure
 -----------------
@@ -62,11 +67,12 @@ https://docs.tigergraph.com/graph-algorithm-library
 
 List of GSQL Graph Algorithms
 -----------------------------
-as of June 26, 2019
+as of Sept 5, 2019
 Compatible with TigerGraph version 2.1.8 or higher
 
 closeness_cent                  Closeness Centrality
 conn_comp                       Connected Component Detection
+scc				Strongly Connected Component Detection
 label_prop                      Label Propagation Method for Community Detection
 louvain_parallel                Parallel Louvain Modularity Method with Refinement for Community Detection
 pageRank                        PageRank measurement of relative influence of each vertex
@@ -83,7 +89,9 @@ cosine_nbor_ss                  Cosine Similarity from a single vertex
 cosine_nbor_ap                  Cosine Similarity for each pair of vertices
 jaccard_nbor_ss                 Jaccard Similarity from a single vertex
 jaccard_nbor_ap                 Jaccard Similarity for each pair of vertices
-knn_cosine_ss			k-Nearest Neighbor classification, using Cosine Similarity
+knn_cosine_ss			k-Nearest Neighbor classification, using Cosine Similarity, single source
+knn_cosine_all			k-Nearest Neighbor classification, using Cosine Similarity, batch
+knn_cosine_cv			Cross validation for k-Nearest Neighbor, using Cosine Similarity
 
 Each of the above  may be available as 2 or 3 related queries
 For example:
