@@ -39,15 +39,8 @@ fi
 finished=false
 while [ !$finished ]; do
 	echo; echo "Please enter the index of the algorithm you want to create or EXIT:"
-
-	select algo in "EXIT" "Closeness Centrality" "Connected Components" "Connected Components (Fast)" "Strongly Connected Components" 
-  "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" 
-  "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" 
-  "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" 
-  "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" 
-  "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)"
-  "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" 
-
+  
+	select algo in "EXIT" "Closeness Centrality" "Connected Components" "Connected Components (Fast)" "Strongly Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Minimum Spanning Forest (MSF)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)" "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" 
     	case $algo in
 			"Closeness Centrality" )
 				algoName="closeness_cent"
@@ -101,6 +94,10 @@ while [ !$finished ]; do
                                 algoName="mst"
                                 echo "  mst() works on weighted undirected edges"
                                 break;;
+                       	"Minimum Spanning Forest (MSF)" )
+				algoName="msf"
+				echo " msf() works on weighted undirected edges"
+				break;;
                         "Cycle Detection" )
                                 algoName="cycle_detection"
                                 echo "  cycle_detection() works on directed edges"
@@ -259,7 +256,7 @@ while [ !$finished ]; do
         fi
 
      	# 5. Ask for edge weight name. Replace *edge-weight* placeholder.
-	if [ "${algoName}" == "shortest_ss_pos_wt" ] || [ "${algoName}" == "shortest_ss_any_wt" ] || [ "${algoName}" == "pageRank_wt" ] || [ "${algoName}" == "mst" ] || [ "${algoName}" == "louvain_parallel" ]; then
+	if [ "${algoName}" == "shortest_ss_pos_wt" ] || [ "${algoName}" == "shortest_ss_any_wt" ] || [ "${algoName}" == "pageRank_wt" ] || [ "${algoName}" == "mst" ] || [ "${algoName}" == "msf" ] || [ "${algoName}" == "louvain_parallel" ]; then
 		while true; do
                 	read -p "Edge attribute that stores FLOAT weight:"  weight
 			if [[ $(countEdgeAttr $weight) > 0 ]]; then
