@@ -6,24 +6,24 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 The output is the predicted label for the source vertex, which is the majority label of its k-nearest neighbors. 
 */
         SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
-        MapAccum<STRING, INT> @@mapCountLabels;
-        INT maxCount = 0;
-        STRING chosenLabel;
+        MapAccum<STRING, INT> @@labels_count_map;
+        INT max_count = 0;
+        STRING predicted_label;
 
         # calculate similarity and find the top k nearest neighbors
-        Start = {source};
-        Subjects = SELECT t
-                   FROM Start:s -(*edge-types*:e)-> :t
+        start = {source};
+        subjects = SELECT t
+                   FROM start:s -(*edge-types*:e)-> :t
                    ACCUM t.@numerator = e.*edge-weight*,
                          @@norm1 += pow(e.*edge-weight*, 2);
 
-        Neighbours = SELECT t
-                     FROM Subjects:s -(*sec-edge-types*:e)-> *vertex-types*:t
+        neighbours = SELECT t
+                     FROM subjects:s -(*sec-edge-types*:e)-> *vertex-types*:t
                      WHERE t != source AND t.*vertex-label* != ""    # only consider the neighbours with known label
                      ACCUM t.@numerator += s.@numerator * e.*edge-weight*;
 
         kNN = SELECT s
-              FROM Neighbours:s -(*edge-types*:e)-> :t
+              FROM neighbours:s -(*edge-types*:e)-> :t
               ACCUM s.@norm2 += pow(e.*edge-weight*, 2)
               POST-ACCUM s.@similarity = s.@numerator/sqrt(@@norm1 * s.@norm2)
               ORDER BY s.@similarity DESC
@@ -32,19 +32,19 @@ The output is the predicted label for the source vertex, which is the majority l
         #predict label
         kNN = SELECT s
               FROM kNN:s
-              ACCUM @@mapCountLabels += (s.*vertex-label* -> 1);
+              ACCUM @@labels_count_map += (s.*vertex-label* -> 1);
         
-        FOREACH (label, cnt) IN @@mapCountLabels DO
-            IF cnt > maxCount THEN
-                maxCount = cnt;
-                chosenLabel = label;
+        FOREACH (label, cnt) IN @@labels_count_map DO
+            IF cnt > max_count THEN
+                max_count = cnt;
+                predicted_label = label;
             END;
         END;
  
-*ATTR*  Start = SELECT s
-*ATTR*          FROM Start:s
-*ATTR*          POST-ACCUM s.*vStrAttr* = chosenLabel;       
-*ACCM*  PRINT chosenLabel;
-*ACCM*  RETURN chosenLabel;
-*FILE*  f.println(source, chosenLabel);
+*ATTR*  start = SELECT s
+*ATTR*          FROM start:s
+*ATTR*          POST-ACCUM s.*vStrAttr* = predicted_label;       
+*ACCM*  PRINT predicted_label;
+*ACCM*  RETURN predicted_label;
+*FILE*  f.println(source, predicted_label);
 }
