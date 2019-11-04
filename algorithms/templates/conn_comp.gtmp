@@ -4,7 +4,6 @@
 # This query identifies the Connected Components (undirected edges)
 
         MinAccum<int> @cc_id = 0;       //each vertex's tentative component id
-        SumAccum<int> @old_id = 0;
         OrAccum<bool> @active;
         MapAccum<int, int> @@compSizes;
   
@@ -14,8 +13,8 @@
         S = SELECT x 
             FROM Start:x
             POST-ACCUM x.@cc_id = getvid(x),
-                       x.@old_id = getvid(x)        
-            ;
+		       x.@active = true
+                       ;
 
 # Propagate smaller internal IDs until no more ID changes can be DOne
         WHILE (Start.size()>0) DO
@@ -23,8 +22,7 @@
                         FROM Start:s -(*edge-types*:e)-> :t
                         ACCUM t.@cc_id += s.@cc_id // If s has a smaller id than t, copy the id to t
                         POST-ACCUM
-                                CASE WHEN t.@old_id != t.@cc_id THEN // If t's id has changed
-                                        t.@old_id = t.@cc_id,
+                                CASE WHEN t.@cc_id != t.@cc_id' THEN // If t's id has changed; @cc_id' is the previous value
                                         t.@active = true
                                 ELSE 
                                         t.@active = false
