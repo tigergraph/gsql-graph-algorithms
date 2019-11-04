@@ -15,15 +15,13 @@
                        ;
 
 # Propagate smaller internal IDs until no more ID changes can be DOne
-        WHILE (Start.size()>0) DO
-                Start = SELECT t
-                        FROM Start:s -(*edge-types*:e)-> :t
+        WHILE (S.size()>0) DO
+                S = SELECT t
+                        FROM S:s -(*edge-types*:e)-> :t
                         ACCUM t.@cc_id += s.@cc_id // If s has a smaller id than t, copy the id to t
                         HAVING t.@cc_id != t.@cc_id'
                         ;
         END;
-
-        Start = {*vertex-types*};
 
 *ATTR*  Start = SELECT s FROM Start:s
 *ATTR*          POST-ACCUM s.*vIntAttr* = s.@cc_id;
