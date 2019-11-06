@@ -1,0 +1,42 @@
+CREATE QUERY pageRank_pers_json (SET<VERTEX> source, FLOAT max_change, INT max_iter, FLOAT damping, STRING v_type, STRING e_type, INT output_limit) FOR GRAPH <placeholder> {
+    TYPEDEF TUPLE<VERTEX vertex_id, FLOAT score> VERTEX_SCORE;
+    HeapAccum<VERTEX_SCORE>(output_limit, score DESC) @@top_scores_heap;
+    MaxAccum<FLOAT> @@max_diff = 9999;
+    SumAccum<FLOAT> @received_score = 0;
+    SumAccum<FLOAT> @score = 0;
+    SetAccum<EDGE> @@edge_set;
+    OrAccum @is_source;
+
+    start = {source};
+    start = SELECT s FROM start:s
+            ACCUM
+                s.@score = 1,
+                s.@is_source = true
+    ;
+
+    total = start;
+    WHILE @@max_diff > max_change LIMIT max_iter DO
+        @@max_diff = 0;
+        V_tmp = SELECT t FROM start:s -(e_type:e)-> :t
+                ACCUM t.@received_score += s.@score/(s.outdegree(e_type));
+        T = start UNION V_tmp;
+        start = SELECT s FROM T:s
+                POST-ACCUM
+                    IF s.@is_source == true THEN
+                        s.@score = (1.0 - damping) + damping * s.@received_score
+                    ELSE
+                        s.@score = damping * s.@received_score
+                    END,
+                    s.@received_score = 0,
+                    @@max_diff += abs(s.@score - s.@score');
+
+        total = total UNION T;
+    END;
+
+    IF output_limit > 0 THEN
+        total = SELECT s FROM total:s
+                ACCUM @@top_scores_heap += VERTEX_SCORE(s, s.@score);
+        PRINT @@top_scores_heap;
+    END;
+
+}

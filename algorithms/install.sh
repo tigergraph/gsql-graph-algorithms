@@ -39,7 +39,9 @@ fi
 finished=false
 while [ !$finished ]; do
 	echo; echo "Please enter the index of the algorithm you want to create or EXIT:"
-	select algo in "EXIT" "Betweenness Centrality" "Closeness Centrality" "Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)"   "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"
+  
+	select algo in "EXIT" "Betweenness Centrality" "Closeness Centrality" "Connected Components" "Connected Components (Fast)" "Strongly Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Minimum Spanning Forest (MSF)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)" "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" 
+
     	case $algo in
             		"Betweenness Centrality" )
                 		algoName="betweenness_cent"
@@ -53,6 +55,14 @@ while [ !$finished ]; do
 				algoName="conn_comp"
 				echo "  conn_comp() works on undirected edges"
 				break;;
+      "Connected Components (Fast)" )
+        algoName="wcc_fast"
+        echo "  wcc_fast() works on undirected edges"
+        break;;
+			"Strongly Connected Components" )
+        algoName="scc"
+        echo "  scc() works on directed edges with reverse edges. DISTRIBUTED QUERY mode for this query is supported from TG 2.4"
+        break;;
 			"Label Propagation" )
 				algoName="label_prop"
 				echo "  label_prop() works on undirected edges"
@@ -65,14 +75,14 @@ while [ !$finished ]; do
 				algoName="pageRank"
 				echo "  pageRank() works on directed edges"
 				break;;
-                        "Weighted PageRank" )
-                                algoName="pageRank_wt"
-                                echo "  pageRank_wt() works on directed edges"
-                                break;;
-                        "Personalized PageRank" )
-                                algoName="pageRank_pers"
-                                echo "  pageRank_pers() works on directed edges"
-                                break;;
+      "Weighted PageRank" )
+        algoName="pageRank_wt"
+        echo "  pageRank_wt() works on directed edges"
+        break;;
+      "Personalized PageRank" )
+        algoName="pageRank_pers"
+        echo "  pageRank_pers() works on directed edges"
+        break;;
 			"Shortest Path, Single-Source, No Weight" )
                                 algoName="shortest_ss_no_wt"
                                 echo "  shortest_ss_no_wt() works on directed or undirected edges without weight"
@@ -89,6 +99,10 @@ while [ !$finished ]; do
                                 algoName="mst"
                                 echo "  mst() works on weighted undirected edges"
                                 break;;
+                       	"Minimum Spanning Forest (MSF)" )
+				algoName="msf"
+				echo " msf() works on weighted undirected edges"
+				break;;
                         "Cycle Detection" )
                                 algoName="cycle_detection"
                                 echo "  cycle_detection() works on directed edges"
@@ -129,14 +143,14 @@ while [ !$finished ]; do
                                 algoName="knn_cosine_ss"
                                 echo "  knn_cosine_ss() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
                                 break;;
-                       # 'k-Nearest Neighbors (Cosine Neighbor Similarity, batch)' )
-                       #         algoName="knn_cosine_all"
-                       #         echo "  knn_cosine_all() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
-                       #         break;;
-                       # 'k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)' )
-                       #         algoName="knn_cosine_cv"
-                       #         echo "  knn_cosine_cv() returns an estimated best choice of k in a range, based on cosine neighbor similarity"
-                       #         break;;
+                       'k-Nearest Neighbors (Cosine Neighbor Similarity, batch)' )
+                                algoName="knn_cosine_all"
+                                echo "  knn_cosine_all() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
+                                break;;
+                       'k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)' )
+                                algoName="knn_cosine_cv"
+                                echo "  knn_cosine_cv() returns an estimated best choice of k in a range, based on cosine neighbor similarity"
+                                break;;
 			"EXIT" )
 				finished=true
 				break;;
@@ -153,6 +167,7 @@ while [ !$finished ]; do
 	# Copy the algorithm template file to the destination file.
 	templPath="./templates"
 	genPath="./generated"
+	mkdir -p ./generated;
 	cp ${templPath}/${algoName}.gtmp ${genPath}/${algoName}_tmp.gsql;
 
 	# Replace *graph* placeholder
@@ -220,10 +235,10 @@ while [ !$finished ]; do
 		edgeFuncProc outdegree t_outdegrees + t;
 	#esac
 
-	if [[ $egs = *","* ]]; then
+	#if [[ $egs = *","* ]]; then
 		egs=${egs//,/|}
 		egs="(${egs})"
-	fi
+	#fi
 	sed -i "s/\*edge-types\*/$egs/g" ${genPath}/${algoName}_tmp.gsql
 
 	# 4.2 Ask for reverse edge type for similarity algos. 
@@ -233,9 +248,20 @@ while [ !$finished ]; do
 		sed -i "s/\*sec-edge-types\*/$edge2/g" ${genPath}/${algoName}_tmp.gsql
 	fi
 
+	# 4.3 Ask for reverse edge type for directed edges.
+        if [[ $algoName == scc ]]; then
+                read -p 'Reverse Edge Type: ' edge3
+                edge3=${edge3//[[:space:]]/}
+		#if [[ $edge3 = *","* ]]; then
+                	edge3=${edge3//,/|}
+                	edge3="(${edge3})"
+        	#fi
+                sed -i "s/\*reverse-edge-types\*/$edge3/g" ${genPath}/${algoName}_tmp.gsql
+		sed -i "s/)|(/|/g" ${genPath}/${algoName}_tmp.gsql
+        fi
 
      	# 5. Ask for edge weight name. Replace *edge-weight* placeholder.
-	if [ "${algoName}" == "shortest_ss_pos_wt" ] || [ "${algoName}" == "shortest_ss_any_wt" ] || [ "${algoName}" == "pageRank_wt" ] || [ "${algoName}" == "mst" ] || [ "${algoName}" == "louvain_parallel" ]; then
+	if [ "${algoName}" == "shortest_ss_pos_wt" ] || [ "${algoName}" == "shortest_ss_any_wt" ] || [ "${algoName}" == "pageRank_wt" ] || [ "${algoName}" == "mst" ] || [ "${algoName}" == "msf" ] || [ "${algoName}" == "louvain_parallel" ]; then
 		while true; do
                 	read -p "Edge attribute that stores FLOAT weight:"  weight
 			if [[ $(countEdgeAttr $weight) > 0 ]]; then
@@ -346,8 +372,8 @@ END
                 			sed -i "s/\*EXT\*/$fExt/g" ${genPath}/${algoName}$fExt.gsql;  # *EXT* -> $fExt
 					sed -i '/^\*ATTR\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ATTR* lines
 					sed -i '/^\*ACCM\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ACCM* lines
-                                        sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}.gsql; # Cut *FILE* string
-                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
+                                        sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string
+                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}$fExt.gsql;
 					sed -i 's/\*FILE\*/      /g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string in query body
 					gsql -g $grph "DROP QUERY ${algoName}$fExt"
 					subqueryClue="\*SUB\* CREATE QUERY"
@@ -455,18 +481,18 @@ END
 					fi
 					sed -i "s/\*EXT\*/$aExt/g" $attrQuery; # *EXT* > $aExt
                                         sed -i 's/\*ATTR\*CREATE/CREATE/g' $attrQuery;  # Cut *ATTR* string
-                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
+                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' $attrQuery;
 					sed -i 's/\*ATTR\*/      /g' $attrQuery;  # Cut *ATTR* string in query body
 					sed -i '/^\*ACCM\*/ d' $attrQuery;  # Del *ACCM* lines
 					sed -i '/^\*FILE\*/ d' $attrQuery;  # Del *FILE*lines
 					gsql -g $grph "DROP QUERY ${algoName}$aExt"
 					subqueryClue="\*SUB\* CREATE QUERY"
-					subqueryLine=$(grep "$subqueryClue" ${genPath}/${algoName}$aExt.gsql)
-					if [[ $(grep -c "$subqueryClue" ${genPath}/${algoName}$aExt.gsql) > 0 ]]; then
+					subqueryLine=$(grep "$subqueryClue" $attrQuery)
+					if [[ $(grep -c "$subqueryClue" $attrQuery) > 0 ]]; then
 						subqueryWords=( $subqueryLine )
 						gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
 					fi				
-					sed -i 's/\*SUB\* //g' ${genPath}/${algoName}$aExt.gsql;   # Cut the *SUB* string
+					sed -i 's/\*SUB\* //g' $attrQuery;   # Cut the *SUB* string
 					echo gsql -g $grph $attrQuery;
 					gsql -g $grph $attrQuery;
 				  ;;
@@ -504,8 +530,8 @@ END
                                         sed -i "s/\*EXT\*/$fExt/g" ${genPath}/${algoName}$fExt.gsql;  # *EXT* -> $fExt
                                         sed -i '/^\*ATTR\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ATTR* lines
                                         sed -i '/^\*ACCM\*/ d' ${genPath}/${algoName}$fExt.gsql; # Del *ACCM* lines
-                                        sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}.gsql; # Cut *FILE* string
-                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
+                                        sed -i 's/\*FILE\*CREATE/CREATE/g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string
+                                        sed -i 's/\*FILE\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}$fExt.gsql;
                                         sed -i 's/\*FILE\*/      /g' ${genPath}/${algoName}$fExt.gsql; # Cut *FILE* string in query body
                                         gsql -g $grph "DROP QUERY ${algoName}$fExt"
                                         subqueryClue="\*SUB\* CREATE QUERY"
@@ -538,7 +564,7 @@ END
                                           while true; do
                                                 read -p "Vertex attribute to store INT result (e.g. component ID): " vIntAttr
                                                 if [[ $(countVertexAttr $vIntAttr) > 0 ]]; then
-                                                        sed -i "s/\*vIntAttr\*/$vIntAttr/g" ${genPath}/${algoName}$aExt.gsql;
+                                                        sed -i "s/\*vIntAttr\*/$vIntAttr/g" $attrQuery;
                                                         break;
                                                 else
                                                         echo " *** Vertex attribute name not found. Try again."
@@ -551,7 +577,7 @@ END
                                           while true; do
                                                 read -p "Vertex attribute to store BOOL result (e.g. in_cycle): " vBoolAttr
                                                 if [[ $(countVertexAttr $vBoolAttr) > 0 ]]; then
-                                                        sed -i "s/\*vBoolAttr\*/$vBoolAttr/g" ${genPath}/${algoName}$aExt.gsql;
+                                                        sed -i "s/\*vBoolAttr\*/$vBoolAttr/g" $attrQuery;
                                                         break;
                                                 else
                                                         echo " *** Vertex attribute name not found. Try again."
@@ -612,18 +638,18 @@ END
                                         fi
                                         sed -i "s/\*EXT\*/$aExt/g" $attrQuery; # *EXT* > $aExt
                                         sed -i 's/\*ATTR\*CREATE/CREATE/g' $attrQuery;  # Cut *ATTR* string
-                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' ${genPath}/${algoName}.gsql;
+                                        sed -i 's/\*ATTR\*\*SUB\*/\*SUB\*/g' $attrQuery;
                                         sed -i 's/\*ATTR\*/      /g' $attrQuery;  # Cut *ATTR* string in query body
                                         sed -i '/^\*ACCM\*/ d' $attrQuery;  # Del *ACCM* lines
                                         sed -i '/^\*FILE\*/ d' $attrQuery;  # Del *FILE*lines
                                         gsql -g $grph "DROP QUERY ${algoName}$aExt"
                                         subqueryClue="\*SUB\* CREATE QUERY"
-                                        subqueryLine=$(grep "$subqueryClue" ${genPath}/${algoName}$aExt.gsql)
-                                        if [[ $(grep -c "$subqueryClue" ${genPath}/${algoName}$aExt.gsql) > 0 ]]; then
+                                        subqueryLine=$(grep "$subqueryClue" $attrQuery)
+                                        if [[ $(grep -c "$subqueryClue" $attrQuery) > 0 ]]; then
                                                 subqueryWords=( $subqueryLine )
                                                 gsql -g $grph "DROP QUERY ${subqueryWords[3]}"
                                         fi
-                                        sed -i 's/\*SUB\* //g' ${genPath}/${algoName}$aExt.gsql;   # Cut the *SUB* string
+                                        sed -i 's/\*SUB\* //g' $attrQuery;   # Cut the *SUB* string
                                         echo gsql -g $grph $attrQuery;
                                         gsql -g $grph $attrQuery;
                                   ;;
