@@ -5,6 +5,7 @@ CREATE QUERY shortest_ss_any_wt (VERTEX source, BOOL display) FOR GRAPH social {
 */
         TYPEDEF TUPLE<FLOAT dist, VERTEX pred> pathTuple;    
         HeapAccum<pathTuple>(1, dist ASC) @minPath;
+        EXCEPTION negativeCycleExc (40001);
         ListAccum<VERTEX> @path;                 # shortest path FROM source
         SetAccum<EDGE> @@edgeSet;               # list of all edges, if display is needed
         OrAccum @visited;
@@ -48,7 +49,8 @@ CREATE QUERY shortest_ss_any_wt (VERTEX source, BOOL display) FOR GRAPH social {
                             negativeCycle = TRUE
                     END;
         IF negativeCycle THEN 
-                PRINT "Negative Cycle Detected.";
+                #PRINT "Negative Cycle Detected.";
+                RAISE negativeCycleExc ("Negative Cycle Detected.");
         ELSE
           ##### Calculate the paths #####
                 start = {source};
