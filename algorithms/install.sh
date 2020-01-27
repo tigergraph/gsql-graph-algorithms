@@ -39,9 +39,15 @@ fi
 finished=false
 while [ !$finished ]; do
 	echo; echo "Please enter the index of the algorithm you want to create or EXIT:"
-        select algo in "EXIT" "Closeness Centrality" "Connected Components" "Strongly Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)" "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)"
+  
+	select algo in "EXIT" "Betweenness Centrality" "Closeness Centrality" "Connected Components" "Connected Components (Fast)" "Strongly Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Minimum Spanning Forest (MSF)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)" "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" 
+
     	case $algo in
-			"Closeness Centrality" )
+            		"Betweenness Centrality" )
+                		algoName="betweenness_cent"
+                		echo "  betweenness_cent() works on undirected edges"
+                		break;;
+            		"Closeness Centrality" )
 				algoName="closeness_cent"
 				echo "  closeness_cent() works on undirected edges"
 				break;;
@@ -49,10 +55,14 @@ while [ !$finished ]; do
 				algoName="conn_comp"
 				echo "  conn_comp() works on undirected edges"
 				break;;
+      "Connected Components (Fast)" )
+        algoName="wcc_fast"
+        echo "  wcc_fast() works on undirected edges"
+        break;;
 			"Strongly Connected Components" )
-                                algoName="scc"
-                                echo "  scc() works on directed edges with reverse edges. DISTRIBUTED QUERY mode for this query is supported from TG 2.4"
-                                break;;
+        algoName="scc"
+        echo "  scc() works on directed edges with reverse edges. DISTRIBUTED QUERY mode for this query is supported from TG 2.4"
+        break;;
 			"Label Propagation" )
 				algoName="label_prop"
 				echo "  label_prop() works on undirected edges"
@@ -65,14 +75,14 @@ while [ !$finished ]; do
 				algoName="pageRank"
 				echo "  pageRank() works on directed edges"
 				break;;
-                        "Weighted PageRank" )
-                                algoName="pageRank_wt"
-                                echo "  pageRank_wt() works on directed edges"
-                                break;;
-                        "Personalized PageRank" )
-                                algoName="pageRank_pers"
-                                echo "  pageRank_pers() works on directed edges"
-                                break;;
+      "Weighted PageRank" )
+        algoName="pageRank_wt"
+        echo "  pageRank_wt() works on directed edges"
+        break;;
+      "Personalized PageRank" )
+        algoName="pageRank_pers"
+        echo "  pageRank_pers() works on directed edges"
+        break;;
 			"Shortest Path, Single-Source, No Weight" )
                                 algoName="shortest_ss_no_wt"
                                 echo "  shortest_ss_no_wt() works on directed or undirected edges without weight"
@@ -89,6 +99,10 @@ while [ !$finished ]; do
                                 algoName="mst"
                                 echo "  mst() works on weighted undirected edges"
                                 break;;
+                       	"Minimum Spanning Forest (MSF)" )
+				algoName="msf"
+				echo " msf() works on weighted undirected edges"
+				break;;
                         "Cycle Detection" )
                                 algoName="cycle_detection"
                                 echo "  cycle_detection() works on directed edges"
@@ -247,7 +261,7 @@ while [ !$finished ]; do
         fi
 
      	# 5. Ask for edge weight name. Replace *edge-weight* placeholder.
-	if [ "${algoName}" == "shortest_ss_pos_wt" ] || [ "${algoName}" == "shortest_ss_any_wt" ] || [ "${algoName}" == "pageRank_wt" ] || [ "${algoName}" == "mst" ] || [ "${algoName}" == "louvain_parallel" ]; then
+	if [ "${algoName}" == "shortest_ss_pos_wt" ] || [ "${algoName}" == "shortest_ss_any_wt" ] || [ "${algoName}" == "pageRank_wt" ] || [ "${algoName}" == "mst" ] || [ "${algoName}" == "msf" ] || [ "${algoName}" == "louvain_parallel" ]; then
 		while true; do
                 	read -p "Edge attribute that stores FLOAT weight:"  weight
 			if [[ $(countEdgeAttr $weight) > 0 ]]; then
