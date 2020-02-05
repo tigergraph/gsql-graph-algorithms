@@ -1,4 +1,4 @@
-CREATE QUERY tri_count() FOR GRAPH *graph* {
+CREATE QUERY tri_count*EXT*() FOR GRAPH *graph* {
 # Compute the total number of triangles in the GRAPH. No input parameters are needed.
         SumAccum<int> @@cnt;
 
