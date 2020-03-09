@@ -1,6 +1,6 @@
-*ATTR**SUB* CREATE QUERY cc_subquery*EXT* (VERTEX source, INT numVert, INT maxHops) FOR GRAPH *graph* RETURNS(FLOAT) {
-*ACCM**SUB* CREATE QUERY cc_subquery*EXT* (VERTEX source, INT numVert, INT maxHops) FOR GRAPH *graph* RETURNS(FLOAT) {
-*FILE**SUB* CREATE QUERY cc_subquery*EXT* (VERTEX source, INT numVert, INT maxHops) FOR GRAPH *graph* RETURNS(FLOAT) {
+*ATTR**SUB* CREATE QUERY cc_subquery*EXT* (VERTEX source, INT numVert, INT maxHops, BOOL wf = TRUE) FOR GRAPH *graph* RETURNS(FLOAT) {
+*ACCM**SUB* CREATE QUERY cc_subquery*EXT* (VERTEX source, INT numVert, INT maxHops, BOOL wf = TRUE) FOR GRAPH *graph* RETURNS(FLOAT) {
+*FILE**SUB* CREATE QUERY cc_subquery*EXT* (VERTEX source, INT numVert, INT maxHops, BOOL wf = TRUE) FOR GRAPH *graph* RETURNS(FLOAT) {
 # Subquery returns closeness centrality for vertex source in graph with numVert vertices 
         SumAccum<int> @@currDist, @@totalDist;
          OrAccum<bool> @visited;
@@ -21,15 +21,19 @@
         END;
  
         IF @@totalDist > 0 THEN
-                RETURN ((numVert - 1) * 1.0) / (@@totalDist * 1.0);
+	          IF wf == TRUE THEN
+                        RETURN (@@n*1.0/(numVert-1))*(@@n*1.0/@@totalDist);
+	          ELSE 
+                        RETURN (@@n*1.0/@@totalDist);
+	          END;
         ELSE
                 RETURN (-1.0);
         END;
  }
 
-*ATTR*CREATE QUERY closeness_cent*EXT* () FOR GRAPH *graph* {
-*ACCM*CREATE QUERY closeness_cent*EXT* (BOOL display, INT outputLimit) FOR GRAPH *graph* {
-*FILE*CREATE QUERY closeness_cent*EXT* (FILE f) FOR GRAPH *graph* {
+*ATTR*CREATE QUERY closeness_cent*EXT* (BOOL wf = TRUE) FOR GRAPH *graph* {
+*ACCM*CREATE QUERY closeness_cent*EXT* (BOOL display, INT outputLimit, BOOL wf = TRUE) FOR GRAPH *graph* {
+*FILE*CREATE QUERY closeness_cent*EXT* (FILE f, BOOL wf = TRUE) FOR GRAPH *graph* {
 # Closeness Centrality main query
 
 *ACCM*  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> vertexScore;
@@ -48,10 +52,10 @@
         # get closeness centrality for each vertex
 *FILE*  f.println("Vertex_ID", "Closeness");
         Start = SELECT s FROM Start:s
-                POST-ACCUM s.@score = cc_subquery*EXT*(s,numVert,maxHops),
-*ATTR*                     s.*vFltAttr* = cc_subquery*EXT*(s,numVert,maxHops);
-*ACCM*                     @@topScores += vertexScore(s, cc_subquery*EXT*(s,numVert,maxHops));
-*FILE*                     f.println(s, cc_subquery*EXT*(s,numVert,maxHops));
+                POST-ACCUM s.@score = cc_subquery*EXT*(s,numVert,maxHops,wf),
+*ATTR*                     s.*vFltAttr* = cc_subquery*EXT*(s,numVert,maxHops,wf);
+*ACCM*                     @@topScores += vertexScore(s, cc_subquery*EXT*(s,numVert,maxHops,wf));
+*FILE*                     f.println(s, cc_subquery*EXT*(s,numVert,maxHops,wf));
 
 *ACCM*  PRINT @@topScores;
 *ACCM*  IF display THEN
