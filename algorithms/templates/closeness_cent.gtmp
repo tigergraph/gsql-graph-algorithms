@@ -2,8 +2,8 @@
 *ACCM**SUB* CREATE QUERY cc_subquery*EXT* (VERTEX source, INT numVert, INT maxHops, BOOL wf = TRUE) FOR GRAPH *graph* RETURNS(FLOAT) {
 *FILE**SUB* CREATE QUERY cc_subquery*EXT* (VERTEX source, INT numVert, INT maxHops, BOOL wf = TRUE) FOR GRAPH *graph* RETURNS(FLOAT) {
 # Subquery returns closeness centrality for vertex source in graph with numVert vertices 
-        SumAccum<int> @@currDist, @@totalDist;
-         OrAccum<bool> @visited;
+        SumAccum<int> @@currDist, @@totalDist, @nn;
+        OrAccum<bool> @visited;
  
 # Initialize: Set the input vertex source as the starting point
         Start = {source};
@@ -18,6 +18,7 @@
                         WHERE t.@visited == false AND t != s
                         POST-ACCUM t.@visited += true;
                                    @@totalDist += Start.size() * @@currDist;
+				   @@n += Start.size();
         END;
  
         IF @@totalDist > 0 THEN
