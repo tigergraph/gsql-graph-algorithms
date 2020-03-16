@@ -73,7 +73,7 @@
                         curr = active;
                         WHILE (curr.size()>0) DO
                                 curr = SELECT t
-                                       FROM curr:s -(*edge-types*|*reverse-edge-types*:e)-> :t
+                                       FROM curr:s -((*edge-types*|*reverse-edge-types*):e)-> :t
                                        WHERE s.@cid == t.@cid AND t.@detached == FALSE
                                        ACCUM t.@wcc_id_curr += s.@wcc_id_prev // If s has a smaller id than t, copy the id to t
                                        POST-ACCUM
@@ -110,7 +110,7 @@
                 curr = pivots;
                 WHILE curr.size()>0 DO
                         curr = SELECT t 
-                               FROM curr:s -((*reverse-edge-types*):e)->:t  // reverse edge
+                               FROM curr:s -(*reverse-edge-types*:e)->:t  // reverse edge
                                WHERE t.@detached == FALSE AND t.@is_backward == FALSE AND s.@cid == t.@cid // not traversed
                                ACCUM t.@is_backward = TRUE;
                 END;
