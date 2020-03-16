@@ -21,7 +21,7 @@
 
   ##### Initialization: Set the best-known distance to a maxValue (pseudo-infinite)
         Source = SELECT s FROM Source:s
-                 POST-ACCUM sourceName = s.name;        # Get the name of the source vertex
+                 POST-ACCUM sourceName = s.id;        # Get the name of the source vertex
         VSET = SELECT s FROM VSET:s
                POST-ACCUM s.@dist = maxVal,
                           s.@path = sourceName;
@@ -36,7 +36,7 @@
                        ACCUM IF s.@visited THEN
                                 IF s.@dist + e.*edge-weight* < t.@dist THEN
                                         t.@dist = s.@dist + e.*edge-weight*,             # @dist is a MinAccum
-                                        t.@path = s.@path +"-"+ t.name
+                                        t.@path = s.@path +"-"+ t.id
                                 END,
                                 t.@visited += true
                              END;
