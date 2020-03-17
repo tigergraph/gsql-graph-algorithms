@@ -14,7 +14,7 @@
         STRING sourceName;
         INT iter;
         BOOL negativeCycle;
-        total = {source};                       # the connected vertices
+        total = {*vertex-types*};                       # the connected vertices
         start = {source};
 
               
