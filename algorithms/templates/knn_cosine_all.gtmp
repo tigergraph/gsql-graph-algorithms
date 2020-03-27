@@ -51,13 +51,13 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 */
         SumAccum<STRING> @predicted_label;
         
-        source = {*vertex-types*);        
+        source = {*vertex-types*};        
         source = SELECT s
                  FROM source:s 
                  WHERE s.*vertex-label* == ""
-*ACCM*           ACCUM s.@predicted_label = knn_cosine_ss(s, topK);    
-*ATTR*           POST-ACCUM s.*vStrAttr* = knn_cosine_ss(s, topK);
-*FILE*           ACCUM s.@predicted_label = knn_cosine_ss(s, topK)
+*ACCM*           ACCUM s.@predicted_label = knn_cosine_ss*EXT*(s, topK);    
+*ATTR*           POST-ACCUM s.*vStrAttr* = knn_cosine_ss*EXT*(s, topK);
+*FILE*           ACCUM s.@predicted_label = knn_cosine_ss*EXT*(s, topK)
 *FILE*           POST-ACCUM f.println(s, s.@predicted_label);
 *ACCM*  PRINT source;
   
