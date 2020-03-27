@@ -1,6 +1,6 @@
-*ATTR*CREATE QUERY shortest_ss_pos_wt*EXT* (VERTEX source<*vertex-as-param*>) FOR GRAPH *graph* {
-*ACCM*CREATE QUERY shortest_ss_pos_wt*EXT* (VERTEX source<*vertex-as-param*>, BOOL display) FOR GRAPH *graph* {
-*FILE*CREATE QUERY shortest_ss_pos_wt*EXT* (VERTEX source<*vertex-as-param*>, STRING filepath) FOR GRAPH *graph* {
+*ATTR*CREATE QUERY shortest_ss_pos_wt*EXT* (VERTEX<*vertex-as-param*> source) FOR GRAPH *graph* {
+*ACCM*CREATE QUERY shortest_ss_pos_wt*EXT* (VERTEX<*vertex-as-param*> source, BOOL display) FOR GRAPH *graph* {
+*FILE*CREATE QUERY shortest_ss_pos_wt*EXT* (VERTEX<*vertex-as-param*> source, STRING filepath) FOR GRAPH *graph* {
 /* The Bellman-Ford algorithm for single-Source Shortest Path 
    on directed/undirected graph with positive weight.
    It will not detect negative cycle in this algorithm. 
