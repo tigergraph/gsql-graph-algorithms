@@ -1,6 +1,4 @@
 *ACCM**SUB* CREATE QUERY kcore_sub*EXT* (STRING vertexType, STRING edgeType, INT verbosity) FOR GRAPH *graph* RETURNS (MapAccum<INT, SetAccum<VERTEX>>)  {
-*FILE**SUB* CREATE QUERY kcore_sub*EXT* (STRING vertexType, STRING edgeType, INT verbosity) FOR GRAPH *graph* RETURNS (MapAccum<INT, SetAccum<VERTEX>>)  {
-
 /* An implementation of Algorithm 2 in
  * Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
  * Tripathy et al., IEEE Big Data 2018.
@@ -63,9 +61,7 @@
   
   }
   
-*ACCM**SUB* CREATE QUERY kcore_max*EXT* (STRING vertexType, STRING edgeType, BOOL inducedEdges, INT verbosity) FOR GRAPH *graph* {
-*FILE**SUB* CREATE QUERY kcore_max*EXT* (STRING vertexType, STRING edgeType, BOOL inducedEdges, INT verbosity, FILE f) FOR GRAPH *graph* {
-
+*ACCM*CREATE QUERY kcore_max*EXT* (STRING vertexType, STRING edgeType, BOOL inducedEdges, INT verbosity) FOR GRAPH *graph* {
 /* An implementation of Algorithm 2 in
  * Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
  * Tripathy et al., IEEE Big Data 2018.
