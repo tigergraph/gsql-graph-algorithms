@@ -63,8 +63,8 @@
   
   }
   
-*ACCM**SUB*  CREATE QUERY kcore_max*EXT* (STRING vertexType, STRING edgeType, BOOL inducedEdges, INT verbosity) FOR GRAPH *graph* {
-*FILE**SUB*  CREATE QUERY kcore_max*EXT* (STRING vertexType, STRING edgeType, BOOL inducedEdges, INT verbosity, FILE f) FOR GRAPH *graph* {
+*ACCM**SUB* CREATE QUERY kcore_max*EXT* (STRING vertexType, STRING edgeType, BOOL inducedEdges, INT verbosity) FOR GRAPH *graph* {
+*FILE**SUB* CREATE QUERY kcore_max*EXT* (STRING vertexType, STRING edgeType, BOOL inducedEdges, INT verbosity, FILE f) FOR GRAPH *graph* {
 
 /* An implementation of Algorithm 2 in
  * Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
