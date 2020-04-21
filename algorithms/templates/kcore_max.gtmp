@@ -72,7 +72,7 @@
 	ListAccum<EDGE> @@inducedEdges;                // optional output
 	INT k;
 	
-  @@coreListMap += kcore_sub(vertexType, edgeType, verbosity); // get vertex core numnbers
+  @@coreListMap += kcore_sub*EXT*(vertexType, edgeType, verbosity); // get vertex core numnbers
 	k = @@coreListMap.size() - 1;
 	@@kcoreVertices = @@coreListMap.get(k);   
 	coreV = @@kcoreVertices;
