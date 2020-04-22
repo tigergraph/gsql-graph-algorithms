@@ -103,9 +103,8 @@ FOR GRAPH *graph* {
 	                ELSE
 	                  PRINT k,@@kcoreVertices;
 	                END;
-              END;
+              	    END;
 	        END;
 	    END;
 	END;
 }
-
