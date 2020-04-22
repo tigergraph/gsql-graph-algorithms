@@ -72,7 +72,7 @@
 	ListAccum<EDGE> @@inducedEdges;                // optional output
 	INT k;
 	
-  @@coreListMap += kcore_sub*EXT*(vertexType, edgeType, verbosity); // get vertex core numnbers
+ 	@@coreListMap += kcore_sub*EXT*(vertexType, edgeType, verbosity); // get vertex core numnbers
 	k = @@coreListMap.size() - 1;
 	@@kcoreVertices = @@coreListMap.get(k);   
 	coreV = @@kcoreVertices;
@@ -80,12 +80,10 @@
 	// Print the results
 	IF verbosity > 0 THEN PRINT "verbosity", @@coreListMap; END;
 	PRINT k, @@kcoreVertices.size(), @@kcoreVertices;
-  IF inducedEdges THEN
-      Q = SELECT s
-          FROM coreV:s -(edgeType:e)-> :t
-	        WHERE t IN @@kcoreVertices
-	        ACCUM @@inducedEdges += e;
-	    PRINT @@inducedEdges;
+  	IF inducedEdges THEN
+      		Q = SELECT s FROM coreV:s -(edgeType:e)-> :t WHERE t IN @@kcoreVertices
+	        	ACCUM @@inducedEdges += e;
+	    	PRINT @@inducedEdges;
 	END;
 }
   
