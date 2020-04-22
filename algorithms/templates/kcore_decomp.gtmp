@@ -5,16 +5,14 @@ CREATE QUERY kcore_sq(STRING vertexType, STRING edgeType, INT verbosity) FOR GRA
  * Returns a map <k, <vertex-list>> where <vertex-list> are those who are in that k-core but not (k+1)-core
  */
   
-  SetAccum<VERTEX> @@Q;    // queue of vertices removed per peel
-	SetAccum<VERTEX> @@Vb;    // batch of vertices to delete in this round
-	SumAccum<INT> @deg;        // The number of edges v has to active vertices.
-	SumAccum<INT> @core;       // The core level of vertex v
-  OrAccum @flag;				    // true if v does not exist in Gcum
-	MapAccum<INT, SetAccum<VERTEX>> @@coreListMap;  // List of vertices sorted by increasing core level
- 	
-  //OrAccum @color;				    // true if v will be pruned this iteration
-	INT k = 0;				      // max degree value used to determine whether to prune
-	INT num_active;
+  	SetAccum<VERTEX> @@Q;    // queue of vertices removed per peel
+  	SetAccum<VERTEX> @@Vb;    // batch of vertices to delete in this round
+  	SumAccum<INT> @deg;        // The number of edges v has to active vertices.
+  	SumAccum<INT> @core;       // The core level of vertex v
+  	OrAccum @flag;				    // true if v does not exist in Gcum
+  	MapAccum<INT, SetAccum<VERTEX>> @@coreListMap;  // List of vertices sorted by increasing core level
+  	INT k = 0;				      // max degree value used to determine whether to prune
+ 	INT num_active;
 	
 	V = {vertexType.*};
 	V = SELECT v                  // Initialize @deg
@@ -28,17 +26,17 @@ CREATE QUERY kcore_sq(STRING vertexType, STRING edgeType, INT verbosity) FOR GRA
 	num_active = V.size();
 	WHILE num_active > 0 DO
 	    @@Vb.clear();
-	    V = SELECT v 
-	        FROM V:v
-	        WHERE v.@flag == False
-          POST-ACCUM IF v.@deg <= k THEN  // Find vertices whose degree < or = k
-	            v.@flag += True,               // Mark those vertices individually
-	            v.@core += k,                  // Set the core level of those vertices
-		          @@Vb += v,                     // Collect those vertices
-	            @@Q += v
-	        END
-	    ;
-      num_active = num_active - @@Vb.size();
+	    V = SELECT v FROM V:v WHERE v.@flag == False
+          	POST-ACCUM 
+	  		IF v.@deg <= k 
+			THEN                		// Find vertices whose degree < or = k
+	            		v.@flag += True,        // Mark those vertices individually
+	            		v.@core += k,           // Set the core level of those vertices
+				@@Vb += v,              // Collect those vertices
+				@@Q += v
+	        END;
+		
+      	num_active = num_active - @@Vb.size();
 	
 	    IF @@Vb.size() > 0 THEN                // "Remove adjacent edges"         
 	        VBatch = @@Vb;
@@ -53,15 +51,13 @@ CREATE QUERY kcore_sq(STRING vertexType, STRING edgeType, INT verbosity) FOR GRA
 	            @@Q.clear();
 	        END;
 	    END;
-  END;
+  	END;
 	IF @@coreListMap.size() <= k THEN  // haven't added the last batch to @@coreList yet
 	    @@coreListMap += (k -> @@Q);
 	END;
-  RETURN @@coreListMap;
+  	RETURN @@coreListMap;
   
-  }
-
-
+}
 
 *ACCM*CREATE QUERY kcore_decomp(STRING vertexType, STRING edgeType, INT kMin, INT kMax = -1, BOOL showMembership=false, BOOL showShells=true) 
 FOR GRAPH *graph* { 
@@ -78,7 +74,7 @@ FOR GRAPH *graph* {
 	INT printUpper;                    // max value of K to output
 
 	
-  @@coreListMap += kcore_sq(vertexType, edgeType, 1);
+  	@@coreListMap += kcore_sq(vertexType, edgeType, 1);
 	kUpper = @@coreListMap.size() - 1;
 	IF kMax < 0 THEN
 	  printUpper = kUpper;
@@ -86,7 +82,7 @@ FOR GRAPH *graph* {
 	  printUpper = kMax;
 	END;
 	
-// First, print just the size of each k-core	
+	// First, print just the size of each k-core	
 	FOREACH k IN RANGE [kUpper, kMin].STEP(-1) DO
 	    IF @@coreListMap.get(k).size() > 0 THEN      // If the k-shell has some vertices
 	        @@kcoreVertices += @@coreListMap.get(k);
@@ -96,7 +92,7 @@ FOR GRAPH *graph* {
 	    END;
 	END;
 	
-// Next, print the membership of each k-core
+	// Next, print the membership of each k-core
 	IF showMembership THEN
 	    FOREACH k IN RANGE [kUpper, kMin].STEP(-1) DO
 	        IF @@coreListMap.get(k).size() > 0 THEN      // If the k-shell has some vertices
@@ -112,3 +108,4 @@ FOR GRAPH *graph* {
 	    END;
 	END;
 }
+
