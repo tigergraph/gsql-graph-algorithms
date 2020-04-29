@@ -1,4 +1,4 @@
-CREATE QUERY jaccard_nbor_ap_sub_file (VERTEX source, STRING v_type, STRING e_type, INT top_k, FILE f) FOR GRAPH <placeholder> {
+CREATE QUERY jaccard_nbor_ap_sub_file (VERTEX source, STRING v_type, STRING e_type, INT top_k, FILE f) {
 /* This subquery calculates the Jaccard Similarity between a given vertex and every other vertex.
 Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
 */
