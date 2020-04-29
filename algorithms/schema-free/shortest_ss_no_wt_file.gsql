@@ -1,4 +1,4 @@
-CREATE QUERY shortest_ss_no_wt_file (VERTEX source, STRING v_type, STRING e_type, FILE f) FOR GRAPH <placeholder> {
+CREATE QUERY shortest_ss_no_wt_file (VERTEX source, STRING v_type, STRING e_type, FILE f) {
 /* This query is Single_source Shortest Path without weights on edges. It calculates the shortest distance from the given vertex source to all other connected vertices, and shows one shortest path between them.
 This JSON version also shows visualization of the network.
 */
