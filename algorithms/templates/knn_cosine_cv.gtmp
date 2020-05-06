@@ -59,7 +59,7 @@
         IF max_k < min_k OR max_k < 1 THEN  // terminate if the range is invalid
                 RETURN 0;
         END;
-        start = {*vertex-types*};
+        start = {*vertex-types*.*};
   
         start = SELECT s
                 FROM start:s 
