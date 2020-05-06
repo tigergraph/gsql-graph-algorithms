@@ -1,16 +1,16 @@
-*ATTR**SUB* CREATE QUERY cosine_nbor_ap_sub*EXT* (VERTEX<*vertex-types*> source, INT topK) FOR GRAPH *graph* {
+*ATTR**SUB* CREATE QUERY cosine_nbor_ap_sub*EXT* (VERTEX<weighted_undirected_v.*> source, INT topK) FOR GRAPH *graph* {
 *ACCM**SUB* CREATE QUERY cosine_nbor_ap_sub*EXT* (VERTEX source, INT topK) FOR GRAPH *graph* RETURNS (MapAccum<VERTEX, FLOAT>){
 *FILE**SUB* CREATE QUERY cosine_nbor_ap_sub*EXT* (VERTEX source, INT topK, FILE f) FOR GRAPH *graph*{
 /* This subquery calculates the Cosine Similarity between a given vertex and every other vertex.
 Cosine similarity = A \dot B / ||A|| \dot ||B||
 */
-
+  
 *ACCM*  MapAccum<VERTEX, FLOAT> @@topK_result;
         SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
 
         start = {source};
         subjects = SELECT t
-                   FROM start:s -(*edge-types*:e)-> :t
+                   FROM start:s -(*edge-types*:e)->:t
                    ACCUM t.@numerator = e.*edge-weight*,
                          @@norm1 += pow(e.*edge-weight*, 2);
 
@@ -29,7 +29,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 *ATTR*               FROM neighbours:s
 *ATTR*               POST-ACCUM insert into *insert-edge-name* values(source, s, s.@similarity);
 *ACCM*  neighbours = SELECT s
-*ACCM*               FROM neighbours:s 
+*ACCM*               FROM neighbours:s
 *ACCM*               ACCUM @@topK_result += (s -> s.@similarity);
 *ACCM*  return @@topK_result;
 *FILE*  neighbours = SELECT s
@@ -38,7 +38,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 }
 
 
-*ATTR*CREATE QUERY cosine_nbor_ap*EXT* (INT topK) FOR GRAPH *graph* { 
+*ATTR*CREATE QUERY cosine_nbor_ap*EXT* (INT topK) FOR GRAPH *graph* {
 *ACCM*CREATE QUERY cosine_nbor_ap*EXT* (INT topK) FOR GRAPH *graph*{
 *FILE*CREATE QUERY cosine_nbor_ap*EXT* (INT topK, FILE f) FOR GRAPH *graph*{
 /* This query calls the subquery cosine_nbor_ap_sub*EXT* to get the similarity score of every pair of vertices.
@@ -47,12 +47,14 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
    A similarity edge with one FLOAT attribute in the schema is required for this version.
 */
 *ACCM*  MapAccum<VERTEX, FLOAT> @result;
-        start = {*vertex-types*}; 
+        start = {weighted_undirected_v.*};
 *FILE*  f.println("Vertex1","Vertex2","Similarity");
         start = SELECT s
                 FROM start:s
-*ATTR*          ACCUM cosine_nbor_ap_sub*EXT*(s, topK);
+                *ATTR*          ACCUM cosine_nbor_ap_sub*EXT*(s, topK);
 *ACCM*          ACCUM s.@result = cosine_nbor_ap_sub*EXT*(s, topK);
 *FILE*          ACCUM cosine_nbor_ap_sub*EXT*(s, topK, f);
 *ACCM*  PRINT start.@result;
 }
+
+
