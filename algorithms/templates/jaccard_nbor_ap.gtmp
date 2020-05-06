@@ -47,7 +47,7 @@ Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
    A similarity edge with one float attribute in the schema is required for this version.  
 */
 *ACCM*  MapAccum<VERTEX, FLOAT> @result;
-        start = {*vertex-types*};
+        start = {*vertex-types*.*};
 *FILE*  f.println("Vertex1","Vertex2","Similarity");
         start = SELECT s
                 FROM start:s
