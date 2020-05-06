@@ -51,7 +51,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 */
         SumAccum<STRING> @predicted_label;
         
-        source = {*vertex-types*};        
+        source = {*vertex-types*.*};        
         source = SELECT s
                  FROM source:s 
                  WHERE s.*vertex-label* == ""
