@@ -1,4 +1,4 @@
-*ATTR**SUB* CREATE QUERY cosine_nbor_ap_sub*EXT* (VERTEX<weighted_undirected_v.*> source, INT topK) FOR GRAPH *graph* {
+*ATTR**SUB* CREATE QUERY cosine_nbor_ap_sub*EXT* (VERTEX source, INT topK) FOR GRAPH *graph* {
 *ACCM**SUB* CREATE QUERY cosine_nbor_ap_sub*EXT* (VERTEX source, INT topK) FOR GRAPH *graph* RETURNS (MapAccum<VERTEX, FLOAT>){
 *FILE**SUB* CREATE QUERY cosine_nbor_ap_sub*EXT* (VERTEX source, INT topK, FILE f) FOR GRAPH *graph*{
 /* This subquery calculates the Cosine Similarity between a given vertex and every other vertex.
@@ -47,7 +47,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
    A similarity edge with one FLOAT attribute in the schema is required for this version.
 */
 *ACCM*  MapAccum<VERTEX, FLOAT> @result;
-        start = {weighted_undirected_v.*};
+        start = {*vertex-types*.*};
 *FILE*  f.println("Vertex1","Vertex2","Similarity");
         start = SELECT s
                 FROM start:s
