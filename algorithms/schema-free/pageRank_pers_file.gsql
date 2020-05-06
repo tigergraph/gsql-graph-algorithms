@@ -1,4 +1,4 @@
-CREATE QUERY pageRank_pers_file (SET<VERTEX> source, FLOAT max_change, INT max_iter, FLOAT damping, STRING v_type, STRING e_type, FILE f) FOR GRAPH <placeholder> {
+CREATE QUERY pageRank_pers_file (SET<VERTEX> source, FLOAT max_change, INT max_iter, FLOAT damping, STRING v_type, STRING e_type, FILE f) {
     MaxAccum<FLOAT> @@max_diff = 9999;
     SumAccum<FLOAT> @received_score = 0;
     SumAccum<FLOAT> @score = 0;

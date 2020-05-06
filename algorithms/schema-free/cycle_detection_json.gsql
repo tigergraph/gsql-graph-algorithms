@@ -1,4 +1,4 @@
-CREATE QUERY cycle_detection_json (STRING v_type, STRING e_type, INT depth) FOR GRAPH <placeholder> {
+CREATE QUERY cycle_detection_json (STRING v_type, STRING e_type, INT depth) {
 /* Rocha-Thatte cycle detection algorithm
 This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
 Stop passing the sequence (v1,v2,v3, ...) when:
