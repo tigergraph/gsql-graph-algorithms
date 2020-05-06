@@ -51,7 +51,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 *FILE*  f.println("Vertex1","Vertex2","Similarity");
         start = SELECT s
                 FROM start:s
-                *ATTR*          ACCUM cosine_nbor_ap_sub*EXT*(s, topK);
+*ATTR*          ACCUM cosine_nbor_ap_sub*EXT*(s, topK);
 *ACCM*          ACCUM s.@result = cosine_nbor_ap_sub*EXT*(s, topK);
 *FILE*          ACCUM cosine_nbor_ap_sub*EXT*(s, topK, f);
 *ACCM*  PRINT start.@result;
