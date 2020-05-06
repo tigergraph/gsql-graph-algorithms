@@ -19,8 +19,9 @@ Stop passing the sequence (v1,v2,v3, ...) when:
         WHILE Active.size() > 0 LIMIT depth DO 
         Active = SELECT t 
                  FROM Active:s -(*edge-types*:e)-> :t
-                 ACCUM BOOL t_is_min = TRUE,
+                 ACCUM 
                        FOREACH sequence IN s.@currList DO 
+                       BOOL t_is_min = TRUE,
                                IF t == sequence.get(0) THEN  # cycle detected
                                         FOREACH v IN sequence DO
                                                 IF getvid(v) < getvid(t) THEN
