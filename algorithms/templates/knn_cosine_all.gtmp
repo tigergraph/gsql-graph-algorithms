@@ -1,4 +1,4 @@
-*SUB* CREATE QUERY knn_cosine_all_sq*EXT*(VERTEX source, INT topK) FOR GRAPH *graph* RETURNS (STRING) {
+*SUB* CREATE QUERY knn_cosine_all_ss*EXT*(VERTEX source, INT topK) FOR GRAPH *graph* RETURNS (STRING) {
 /* This subquery is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
 Cosine similarity = A \dot B / ||A|| \dot ||B||
 */
