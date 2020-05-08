@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-*SUB* CREATE QUERY knn_cosine_all_sq (VERTEX source, INT topK) FOR GRAPH *graph* RETURNS (STRING) {
-=======
-*SUB* CREATE QUERY knn_cosine_all_ss*EXT*(VERTEX source, INT topK) FOR GRAPH *graph* RETURNS (STRING) {
->>>>>>> 0ef8f650f3b28b3241e972571e0730fa3f931c2b
+*SUB* CREATE QUERY knn_cosine_ss*EXT* (VERTEX source, INT topK) FOR GRAPH *graph* RETURNS (STRING) {
 /* This subquery is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
 Cosine similarity = A \dot B / ||A|| \dot ||B||
 */
@@ -19,7 +15,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
                          @@norm1 += pow(e.*edge-weight*, 2);
 
         neighbours = SELECT t
-                     FROM subjects:s -(*sec-edge-types*:e)->:t
+                     FROM subjects:s -(*sec-edge-types*:e)-> *vertex-types*:t
                      WHERE t != source AND t.*vertex-label* != ""    # only consider the ones with known label
                      ACCUM t.@numerator += s.@numerator * e.*edge-weight*;
 
@@ -59,9 +55,9 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
         source = SELECT s
                  FROM source:s 
                  WHERE s.*vertex-label* == ""
-*ACCM*           ACCUM s.@predicted_label = knn_cosine_all_sq(s, topK);    
-*ATTR*           POST-ACCUM s.*vStrAttr* = knn_cosine_all_sq(s, topK);
-*FILE*           ACCUM s.@predicted_label = knn_cosine_all_sq(s, topK)
+*ACCM*           ACCUM s.@predicted_label = knn_cosine_ss(s, topK);    
+*ATTR*           POST-ACCUM s.*vStrAttr* = knn_cosine_ss(s, topK);
+*FILE*           ACCUM s.@predicted_label = knn_cosine_ss(s, topK)
 *FILE*           POST-ACCUM f.println(s, s.@predicted_label);
 *ACCM*  PRINT source;
   
