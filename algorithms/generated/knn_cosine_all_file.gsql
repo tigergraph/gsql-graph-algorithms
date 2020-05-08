@@ -1,0 +1,59 @@
+CREATE QUERY knn_cosine_all_sq (VERTEX source, INT topK) FOR GRAPH master RETURNS (STRING) {
+/* This subquery is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
+Cosine similarity = A \dot B / ||A|| \dot ||B||
+*/
+        SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
+        MapAccum<STRING, INT> @@count;
+        INT max_count = 0;
+        STRING predicted_label;
+
+        # calculate similarity and find the top k nearest neighbors
+        start = {source};
+        subjects = SELECT t
+                   FROM start:s -(rates:e)-> :t
+                   ACCUM t.@numerator = e.weight,
+                         @@norm1 += pow(e.weight, 2);
+
+        neighbours = SELECT t
+                     FROM subjects:s -(rev_rates:e)->:t
+                     WHERE t != source AND t.vStrAttr != ""    # only consider the ones with known label
+                     ACCUM t.@numerator += s.@numerator * e.weight;
+
+        kNN = SELECT s
+              FROM neighbours:s -(rates:e)-> :t
+              ACCUM s.@norm2 += pow(e.weight, 2)
+              POST-ACCUM s.@similarity = s.@numerator/sqrt(@@norm1 * s.@norm2)
+              ORDER BY s.@similarity DESC
+              LIMIT topK;
+
+        #predict label
+        kNN = SELECT s
+              FROM kNN:s
+              ACCUM @@count += (s.vStrAttr -> 1);
+
+        FOREACH (label, cnt) IN @@count DO
+            IF cnt > max_count THEN
+                max_count = cnt;
+                predicted_label = label;
+            END;
+        END;
+
+        PRINT predicted_label;
+        RETURN predicted_label;
+
+}
+
+CREATE QUERY knn_cosine_all_file (INT topK, FILE f) FOR GRAPH master {
+/* This query is k-nearest neighbors based on Cosine Similarity on all vertices.
+   The output is the predicted label for all the vertices depending on the majority label of their k-nearest neighbors.
+*/
+        SumAccum<STRING> @predicted_label;
+        
+        source = {weighted_directed_v.*};        
+        source = SELECT s
+                 FROM source:s 
+                 WHERE s.vStrAttr == ""
+                 ACCUM s.@predicted_label = knn_cosine_all_sq(s, topK)
+                 POST-ACCUM f.println(s, s.@predicted_label);
+  
+}
