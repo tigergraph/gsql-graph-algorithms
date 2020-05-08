@@ -1,4 +1,4 @@
-CREATE QUERY label_prop_file (STRING v_type, STRING e_type, INT max_iter, FILE f) FOR GRAPH <placeholder> {
+CREATE QUERY label_prop_file (STRING v_type, STRING e_type, INT max_iter, FILE f) {
 # Partition the vertices into communities, according to the Label Propagation method.
 # Indicate community membership by assigning each vertex a community ID.
 

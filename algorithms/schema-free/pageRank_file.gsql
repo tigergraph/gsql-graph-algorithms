@@ -1,4 +1,4 @@
-CREATE QUERY pageRank_file (FLOAT max_change, INT max_iter, FLOAT damping, STRING v_type, STRING e_type, FILE f) FOR GRAPH <placeholder> {
+CREATE QUERY pageRank_file (FLOAT max_change, INT max_iter, FLOAT damping, STRING v_type, STRING e_type, FILE f){
     MaxAccum<FLOAT> @@max_diff = 9999; # max score change in an interation
     SumAccum<FLOAT> @received_score = 0; # sum of scores each vertex receives FROM neighbors
     SumAccum<FLOAT> @score = 1; # Initial score for every vertex is 1

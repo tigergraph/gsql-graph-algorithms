@@ -27,7 +27,7 @@
               @@maxDiff = 0;
               V_tmp = SELECT t      # Only update score for activated vertices
                       FROM Start:s -(*edge-types*:e)-> :t
-                      ACCUM t.@received_score += s.@score/(s.outdegree("Friend"));
+                      ACCUM t.@received_score += s.@score/(*s_outdegrees*);
               T = Start UNION V_tmp;
               Start = SELECT s
                       FROM T:s

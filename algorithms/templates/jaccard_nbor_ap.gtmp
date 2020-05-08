@@ -51,9 +51,8 @@ Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
 *FILE*  f.println("Vertex1","Vertex2","Similarity");
         start = SELECT s
                 FROM start:s
-*ATTR*          ACCUM jaccard_nbor_ap_sub_attr(s, topK);
-*ACCM*          ACCUM s.@result = jaccard_nbor_ap_sub(s, topK);
-*FILE*          ACCUM jaccard_nbor_ap_sub_file(s, topK, f);
+*ATTR*          ACCUM jaccard_nbor_ap_sub*EXT*(s, topK);
+*ACCM*          ACCUM s.@result = jaccard_nbor_ap_sub*EXT*(s, topK);
+*FILE*          ACCUM jaccard_nbor_ap_sub*EXT*(s, topK, f);
 *ACCM*  PRINT start.@result;
 }
-
