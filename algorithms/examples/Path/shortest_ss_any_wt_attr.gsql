@@ -1,59 +1,75 @@
-CREATE QUERY shortest_ss_any_wt_attr (VERTEX source) FOR GRAPH generic {
-/* The Bellman-Ford algorithm for single-Source Shortest Path with edge weights,
- possibly negative.
- If any loop in the graph has a net negative weight, the algorithm will exit.
+CREATE QUERY shortest_ss_any_wt_attr (VERTEX source) FOR GRAPH social {
+/* The Bellman-Ford algorithm for single-Source Shortest Path 
+   on directed/undirected graph with real value weight.
+   It will always detect negative cycle if an undirected graph is used. 
 */
-
-        MinAccum<FLOAT> @dist;                      # best-known shortest distance FROM source
-        SumAccum<STRING> @path;                     # best-known path FROM source
-        OrAccum @visited = false;                   # whether this vertex has been visited
-        OrAccum @@hasNegLoop;                       # Indicates a negative loop is found
+        TYPEDEF TUPLE<FLOAT dist, VERTEX pred> pathTuple;    
+        HeapAccum<pathTuple>(1, dist ASC) @minPath;
+        EXCEPTION negativeCycleExc (40001);
+        ListAccum<VERTEX> @path;                 # shortest path FROM source
+        OrAccum @visited;
         STRING sourceName;
-        STRING errMsg = "There is a loop with negative length. Shortest path is undefined.";
-        INT maxVal = 1000000000;                    # Should be larger than any possible path
-        EXCEPTION negLoop (40999);
-        VSET = {Node.*};
-        Source = {source}; 
+        INT iter;
+        BOOL negativeCycle;
+        total = {source};                       # the connected vertices
+        start = {source};
 
-  ##### Initialization: Set the best-known distance to a maxValue (pseudo-infinite)
-        Source = SELECT s FROM Source:s
-                 POST-ACCUM sourceName = s.name;        # Get the name of the source vertex
-        VSET = SELECT s FROM VSET:s
-               POST-ACCUM s.@dist = maxVal,
-                          s.@path = sourceName;
-        Source = SELECT s FROM Source:s               # The distance FROM s to itself is 0.
-                 POST-ACCUM s.@dist = 0,
-                            s.@visited = true;
-  
-  ##### Do N-1 iterations: Consider whether each edge lowers the best-known distance.
-        FOREACH i IN RANGE[1, VSET.size()-1] DO
-                VSET = SELECT s
-                       FROM VSET:s -(LinkTo:e)-> :t
-                       ACCUM IF s.@visited THEN
-                                IF s.@dist + e.weight < t.@dist THEN
-                                        t.@dist = s.@dist + e.weight,             # @dist is a MinAccum
-                                        t.@path = s.@path +"-"+ t.name
-                                END,
-                                t.@visited += true
-                             END;
+              
+        ##### Get the connected vertices
+        start = SELECT s
+                FROM start:s
+                ACCUM s.@minPath += pathTuple(0, s),
+                      s.@visited = TRUE,
+                      s.@path += s;
+        WHILE start.size() > 0 DO
+                start = SELECT t
+                        FROM start:s -((Friend):e)-> :t
+                        WHERE NOT t.@visited
+                        ACCUM t.@visited = TRUE;
+                total = total UNION start;
         END;
-             
-  ##### Check for loops with net negative weight #####
-        VSET = SELECT s
-               FROM VSET:s -(LinkTo:e)-> :t
-               ACCUM @@hasNegLoop +=s.@dist + e.weight < t.@dist;
-         
-        IF @@hasNegLoop THEN        
-                RAISE negLoop (errMsg);
+        
+  ##### Do V-1 iterations: Consider whether each edge lowers the best-known distance.
+        iter = total.size() - 1;    # the max iteration is V-1
+        WHILE TRUE LIMIT iter DO 
+                tmp = SELECT s
+                      FROM total:s -((Friend):e)-> :t
+                      ACCUM 
+                            IF s.@minPath.size()>0 AND s.@minPath.top().dist < GSQL_INT_MAX THEN
+                                t.@minPath += pathTuple(s.@minPath.top().dist + e.weight, s)
+                            END;     
         END;
-  
-  ##### Print the results #####
-        VSET = SELECT s
-               FROM VSET:s
-               POST-ACCUM s.score = s.@dist,  
-                          s.tag = s.@path;
-                    
-
+        
+  ##### Detect negative cycle
+        tmp = SELECT s
+              FROM total:s -((Friend):e)-> :t
+              ACCUM 
+                    IF s.@minPath.top().dist + e.weight < t.@minPath.top().dist THEN
+                            negativeCycle = TRUE
+                    END;
+        IF negativeCycle THEN 
+                #PRINT "Negative Cycle Detected.";
+                RAISE negativeCycleExc ("Negative Cycle Detected.");
+        ELSE
+          ##### Calculate the paths #####
+                start = {source};
+                tmp = SELECT s
+                      FROM total:s
+                      WHERE s != source
+                      ACCUM s.@visited = FALSE;
+                WHILE start.size() > 0 LIMIT iter DO # Limit the number of hops
+                        start = SELECT t
+                                FROM start:s -((Friend):e)-> :t
+                                WHERE NOT t.@visited
+                                ACCUM IF s == t.@minPath.top().pred THEN 
+                                          t.@visited = TRUE,
+                                          t.@path += s.@path,
+                                          t.@path += t
+                                      END;
+                END;
+          ##### Print the results #####
+                total = SELECT s
+                        FROM total:s
+                        POST-ACCUM s.score = s.@minPath.top().dist;
+        END;
 }
-
-#INSTALL QUERY shortest_ss_any_wt_attr

@@ -69,5 +69,3 @@
 *FILE*  VSET = SELECT s FROM VSET:s
 *FILE*         POST-ACCUM f.println(s, s.@dist, s.@path);
 }
-
-#INSTALL QUERY shortest_ss_any_wt*EXT*
