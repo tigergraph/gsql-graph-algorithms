@@ -3,7 +3,7 @@ CREATE QUERY tri_count_fast*EXT*() FOR GRAPH *graph* {
 # Use an algorithm which is fast but use additional memory for temporary storage
         SumAccum<int> @@cnt;
 
-        SetAccum<int> @neighbors;
+        SetAccum<int> @neighbors,  @outdegree;
       
         all = {*vertex-types*};
         all = SELECT s
