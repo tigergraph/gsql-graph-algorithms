@@ -1,9 +1,8 @@
 CREATE QUERY tri_count_fast*EXT*() FOR GRAPH *graph* {
 # Compute the total number of triangles in the GRAPH. No input parameters are needed.
 # Use an algorithm which is fast but use additional memory for temporary storage
-        SumAccum<int> @@cnt;
-
-        SetAccum<int> @neighbors,  @outdegree;
+        SumAccum<int> @@cnt, @outdegree;
+        SetAccum<int> @neighbors;
       
         all = {*vertex-types*};
         all = SELECT s
