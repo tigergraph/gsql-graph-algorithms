@@ -49,15 +49,12 @@
 
  }
 
-*ATTR*CREATE QUERY betweenness_cent*EXT* () FOR GRAPH *graph* {
-*ACCM*CREATE QUERY betweenness_cent*EXT* () FOR GRAPH *graph* {
-*FILE*CREATE QUERY betweenness_cent*EXT* (FILE f) FOR GRAPH *graph* {
+*ATTR*CREATE QUERY betweenness_cent*EXT* (INT maxHops = 10) FOR GRAPH *graph* {
+*ACCM*CREATE QUERY betweenness_cent*EXT* (INT maxHops = 10) FOR GRAPH *graph* {
+*FILE*CREATE QUERY betweenness_cent*EXT* (FILE f, INT maxHops = 10) FOR GRAPH *graph* {
 # Betweenness Centrality main query
 
 	MapAccum<VERTEX,SumAccum<float>> @@BC;
-  
-        INT maxHops = 10;      # measure distance for vertices up to 10 hops away
-  
         Start = {*vertex-types*};
         
 *FILE*  f.println("Vertex_ID", "Betweenness");
