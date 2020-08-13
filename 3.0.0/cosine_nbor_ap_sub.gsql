@@ -1,0 +1,35 @@
+CREATE QUERY cosine_nbor_ap_sub (VERTEX source, SET<STRING> e_type, SET<STRING> re_type, STRING weight, INT top_k, BOOL store_accum, STRING similarity_edge, STRING file_path, FILE f) RETURNS (MapAccum<VERTEX, FLOAT>){
+/* This subquery calculates the Cosine Similarity between a given vertex and every other vertex.
+Cosine similarity = A \dot B / ||A|| \dot ||B||
+*/
+  
+         MapAccum<VERTEX, FLOAT> @@topK_result;
+        SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
+
+        start = {source};
+        subjects = SELECT t
+                   FROM start:s -(e_type:e)->:t
+                   ACCUM t.@numerator = e.getAttr(weight, "FLOAT"),
+                         @@norm1 += pow(e.getAttr(weight, "FLOAT"), 2);
+
+        neighbours = SELECT t
+                     FROM subjects:s -(re_type:e)->:t
+                     WHERE t != source
+                     ACCUM t.@numerator += s.@numerator * e.getAttr(weight, "FLOAT");
+
+        neighbours = SELECT s
+                     FROM neighbours:s -(e_type:e)-> :t
+                     ACCUM s.@norm2 += pow(e.getAttr(weight, "FLOAT"), 2)
+                     POST-ACCUM s.@similarity = s.@numerator/sqrt(@@norm1 * s.@norm2)
+                     ORDER BY s.@similarity DESC
+                     LIMIT top_k;
+  
+        neightbours = SELECT s
+                      FROM neighbours:s
+                      POST-ACCUM 
+                      IF similarity_edge != "" THEN INSERT INTO EDGE similarity_edge VALUES(source, s, s.@similarity) END,
+                      IF store_accum THEN @@topK_result += (s -> s.@similarity) END,
+                      IF file_path != "" THEN f.println(source, s, s.@similarity) END;
+                      
+        return @@topK_result;
+}

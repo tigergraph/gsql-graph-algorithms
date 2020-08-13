@@ -1,0 +1,139 @@
+CREATE QUERY msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight, BOOL print_accum = TRUE, STRING boolean_attr = "", STRING file_path = ""){
+/*
+ * This query identifies minimum spanning trees using the algorithm in section 6.2 of Qin et al. 2014:
+ * http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf.
+ */
+        TYPEDEF TUPLE <FLOAT weight, VERTEX from_v, VERTEX to_v, EDGE e, INT vid> EDGE_WEIGHT;
+        MapAccum<VERTEX, VERTEX> @@parents_map;
+        MapAccum<VERTEX, AndAccum<BOOL>> @@star_map;
+
+        SumAccum<INT> @@parent_changed_count;
+        SetAccum<EDGE> @@result;
+        SetAccum<EDGE_WEIGHT> @@mst;
+        
+        HeapAccum<EDGE_WEIGHT>(1, weight ASC, to_v ASC, vid ASC) @ew_heap;
+        MinAccum<VERTEX> @parent; # Given a vertex v, we need to be able to send its outgoing edge info to its parent, which is only posible if we store the parent in a local accumulator.
+        OrAccum @ignore;
+        FILE f (file_path);
+
+        all_v = {v_type};
+
+        ### FOREST INITIALIZATION ###
+        # For each node v, let parent p(v) = neighbor of v connected via the least-weighted edge.
+        all_v = SELECT v FROM all_v:v -(e_type:e)-> :u
+                ACCUM
+                    v.@ew_heap += EDGE_WEIGHT(e.getAttr(weight, "FLOAT"), v,u,e, getvid(u))
+                POST-ACCUM
+                    @@parents_map += (v -> v.@ew_heap.top().to_v),
+                    @@parent_changed_count += 1
+            ;
+
+        WHILE @@parent_changed_count > 0 DO
+            ### BREAK CYCLES ###
+            all_v = SELECT v
+                    FROM all_v:v
+                    POST-ACCUM v.@ignore = false;
+            all_v = SELECT v FROM all_v:v
+                    POST-ACCUM
+                        VERTEX p = @@parents_map.get(v),
+                        VERTEX gp = @@parents_map.get(p),
+                        IF v != p AND v == gp THEN
+                            IF (getvid(v) < getvid(p)) THEN
+                                @@parents_map += (v -> v),
+                                v.@ignore = TRUE
+                            END
+                        END
+                    ;
+
+            # only add edges to MST after breaking cycles to avoid double counting edges
+            add_edges = SELECT v FROM all_v:v WHERE v.@ignore == false AND v.@ew_heap.size() > 0
+                        POST-ACCUM
+                          IF file_path != "" THEN @@mst += v.@ew_heap.top() END,
+                          IF print_accum OR boolean_attr != "" THEN @@result += v.@ew_heap.top().e END;
+
+            ### UPDATE PARENT POINTERS ###
+            @@parent_changed_count = 0;
+            all_v = SELECT v FROM all_v:v
+                    POST-ACCUM
+                        VERTEX p = @@parents_map.get(v),
+                        VERTEX gp = @@parents_map.get(p),
+                        IF (p != gp) THEN
+                            @@parent_changed_count += 1,
+                            @@parents_map += (v -> gp)
+                        END
+                    ;
+            IF @@parent_changed_count == 0 THEN
+                BREAK;
+            END;
+
+            ### STAR DETECTION ###
+            @@star_map.clear();
+            # Rule 1: Let s(v) = 1 if p(v) = p(p(v))
+            # Only root and depth 1 vertices will have s(v) = 1. Everything else will have s(v) = 0.
+            all_v = SELECT v FROM all_v:v
+                    POST-ACCUM
+                        VERTEX parent = @@parents_map.get(v),
+                        IF parent == @@parents_map.get(parent) THEN
+                            @@star_map += (v -> true)
+                        ELSE
+                            @@star_map += (v -> false)
+                        END
+                    ;
+
+            # Rule 2: If s(v) = 1 but v has a grandchild u such that s(u) = 0, then s(v) = 0. This will end up updating root vertices. 
+            not_star_roots =    SELECT u FROM all_v:u
+                                WHERE
+                                    @@star_map.get(u) == false
+                                POST-ACCUM
+                                    @@star_map += (@@parents_map.get(@@parents_map.get(u)) -> false)
+                                ;
+
+            # Rule 3: If s(p(v)) = 0, then s(v) = 0. This will end up updating vertices at depth 1 of trees.
+            not_star_depth1 =   SELECT u FROM all_v:u
+                                WHERE
+                                    @@star_map.get(@@parents_map.get(u)) == false
+                                POST-ACCUM
+                                    @@star_map += (u -> false)
+                                ;
+
+            ### STAR HOOKING ###
+            # First, we need to clear each vertex's heap and reset the local @parent.
+            all_v = SELECT v FROM all_v:v
+                    POST-ACCUM
+                        v.@ew_heap.clear(),
+                        v.@parent = @@parents_map.get(v)
+                    ;
+            star_nodes =    SELECT v FROM all_v:v -(e_type:e)-> :u
+                            WHERE @@star_map.get(v) == true AND v.@parent != u.@parent
+                            ACCUM
+                                VERTEX parent = v.@parent,
+                                parent.@ew_heap += EDGE_WEIGHT(e.getAttr(weight, "FLOAT"), v,u,e, getvid(u));
+            updated_star_roots =    SELECT v FROM all_v:v
+                                    WHERE
+                                        @@star_map.get(v) == true AND @@parents_map.get(v) == v AND v.@ew_heap.size() > 0
+                                    POST-ACCUM
+                                        @@parents_map += (v -> @@parents_map.get(v.@ew_heap.top().to_v))
+                                    ;
+        END;
+        
+        IF boolean_attr != "" THEN
+          all_v = SELECT v FROM all_v:v -(e_type:e)-> :u
+                ACCUM
+                IF e IN @@result THEN
+                  e.setAttr(boolean_attr, TRUE)
+                  ELSE
+                  e.setAttr(boolean_attr, FALSE)
+                 END;
+        END;
+  
+        IF print_accum THEN
+          PRINT @@result;
+        END;
+        
+        IF file_path != "" THEN
+          f.println("From", "To", "Weight");
+          FOREACH e IN @@mst DO
+              f.println(e.from_v, e.to_v, e.weight);
+      END;
+        END;
+}

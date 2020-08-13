@@ -1,0 +1,44 @@
+CREATE QUERY knn_cosine_all_sub (VERTEX source, SET<STRING> e_type, SET<STRING> re_type, STRING weight, STRING label, INT top_k) RETURNS (STRING) {
+/* This subquery is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
+Cosine similarity = A \dot B / ||A|| \dot ||B||
+*/
+        SumAccum<FLOAT> @numerator, @@norm1, @norm2, @similarity;
+        MapAccum<STRING, INT> @@count;
+        INT max_count = 0;
+        STRING predicted_label;
+
+        # calculate similarity and find the top k nearest neighbors
+        start = {source};
+        subjects = SELECT t
+                   FROM start:s -(e_type:e)-> :t
+                   ACCUM t.@numerator = e.getAttr(weight, "FLOAT"),
+                         @@norm1 += pow(e.getAttr(weight, "FLOAT"), 2);
+
+        neighbours = SELECT t
+                     FROM subjects:s -(re_type:e)-> :t
+                     WHERE t != source AND t.getAttr(label, "STRING") != ""    # only consider the ones with known label
+                     ACCUM t.@numerator += s.@numerator * e.getAttr(weight, "FLOAT");
+
+        kNN = SELECT s
+              FROM neighbours:s -(e_type:e)-> :t
+              ACCUM s.@norm2 += pow(e.getAttr(weight, "FLOAT"), 2)
+              POST-ACCUM s.@similarity = s.@numerator/sqrt(@@norm1 * s.@norm2)
+              ORDER BY s.@similarity DESC
+              LIMIT top_k;
+
+        #predict label
+        kNN = SELECT s
+              FROM kNN:s
+              ACCUM @@count += (s.getAttr(label, "STRING") -> 1);
+
+        FOREACH (pred_label, cnt) IN @@count DO
+            IF cnt > max_count THEN
+                max_count = cnt;
+                predicted_label = pred_label;
+            END;
+        END;
+
+        PRINT predicted_label;
+        RETURN predicted_label;
+
+}
