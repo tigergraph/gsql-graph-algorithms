@@ -3,7 +3,7 @@ CREATE QUERY kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, 
  * Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
  * Tripathy et al., IEEE Big Data 2018.
  
-  This query supports only taking in a single edge for the time being (8/13/2020).
+ This query is only supported for a single edge type at the moment (8/13/20)
  */
 	SumAccum<INT> @deg;        // The number of edges v has to active vertices.
   SumAccum<INT> @core;       // The core level of vertex v
@@ -18,7 +18,7 @@ CREATE QUERY kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, 
   
   
 	Q = active;
-	WHILE active.size() > 0 AND (k_max == -1 OR k <= k_max) DO
+	WHILE active.size() > 0 AND (k_max == -1 OR k < k_max) DO
       deleted = SELECT v FROM active:v
           WHERE v.@deg <= k
           ACCUM v.@core += k;
@@ -36,7 +36,7 @@ CREATE QUERY kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, 
               shells = Q MINUS active;
               PRINT k, shells; 
           END;
-          IF active.size() > 0 THEN
+          IF active.size() > 0THEN
               Q = active;
           END;
         
