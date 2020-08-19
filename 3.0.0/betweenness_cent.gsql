@@ -14,8 +14,7 @@ CREATE QUERY betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, INT max_ho
   Start = SELECT s FROM Start:s
           ACCUM @@BC += bc_subquery(s, v_type,e_type, max_hops)
           POST-ACCUM 
-            INT a = @@BC.get(s) * 100,
-            s.@score = a / 100.0,
+            s.@score = @@BC.get(s),
             IF attr != "" THEN s.setAttr(attr, @@BC.get(s)) END,  
             IF file_path != "" THEN f.println(s, @@BC.get(s)) END;
      
