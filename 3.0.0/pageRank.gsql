@@ -28,6 +28,10 @@ CREATE QUERY pageRank (STRING v_type, STRING e_type, INT output_limit, FLOAT max
                                @@maxDiff += abs(s.@score - s.@score');
         END; # END WHILE loop
         
+        IF file_path != "" THEN
+          f.println("Vertex_ID", "PageRank");
+        END;
+  
         V = SELECT s FROM Start:s
             POST-ACCUM 
                 IF attr != "" THEN s.setAttr(attr, s.@score) END,

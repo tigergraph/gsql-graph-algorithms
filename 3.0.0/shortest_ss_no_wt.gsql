@@ -26,7 +26,8 @@ The attribute version only store the distance into attribute, not the path.
                          WHERE t.@visited == false
                          ACCUM t.@dis += s.@dis + 1,
                                t.@path = s.@path + [t],
-                               t.@visited += true;
+                               t.@visited += true
+                        ORDER BY getvid(t);
                 ResultSet = ResultSet UNION Source;
         END;
 

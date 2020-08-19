@@ -9,7 +9,10 @@ CREATE QUERY knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> 
         source = SELECT s
                  FROM source:s 
                  WHERE s.getAttr(label, "STRING") == ""
-                  POST-ACCUM s.@predicted_label = knn_cosine_all_sub(s, e_type,re_type, weight, label,top_k),
+                  POST-ACCUM s.@predicted_label = knn_cosine_all_sub(s, e_type,re_type, weight, label,top_k);
+  
+        source = SELECT s FROM source:s
+                  POST-ACCUM
                   IF file_path != "" THEN f.println(s, s.@predicted_label) END,
                   IF attr != "" THEN s.setAttr(attr, s.@predicted_label) END;
       

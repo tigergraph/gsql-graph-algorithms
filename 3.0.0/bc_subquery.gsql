@@ -42,7 +42,6 @@ CREATE QUERY bc_subquery (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
 	            @@MapDelta += (s->s.@delta/2)
 	          ELSE @@MapDelta += (s->0)
 	          END;
-
+  
 	return @@MapDelta;
-
  }

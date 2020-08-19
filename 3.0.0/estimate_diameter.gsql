@@ -1,11 +1,12 @@
-CREATE QUERY estimate_diameter(SET<STRING> v_type, SET<STRING> e_type, INT seed_set_length, BOOL print_accum = TRUE, STRING file_path = "", BOOL display = FALSE) {
+CREATE QUERY estimate_diameter(SET<STRING> v_type, SET<STRING> e_type, INT seed_set_length, BOOL print_accum = TRUE, STRING file_path = "", BOOL display = FALSE){
+  
         MaxAccum<INT> @@diameter;
         FILE f (file_path);
   
         start = {v_type};
+  
         start = SELECT s
                 FROM start:s
-                ORDER BY getvid(s)
                 LIMIT seed_set_length;
   
         IF display THEN

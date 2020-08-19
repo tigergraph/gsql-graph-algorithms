@@ -2,20 +2,25 @@ CREATE QUERY betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, INT max_ho
 # Betweenness Centrality main query
 
 	MapAccum<VERTEX,SumAccum<FLOAT>> @@BC;
+  SumAccum<FLOAT> @score;
   FILE f (file_path);
   Start = {v_type};
+  
   
   IF file_path != "" THEN
      f.println("Vertex_ID", "Betweenness");
   END;
   
   Start = SELECT s FROM Start:s
-          ACCUM @@BC += bc_subquery(s, v_type,e_type, max_hops), 
-          IF file_path != "" THEN f.println(s, @@BC.get(s)) END
-          POST-ACCUM IF attr != "" THEN s.setAttr(attr, @@BC.get(s)) END;
-        
+          ACCUM @@BC += bc_subquery(s, v_type,e_type, max_hops)
+          POST-ACCUM 
+            INT a = @@BC.get(s) * 100,
+            s.@score = a / 100.0,
+            IF attr != "" THEN s.setAttr(attr, @@BC.get(s)) END,  
+            IF file_path != "" THEN f.println(s, @@BC.get(s)) END;
+     
   
   IF print_accum THEN
-    PRINT @@BC;
+    PRINT Start[Start.@score];
   END;
 }

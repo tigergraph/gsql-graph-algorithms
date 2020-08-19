@@ -32,11 +32,15 @@ Start = SELECT s
                                @@maxDiff += abs(s.@score - s.@score');
         END;
 
+        IF file_path != "" THEN
+          f.println("Vertex_ID", "PageRank");
+        END;
+  
         V = SELECT s FROM Start:s
             POST-ACCUM 
                         IF attr != "" THEN s.setAttr(attr, s.@score) END,
                         IF print_accum THEN @@topScores += Vertex_Score(s, s.@score) END,
-                        IF file_path != "" THEN f.println("Vertex_ID", "PageRank") END
+                        IF file_path != "" THEN f.println(s, s.@score) END
             LIMIT output_limit;
 
        IF print_accum THEN
