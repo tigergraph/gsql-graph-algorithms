@@ -1,0 +1,36 @@
+CREATE QUERY closeness_cent(SET<STRING> v_type, SET<STRING> e_type, INT output_limit, BOOL wf = TRUE, BOOL print_accum = True, STRING attr = "", STRING file_path = "", BOOL display = FALSE){
+  
+        TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
+        HeapAccum<VertexScore>(output_limit, score DESC) @@topScores;
+        SumAccum<FLOAT> @score;
+        SetAccum<EDGE> @@edgeSet;
+        FILE f (file_path);
+  
+        INT numVert;
+        INT maxHops = 10;      # measure distance for vertices up to 10 hops away
+        Start = {v_type};
+        numVert = Start.size();
+        
+  
+        IF file_path != "" THEN
+          f.println("Vertex_ID", "Closeness");
+        END;
+
+        Start = SELECT s FROM Start:s
+                POST-ACCUM s.@score = cc_subquery(s, e_type, numVert, maxHops, wf),
+                            IF attr != "" THEN  s.setAttr(attr, s.@score) END,
+                            IF print_accum THEN @@topScores += VertexScore(s, s.@score) END,
+                            IF file_path != "" THEN f.println(s, s.@score) END
+                LIMIT output_limit;
+  
+        IF print_accum THEN
+          PRINT @@topScores AS top_scores;
+          IF display THEN
+                PRINT Start[Start.@score];
+                Start = SELECT s
+                FROM Start:s -(e_type:e)->:t
+                    ACCUM @@edgeSet += e;
+                PRINT @@edgeSet;
+        END;
+        END;
+}
