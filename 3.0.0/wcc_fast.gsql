@@ -1,4 +1,4 @@
-CREATE QUERY wcc_fast() FOR GRAPH social {
+CREATE QUERY wcc_fast(SET<STRING> v_type, SET<STRING> e_type, INT output_limit, BOOL print_accum=TRUE, STRING attr = "", STRING file_path=""){
 /*
  * This query identifies connected components using the algorithm found in section 5.2 of Qin et al.
  * 2014: http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf
@@ -6,13 +6,14 @@ CREATE QUERY wcc_fast() FOR GRAPH social {
         MapAccum<VERTEX, VERTEX> @@parents_map;
         MapAccum<VERTEX, MinAccum<VERTEX>> @@temp_parents_map;
         SumAccum<INT> @subnode_count;
-        MapAccum<VERTEX, AndAccum<bool>> @@star_map;
+        MapAccum<VERTEX, AndAccum<BOOL>> @@star_map;
         SumAccum<INT> @@parent_changed_count;
+        FILE f (file_path);
 
         MapAccum<INT, INT> @@comp_sizes_map; # we'll compile component sizes here. each component has 1 parent, which will be key in map
         MinAccum<INT> @cid = 0;   # community id for PRINT
 
-        all_v = {Person.*};
+        all_v = {v_type};
 
         #### FOREST INITIALIZATION ####
         # Step 1: For each node v, let parent p(v) = min ID of v and each of its neighbors.
@@ -23,7 +24,7 @@ CREATE QUERY wcc_fast() FOR GRAPH social {
                 ;
 
         # This SELECT will not return isolated singletons because they won't have any edges
-        T1 =    SELECT v FROM all_v:v -((Coworker):e)-> :u
+        T1 =    SELECT v FROM all_v:v -(e_type:e)-> :u
                 ACCUM
                     @@temp_parents_map += (v -> u)
                 ;
@@ -31,7 +32,7 @@ CREATE QUERY wcc_fast() FOR GRAPH social {
         @@parents_map += @@temp_parents_map;
 
         # Step 2: For each node v, count the number of its subnodes u such that u != v and p(u) = v. Let c(v) = the number of subnodes of vertex v.
-        T1 =    SELECT v FROM all_v:v -((Coworker):e)-> :u
+        T1 =    SELECT v FROM all_v:v -(e_type:e)-> :u
                 ACCUM
                     IF (@@parents_map.get(u) == v) THEN
                         v.@subnode_count += 1
@@ -40,7 +41,7 @@ CREATE QUERY wcc_fast() FOR GRAPH social {
 
         # Step 3: Eliminate non-isolated singletons - that is, all vertices v such that p(v) = v and c(v) = 0, and there exists another vertex u such that (u, v) is an edge in the graph
         @@temp_parents_map.clear();
-        non_iso_singletons =    SELECT v FROM all_v:v -((Coworker):e)-> :u
+        non_iso_singletons =    SELECT v FROM all_v:v -(e_type:e)-> :u
                                 WHERE
                                     @@parents_map.get(v) == v AND v.@subnode_count == 0
                                 ACCUM
@@ -87,7 +88,7 @@ CREATE QUERY wcc_fast() FOR GRAPH social {
             # Step 1: Conditional star hooking
             @@temp_parents_map.clear();
 
-            connected_nodes =   SELECT v FROM all_v:v -((Coworker):e)-> :u
+            connected_nodes =   SELECT v FROM all_v:v -(e_type:e)-> :u
                                 ACCUM
                                     VERTEX v_parent = @@parents_map.get(v),
                                     VERTEX u_parent = @@parents_map.get(u),
@@ -130,7 +131,7 @@ CREATE QUERY wcc_fast() FOR GRAPH social {
             # We can also start from original values instead of all_v because each of these values should be a subset of the previous vset.
             @@temp_parents_map.clear();
 
-            connected_nodes =   SELECT v FROM all_v:v -((Coworker):e)-> :u
+            connected_nodes =   SELECT v FROM all_v:v -(e_type:e)-> :u
                                 ACCUM
                                     VERTEX v_parent = @@parents_map.get(v),
                                     VERTEX u_parent = @@parents_map.get(u),
@@ -175,16 +176,21 @@ CREATE QUERY wcc_fast() FOR GRAPH social {
                     ;
         END;
 
+        IF file_path != "" THEN
+            f.println("Vertex_ID", "Component_ID");
+        END;
 
-        all_v = SELECT v FROM all_v:v
-                POST-ACCUM
-      		    v.@cid = getvid(@@parents_map.get(v)),
-                    @@comp_sizes_map += (getvid(@@parents_map.get(v)) -> 1)
-                ;
+         all_v = SELECT v FROM all_v:v
+                POST-ACCUM 
+                IF attr != "" THEN v.setAttr(attr,getvid(@@parents_map.get(v))) END,
+                IF print_accum THEN v.@cid = getvid(@@parents_map.get(v)), 
+                    @@comp_sizes_map += (getvid(@@parents_map.get(v)) -> 1) END,
+                IF file_path != "" THEN f.println(v, getvid(@@parents_map.get(v))) END
+                LIMIT output_limit;
+                
+
+    IF print_accum THEN
         PRINT @@comp_sizes_map.size() AS num_components, @@comp_sizes_map AS comp_sizes;
-        PRINT all_v.@cid;
-
+        PRINT all_v[all_v.@cid];
+    END;
 }
-
-
-

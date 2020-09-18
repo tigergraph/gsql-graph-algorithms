@@ -1,4 +1,4 @@
-CREATE QUERY jaccard_nbor_ap_sub_file (VERTEX source, STRING v_type, STRING e_type, INT top_k, FILE f) FOR GRAPH <placeholder> {
+CREATE QUERY jaccard_nbor_ap_sub_file (VERTEX source, STRING v_type, STRING e_type, INT top_k, FILE f) {
 /* This subquery calculates the Jaccard Similarity between a given vertex and every other vertex.
 Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
 */
@@ -22,7 +22,7 @@ Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
              POST-ACCUM f.println(source, s, s.@similarity);
 }
 
-CREATE QUERY jaccard_nbor_ap_file (STRING v_type, STRING e_type, INT top_k, FILE f) FOR GRAPH <placeholder> {
+CREATE QUERY jaccard_nbor_ap_file (STRING v_type, STRING e_type, INT top_k, FILE f) {
 /* This query calls the subquery jaccard_nbor_ap_sub*EXT* to get the similarity score of every pair of vertices.
 1. The JSON and FILE version keeps the top k pairs of vertices. The result in FILE version is not in order.
 2. The Attribute version insert edges between the pairs, with the score as an edge attribute. 

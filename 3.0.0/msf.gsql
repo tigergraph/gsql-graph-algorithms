@@ -1,26 +1,28 @@
-CREATE QUERY msf_file (FILE f) FOR GRAPH social {
+CREATE QUERY msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight, BOOL print_accum = TRUE, STRING boolean_attr = "", STRING file_path = ""){
 /*
  * This query identifies minimum spanning trees using the algorithm in section 6.2 of Qin et al. 2014:
  * http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf.
  */
-        TYPEDEF TUPLE<FLOAT weight, VERTEX from_v, VERTEX to_v> EDGE_WEIGHT;
+        TYPEDEF TUPLE <FLOAT weight, VERTEX from_v, VERTEX to_v, EDGE e, INT vid> EDGE_WEIGHT;
         MapAccum<VERTEX, VERTEX> @@parents_map;
-        MapAccum<VERTEX, AndAccum<bool>> @@star_map;
+        MapAccum<VERTEX, AndAccum<BOOL>> @@star_map;
 
         SumAccum<INT> @@parent_changed_count;
+        SetAccum<EDGE> @@result;
         SetAccum<EDGE_WEIGHT> @@mst;
         
-        HeapAccum<EDGE_WEIGHT>(1, weight ASC, to_v ASC) @ew_heap;
-        MinAccum<vertex> @parent; # Given a vertex v, we need to be able to send its outgoing edge info to its parent, which is only posible if we store the parent in a local accumulator.
+        HeapAccum<EDGE_WEIGHT>(1, weight ASC, to_v ASC, vid ASC) @ew_heap;
+        MinAccum<VERTEX> @parent; # Given a vertex v, we need to be able to send its outgoing edge info to its parent, which is only posible if we store the parent in a local accumulator.
         OrAccum @ignore;
+        FILE f (file_path);
 
-        all_v = {Person.*};
+        all_v = {v_type};
 
         ### FOREST INITIALIZATION ###
         # For each node v, let parent p(v) = neighbor of v connected via the least-weighted edge.
-        all_v = SELECT v FROM all_v:v -((Coworker):e)-> :u
+        all_v = SELECT v FROM all_v:v -(e_type:e)-> :u
                 ACCUM
-                    v.@ew_heap += EDGE_WEIGHT(e.weight, v, u)
+                    v.@ew_heap += EDGE_WEIGHT(e.getAttr(weight, "FLOAT"), v,u,e, getvid(u))
                 POST-ACCUM
                     @@parents_map += (v -> v.@ew_heap.top().to_v),
                     @@parent_changed_count += 1
@@ -46,8 +48,8 @@ CREATE QUERY msf_file (FILE f) FOR GRAPH social {
             # only add edges to MST after breaking cycles to avoid double counting edges
             add_edges = SELECT v FROM all_v:v WHERE v.@ignore == false AND v.@ew_heap.size() > 0
                         POST-ACCUM
-                            @@mst += v.@ew_heap.top()
-                        ;
+                          IF file_path != "" THEN @@mst += v.@ew_heap.top() END,
+                          IF print_accum OR boolean_attr != "" THEN @@result += v.@ew_heap.top().e END;
 
             ### UPDATE PARENT POINTERS ###
             @@parent_changed_count = 0;
@@ -101,12 +103,11 @@ CREATE QUERY msf_file (FILE f) FOR GRAPH social {
                         v.@ew_heap.clear(),
                         v.@parent = @@parents_map.get(v)
                     ;
-            star_nodes =    SELECT v FROM all_v:v -((Coworker):e)-> :u
+            star_nodes =    SELECT v FROM all_v:v -(e_type:e)-> :u
                             WHERE @@star_map.get(v) == true AND v.@parent != u.@parent
                             ACCUM
-                                vertex parent = v.@parent,
-                                parent.@ew_heap += EDGE_WEIGHT(e.weight, v, u)
-                            ;
+                                VERTEX parent = v.@parent,
+                                parent.@ew_heap += EDGE_WEIGHT(e.getAttr(weight, "FLOAT"), v,u,e, getvid(u));
             updated_star_roots =    SELECT v FROM all_v:v
                                     WHERE
                                         @@star_map.get(v) == true AND @@parents_map.get(v) == v AND v.@ew_heap.size() > 0
@@ -114,8 +115,25 @@ CREATE QUERY msf_file (FILE f) FOR GRAPH social {
                                         @@parents_map += (v -> @@parents_map.get(v.@ew_heap.top().to_v))
                                     ;
         END;
-        f.println("From", "To", "Weight");
-        FOREACH e IN @@mst DO
-            f.println(e.from_v, e.to_v, e.weight);
+        
+        IF boolean_attr != "" THEN
+          all_v = SELECT v FROM all_v:v -(e_type:e)-> :u
+                ACCUM
+                IF e IN @@result THEN
+                  e.setAttr(boolean_attr, TRUE)
+                  ELSE
+                  e.setAttr(boolean_attr, FALSE)
+                 END;
+        END;
+  
+        IF print_accum THEN
+          PRINT @@result;
+        END;
+        
+        IF file_path != "" THEN
+          f.println("From", "To", "Weight");
+          FOREACH e IN @@mst DO
+              f.println(e.from_v, e.to_v, e.weight);
+      END;
         END;
 }

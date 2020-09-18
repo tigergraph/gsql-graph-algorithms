@@ -39,4 +39,3 @@ Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
 *FILE*           POST-ACCUM f.println(source, s, s.@similarity);
 
 }
-

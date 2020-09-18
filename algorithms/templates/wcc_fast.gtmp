@@ -192,6 +192,3 @@
 *FILE*  all_v = SELECT v FROM all_v:v
 *FILE*          POST-ACCUM f.println(v, getvid(@@parents_map.get(v)));
 }
-
-
-

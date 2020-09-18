@@ -1,0 +1,110 @@
+CREATE QUERY kcore_sq(STRING vertexType, STRING edgeType, INT verbosity) FOR GRAPH *graph* RETURNS (MapAccum<INT, SetAccum<VERTEX>>)  {
+/* An implementation of Algorithm 2 in
+ * Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
+ * Tripathy et al., IEEE Big Data 2018.
+ * Returns a map <k, <vertex-list>> where <vertex-list> are those who are in that k-core but not (k+1)-core
+ */
+  
+  	SetAccum<VERTEX> @@Q;    // queue of vertices removed per peel
+  	SetAccum<VERTEX> @@Vb;    // batch of vertices to delete in this round
+  	SumAccum<INT> @deg;        // The number of edges v has to active vertices.
+  	SumAccum<INT> @core;       // The core level of vertex v
+  	OrAccum @flag;				    // true if v does not exist in Gcum
+  	MapAccum<INT, SetAccum<VERTEX>> @@coreListMap;  // List of vertices sorted by increasing core level
+  	INT k = 0;				      // max degree value used to determine whether to prune
+ 	INT num_active;
+	
+	V = {vertexType.*};
+	V = SELECT v                  // Initialize @deg
+	    FROM V:v
+	    POST-ACCUM v.@deg += v.outdegree()
+	    ORDER BY v.@deg;
+	IF verbosity > 0 THEN        // Show initial vertex degrees
+	  PRINT "Init", V[V.@deg];
+	END;
+	
+	num_active = V.size();
+	WHILE num_active > 0 DO
+	    @@Vb.clear();
+	    V = SELECT v FROM V:v WHERE v.@flag == False
+          	POST-ACCUM 
+	  		IF v.@deg <= k 
+			THEN                		// Find vertices whose degree < or = k
+	            		v.@flag += True,        // Mark those vertices individually
+	            		v.@core += k,           // Set the core level of those vertices
+				@@Vb += v,              // Collect those vertices
+				@@Q += v
+	        END;
+		
+      	num_active = num_active - @@Vb.size();
+	
+	    IF @@Vb.size() > 0 THEN                // "Remove adjacent edges"         
+	        VBatch = @@Vb;
+	        U = SELECT u
+	            FROM VBatch:u -(edgeType:e)-> :v
+	            ACCUM u.@deg += -1, v.@deg += -1;  // Actually, reduce degree of vertices
+	    ELSE                     // Finished with this value of k
+	        IF verbosity > 0 THEN PRINT k, @@Q; END;
+	        @@coreListMap += (k -> @@Q);
+	        k = k + 1;
+	        IF num_active > 0 THEN
+	            @@Q.clear();
+	        END;
+	    END;
+  	END;
+	IF @@coreListMap.size() <= k THEN  // haven't added the last batch to @@coreList yet
+	    @@coreListMap += (k -> @@Q);
+	END;
+  	RETURN @@coreListMap;
+  
+}
+
+*ACCM*CREATE QUERY kcore_decomp(STRING vertexType, STRING edgeType, INT kMin, INT kMax = -1, BOOL showMembership=false, BOOL showShells=true) 
+FOR GRAPH *graph* { 
+/* Outputs the k-core vertex membership for each value of k from kMin to kMax.
+ * By definition, for k=0, the vertex set = the entire graph.
+ * As k increases, V(k) is a subset of V(k-1).
+ * If kMax < 0, then the query proceeds until it reaches the maximal k-core.
+ * Calls kcore_sub().
+ */
+ 	MapAccum<INT, SetAccum<VERTEX>> @@coreListMap; // Map <k, k-core_vertex_set>
+	SetAccum<VERTEX> @@kcoreVertices;              // vertex set for kMax
+	ListAccum<EDGE> @@inducedEdges;                // optional output
+	INT kUpper;                        // actual max K
+	INT printUpper;                    // max value of K to output
+
+	
+  	@@coreListMap += kcore_sq(vertexType, edgeType, 1);
+	kUpper = @@coreListMap.size() - 1;
+	IF kMax < 0 THEN
+	  printUpper = kUpper;
+	ELSE
+	  printUpper = kMax;
+	END;
+	
+	// First, print just the size of each k-core	
+	FOREACH k IN RANGE [kUpper, kMin].STEP(-1) DO
+	    IF @@coreListMap.get(k).size() > 0 THEN      // If the k-shell has some vertices
+	        @@kcoreVertices += @@coreListMap.get(k);
+	        IF k BETWEEN kMin and printUpper THEN 
+	            PRINT k,@@kcoreVertices.size();
+          END;
+	    END;
+	END;
+	
+	// Next, print the membership of each k-core
+	IF showMembership THEN
+	    FOREACH k IN RANGE [kUpper, kMin].STEP(-1) DO
+	        IF @@coreListMap.get(k).size() > 0 THEN      // If the k-shell has some vertices
+	            @@kcoreVertices += @@coreListMap.get(k);
+	            IF k BETWEEN kMin and printUpper THEN
+	                IF showShells THEN
+	                  PRINT k, @@coreListMap.get(k);
+	                ELSE
+	                  PRINT k,@@kcoreVertices;
+	                END;
+              	    END;
+	        END;
+	    END;
+	END;
+}

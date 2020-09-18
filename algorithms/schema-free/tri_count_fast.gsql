@@ -1,4 +1,4 @@
-CREATE QUERY tri_count_fast(STRING v_type, STRING e_type) FOR GRAPH <placeholder> {
+CREATE QUERY tri_count_fast(STRING v_type, STRING e_type) {
 # Compute the total number of triangles in the graph.
 # Uses an algorithm which is fast but requires additional memory for temporary storage
     SumAccum<INT> @@cnt;

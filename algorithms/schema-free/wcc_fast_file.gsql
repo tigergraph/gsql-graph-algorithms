@@ -1,4 +1,4 @@
-CREATE QUERY wcc_fast(STRING v_type, STRING e_type, FILE f) FOR GRAPH MyGraph {
+CREATE QUERY wcc_fast(STRING v_type, STRING e_type, FILE f) {
 /*
  * This query identifies connected components using the algorithm found in section 5.2 of Qin et al.
  * 2014: http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf

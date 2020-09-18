@@ -1,4 +1,4 @@
-CREATE QUERY cc_subquery_json (VERTEX source, INT num_vert, INT max_hops, STRING v_type, STRING e_type) FOR GRAPH <placeholder> RETURNS (FLOAT) {
+CREATE QUERY cc_subquery_json (VERTEX source, INT num_vert, INT max_hops, STRING v_type, STRING e_type) RETURNS (FLOAT) {
 # Subquery returns closeness centrality for vertex source in graph with num_vert vertices    
     SumAccum<INT> @@curr_dist, @@total_dist;
     OrAccum @visited;
@@ -25,7 +25,7 @@ CREATE QUERY cc_subquery_json (VERTEX source, INT num_vert, INT max_hops, STRING
     END;   
 }
 
-CREATE QUERY closeness_cent_json (STRING v_type, STRING e_type, BOOL display, INT output_limit) FOR GRAPH <placeholder> {
+CREATE QUERY closeness_cent_json (STRING v_type, STRING e_type, BOOL display, INT output_limit) {
     TYPEDEF TUPLE<VERTEX vertex_id, FLOAT score> VERTEX_SCORE;
     HeapAccum<VERTEX_SCORE>(output_limit, score DESC) @@top_scores_heap;
 

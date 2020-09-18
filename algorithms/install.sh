@@ -187,6 +187,8 @@ while [ !$finished ]; do
 	vts=${vts//[[:space:]]/}
 	if [[ $algoName == *cosine* ]] || [[ $algoName == *jaccard* ]]; then 
 		sed -i "s/\*vertex-types\*/$vts/g" ${genPath}/${algoName}_tmp.gsql
+        elif [[ $algoName == "shortest_ss_pos_w" ]]; then
+		sed -i "s/\*vertex-types\*/$vts/g" ${genPath}/${algoName}_tmp.gsql		
 	elif [ "${vts}" == "" ]; then
 		vts="ANY"
 	else
@@ -237,7 +239,7 @@ while [ !$finished ]; do
 
 	#if [[ $egs = *","* ]]; then
 		egs=${egs//,/|}
-		egs="(${egs})"
+		egs="${egs}"
 	#fi
 	sed -i "s/\*edge-types\*/$egs/g" ${genPath}/${algoName}_tmp.gsql
 
@@ -254,7 +256,7 @@ while [ !$finished ]; do
                 edge3=${edge3//[[:space:]]/}
 		#if [[ $edge3 = *","* ]]; then
                 	edge3=${edge3//,/|}
-                	edge3="(${edge3})"
+                	edge3="${edge3}"
         	#fi
                 sed -i "s/\*reverse-edge-types\*/$edge3/g" ${genPath}/${algoName}_tmp.gsql
 		sed -i "s/)|(/|/g" ${genPath}/${algoName}_tmp.gsql

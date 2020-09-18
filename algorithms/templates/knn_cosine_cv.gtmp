@@ -64,7 +64,7 @@
         start = SELECT s
                 FROM start:s 
                 WHERE s.*vertex-label* != ""  // get the vertices with known label
-                ACCUM s.@predicted_label_list = knn_cosine_cv_sub(s, max_k)  // get a list of predicted label wrt different k
+                ACCUM s.@predicted_label_list = knn_cosine_cv_sub*EXT*(s, max_k)  // get a list of predicted label wrt different k
                 POST-ACCUM FOREACH label IN s.@predicted_label_list DO
                                    IF s.*vertex-label* == label THEN  # *vStrAttrOld*  means no neighbor with label
                                            s.@is_correct_list += 1
