@@ -25,8 +25,12 @@ Key Changes since version 3.0
 * New algorithms: estimate_diameter, kcore, maximal_indep_set
 * Nearly all the algorithms now work as schema-free algorithms, making them much easier
   to use
+* Instead of having up to 3 versions of an algorithm, to handle 3 different choices
+  for output style, they have been merge to one version, with parameters for output
+  filename and/or attribute to store the result.
 * Parameter lists have been updated:
   - to make an algorithm schema-free, runtime parameters are needed
+  - to specify how to handle the results
   - other parameters may have been added to make the algorithms easier to tune
 
 Library Structure
