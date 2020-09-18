@@ -1,4 +1,5 @@
 README for GSQL Algorithm Library
+for TigerGraph v2.6 or higher
 2/6/2020
 
 The GSQL Graph Algorithm Library is a collection of high-performance GSQL queries,
@@ -20,11 +21,6 @@ well-suited for graph algorithms:
   example, and they can develop and submit additions to the library.
 
 
-Compatibility
------------------
-v2.0 compatible with TG2.4 or higher
-v1.2 compatible with TG2.4 or higher
-v1.1 compatible with TG2.4 or higher
 
 Library Structure
 -----------------
@@ -75,35 +71,38 @@ https://docs.tigergraph.com/graph-algorithm-library
 
 List of GSQL Graph Algorithms
 -----------------------------
-as of Oct 3, 2019
+as of Feb 6, 2020
 
 betweenness_cent                Betweenness Centrality
-closeness_cent                  Closeness Centrality
-conn_comp                       Connected Component Detection
-wcc_fast                        Connected Components (Fast)
-scc				Strongly Connected Component Detection
-label_prop                      Label Propagation Method for Community Detection
+closeness_cent *                Closeness Centrality
+conn_comp *                     Connected Component Detection
+wcc_fast *                      Connected Components (Fast)
+scc				                Strongly Connected Component Detection
+label_prop *                    Label Propagation Method for Community Detection
 louvain_parallel                Parallel Louvain Modularity Method with Refinement for Community Detection
-pageRank                        PageRank measurement of relative influence of each vertex
+pageRank *                      PageRank measurement of relative influence of each vertex
 pageRank_wt                     Weighted PageRank
-pageRank_pers                   Personalized PageRank
-shortest_ss_no_wt               Single-Source Shortest Paths without weight
+pageRank_pers *                 Personalized PageRank
+shortest_ss_no_wt *             Single-Source Shortest Paths without weight
 shortest_ss_pos_wt              Single-Source Shortest Paths with positive weight
 shortest_ss_any_wt              Single-Source Shortest Paths
 mst                             Minimum Spanning Tree (MST)
 msf                             Minimum Spanning Forest (MSF)
-cycle_detection                 Rocha–Thatte algorithm for cycle detection
+cycle_detection *               Rocha–Thatte algorithm for cycle detection
 tri_count                       Count all the triangles, memory effient
-tri_count_fast                  Count all the triangles, faster but using more memory
+tri_count_fast *                Count all the triangles, faster but using more memory
 cosine_nbor_ss                  Cosine Similarity from a single vertex
 cosine_nbor_ap                  Cosine Similarity for each pair of vertices
-jaccard_nbor_ss                 Jaccard Similarity from a single vertex
-jaccard_nbor_ap                 Jaccard Similarity for each pair of vertices
+jaccard_nbor_ss *               Jaccard Similarity from a single vertex
+jaccard_nbor_ap *               Jaccard Similarity for each pair of vertices
 knn_cosine_ss			k-Nearest Neighbor classification, using Cosine Similarity, single source
 knn_cosine_all			k-Nearest Neighbor classification, using Cosine Similarity, batch
 knn_cosine_cv			Cross validation for k-Nearest Neighbor, using Cosine Similarity
 
-Each of the above may be available as 2 or 3 related queries
+Algorithms with an asterisk (*) are available as schema-free queries.  Other queries
+need to be targeted to a specific graph schema before they can be run.
+
+Each of the above algorithms may be available as 2 or 3 related queries
 For example:
 
 pageRank.gsql - base version. Results are provided as JSON output.
