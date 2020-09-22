@@ -1,10 +1,13 @@
 CREATE QUERY shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, 
-  BOOL print_accum = TRUE, STRING int_result_attr = "", STRING file_path = "",
-  BOOL display_edges = FALSE) {
-/* This query is Single-Source Shortest Path without weights on edges. It calculates the
-shortest distance from the given vertex source to all other connected vertices, and shows
-one shortest path between them. The JSON version also show visualization of the network. 
-The attribute version only store the distance into attribute, not the path.
+  INT output_limit = -1, BOOL print_accum =TRUE, STRING result_attr ="", STRING file_path ="",
+  BOOL display_edges =FALSE) {
+/*
+Single-source shortest path algorithm, with unweighted edges.
+From the source vertex, finds the unweighted shortest path (number of hops, INT value)
+ source: start vertex                         print_accum: print JSON output
+ v_type: vertex types to traverse             result_attr: INT attr to store results to
+ e_type: edge types to traverse               file_path: file to write CSV output to
+ output_limit: max #vertices to output        display_edges: output edges for visualization
 */
 
 	FILE f(file_path);
@@ -40,13 +43,15 @@ The attribute version only store the distance into attribute, not the path.
 
 	ResultSet = SELECT s FROM ResultSet:s 
 				POST-ACCUM 
-					IF int_result_attr != "" THEN s.setAttr(int_result_attr, s.@dis) END,
+					IF result_attr != "" THEN s.setAttr(result_attr, s.@dis) END,
 					IF file_path != "" THEN f.println(s, s.@dis, s.@path) END
 	;
 
 
 	IF print_accum THEN
-	
+    IF output_limit >= 0 THEN
+        ResultSet = SELECT s FROM ResultSet:s LIMIT output_limit;
+    END;
 		PRINT ResultSet[ResultSet.@dis, ResultSet.@path];
 		IF display_edges THEN
 

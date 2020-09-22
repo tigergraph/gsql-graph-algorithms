@@ -1,9 +1,16 @@
 CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
- STRING wt_attr, STRING wt_type, BOOL print_accum = TRUE, STRING float_result_attr = "",
- STRING file_path = "", BOOL display_edges = FALSE) {
-/* The Bellman-Ford algorithm for Single-Source Shortest Path with edge weights,
- possibly negative.
- If any loop in the graph has a net negative weight, the algorithm will exit.
+ STRING wt_attr, STRING wt_type, INT output_limit = -1, BOOL print_accum = TRUE,
+ STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE) {
+/* 
+ Single-source shortest path algorithm, with weight edges, possibly negative.
+ From the source vertex, finds the weighted shortest path (FLOAT value).
+ The Bellman-Ford algorithm for Single-Source Shortest Path with edge weights,
+ is used.  If any loop in the graph has a net negative weight, the algorithm will exit.
+ source: start vertex                            print_accum: print JSON output
+ v_type: vertex types to traverse                result_attr: INT attr to store results to
+ e_type: edge types to traverse                  file_path: file to write CSV output to
+ wt_attr: attribute for edge weights             output_limit: max #vertices to output
+ wt_type: weight data type (INT,FLOAT,DOUBLE)    display_edges: output edges for visualization
 */
 
 	TYPEDEF TUPLE<FLOAT dist, VERTEX pred> Path_Tuple;    
@@ -15,14 +22,18 @@ CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
 	INT iter;
 
 	OrAccum @@hasNegLoop;                 # Indicates a negative loop is found
-	BOOL excep_caught;
-	STRING msg40998 = "wt_attr must be numeric: INT, FLOAT, or DOUBLE"; 
 	STRING msg40999 = "There is a loop with negative length. Shortest path is undefined.";
-	EXCEPTION non_numeric_excep (40998); 
 	EXCEPTION neg_loop_excep (40999);
 
-	##### Initialize #####
-	start = {source};
+	# Check wt_type parameter
+  IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+    PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+    RETURN;
+  END;
+
+
+  ##### Initialize #####
+	start = {source}; 
 	component = {source};                 # the connected component of the source vertex
 	start = SELECT s
 			FROM start:s
@@ -54,13 +65,8 @@ CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
             t.@minPath += Path_Tuple(s.@minPath.top().dist + e.getAttr(wt_attr, "FLOAT"), s)
           WHEN "DOUBLE" THEN
             t.@minPath += Path_Tuple(s.@minPath.top().dist + e.getAttr(wt_attr, "DOUBLE"), s)
-          ELSE
-             excep_caught = TRUE
           END
 				END;
-      IF excep_caught THEN
-          RAISE non_numeric_excep (msg40998);
-      END;
 	END;
 
 	 
@@ -77,12 +83,7 @@ CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
           WHEN "DOUBLE" THEN
             @@hasNegLoop +=
 			s.@minPath.top().dist + e.getAttr(wt_attr,"DOUBLE") < t.@minPath.top().dist   
-          ELSE
-             excep_caught = TRUE
           END;
-      IF excep_caught THEN
-          RAISE non_numeric_excep (msg40998);
-      END;   
  
 	IF @@hasNegLoop THEN        
 		RAISE neg_loop_excep (msg40999);
@@ -113,10 +114,13 @@ CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
 
 	component = SELECT s FROM component:s
 			POST-ACCUM 
-			  IF float_result_attr != "" THEN s.setAttr(float_result_attr, s.@minPath.top().dist) END,
+			  IF result_attr != "" THEN s.setAttr(result_attr, s.@minPath.top().dist) END,
 			  IF file_path != "" THEN f.println(s, s.@minPath.top().dist, s.@path) END;
 		  
 	IF print_accum THEN
+    IF output_limit >= 0 THEN
+        component = SELECT s FROM component:s LIMIT output_limit;
+    END;
 		PRINT component[component.@minPath.top().dist, component.@path];
 		IF display_edges THEN
 			tmp = SELECT s

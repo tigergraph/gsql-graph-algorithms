@@ -1,4 +1,5 @@
-CREATE QUERY cc_subquery (VERTEX source, SET<STRING> e_type, INT num_vert, INT max_hops, BOOL wf = TRUE)  RETURNS (FLOAT) {
+CREATE QUERY cc_subquery (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
+ INT num_vert, INT max_hops, BOOL wf = TRUE)  RETURNS (FLOAT) {
   /*
   Subquery returns closeness centrality for vertex source in graph with numVert vertices
   wf: Wasserman and Faust normalization factor for multi-component graphs 
@@ -16,7 +17,7 @@ CREATE QUERY cc_subquery (VERTEX source, SET<STRING> e_type, INT num_vert, INT m
 	WHILE (Start.size() > 0) LIMIT max_hops DO    # explore up to (maxHops) hops FROM s
 			@@currDist += 1;
 			# Move FROM current start set to the neighboring set of (unvisited) vertices
-			Start = SELECT t FROM Start:s -(e_type:e)-> :t
+			Start = SELECT t FROM Start:s -(e_type:e)-> v_type:t
 					WHERE t.@visited == false AND t != s
 					POST-ACCUM t.@visited += true;
 							   @@totalDist += Start.size() * @@currDist;

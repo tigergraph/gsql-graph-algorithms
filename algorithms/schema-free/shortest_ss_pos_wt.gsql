@@ -1,9 +1,18 @@
 CREATE QUERY shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
- STRING wt_attr, STRING wt_type, BOOL print_accum = TRUE, STRING float_result_attr = "",
- STRING file_path = "", BOOL display_edges = FALSE) {
-/* The Bellman-Ford algorithm is used instead of Dijkstra's, because only the former
-	works with parallel breadth-first.Edge weights must be non-negative.
+ STRING wt_attr, STRING wt_type, INT output_limit = -1, BOOL print_accum = TRUE,
+ STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE) {
+
+/* Single-source shortest path algorithm, with positive weight edges.
+ From the source vertex, finds the weighted shortest path (FLOAT value).
+ The Bellman-Ford algorithm is used instead of Dijkstra's, because only the former
+	works with parallel breadth-first search. Edge weights must be non-negative.
+ source: start vertex to every other vertex.     print_accum: print JSON output
+ v_type: vertex types to traverse                result_attr: INT attr to store results to
+ e_type: edge types to traverse                  file_path: file to write CSV output to
+ wt_attr: attribute for edge weights             output_limit: max #vertices to output
+ wt_type: weight data type (INT,FLOAT,DOUBLE)    display_edges: output edges for visualization
 */
+
 	TYPEDEF TUPLE<FLOAT dist, VERTEX pred> Path_Tuple;    
 	HeapAccum<Path_Tuple>(1, dist ASC) @minPath;       # retain 1 shortest path
 	ListAccum<STRING> @path;         				   # shortest path FROM source
@@ -82,10 +91,13 @@ CREATE QUERY shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
 
 	component = SELECT s FROM component:s
 			POST-ACCUM 
-			  IF float_result_attr != "" THEN s.setAttr(float_result_attr, s.@minPath.top().dist) END,
+			  IF result_attr != "" THEN s.setAttr(result_attr, s.@minPath.top().dist) END,
 			  IF file_path != "" THEN f.println(s, s.@minPath.top().dist, s.@path) END;
 		  
 	IF print_accum THEN
+    IF output_limit >= 0 THEN
+        component = SELECT s FROM component:s LIMIT output_limit;
+    END;
 		PRINT component[component.@minPath.top().dist, component.@path];
 		IF display_edges THEN
 			tmp = SELECT s
