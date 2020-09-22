@@ -1,55 +1,58 @@
-CREATE QUERY mst(SET<STRING> v_type, SET<STRING> e_type, STRING weight, BOOL print_accum = TRUE, STRING file_path = "", STRING boolean_attr = ""){ 
+CREATE QUERY mst(SET<STRING> v_type, SET<STRING> e_type, STRING weight_attr,
+  BOOL print_accum = TRUE, STRING bool_attr = "", STRING file_path = "") {
+  
   TYPEDEF TUPLE<VERTEX from_v, VERTEX to_v, EDGE e, FLOAT weight, INT vid> EDGE_WEIGHT;
-  HeapAccum<EDGE_WEIGHT>(1, weight ASC, vid ASC) @@chosen_edge; //only need to keep the minimal tuple
+  HeapAccum<EDGE_WEIGHT>(1, weight ASC, vid ASC) @@chosen_edge; // keep the minimal tuple
   SetAccum<EDGE_WEIGHT> @@mst;
   SetAccum<EDGE> @@result;
   OrAccum @chosen;
   FILE f (file_path);
         
-        all_v = {v_type};
-        
-        MSTNodes = SELECT s FROM all_v:s LIMIT 1;
-        // initialize the source vertex
-        Current = SELECT s FROM MSTNodes:s
-                  ACCUM s.@chosen = true;
+	All_v = {v_type};
 
-        WHILE (Current.size() > 0) DO
-                Current = SELECT t
-                          FROM MSTNodes:s -(e_type:e) -> :t
-                          WHERE t.@chosen == false    // vertex not in MSTNodes
-                          ACCUM @@chosen_edge += EDGE_WEIGHT(s, t, e, e.getAttr(weight, "FLOAT"), getvid(t))
-                          POST-ACCUM IF t == @@chosen_edge.top().to_v THEN    
-                                              t.@chosen = TRUE      // mark the chosen vertex to add into MSTNodes
-                                     END
-                          HAVING t.@chosen == true;
-  
-                IF @@chosen_edge.size() > 0 THEN
-                    IF boolean_attr != "" THEN
-                      S = SELECT s
-                           FROM Current:s -(e_type:e) -> :t
-                           WHERE t == @@chosen_edge.top().from_v
-                           ACCUM e.setAttr(boolean_attr, TRUE);
-  
-                    END;
-                    IF file_path != "" THEN
-                       @@mst += @@chosen_edge.top();
-                    END;
-                    IF print_accum THEN
-                      @@result += @@chosen_edge.top().e;
-                    END;
-                END;    
-                @@chosen_edge.clear();
-                MSTNodes = MSTNodes UNION Current;      // update MSTNodes
-        END;
-  
-      IF print_accum THEN
-        PRINT @@result as mst;
-      END;
-      
-      IF file_path != "" THEN
-         f.println("From", "To", "Weight");
-          FOREACH e in @@mst DO
-            f.println(e.from_v, e.to_v, e.weight);
-          END;
-      END;
+	// Pick a random start vertex to initialize
+	MSTNodes = SELECT s FROM All_v:s LIMIT 1;
+	Current = SELECT s FROM MSTNodes:s
+			  POST-ACCUM s.@chosen = true;
+
+	WHILE (Current.size() > 0) DO
+		Current = SELECT t
+			FROM MSTNodes:s -(e_type:e)-> v_type:t
+			WHERE t.@chosen == false    // vertex not in MSTNodes
+			ACCUM @@chosen_edge += EDGE_WEIGHT(s, t, e, e.getAttr(weight_attr,"FLOAT"), getvid(t))
+			POST-ACCUM
+				IF t == @@chosen_edge.top().to_v THEN    
+					t.@chosen = TRUE      // mark the chosen vertex to add into MSTNodes
+				END
+			HAVING t.@chosen == true;
+
+		IF @@chosen_edge.size() > 0 THEN
+			IF bool_attr != "" THEN
+			  S = SELECT s
+				   FROM Current:s -(e_type:e) -> v_type:t
+				   WHERE t == @@chosen_edge.top().from_v
+				   ACCUM e.setAttr(bool_attr, TRUE);
+
+			END;
+			IF file_path != "" THEN
+			   @@mst += @@chosen_edge.top();
+			END;
+			IF print_accum THEN
+			  @@result += @@chosen_edge.top().e;
+			END;
+		END;    
+		@@chosen_edge.clear();
+		MSTNodes = MSTNodes UNION Current;      // update MSTNodes
+	END;
+
+	IF print_accum THEN
+		PRINT @@result as mst;
+	END;
+
+	IF file_path != "" THEN
+		f.println("From", "To", "Weight");
+		FOREACH e in @@mst DO
+			f.println(e.from_v, e.to_v, e.weight);
+		END;
+	END;
 }

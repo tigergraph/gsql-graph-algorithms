@@ -95,7 +95,7 @@ knn_cosine_all      k-Nearest Neighbor classification, using Cosine Similarity, 
 knn_cosine_cv       Cross validation for k-Nearest Neighbor, using Cosine Similarity
 
 Notes:
-[1] This algorithm is in schema-fast, use the install.sh script to customize it
+[1] This algorithm is not in the schema-first folder; use the install.sh script to customize it
     for your target graph schema
 [2] The schema-free version of this algorithm can use only one edge type.
     If you have a set of edge types, use the template algorithm and the install.sh script
