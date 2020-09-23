@@ -1,11 +1,15 @@
-CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING weight,
-  STRING attr =  "", STRING file_path = "", BOOL print_accum = TRUE,
-  INT iter1=10, INT iter2=10, INT iter3=10, INT split=10, BOOL comm_by_size = TRUE) {
+CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr,
+  INT iter1=10, INT iter2=10, INT iter3=10, INT split=10, BOOL print_accum = TRUE,
+  STRING result_attr = "", STRING file_path = "", BOOL comm_by_size = TRUE) {
  /*
  * Louvain Method with Parallelism and Refinement
  * https://arxiv.org/pdf/1304.4453
  * The minimum label heuristics are implemented: https://doi.org/10.1016/j.parco.2015.03.003
  
+Parameters:
+ * v_type: vertex types to traverse        print_accum: print JSON
+ * e_type: edge types to traverse          result_attr: INT attr to store results to
+ * wt_attr: attribute for edge weights     file_path: file to write CSV output to
  * iter: There are three phases in the algorithm -- move, merge and refine. Their max number of iterations are set by iter1, iter2, iter3 respectively.
  * split: To save memory, split number is 10 by default. When the split number is larger, the query is closer to sequential Louvain Method, which is slower. When the split number is 1, the query is parallel, but requires more memory. 
  * comm_by_size: list community ids by size
@@ -55,8 +59,8 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
     Start = {v_type};
     S = SELECT s 
         FROM Start:s -(e_type:e)-> :t
-        ACCUM @@totalWeight += e.getAttr(weight,"INT")*1.0,
-            s.@weight += e.getAttr(weight,"INT")*1.0
+        ACCUM @@totalWeight += e.getAttr(wt_attr,"INT")*1.0,
+            s.@weight += e.getAttr(wt_attr,"INT")*1.0
         POST-ACCUM s.@vid = getvid(s),
                    s.@uid = s.@vid,
                    s.@cid = s.@vid;  # Label each vertex with its own internal ID
@@ -66,8 +70,8 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
     S = SELECT s 
         FROM Start:s -(e_type:e)-> :t
         WHERE s.@cid > t.@cid
-        ACCUM s.@largestDeltaQ += vDeltaQ(t, t.@cid, e.getAttr(weight,"INT")*1.0 - 2 * s.@weight * s.@weight/ @@totalWeight) 
-              # weightToCluster is just e.getAttr(weight,"INT")*1.0
+        ACCUM s.@largestDeltaQ += vDeltaQ(t, t.@cid, e.getAttr(wt_attr,"INT")*1.0 - 2 * s.@weight * s.@weight/ @@totalWeight) 
+              # weightToCluster is just e.getAttr(wt_attr,"INT")*1.0
         POST-ACCUM INT bestCluster = s.@largestDeltaQ.top().cid,
                    IF s.@largestDeltaQ.size() > 0 and s.@largestDeltaQ.top().deltaQ > 0 and s.@cid != bestCluster THEN 
                            s.@cid = bestCluster
@@ -77,7 +81,7 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
     S = SELECT s
         FROM Start:s-(e_type:e)-:t
         WHERE s.@cid == t.@cid
-        ACCUM @@modularity += e.getAttr(weight,"INT")*1.0 - s.@weight * t.@weight / (@@totalWeight);
+        ACCUM @@modularity += e.getAttr(wt_attr,"INT")*1.0 - s.@weight * t.@weight / (@@totalWeight);
 
     @@modularity = @@modularity / @@totalWeight;                      
     PRINT iteration AS Phase1Iter, @@modularity;
@@ -107,7 +111,7 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
                     OR (abs(s.@weight - @@totIncidentCluster.get(s.@cid)) < epsilon      # s is a singlet 
                     AND abs(t.@weight - @@totIncidentCluster.get(t.@cid)) < epsilon      # t is also a singlet
                     AND s.@cid > t.@cid) )                                               # consider only when target label is smaller
-                ACCUM s.@weightToCluster += (t.@cid -> e.getAttr(weight,"INT")*1.0)
+                ACCUM s.@weightToCluster += (t.@cid -> e.getAttr(wt_attr,"INT")*1.0)
                 POST-ACCUM INT bestCluster = s.@cid,
                     FLOAT maxDeltaQ = 0.0,
                     FLOAT deltaQ_new = 0.0,
@@ -132,7 +136,7 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
         T1 = SELECT s
             FROM Start:s-(e_type:e)-:t
             WHERE s.@cid == t.@cid
-            ACCUM @@modularity += e.getAttr(weight,"INT")*1.0 - s.@weight * t.@weight / (@@totalWeight);
+            ACCUM @@modularity += e.getAttr(wt_attr,"INT")*1.0 - s.@weight * t.@weight / (@@totalWeight);
         @@modularity = @@modularity / @@totalWeight;                      
         PRINT iteration AS Phase1Iter, @@modularity;
         log(debug > 0, "[redrain]#move", iteration, @@modularity);
@@ -172,11 +176,11 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
         WHILE (iteration < 2 OR @@modularity - last_modularity > epsilon) limit iter1 DO
             iteration = iteration + 1;
 
-            # Calculate.getAttr(weight,"INT")*1.0 incident from vertex to cluster in coarsened graph; change every interation
+            # Calculate.getAttr(wt_attr,"INT")*1.0 incident from vertex to cluster in coarsened graph; change every interation
             S = SELECT s
                 FROM Start:s -(e_type:e)-:t
                 WHERE s.@cid != t.@cid AND @@totIncidentCluster.get(s.@uid) > 0 AND @@totIncidentCluster.get(t.@cid) > 0   #@@totIncidentCluster keeps changing, can be 0
-                ACCUM @@weightToClusterMap += (s.@uid -> (t.@cid -> e.getAttr(weight,"INT")*1.0));  # from s, incident to some clusters. Not consider the same cluster
+                ACCUM @@weightToClusterMap += (s.@uid -> (t.@cid -> e.getAttr(wt_attr,"INT")*1.0));  # from s, incident to some clusters. Not consider the same cluster
             represent = SELECT s 
                 FROM represent:s
                 POST-ACCUM INT bestCluster = s.@cid,
@@ -220,7 +224,7 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
             S = SELECT s
                 FROM Start:s-(e_type:e)-:t
                 WHERE s.@cid == t.@cid
-                ACCUM @@modularity += e.getAttr(weight,"INT")*1.0 - s.@weight * t.@weight / (@@totalWeight);
+                ACCUM @@modularity += e.getAttr(wt_attr,"INT")*1.0 - s.@weight * t.@weight / (@@totalWeight);
                 @@modularity = @@modularity / @@totalWeight;
                 PRINT iteration AS Phase1Iter, @@modularity;
             log(debug > 0, "[redrain]#2_move", iteration, @@modularity);
@@ -246,7 +250,7 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
         S = SELECT s 
             FROM Start:s -(e_type:e)-> :t
             WHERE abs(s.@weight - @@totIncidentCluster.get(s.@cid)) > epsilon OR abs(t.@weight - @@totIncidentCluster.get(t.@cid)) > epsilon OR (abs(s.@weight - @@totIncidentCluster.get(s.@cid)) < epsilon AND abs(t.@weight - @@totIncidentCluster.get(t.@cid)) < epsilon AND s.@cid > t.@cid)   # at least one cluster not only itself, or use smaller label
-            ACCUM s.@weightToCluster += (t.@cid -> e.getAttr(weight,"INT")*1.0)
+            ACCUM s.@weightToCluster += (t.@cid -> e.getAttr(wt_attr,"INT")*1.0)
             POST-ACCUM
                 INT bestCluster = s.@cid,
                 FLOAT maxDeltaQ = 0.0,
@@ -271,7 +275,7 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
         T1 = SELECT s
              FROM Start:s-(e_type:e)-:t
              WHERE s.@cid == t.@cid
-             ACCUM @@modularity += e.getAttr(weight,"INT")*1.0 - s.@weight * t.@weight / (@@totalWeight);
+             ACCUM @@modularity += e.getAttr(wt_attr,"INT")*1.0 - s.@weight * t.@weight / (@@totalWeight);
         @@modularity = @@modularity / @@totalWeight;                      
         PRINT iteration AS Phase3Iter, @@modularity;
         log(debug > 0, "[redrain]#refine", iteration, @@modularity);
@@ -279,7 +283,7 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING we
 	
 	Start = SELECT s FROM Start:s
 	    POST-ACCUM
-	        IF attr != "" THEN s.setAttr(attr, s.@cid) END,
+	        IF result_attr != "" THEN s.setAttr(result_attr, s.@cid) END,
 	        IF file_path != "" THEN f.println(s, s.@cid) END
 	    ;
 	IF print_accum THEN

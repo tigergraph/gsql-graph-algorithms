@@ -50,6 +50,7 @@ CREATE QUERY pageRank (STRING v_type, STRING e_type,
 			IF print_accum THEN @@topScores += Vertex_Score(s, s.@score) END;
 
 	IF print_accum THEN
+		PRINT @@topScores;
 		IF display_edges THEN
 			PRINT Start[Start.@score];
 			Start = SELECT s
