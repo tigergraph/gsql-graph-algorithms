@@ -2,7 +2,8 @@ CREATE QUERY shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
  STRING wt_attr, STRING wt_type, INT output_limit = -1, BOOL print_accum = TRUE,
  STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE) {
 
-/* Single-source shortest path algorithm, with positive weight edges.
+/*
+ Single-source shortest path algorithm, with positive weight edges.
  From the source vertex, finds the weighted shortest path (FLOAT value).
  The Bellman-Ford algorithm is used instead of Dijkstra's, because only the former
 	works with parallel breadth-first search. Edge weights must be non-negative.
@@ -21,6 +22,12 @@ CREATE QUERY shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
 	FILE f(file_path);
 	INT iter;
 
+	# Check wt_type parameter
+	IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+		PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+		RETURN;
+	END;
+
 	##### Initialize #####
 	start = {source};
 	component = {source};                 # the connected component of the source vertex
@@ -31,14 +38,14 @@ CREATE QUERY shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
 				  s.@path += s.id;
 	
 	##### Get the connected component #####		  
-	WHILE start.size() > 0 DO 
+	WHILE start.size() > 0 DO
 		start = SELECT t
 				FROM start:s -(e_type:e)-> v_type:t
 				WHERE NOT t.@visited
 				ACCUM t.@visited = TRUE;
 		component = component UNION start;
 	END;
-  PRINT component.size();
+	PRINT component.size();
 
 	##### Do N-1 iterations: Consider whether each edge lowers the best-known distance.
 	iter = component.size() - 1;    # the max iteration is N-1

@@ -23,7 +23,7 @@ CREATE QUERY closeness_cent(SET<STRING> v_type, SET<STRING> e_type, INT max_hops
 
 	Start = SELECT s FROM Start:s
 			# Calculate Closeness Centrality for each vertex
-			POST-ACCUM s.@score = cc_subquery(s, e_type, numVert, max_hops, wf),
+			POST-ACCUM s.@score = cc_subquery(s, v_type, e_type, numVert, max_hops, wf),
 					IF result_attr != "" THEN s.setAttr(result_attr, s.@score) END,
 					IF print_accum THEN @@topScores += VertexScore(s, s.@score) END,
 					IF file_path != "" THEN f.println(s, s.@score) END;

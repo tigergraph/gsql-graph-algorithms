@@ -1,7 +1,7 @@
 CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
  STRING wt_attr, STRING wt_type, INT output_limit = -1, BOOL print_accum = TRUE,
  STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE) {
-/* 
+/*
  Single-source shortest path algorithm, with weight edges, possibly negative.
  From the source vertex, finds the weighted shortest path (FLOAT value).
  The Bellman-Ford algorithm for Single-Source Shortest Path with edge weights,
@@ -15,7 +15,7 @@ CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
 
 	TYPEDEF TUPLE<FLOAT dist, VERTEX pred> Path_Tuple;    
 	HeapAccum<Path_Tuple>(1, dist ASC) @minPath;       # retain 1 shortest path
-	ListAccum<STRING> @path;         				  # shortest path FROM source
+	ListAccum<STRING> @path;         				   # shortest path FROM source
 	SetAccum<EDGE> @@edgeSet;        	# list of all edges, if display_edges is needed
 	OrAccum @visited;
 	FILE f(file_path);
@@ -26,14 +26,14 @@ CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> 
 	EXCEPTION neg_loop_excep (40999);
 
 	# Check wt_type parameter
-  IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
-    PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
-    RETURN;
-  END;
+	IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+		PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+		RETURN;
+	END;
 
 
-  ##### Initialize #####
-	start = {source}; 
+	##### Initialize #####
+	start = {source};
 	component = {source};                 # the connected component of the source vertex
 	start = SELECT s
 			FROM start:s

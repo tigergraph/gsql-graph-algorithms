@@ -9,7 +9,9 @@ CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING wt
 Parameters:
  * v_type: vertex types to traverse        print_accum: print JSON
  * e_type: edge types to traverse          result_attr: INT attr to store results to
- * wt_attr: attribute for edge weights     file_path: file to write CSV output to
+                                           file_path: file to write CSV output to
+ * wt_attr: attribute for edge weights. The wt_attr data type is hardcoded to INT. FLOAT
+  or DOUBLE can be supported by changing "INT" to "FLOAT"/"DOUBLE" (~10 instances) below. 
  * iter: There are three phases in the algorithm -- move, merge and refine. Their max number of iterations are set by iter1, iter2, iter3 respectively.
  * split: To save memory, split number is 10 by default. When the split number is larger, the query is closer to sequential Louvain Method, which is slower. When the split number is 1, the query is parallel, but requires more memory. 
  * comm_by_size: list community ids by size
