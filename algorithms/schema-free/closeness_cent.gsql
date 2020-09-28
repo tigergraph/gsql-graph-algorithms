@@ -1,36 +1,46 @@
-CREATE QUERY closeness_cent(SET<STRING> v_type, SET<STRING> e_type, INT output_limit, BOOL wf = TRUE, BOOL print_accum = True, STRING attr = "", STRING file_path = "", BOOL display = FALSE){
+CREATE QUERY closeness_cent(SET<STRING> v_type, SET<STRING> e_type, INT max_hops=10,
+  INT top_k=100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
+  STRING file_path = "", BOOL display_edges = FALSE) {
+/*
+  Compute Closeness Centrality for each VERTEX. Parameters:
+  v_type: vertex types to traverse                 print_accum: print JSON output
+  e_type: edge types to traverse                   result_attr: INT attr to store results to
+  max_hops: look only this far from each vertex    file_path: file to write CSV output to
+  output_limit: report only this many top scores   display_edges: output edges for visualization
+  wf: Wasserman and Faust normalization factor for multi-component graphs 
+  */
   
-        TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
-        HeapAccum<VertexScore>(output_limit, score DESC) @@topScores;
-        SumAccum<FLOAT> @score;
-        SetAccum<EDGE> @@edgeSet;
-        FILE f (file_path);
-  
-        INT numVert;
-        INT maxHops = 10;      # measure distance for vertices up to 10 hops away
-        Start = {v_type};
-        numVert = Start.size();
-        
-  
-        IF file_path != "" THEN
-          f.println("Vertex_ID", "Closeness");
-        END;
+	TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
+	HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+	SumAccum<FLOAT> @score;
+	SetAccum<EDGE> @@edgeSet;
+	FILE f (file_path);
+	INT numVert;
 
-        Start = SELECT s FROM Start:s
-                POST-ACCUM s.@score = cc_subquery(s, e_type, numVert, maxHops, wf),
-                            IF attr != "" THEN  s.setAttr(attr, s.@score) END,
-                            IF print_accum THEN @@topScores += VertexScore(s, s.@score) END,
-                            IF file_path != "" THEN f.println(s, s.@score) END
-                LIMIT output_limit;
-  
-        IF print_accum THEN
-          PRINT @@topScores AS top_scores;
-          IF display THEN
-                PRINT Start[Start.@score];
-                Start = SELECT s
-                FROM Start:s -(e_type:e)->:t
-                    ACCUM @@edgeSet += e;
-                PRINT @@edgeSet;
-        END;
-        END;
+# Compute closeness	
+	Start = {v_type};
+	numVert = Start.size();
+
+	Start = SELECT s FROM Start:s
+			# Calculate Closeness Centrality for each vertex
+			POST-ACCUM s.@score = cc_subquery(s, v_type, e_type, numVert, max_hops, wf),
+					IF result_attr != "" THEN s.setAttr(result_attr, s.@score) END,
+					IF print_accum THEN @@topScores += VertexScore(s, s.@score) END,
+					IF file_path != "" THEN f.println(s, s.@score) END;
+
+#Output
+	IF file_path != "" THEN
+			f.println("Vertex_ID", "Closeness");
+	END;
+
+	IF print_accum THEN
+		PRINT @@topScores AS top_scores;
+		IF display_edges THEN
+			PRINT Start[Start.@score];
+			Start = SELECT s
+			FROM Start:s -(e_type:e)->:t
+				ACCUM @@edgeSet += e;
+			PRINT @@edgeSet;
+		END;
+	END;
 }

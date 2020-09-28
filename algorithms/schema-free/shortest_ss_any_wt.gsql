@@ -1,74 +1,132 @@
-CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, STRING weight, INT output_limit, BOOL print_accum=TRUE, STRING dist_attr = "", STRING file_path = "", BOOL display=FALSE){
-/* The Bellman-Ford algorithm for single-Source Shortest Path with edge weights,
- possibly negative.
- If any loop in the graph has a net negative weight, the algorithm will exit.
+CREATE QUERY shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
+ STRING wt_attr, STRING wt_type, INT output_limit = -1, BOOL print_accum = TRUE,
+ STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE) {
+/*
+ Single-source shortest path algorithm, with weight edges, possibly negative.
+ From the source vertex, finds the weighted shortest path (FLOAT value).
+ The Bellman-Ford algorithm for Single-Source Shortest Path with edge weights,
+ is used.  If any loop in the graph has a net negative weight, the algorithm will exit.
+ source: start vertex                            print_accum: print JSON output
+ v_type: vertex types to traverse                result_attr: INT attr to store results to
+ e_type: edge types to traverse                  file_path: file to write CSV output to
+ wt_attr: attribute for edge weights             output_limit: max #vertices to output
+ wt_type: weight data type (INT,FLOAT,DOUBLE)    display_edges: output edges for visualization
 */
 
-        FILE f(file_path);
-        MinAccum<FLOAT> @dist;                      # best-known shortest distance FROM source
-        ListAccum<VERTEX> @path;                     # best-known path FROM source
-        OrAccum @visited = false;                   # whether this vertex has been visited
-        OrAccum @@hasNegLoop;                       # Indicates a negative loop is found
-        SetAccum<EDGE> @@edgeSet;                   # list of all edges, if display is needed
-        STRING sourceName;
-        STRING errMsg = "There is a loop with negative length. Shortest path is undefined.";
-        INT maxVal = 1000000000;                   # Should be larger than any possible path
-        EXCEPTION negLoop (40999);
-        VSET = {v_type};
-        Source = {source}; 
+	TYPEDEF TUPLE<FLOAT dist, VERTEX pred> Path_Tuple;    
+	HeapAccum<Path_Tuple>(1, dist ASC) @minPath;       # retain 1 shortest path
+	ListAccum<STRING> @path;         				   # shortest path FROM source
+	SetAccum<EDGE> @@edgeSet;        	# list of all edges, if display_edges is needed
+	OrAccum @visited;
+	FILE f(file_path);
+	INT iter;
 
-  ##### Initialization: Set the best-known distance to a maxValue (pseudo-infinite)
+	OrAccum @@hasNegLoop;                 # Indicates a negative loop is found
+	STRING msg40999 = "There is a loop with negative length. Shortest path is undefined.";
+	EXCEPTION neg_loop_excep (40999);
 
-        VSET = SELECT s FROM VSET:s
-               POST-ACCUM s.@dist = maxVal,
-                          s.@path = s;
-        Source = SELECT s FROM Source:s               # The distance FROM s to itself is 0.
-                 POST-ACCUM s.@dist = 0,
-                            s.@visited = true;
-  
-  ##### Do N-1 iterations: Consider whether each edge lowers the best-known distance.
-        FOREACH i IN RANGE[1, VSET.size()-1] DO
-                VSET = SELECT s
-                       FROM VSET:s -(e_type:e)-> :t
-                       ACCUM IF s.@visited THEN
-                                IF s.@dist + e.getAttr(weight, "FLOAT") < t.@dist THEN
-                                        t.@dist = s.@dist + e.getAttr(weight, "FLOAT"),             # @dist is a MinAccum
-                                        t.@path = s.@path + [t]
-                                END,
-                                t.@visited += true
-                             END;
-        END;
-             
-  ##### Check for loops with net negative weight #####
-        VSET = SELECT s
-               FROM VSET:s -(e_type:e)-> :t
-               ACCUM @@hasNegLoop +=s.@dist + e.getAttr(weight, "FLOAT") < t.@dist;
-         
-        IF @@hasNegLoop THEN        
-                RAISE negLoop (errMsg);
-        END;
-  
-        IF file_path != "" THEN
-          f.println("Vertex_ID", "Distance", "Shortest_Path");
-        END;
-  
-  ##### Print the results #####
-          VSET = SELECT s
-               FROM VSET:s
-               POST-ACCUM 
-                  IF dist_attr != "" THEN s.setAttr(dist_attr,s.@dist) END, 
-                  IF file_path != "" THEN f.println(s, s.@dist, s.@path) END
-              LIMIT output_limit;
-                
-        
-        IF print_accum THEN
-          PRINT VSET[VSET.@dist, VSET.@path];
-           IF display THEN
-            VSET = SELECT s
-                  FROM VSET:s -(e_type:e)-> :t
-                    ACCUM @@edgeSet += e;
-            PRINT @@edgeSet;
-       END;
-  
-        END;
+	# Check wt_type parameter
+	IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+		PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+		RETURN;
+	END;
+
+
+	##### Initialize #####
+	start = {source};
+	component = {source};                 # the connected component of the source vertex
+	start = SELECT s
+			FROM start:s
+			POST-ACCUM s.@minPath += Path_Tuple(0, s),
+				  s.@visited = TRUE,
+				  s.@path += s.id;
+	
+	##### Get the connected component #####		  
+	WHILE start.size() > 0 DO
+		start = SELECT t
+				FROM start:s -(e_type:e)-> v_type:t
+				WHERE NOT t.@visited
+				ACCUM t.@visited = TRUE;
+		component = component UNION start;
+	END;
+	PRINT component.size();
+	
+	##### Do N-1 iterations: Consider whether each edge lowers the best-known distance.
+	iter = component.size() - 1;    # the max iteration is N-1
+	WHILE TRUE LIMIT iter DO 
+		tmp = SELECT s
+			FROM component:s -(e_type:e)-> v_type:t
+			ACCUM 
+				IF s.@minPath.size()>0 /*AND s.@minPath.top().dist < GSQL_INT_MAX*1.0*/ THEN
+          CASE wt_type
+          WHEN "INT" THEN
+					  t.@minPath += Path_Tuple(s.@minPath.top().dist + e.getAttr(wt_attr, "INT"), s)
+          WHEN "FLOAT" THEN
+            t.@minPath += Path_Tuple(s.@minPath.top().dist + e.getAttr(wt_attr, "FLOAT"), s)
+          WHEN "DOUBLE" THEN
+            t.@minPath += Path_Tuple(s.@minPath.top().dist + e.getAttr(wt_attr, "DOUBLE"), s)
+          END
+				END;
+	END;
+
+	 
+	##### Check for loops with net negative weight #####
+	component = SELECT s
+		FROM component:s -(e_type:e)-> v_type:t
+		ACCUM CASE wt_type
+          WHEN "INT" THEN
+					  @@hasNegLoop +=
+			s.@minPath.top().dist + e.getAttr(wt_attr,"INT") < t.@minPath.top().dist
+          WHEN "FLOAT" THEN
+            @@hasNegLoop +=
+			s.@minPath.top().dist + e.getAttr(wt_attr,"FLOAT") < t.@minPath.top().dist
+          WHEN "DOUBLE" THEN
+            @@hasNegLoop +=
+			s.@minPath.top().dist + e.getAttr(wt_attr,"DOUBLE") < t.@minPath.top().dist   
+          END;
+ 
+	IF @@hasNegLoop THEN        
+		RAISE neg_loop_excep (msg40999);
+	END;
+
+
+	##### Calculate the paths #####
+	start = {source};
+	tmp = SELECT s
+		  FROM component:s
+		  WHERE s != source
+		  POST-ACCUM s.@visited = FALSE;
+	WHILE start.size() > 0 LIMIT iter DO		 # Limit the number of hops
+		start = SELECT t
+				FROM start:s -(e_type:e)-> v_type:t
+				WHERE NOT t.@visited
+				ACCUM IF s == t.@minPath.top().pred THEN 
+						  t.@visited = TRUE,
+						  t.@path += s.@path,
+						  t.@path += t.id
+					  END;
+	END;
+	
+	##### Output #####
+	IF file_path != "" THEN
+	  f.println("Vertex_ID","Distance","Shortest_Path");
+	END;
+
+	component = SELECT s FROM component:s
+			POST-ACCUM 
+			  IF result_attr != "" THEN s.setAttr(result_attr, s.@minPath.top().dist) END,
+			  IF file_path != "" THEN f.println(s, s.@minPath.top().dist, s.@path) END;
+		  
+	IF print_accum THEN
+    IF output_limit >= 0 THEN
+        component = SELECT s FROM component:s LIMIT output_limit;
+    END;
+		PRINT component[component.@minPath.top().dist, component.@path];
+		IF display_edges THEN
+			tmp = SELECT s
+				  FROM component:s -(e_type:e)-> v_type:t
+				  ACCUM @@edgeSet += e;
+			PRINT @@edgeSet;
+		END;
+	END;
 }

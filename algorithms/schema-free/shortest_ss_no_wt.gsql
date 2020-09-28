@@ -1,55 +1,63 @@
-CREATE QUERY shortest_ss_no_wt (VERTEX source, SET<STRING> e_type, INT output_limit, BOOL print_accum = TRUE, STRING attr = "", STRING file_path = "", BOOL display = FALSE){
-/* This query is Single-Source Shortest Path without weights on edges. It calculates the shortest distance from the given vertex source to all other connected vertices, and shows one shortest path between them.   
-The JSON version also show visualization of the network. 
-The attribute version only store the distance into attribute, not the path.
+CREATE QUERY shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, 
+  INT output_limit = -1, BOOL print_accum =TRUE, STRING result_attr ="", STRING file_path ="",
+  BOOL display_edges =FALSE) {
+/*
+Single-source shortest path algorithm, with unweighted edges.
+From the source vertex, finds the unweighted shortest path (number of hops, INT value)
+ source: start vertex                         print_accum: print JSON output
+ v_type: vertex types to traverse             result_attr: INT attr to store results to
+ e_type: edge types to traverse               file_path: file to write CSV output to
+ output_limit: max #vertices to output        display_edges: output edges for visualization
 */
 
-        FILE f(file_path);
-        MinAccum<INT> @dis;
-        OrAccum @visited;
-        ListAccum<VERTEX> @path;
-        SetAccum<EDGE> @@edgeSet;
+	FILE f(file_path);
+	MinAccum<INT> @dis;
+	OrAccum @visited;
+	ListAccum<VERTEX> @path;
+	SetAccum<EDGE> @@edgeSet;
 
-  ##### Initialization  #####
-        Source = {source};
-        Source = SELECT s 
-                 FROM Source:s
-                 ACCUM s.@visited += true, 
-                       s.@dis = 0,
-                       s.@path = s; 
-        ResultSet = {source};
+	##### Initialization  #####
+	Source = {source};
+	Source = SELECT s 
+			 FROM Source:s
+			 ACCUM s.@visited += true, 
+				   s.@dis = 0,
+				   s.@path = s; 
+	ResultSet = {source};
 
-  ##### Calculate distances and paths #####
-        WHILE(Source.size()>0) DO
-                Source = SELECT t
-                         FROM Source:s -(e_type:e)-> :t
-                         WHERE t.@visited == false
-                         ACCUM t.@dis += s.@dis + 1,
-                               t.@path = s.@path + [t],
-                               t.@visited += true
-                        ORDER BY getvid(t);
-                ResultSet = ResultSet UNION Source;
-        END;
+	##### Calculate distances and paths #####
+	WHILE(Source.size()>0) DO
+		Source = SELECT t
+				 FROM Source:s -(e_type:e)-> v_type:t
+				 WHERE t.@visited == false
+				 ACCUM t.@dis += s.@dis + 1,
+					   t.@path = s.@path + [t],
+					   t.@visited += true
+				ORDER BY getvid(t);
+		ResultSet = ResultSet UNION Source;
+	END;
 
-        IF file_path != "" THEN
-            f.println("Vertex_ID","Distance","Shortest_Path");
-        END;
+	IF file_path != "" THEN
+		f.println("Vertex_ID","Distance","Shortest_Path");
+	END;
 
-        ResultSet = SELECT s FROM ResultSet:s 
-                    POST-ACCUM 
-                        IF attr != "" THEN s.setAttr(attr, s.@dis) END,
-                        IF file_path != "" THEN f.println(s, s.@dis, s.@path) END
-                    LIMIT output_limit;
+	ResultSet = SELECT s FROM ResultSet:s 
+				POST-ACCUM 
+					IF result_attr != "" THEN s.setAttr(result_attr, s.@dis) END,
+					IF file_path != "" THEN f.println(s, s.@dis, s.@path) END
+	;
 
-        
-        IF print_accum THEN
-            
-            PRINT ResultSet[ResultSet.@dis, ResultSet.@path];
-            IF display THEN
 
-                ResultSet = SELECT s FROM ResultSet:s -(e_type:e)-> :t
-                ACCUM @@edgeSet += e;
-                PRINT @@edgeSet;
-            END;
-        END;
+	IF print_accum THEN
+    IF output_limit >= 0 THEN
+        ResultSet = SELECT s FROM ResultSet:s LIMIT output_limit;
+    END;
+		PRINT ResultSet[ResultSet.@dis, ResultSet.@path];
+		IF display_edges THEN
+
+			ResultSet = SELECT s FROM ResultSet:s -(e_type:e)-> v_type:t
+			ACCUM @@edgeSet += e;
+			PRINT @@edgeSet;
+		END;
+	END;
 }
