@@ -1,16 +1,28 @@
-CREATE QUERY pageRank_pers(SET<VERTEX> source, STRING e_type, INT output_limit, FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, STRING attr = "", STRING file_path = "", BOOL print_accum = TRUE){
-# Compute the pageRank score for each vertex in the GRAPH, given a set of source vertices
-# In each iteration, compute a score for activated vertices if they are source vertices:
-#   score = (1-damping) + damping*sum(received scores FROM its neighbors).
-# If they are not source vertices, then score = damping*sum(received scores FROM its neighbors).
-# The personalized pageRank algorithm stops when either of the following is true:
-#  a) it reaches max_iter iterations;
-#  b) the max score change for any vertex compared to the last iteration <= maxChange.
+CREATE QUERY pageRank_pers(SET<VERTEX> source, STRING e_type,
+  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,
+  BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") {
+/*
+ Compute the pageRank score for each vertex in the GRAPH, given a set of source vertices
+ In each iteration, compute a score for activated vertices if they are source vertices:
+   score = (1-damping) + damping*sum(received scores FROM its neighbors).
+ If they are not source vertices, then score = damping*sum(received scores FROM its neighbors).
+ The personalized pageRank algorithm stops when either of the following is true:
+  a) it reaches max_iter iterations;
+  b) the max score change for any vertex compared to the last iteration <= maxChange.
   
-# pageRank_pers only supports a single edge at the moment (8/13/2020).
+Parameters:
+ v_type: vertex types to traverse          print_accum: print JSON output
+ e_type: edge types to traverse            result_attr: INT attr to store results to
+ max_iter; max #iterations                 file_path: file to write CSV output to
+ top_k: #top scores to output              display_edges: output edges for visualization
+ max_change: max allowed change between iterations to achieve convergence
+ damping: importance of traversal vs. random teleport
+
+ This query supports only taking in a single edge for the time being (8/13/2020).
+*/
 
   TYPEDEF TUPLE<VERTEX vertex_id, FLOAT score> Vertex_Score;
-  HeapAccum<Vertex_Score>(output_limit, score DESC) @@topScores;
+  HeapAccum<Vertex_Score>(top_k, score DESC) @@topScores;
   MaxAccum<FLOAT> @@maxDiff = 9999; # max score change in an iteration
   SumAccum<FLOAT> @received_score = 0; # sum of scores each vertex receives FROM neighbors
   SumAccum<FLOAT> @score = 0;   # Initial score for every vertex is 0
@@ -48,11 +60,11 @@ CREATE QUERY pageRank_pers(SET<VERTEX> source, STRING e_type, INT output_limit, 
         END; # END WHILE loop
         
       Total = Select s From Total:s
-              POST-ACCUM 
-                          IF attr != "" THEN s.setAttr(attr, s.@score) END,
-                          IF file_path != "" THEN f.println(s, s.@score) END,
-                          IF print_accum THEN @@topScores += Vertex_Score(s, s.@score) END
-              LIMIT output_limit;
+			POST-ACCUM 
+					IF result_attr != "" THEN s.setAttr(result_attr, s.@score) END,
+					IF file_path != "" THEN f.println(s, s.@score) END,
+					IF print_accum THEN @@topScores += Vertex_Score(s, s.@score) END
+			;
                 
         IF print_accum THEN
             PRINT @@topScores as top_scores;
