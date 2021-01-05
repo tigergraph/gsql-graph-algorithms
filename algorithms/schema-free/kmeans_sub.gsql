@@ -1,0 +1,129 @@
+CREATE QUERY kMeans_sub(int k, float maxChange = 1.0, vertex input, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING result_attr="", STRING                    file_path="") returns (ListAccum<Float>) {
+  TypeDef Tuple<int center, float value> distanceTuple;
+  HeapAccum<distanceTuple> (1,value asc) @distanceHeap;
+  ArrayAccum<AvgAccum> @@Array[100][100];
+  ArrayAccum<AvgAccum> @@newArray[100][100];
+  ArrayAccum<MinAccum<float>> @@minValues[100][100];
+  ArrayAccum<MaxAccum<float>> @@maxValues[100][100];
+  SumAccum<int> @closestCenter;
+  MaxAccum<float> @@change;
+  MapAccum<vertex, ListAccum<float>> @@init;
+  GroupByAccum<int numofClusters, MinAccum<float> minDist, MaxAccum<float> maxDist, AvgAccum avgDist> @@kVariation;
+  MapAccum<int, int> @@clusterCounts;
+  AvgAccum @@avgClusterCount;
+  ListAccum<Float> @@res;
+  MapAccum<int, int> @@clusterSizes;
+  FLOAT arrayDistance;
+
+  # for populating starting array
+  FLOAT rangeDiv;
+  FLOAT current = -1.0;
+  file f (file_path);
+
+
+    # for populating starting array
+    current = -1.0;
+    rangeDiv = abs(2.0 / (k-1.0));
+
+    @@change = 99999;
+
+    @@Array.reallocate(k,100);
+    @@newArray.reallocate(k,100);
+
+    Start = {input};
+    allProds = select t from Start:s-(e_type:e)-:t;
+
+    # init array values based on distribution of data points
+    if random == false then
+      foreach i in range[0,k-1] do
+        foreach j in range[0,99] do
+          @@Array[i][j] = current;
+        end;
+        current = current + rangeDiv;
+      end;
+    end;
+
+    # init random array values
+    if random == true then
+      foreach i in range[0,k-1] do
+        foreach j in range[0,99] do
+          @@Array[i][j] = rand_int(-2,5)-0.123*0.4;
+        end;
+      end;
+    end;
+
+    // while center points value change more than the threshold
+    while @@change > maxChange do
+      @@change = 0;
+      arrayDistance = 0;
+      @@clusterCounts.clear();
+
+    // get closest centers for each product
+      allProds = select s from allProds:s
+                 accum foreach i in range [0,k-1] do
+                         double distance = 0,
+                         foreach j in range [0,99] do
+                           distance = distance + pow(@@Array[i][j] - s.embeddings.get(j),2)
+                         end,
+                         s.@distanceHeap += distanceTuple(i,sqrt(distance))
+                       end
+                       post-accum s.@closestCenter = s.@distanceHeap.top().center,
+                                  @@clusterCounts += (s.@distanceHeap.top().center -> 1),
+                                  s.@distanceHeap.clear();
+
+      // recalculate centers
+      recalculate = select t from Start:s-(e_type:e)-:t
+                    post-accum foreach reVal in range[0,k-1] do /* calculate total variation in values per cluster center */
+                                 double distance = 0,
+                                 if t.@closestCenter == reVal then
+                                   foreach j in range [0,99] do
+                                     @@newArray[reVal][j] += t.embeddings.get(j)
+                                   end
+                                 end
+                               end;
+
+      foreach i in range [0,k-1] do
+        foreach j in range [0,99] do
+          arrayDistance = arrayDistance + pow(@@newArray[i][j] - @@Array[i][j],2);
+        end;
+      end;
+
+      @@kVariation += (k -> sqrt(arrayDistance),sqrt(arrayDistance),sqrt(arrayDistance));
+      @@change += sqrt(arrayDistance);
+      @@Array = @@newArray;
+
+    end; // end while
+
+
+  foreach (key,value) in @@clusterCounts DO
+    @@avgClusterCount += value;
+  end;
+
+# output
+  if print_accum or result_attr != "" or file_path != "" then
+    allProds = select s from allProds:s
+               accum @@clusterSizes += (s.@closestCenter -> 1);
+              // post-accum
+               //  if result_attr != "" then s.setAttr(result_attr,s.@closestCenter) end;
+
+    if file_path != "" then
+      f.println(@@Array, @@kVariation, @@clusterSizes);
+    end;
+
+    if print_accum then
+      print @@kVariation as clusterInfo;
+      print @@Array as centroids;
+      print @@clusterSizes as groupsSizes;
+    end;
+  end;
+
+  # return
+  foreach item in @@kVariation do
+    @@res += item.maxDist;
+    @@res += item.avgDist;
+    @@res += @@avgClusterCount;
+  end;
+
+  return @@res;
+
+}

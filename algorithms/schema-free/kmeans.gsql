@@ -1,0 +1,18 @@
+CREATE QUERY kMeans(int k = 2, int maxK = 5, float maxChange = 1.0, vertex input, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING result_attr="",             STRING file_path="") {
+  //GroupByAccum<int numofClusters, MinAccum<float> minDist, MaxAccum<float> maxDist, AvgAccum avgDist> @@kVariation;
+  MapAccum<int, ListAccum<float>> @@kMap;
+  file f (file_path);
+
+  foreach kValue in range [k,maxK] do
+    @@kMap += (kValue -> kMeans_sub(kValue, maxChange, input, e_type, random, print_accum, result_attr, file_path));
+
+  end;
+
+  if print_accum then
+    print @@kMap;
+  end;
+
+  if file_path != "" then
+    f.println(@@kMap);
+  end;
+}

@@ -1,0 +1,64 @@
+CREATE QUERY jaccard_batch (string v_type, string e_type, string re_type, int topK, bool print_accum = true, string similarity_edge, string file_path, int num_of_batches = 1) {
+  TYPEDEF TUPLE<vertex ver, float val> res_tup;
+  MapAccum<VERTEX, INT> @setSize_all, @intersectionSize;
+  SumAccum<INT> @setSize_self;
+  HeapAccum<res_tup>(topK, val desc) @heap;
+  MapAccum<vertex, AvgAccum> @similarity;
+  file f (file_path);
+
+  Start = {v_type.*};
+  Start = select s
+          from Start:s
+          accum s.@setSize_self += s.outdegree(e_type);
+
+  Subjects = select t
+             from Start:s-(e_type:e)-:t
+             accum t.@setSize_all += (s -> s.outdegree(e_type));
+
+  foreach i in range[0,num_of_batches-1] do
+    Others = select t
+             from Subjects:s-(re_type:e)-:t
+             where getvid(t) % num_of_batches == i
+             accum
+               foreach (k,v) in s.@setSize_all do
+                 case when k != t then
+                   t.@intersectionSize += (k -> 1)
+                 end
+               end;
+
+    Others = select t
+            from Subjects:s-(re_type:e)-:t
+            where getvid(t) % num_of_batches == i
+            accum
+              foreach (k,v) in s.@setSize_all do
+                case when k != t then
+                  t.@similarity += (k -> t.@intersectionSize.get(k)*1.0/(v + t.@setSize_self - t.@intersectionSize.get(k)))
+                end
+              end
+              post-accum
+                foreach (k,v) in t.@similarity do
+                  t.@heap += res_tup(k,v)
+                end;
+
+  end;
+
+  Start = select t
+          from Start:t
+          post-accum
+            foreach tup in t.@heap do
+              case when tup.val > 0 then
+                  if file_path != "" then
+                    f.println(t, tup.ver, tup.val)
+                  end,
+                  if similarity_edge != "" then
+                    insert into edge similarity_edge values (t, tup.ver, tup.val)
+                  end
+              end
+            end
+            order by getvid(t) asc;
+
+  if print_accum then
+    print Start[Start.@heap];
+  end;
+
+}

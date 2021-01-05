@@ -1,0 +1,60 @@
+CREATE QUERY cosine_batch(string vertex_type, string edge_type, string edge_attribute, int topK, bool print_accum = true, string file_path, string similarity_edge, int           num_of_batches=1) {
+  TYPEDEF TUPLE<vertex ver, float val> res_tup;
+  MapAccum<vertex, float> @numerator, @@norm;
+  HeapAccum<res_tup>(topK, val desc) @heap;
+  file f (file_path);
+
+  start = {vertex_type.*};
+
+  subjects = select t
+             from start:s -(edge_type:e)-> :t
+             where e.getAttr(edge_attribute, "FLOAT") > 0
+             accum t.@numerator += (s -> e.getAttr(edge_attribute, "FLOAT")),
+                   @@norm += (s -> pow(e.getAttr(edge_attribute, "FLOAT"), 2));
+
+  foreach i in range[0, num_of_batches-1] do
+    neighbours = select t
+                 from subjects:s -(edge_type:e)-> :t
+                 where e.getAttr(edge_attribute, "FLOAT") > 0
+                 and getvid(t) % num_of_batches == i
+                 accum
+                   foreach (k,v) in s.@numerator do
+                     case when getvid(k) != getvid(t) then # for testing purposes, using !=. Use > comparison operation normally
+                       t.@numerator += (k -> v * e.getAttr(edge_attribute, "FLOAT"))
+                     end
+                   end;
+
+    neighbours = select t
+                 from neighbours:t
+                 post-accum
+                 foreach (ver, w) in t.@numerator do
+                   case when ver != t then
+                     FLOAT divisor = sqrt(@@norm.get(t) * @@norm.get(ver)),
+                     case when divisor == 0 then
+                       continue
+                     end,
+                     FLOAT sim = w/divisor,
+                     t.@heap += res_tup(ver, sim)
+                   end
+                 end,
+                 t.@numerator.clear();
+  end;
+
+  start = select t from start:t
+            post-accum
+              foreach tup in t.@heap do
+                case when tup.val > 0 then
+                  if file_path != "" then
+                    f.println(t, tup.ver, tup.val)
+                  end,
+                  if similarity_edge != "" then
+                    insert into edge similarity_edge values (t, tup.ver, tup.val)
+                  end
+                end
+              end
+          order by getvid(t) asc;
+
+  if print_accum then
+    print start[start.@heap];
+  end;
+}
