@@ -1,6 +1,19 @@
-CREATE QUERY kMeans_sub(int k, float maxChange = 1.0, vertex input, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING result_attr="", STRING                    file_path="") returns (ListAccum<Float>) {
-  TypeDef Tuple<int center, float value> distanceTuple;
-  HeapAccum<distanceTuple> (1,value asc) @distanceHeap;
+CREATE QUERY kMeans_sub(int k, float maxChange = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING file_path="") returns (ListAccum<Float>) {
+  /*
+    This query will run k-means clustering computation for a given K number of clusters.
+    K-means clustering utilizes the the euclidean distance formula to compute distance between vectors (centroids).
+
+    Parameters :
+      k : # of centroids
+      maxChange : maximum centroid vector change condition
+      v_type    : vertex type to start from
+      e_type    : edge type to traverse
+      random    : boolean to start from either random or non-random centroid positions 
+      print_accum : print JSON output
+      file_path   : file to write CSV output to
+  */
+  TypeDef Tuple<int center, float value> distanceTuple; # tuple to store results in the Heap
+  HeapAccum<distanceTuple> (1,value asc) @distanceHeap; # stores the closest centroid and distance from it
   ArrayAccum<AvgAccum> @@Array[100][100];
   ArrayAccum<AvgAccum> @@newArray[100][100];
   ArrayAccum<MinAccum<float>> @@minValues[100][100];
@@ -30,7 +43,7 @@ CREATE QUERY kMeans_sub(int k, float maxChange = 1.0, vertex input, string e_typ
     @@Array.reallocate(k,100);
     @@newArray.reallocate(k,100);
 
-    Start = {input};
+    Start = {v_type.*};
     allProds = select t from Start:s-(e_type:e)-:t;
 
     # init array values based on distribution of data points
@@ -100,11 +113,9 @@ CREATE QUERY kMeans_sub(int k, float maxChange = 1.0, vertex input, string e_typ
   end;
 
 # output
-  if print_accum or result_attr != "" or file_path != "" then
+  if print_accum  or file_path != "" then
     allProds = select s from allProds:s
                accum @@clusterSizes += (s.@closestCenter -> 1);
-              // post-accum
-               //  if result_attr != "" then s.setAttr(result_attr,s.@closestCenter) end;
 
     if file_path != "" then
       f.println(@@Array, @@kVariation, @@clusterSizes);

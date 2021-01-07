@@ -1,64 +1,83 @@
 CREATE QUERY jaccard_batch (string v_type, string e_type, string re_type, int topK, bool print_accum = true, string similarity_edge, string file_path, int num_of_batches = 1) {
-  TYPEDEF TUPLE<vertex ver, float val> res_tup;
-  MapAccum<VERTEX, INT> @setSize_all, @intersectionSize;
-  SumAccum<INT> @setSize_self;
-  HeapAccum<res_tup>(topK, val desc) @heap;
-  MapAccum<vertex, AvgAccum> @similarity;
+  /*
+    Calculates the Jaccard Simiarlity between a given vertex and every other vertex.
+      Jaccard Similarity = intersection_size / (setSize_all + setSize_self - intersection_size)
+
+    Paramaters :
+      v_type  : start vertex types
+      e_type  : directed edge types to traverse
+      re_type : reverse edge types to  traverse
+      topK    : # of top scores to report for each vertex
+      print_accum : print JSON output
+      similarity_edge : edge type for storing vertex-vertex similarity scores
+      file_path   : file to write CSV output to
+      num_of_batches  : how many batches to split up the query into (trade off parallelism for memory optimization)
+  */
+  TYPEDEF TUPLE<vertex ver, float val> res_tup; # storing results in the Heap
+  MapAccum<VERTEX, INT> @setSize_all, @intersectionSize; # set sizes of all vertices
+  SumAccum<INT> @setSize_self; # set size of each vertex
+  HeapAccum<res_tup>(topK, val desc) @heap; # stores topK similarity results
+  MapAccum<vertex, AvgAccum> @similarity; # map of similarity scores for each vertex 
   file f (file_path);
 
+# get set sizes for all given vertices of the input type
   Start = {v_type.*};
-  Start = select s
-          from Start:s
-          accum s.@setSize_self += s.outdegree(e_type);
+  Start = SELECT s
+          FROM Start:s
+          ACCUM s.@setSize_self += s.outdegree(e_type);
 
-  Subjects = select t
-             from Start:s-(e_type:e)-:t
-             accum t.@setSize_all += (s -> s.outdegree(e_type));
+# get global comparison of set sizes of input vertex type
+  Subjects = SELECT t
+             FROM Start:s-(e_type:e)-:t
+             ACCUM t.@setSize_all += (s -> s.outdegree(e_type));
 
-  foreach i in range[0,num_of_batches-1] do
-    Others = select t
-             from Subjects:s-(re_type:e)-:t
-             where getvid(t) % num_of_batches == i
-             accum
-               foreach (k,v) in s.@setSize_all do
-                 case when k != t then
+# first get intersection size for each vertex
+  FOREACH i IN RANGE[0,num_of_batches-1] DO
+    Others = SELECT t
+             FROM Subjects:s-(re_type:e)-:t
+             WHERE getvid(t) % num_of_batches == i
+             ACCUM
+               FOREACH (k,v) IN s.@setSize_all DO
+                 CASE WHEN k != t THEN
                    t.@intersectionSize += (k -> 1)
-                 end
-               end;
+                 END
+               END;
 
-    Others = select t
-            from Subjects:s-(re_type:e)-:t
-            where getvid(t) % num_of_batches == i
-            accum
-              foreach (k,v) in s.@setSize_all do
-                case when k != t then
-                  t.@similarity += (k -> t.@intersectionSize.get(k)*1.0/(v + t.@setSize_self - t.@intersectionSize.get(k)))
-                end
-              end
-              post-accum
-                foreach (k,v) in t.@similarity do
-                  t.@heap += res_tup(k,v)
-                end;
+# compute similarity score and store into map temporarily, then store only topK in the heap
+    Others = SELECT t
+             FROM Subjects:s-(re_type:e)-:t
+             WHERE getvid(t) % num_of_batches == i
+             ACCUM
+               FOREACH (k,v) IN s.@setSize_all DO
+                 CASE WHEN k != t THEN
+                   t.@similarity += (k -> t.@intersectionSize.get(k)*1.0/(v + t.@setSize_self - t.@intersectionSize.get(k)))
+                 END
+               END
+             POST-ACCUM
+               FOREACH (k,v) IN t.@similarity DO
+                 t.@heap += res_tup(k,v)
+               END;
 
-  end;
+  END;
 
-  Start = select t
-          from Start:t
-          post-accum
-            foreach tup in t.@heap do
-              case when tup.val > 0 then
-                  if file_path != "" then
+# output to file/JSON or insert edge
+  Start = SELECT t
+          FROM Start:t
+          POST-ACCUM
+            FOREACH tup IN t.@heap DO
+              CASE WHEN tup.val > 0 THEN
+                  IF file_path != "" THEN
                     f.println(t, tup.ver, tup.val)
-                  end,
-                  if similarity_edge != "" then
-                    insert into edge similarity_edge values (t, tup.ver, tup.val)
-                  end
-              end
-            end
-            order by getvid(t) asc;
+                  END,
+                  IF similarity_edge != "" THEN
+                    INSERT INTO EDGE similarity_edge VALUES (t, tup.ver, tup.val)
+                  END
+              END
+            END
+            ORDER BY getvid(t) ASC;
 
-  if print_accum then
-    print Start[Start.@heap];
-  end;
+  IF print_accum THEN
+    PRINT Start[Start.@heap];
+  END;
 
 }

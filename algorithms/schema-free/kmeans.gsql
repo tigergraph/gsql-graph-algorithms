@@ -1,18 +1,33 @@
-CREATE QUERY kMeans(int k = 2, int maxK = 5, float maxChange = 1.0, vertex input, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING result_attr="",             STRING file_path="") {
-  //GroupByAccum<int numofClusters, MinAccum<float> minDist, MaxAccum<float> maxDist, AvgAccum avgDist> @@kVariation;
+CREATE QUERY kMeans(int k = 2, int maxK = 5, float maxChange = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING result_attr="", STRING file_path="") {
+  /*
+    Runs k-means clustering algorithm for a range of K values
+    
+    Parameters :
+      k      : starting value of K range
+      maxK   : ending value of K range
+      maxChange   : maximum centroid vector change condition
+      v_type : vertex type to start from 
+      e_type : edge type to traverse
+      random : boolean to start from either random or non-random centroid positions
+      print_accum : print JSON output
+      result_attr : store as attribute in graph
+      file_path   : file to write CSV output to
+  */
   MapAccum<int, ListAccum<float>> @@kMap;
   file f (file_path);
 
-  foreach kValue in range [k,maxK] do
-    @@kMap += (kValue -> kMeans_sub(kValue, maxChange, input, e_type, random, print_accum, result_attr, file_path));
+# for each k cluster value, call subquery to run calculation for the k number of clusters
+  FOREACH kValue IN RANGE [k,maxK] DO
+    @@kMap += (kValue -> kMeans_sub(kValue, maxChange, v_type, e_type, random, print_accum, result_attr, file_path));
+  END;
 
-  end;
+# print JSON
+  IF print_accum THEN
+    PRINT @@kMap;
+  END;
 
-  if print_accum then
-    print @@kMap;
-  end;
-
-  if file_path != "" then
+# print to file
+  IF file_path != "" THEN
     f.println(@@kMap);
-  end;
+  END;
 }
