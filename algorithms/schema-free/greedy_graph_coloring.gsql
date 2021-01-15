@@ -1,0 +1,82 @@
+CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_count = TRUE,STRING file_path = ""){
+  
+  /* Greedy Graph Coloring algorithm
+  This is a distributed algorithm for coloring graph on large-scale undirect graphs with     one edge type.In every iteration, the vertices send its color to its out-neighbors, and     the neighbors get assigned a different color. 
+  Conditions:
+    -  No two adjacent vertices in the graph should have same color
+    -  Until above condition is achieved , keep on finding conflicts and resolve them.
+    -  Stop the conflict detection when there are no resolution left.
+  */
+  
+  TYPEDEF tuple<INT color> testColor;
+  AndAccum<BOOL> @@isconflict=true;
+  HeapAccum<testColor>(999999,color ASC) @color;
+  SumAccum<INT> @colorvertex;
+  MaxAccum<INT> @@counter;
+  FILE f(file_path);
+  
+  #initialization
+  coloring = {source};
+  coloring = SELECT s 
+             FROM coloring:s 
+             POST-ACCUM s.@colorvertex+=1,@@counter+=s.@colorvertex;
+  
+  #coloring all vertices 
+  WHILE coloring.size()>0 DO
+    coloring = SELECT t 
+             FROM coloring:s-(e_type:e)-:t
+             WHERE t.@colorvertex<1
+             ACCUM t.@color += testColor(s.@colorvertex)
+             POST-ACCUM
+               t.@colorvertex = 1,
+               FOREACH item in t.@color DO
+                 CASE WHEN (item.color == t.@colorvertex) THEN
+                   t.@colorvertex += 1,@@counter+=t.@colorvertex END,
+                 CASE WHEN (item.color > t.@colorvertex) THEN BREAK END
+               END;
+    END;
+  
+  #conflict detection and resolution
+  WHILE @@isconflict DO
+    start= {ANY};
+  
+    #clear the color heap for all vertices
+    start = SELECT s 
+            FROM start:s
+            POST-ACCUM s.@color.clear();
+  
+    #create a color heap for all vertices
+    start = SELECT t 
+            FROM start:s-(e_type:e)-:t
+            ACCUM t.@color+=testColor(s.@colorvertex);
+  
+    #detect all conflicts
+    conflict = SELECT t 
+               FROM start:s-(e_type:e)-:t
+               WHERE s.@colorvertex == t.@colorvertex and getvid(s)<getvid(t);
+  
+    #resolve all detected conflicts
+    resolved = SELECT t 
+               FROM conflict:t
+               POST-ACCUM // getvid to pick smallest
+                   t.@colorvertex = 1, //s.@color.top().color,
+                   FOREACH item in t.@color DO
+                      CASE WHEN (item.color == t.@colorvertex) THEN
+                        t.@colorvertex += 1,@@counter+=t.@colorvertex END,
+                      CASE WHEN (item.color > t.@colorvertex) THEN  BREAK END
+                   END;
+  
+    #ending the conflict detection and resolution
+    IF resolved.size()<1 THEN @@isconflict+=false; END;
+  
+  END;
+  
+  #printing and storing the results
+  IF file_path != "" THEN
+          f.println(@@counter);
+      END;
+  IF print_color_count THEN
+           PRINT @@counter as color_count;
+  END;
+
+}
