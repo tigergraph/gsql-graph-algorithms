@@ -1,4 +1,4 @@
-CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_count = TRUE,STRING file_path = ""){
+CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_count = TRUE,BOOL display = TRUE, STRING file_path = ""){
   
   /* Greedy Graph Coloring algorithm
   This is a distributed algorithm for coloring graph on large-scale undirect graphs with     one edge type.In every iteration, the vertices send its color to its out-neighbors, and     the neighbors get assigned a different color. 
@@ -14,6 +14,7 @@ CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_
   SumAccum<INT> @colorvertex;
   MaxAccum<INT> @@counter;
   SetAccum<EDGE> @@edgeSet;
+  MapAccum<Vertex,INT> @@vertexSet;
   FILE f(file_path);
   
   #initialization
@@ -72,16 +73,26 @@ CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_
   
   END;
   
+  #collecting results
+  start = {ANY};
+  start = SELECT t 
+          FROM start:s-(e_type:e)-:t 
+          ACCUM @@edgeSet+=e 
+          POST-ACCUM @@vertexSet+=(t->t.@colorvertex);
   #printing and storing the results
   IF file_path != "" THEN
-          start = {ANY};
-          start = SELECT s
-                FROM start:s -(e_type:e)->:t
-                    ACCUM @@edgeSet += e;
-                f.println(@@counter,@@edgeSet);
+                f.println(@@counter);
+      IF display THEN
+                f.println(@@edgeSet);
+                f.println(@@vertexSet);
+          END;
       END;
   IF print_color_count THEN
            PRINT @@counter as color_count;
+      IF display THEN
+           PRINT @@edgeSet as edges;
+           PRINT @@vertexSet as vertices;
+      END;
   END;
 
 }
