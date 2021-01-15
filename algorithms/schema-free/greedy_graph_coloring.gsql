@@ -13,6 +13,7 @@ CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_
   HeapAccum<testColor>(999999,color ASC) @color;
   SumAccum<INT> @colorvertex;
   MaxAccum<INT> @@counter;
+  SetAccum<EDGE> @@edgeSet;
   FILE f(file_path);
   
   #initialization
@@ -73,7 +74,11 @@ CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_
   
   #printing and storing the results
   IF file_path != "" THEN
-          f.println(@@counter);
+          start = {ANY};
+          start = SELECT s
+                FROM start:s -(e_type:e)->:t
+                    ACCUM @@edgeSet += e;
+                f.println(@@counter,@@edgeSet);
       END;
   IF print_color_count THEN
            PRINT @@counter as color_count;
