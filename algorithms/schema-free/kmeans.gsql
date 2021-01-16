@@ -1,4 +1,4 @@
-CREATE QUERY kMeans(int k = 2, int maxK = 5, float maxChange = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING result_attr="", STRING file_path="") {
+CREATE QUERY kMeans(int k = 2, int maxK = 5, float maxChange = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING file_path="") {
   /*
     Runs k-means clustering algorithm for a range of K values
     
@@ -18,7 +18,7 @@ CREATE QUERY kMeans(int k = 2, int maxK = 5, float maxChange = 1.0, string v_typ
 
 # for each k cluster value, call subquery to run calculation for the k number of clusters
   FOREACH kValue IN RANGE [k,maxK] DO
-    @@kMap += (kValue -> kMeans_sub(kValue, maxChange, v_type, e_type, random, print_accum, result_attr, file_path));
+    @@kMap += (kValue -> kMeans_sub(kValue, maxChange, v_type, e_type, random, print_accum, file_path));
   END;
 
 # print JSON

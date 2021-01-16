@@ -8,7 +8,7 @@ CREATE QUERY closeness_approx_sub(VERTEX source, SET<STRING> v_type, SET<STRING>
   # Initialize: Set the input vertex source as the starting point
   Start = {source};
   Start = SELECT s FROM Start:s
-      ACCUM s.@visited += true;
+          ACCUM s.@visited += true;
 
   # totalDist = sum(distance between vertex s and all connected neighbors)
   WHILE (Start.size() > 0) LIMIT max_hops DO    # explore up to (maxHops) hops FROM s
@@ -17,7 +17,7 @@ CREATE QUERY closeness_approx_sub(VERTEX source, SET<STRING> v_type, SET<STRING>
       Start = SELECT t FROM Start:s -(e_type:e)-> v_type:t
           WHERE t.@visited == false AND t != s
           POST-ACCUM t.@visited += true;
-                 @@totalDist += Start.size() * @@currDist;
+                     @@totalDist += Start.size() * @@currDist;
       @@n += Start.size();
   END;
 
