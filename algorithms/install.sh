@@ -40,37 +40,9 @@ finished=false
 while [ !$finished ]; do
 	echo; echo "Please enter the index of the algorithm you want to create or EXIT:"
   
-	select algo in "EXIT" "Betweenness Centrality" "Closeness Centrality" "Connected Components" "Connected Components (Fast)" "Strongly Connected Components" "Label Propagation" "Louvain Method with Parallelism and Refinement" "PageRank" "Weighted PageRank" "Personalized PageRank" "Shortest Path, Single-Source, No Weight" "Shortest Path, Single-Source, Positive Weight" "Shortest Path, Single-Source, Any Weight" "Minimal Spanning Tree (MST)" "Minimum Spanning Forest (MSF)" "Cycle Detection" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Cosine Neighbor Similarity (single vertex)" "Cosine Neighbor Similarity (all vertices)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)" "k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)" "k-Nearest Neighbors (Cosine Neighbor Similarity, batch)" "k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" 
+	select algo in "EXIT" "PageRank" "Weighted PageRank" "Personalized PageRank" "Triangle Counting(minimal memory)" "Triangle Counting(fast, more memory)" "Jaccard Neighbor Similarity (single vertex)" "Jaccard Neighbor Similarity (all vertices)"; do   # "Cosine Similarity (single vertex)" "Jaccard Similarity (single vertex)" 
 
     	case $algo in
-            		"Betweenness Centrality" )
-                		algoName="betweenness_cent"
-                		echo "  betweenness_cent() works on undirected edges"
-                		break;;
-            		"Closeness Centrality" )
-				algoName="closeness_cent"
-				echo "  closeness_cent() works on undirected edges"
-				break;;
-			"Connected Components" )
-				algoName="conn_comp"
-				echo "  conn_comp() works on undirected edges"
-				break;;
-      "Connected Components (Fast)" )
-        algoName="wcc_fast"
-        echo "  wcc_fast() works on undirected edges"
-        break;;
-			"Strongly Connected Components" )
-        algoName="scc"
-        echo "  scc() works on directed edges with reverse edges. DISTRIBUTED QUERY mode for this query is supported from TG 2.4"
-        break;;
-			"Label Propagation" )
-				algoName="label_prop"
-				echo "  label_prop() works on undirected edges"
-				break;;
-			"Louvain Method with Parallelism and Refinement" )
-				algoName="louvain_parallel"
-				echo "  louvain_parallel() works on undirected weighted edges"
-				break;;
 			"PageRank" )
 				algoName="pageRank"
 				echo "  pageRank() works on directed edges"
@@ -83,30 +55,6 @@ while [ !$finished ]; do
         algoName="pageRank_pers"
         echo "  pageRank_pers() works on directed edges"
         break;;
-			"Shortest Path, Single-Source, No Weight" )
-                                algoName="shortest_ss_no_wt"
-                                echo "  shortest_ss_no_wt() works on directed or undirected edges without weight"
-                                break;;
-			"Shortest Path, Single-Source, Positive Weight" )
-                                algoName="shortest_ss_pos_wt"
-                                echo "  shortest_ss_pos_wt() works on weighted directed or undirected edges without negative weight"
-                                break;;
-			"Shortest Path, Single-Source, Any Weight" )
-				algoName="shortest_ss_any_wt"
-				echo "  shortest_ss_any_wt() works on weighted directed or undirected edges"
-				break;;
-                        "Minimal Spanning Tree (MST)" )
-                                algoName="mst"
-                                echo "  mst() works on weighted undirected edges"
-                                break;;
-                       	"Minimum Spanning Forest (MSF)" )
-				algoName="msf"
-				echo " msf() works on weighted undirected edges"
-				break;;
-                        "Cycle Detection" )
-                                algoName="cycle_detection"
-                                echo "  cycle_detection() works on directed edges"
-                                break;;
 			"Triangle Counting(minimal memory)" )
 				algoName="tri_count"
 				echo "  tri_count() works on undirected edges"
@@ -115,22 +63,6 @@ while [ !$finished ]; do
 				algoName="tri_count_fast"
 				echo "  tri_count_fast() works on undirected graphs"
 				break;;
-                        #'Cosine Similarity (single vertex)' )
-                        #        algoName="cosine_ss"
-                        #        echo "  cosine_ss() calculates the similarity between one given vertex and all other vertices. You need to have a subquery called collect_feature_cosine returning MapAccum<STRING, FLOAT> installed before installing this algorithm."
-                        #        break;;
-                        #'Jaccard Similarity (single vertex)' )
-                        #        algoName="jaccard_ss"
-                        #        echo "  jaccard_ss() calculates the similarity between one given vertex and all other vertices. You need to have a subquery called collect_feature_jaccard returning SetAccum<STRING> installed before installing this algorithm."
-                        #        break;;
-			'Cosine Neighbor Similarity (single vertex)' )
-				algoName="cosine_nbor_ss"
-                                echo "  cosine_nbor_ss() calculates the similarity between one given vertex and all other vertices"
-                                break;;
-			'Cosine Neighbor Similarity (all vertices)' )
-				algoName="cosine_nbor_ap"
-                                echo "  cosine_nbor_ap() calculates the similarity between all vertices"
-                                break;;
 	                'Jaccard Neighbor Similarity (single vertex)' )
                                 algoName="jaccard_nbor_ss"
                                 echo "  jaccard_nbor_ss() calculates the similarity between one given vertex and all other vertices"
@@ -138,18 +70,6 @@ while [ !$finished ]; do
                         'Jaccard Neighbor Similarity (all vertices)' )
                                 algoName="jaccard_nbor_ap"
                                 echo "  jaccard_nbor_ap() calculates the similarity between all vertices"
-                                break;;
-                        'k-Nearest Neighbors (Cosine Neighbor Similarity, single vertex)' )
-                                algoName="knn_cosine_ss"
-                                echo "  knn_cosine_ss() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
-                                break;;
-                       'k-Nearest Neighbors (Cosine Neighbor Similarity, batch)' )
-                                algoName="knn_cosine_all"
-                                echo "  knn_cosine_all() returns the predicted label based on the nearest neighbors calculated with cosine similarity"
-                                break;;
-                       'k-Nearest Neighbors Cross Validation (Cosine Neighbor Similarity)' )
-                                algoName="knn_cosine_cv"
-                                echo "  knn_cosine_cv() returns an estimated best choice of k in a range, based on cosine neighbor similarity"
                                 break;;
 			"EXIT" )
 				finished=true
