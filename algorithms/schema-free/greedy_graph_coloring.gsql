@@ -1,4 +1,4 @@
-CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_count = TRUE,BOOL display = TRUE, STRING file_path = ""){
+CREATE QUERY greedy_graph_coloring(SET<STRING> e_type,BOOL print_color_count = TRUE,BOOL display = TRUE, STRING file_path = ""){
   
   /* Greedy Graph Coloring algorithm
   This is a distributed algorithm for coloring graph on large-scale undirect graphs with     one edge type.In every iteration, the vertices send its color to its out-neighbors, and     the neighbors get assigned a different color. 
@@ -17,26 +17,11 @@ CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_
   MapAccum<Vertex,INT> @@vertexSet;
   FILE f(file_path);
   
-  #initialization
-  coloring = {source};
+  #initialization - coloring All vertices
+  coloring = {ANY};
   coloring = SELECT s 
              FROM coloring:s 
              POST-ACCUM s.@colorvertex+=1,@@counter+=s.@colorvertex;
-  
-  #coloring all vertices 
-  WHILE coloring.size()>0 DO
-    coloring = SELECT t 
-             FROM coloring:s-(e_type:e)-:t
-             WHERE t.@colorvertex<1
-             ACCUM t.@color += testColor(s.@colorvertex)
-             POST-ACCUM
-               t.@colorvertex = 1,
-               FOREACH item in t.@color DO
-                 CASE WHEN (item.color == t.@colorvertex) THEN
-                   t.@colorvertex += 1,@@counter+=t.@colorvertex END,
-                 CASE WHEN (item.color > t.@colorvertex) THEN BREAK END
-               END;
-    END;
   
   #conflict detection and resolution
   WHILE @@isconflict DO
@@ -55,7 +40,7 @@ CREATE QUERY greedy_graph_coloring(VERTEX source,STRING e_type,BOOL print_color_
     #detect all conflicts
     conflict = SELECT t 
                FROM start:s-(e_type:e)-:t
-               WHERE s.@colorvertex == t.@colorvertex and getvid(s)<getvid(t);
+               WHERE s.@colorvertex == t.@colorvertex and getvid(s)>getvid(t);
   
     #resolve all detected conflicts
     resolved = SELECT t 
