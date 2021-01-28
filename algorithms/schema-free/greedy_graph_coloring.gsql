@@ -1,4 +1,4 @@
-CREATE QUERY greedy_graph_coloring(SET<STRING> e_type,BOOL print_color_count = TRUE,BOOL display = TRUE, STRING file_path = ""){
+CREATE QUERY greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,BOOL print_color_count = TRUE,BOOL display = TRUE, STRING file_path = ""){
   
   /* Greedy Graph Coloring algorithm
   This is a distributed algorithm for coloring graph on large-scale undirect graphs with     one edge type.In every iteration, the vertices send its color to its out-neighbors, and     the neighbors get assigned a different color. 
@@ -9,23 +9,23 @@ CREATE QUERY greedy_graph_coloring(SET<STRING> e_type,BOOL print_color_count = T
   */
   
   TYPEDEF tuple<INT color> testColor;
-  AndAccum<BOOL> @@isconflict=true;
+ // AndAccum<BOOL> @@isconflict=true;
   HeapAccum<testColor>(999999,color ASC) @color;
   SumAccum<INT> @colorvertex;
   MaxAccum<INT> @@counter;
   SetAccum<EDGE> @@edgeSet;
-  MapAccum<Vertex,INT> @@vertexSet;
+  SetAccum<Vertex> @@vertexSet;
   FILE f(file_path);
   
   #initialization - coloring All vertices
-  coloring = {ANY};
+  coloring = {v_type};
   coloring = SELECT s 
              FROM coloring:s 
              POST-ACCUM s.@colorvertex+=1,@@counter+=s.@colorvertex;
   
   #conflict detection and resolution
-  WHILE @@isconflict DO
-    start= {ANY};
+  WHILE TRUE DO//@@isconflict DO
+    start= {v_type};
   
     #clear the color heap for all vertices
     start = SELECT s 
@@ -54,29 +54,25 @@ CREATE QUERY greedy_graph_coloring(SET<STRING> e_type,BOOL print_color_count = T
                    END;
   
     #ending the conflict detection and resolution
-    IF resolved.size()<1 THEN @@isconflict+=false; END;
+    IF resolved.size()<1 THEN BREAK; END;//@@isconflict+=false; END;
   
   END;
   
   #collecting results
-  start = {ANY};
+  start = {v_type};
   start = SELECT t 
-          FROM start:s-(e_type:e)-:t 
-          ACCUM @@edgeSet+=e 
-          POST-ACCUM @@vertexSet+=(t->t.@colorvertex);
+          FROM start:s-(e_type:e)-:t
+          POST-ACCUM 
+              IF file_path != "" THEN
+                  f.println(@@counter),
+                  f.println(t,t.@colorvertex)
+              END;
+  
   #printing and storing the results
-  IF file_path != "" THEN
-                f.println(@@counter);
-      IF display THEN
-                f.println(@@edgeSet);
-                f.println(@@vertexSet);
-          END;
-      END;
   IF print_color_count THEN
            PRINT @@counter as color_count;
       IF display THEN
-           PRINT @@edgeSet as edges;
-           PRINT @@vertexSet as vertices;
+           PRINT start [start.@colorvertex];
       END;
   END;
 
