@@ -9,7 +9,7 @@ CREATE QUERY greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,BOOL pr
   */
   
   TYPEDEF tuple<INT color> testColor;
- // AndAccum<BOOL> @@isconflict=true;
+  AndAccum<BOOL> @@isconflict=true;
   HeapAccum<testColor>(999999,color ASC) @color;
   SumAccum<INT> @colorvertex;
   MaxAccum<INT> @@counter;
@@ -24,7 +24,7 @@ CREATE QUERY greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,BOOL pr
              POST-ACCUM s.@colorvertex+=1,@@counter+=s.@colorvertex;
   
   #conflict detection and resolution
-  WHILE TRUE DO//@@isconflict DO
+  WHILE @@isconflict DO
     start= {v_type};
   
     #clear the color heap for all vertices
@@ -54,7 +54,7 @@ CREATE QUERY greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,BOOL pr
                    END;
   
     #ending the conflict detection and resolution
-    IF resolved.size()<1 THEN BREAK; END;//@@isconflict+=false; END;
+    IF resolved.size()<1 THEN @@isconflict+=false; END;
   
   END;
   
@@ -64,16 +64,15 @@ CREATE QUERY greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,BOOL pr
           FROM start:s-(e_type:e)-:t
           POST-ACCUM 
               IF file_path != "" THEN
-                  f.println(@@counter),
                   f.println(t,t.@colorvertex)
               END;
   
   #printing and storing the results
   IF print_color_count THEN
            PRINT @@counter as color_count;
-      IF display THEN
+  END;
+  IF display THEN
            PRINT start [start.@colorvertex];
-      END;
   END;
 
 }
