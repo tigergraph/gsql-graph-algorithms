@@ -1,14 +1,14 @@
 CREATE QUERY closeness_approx (
     SET<STRING> v_type, 
     SET<STRING> e_type,
-		int k,  # sample num
-		int maxHops,  # max BFS explore steps 
-		double epsilon,  # error parameter
-    bool print_accum, # output to console
-		string file_path,  # output file 
-		int debug,  # debug flag -- 0: No LOG;1: LOG without the sample-node bfs loop;2: ALL LOG.
-		int sample_index,  # random sample group
-		int maxsize,  # max size of connected components using exact closeness algorithm
+		int k = 100,  # sample num
+		int maxHops = 10,  # max BFS explore steps 
+		double epsilon = 0.1,  # error parameter
+    bool print_accum = true, # output to console
+		string file_path = "",  # output file 
+		int debug = 0,  # debug flag -- 0: No LOG;1: LOG without the sample-node bfs loop;2: ALL LOG.
+		int sample_index = 0,  # random sample group
+		int maxsize = 1000,  # max size of connected components using exact closeness algorithm
 		bool wf = True # Wasserman and Faust formula 
 ) {
 		
@@ -50,7 +50,7 @@ CREATE QUERY closeness_approx (
 
 		# Propagate smaller internal IDs until no more ID changes can be DOne
 		WHILE (comp.size()>0) DO
-			comp = SELECT t FROM comp:s-(e_type)->:t
+			comp = SELECT t FROM comp:s-(e_type)->v_type:t
 				     ACCUM t.@cc_id += s.@cc_id 	// If s has a smaller id than t, copy the id to t
 	           HAVING t.@cc_id != t.@cc_id';
 		END;
@@ -108,7 +108,7 @@ CREATE QUERY closeness_approx (
 				# BFS: get the pivot of all nodes and its distance from the pivot
 				WHILE src.size() > 0 DO
 					@@curDist += 1;
-					src = SELECT t FROM src:s-(e_type)->:t
+					src = SELECT t FROM src:s-(e_type)->v_type:t
 						    WHERE t.@visited0 == False
 						    ACCUM t.@pivot += s.@pivot
                 POST-ACCUM t.@visited0 += True,
@@ -143,7 +143,7 @@ CREATE QUERY closeness_approx (
 						@@nonsample = 0;
 	    
 						# decide whether the sample node is within or outside the threshold radius from the pivot of the visiting node
-						vnode = SELECT t FROM vnode:s-(e_type)->:t
+						vnode = SELECT t FROM vnode:s-(e_type)->v_type:t
 								    WHERE t.@visited == False
 								    POST-ACCUM t.@visited += True,
 									    IF t.@sampled == True THEN
