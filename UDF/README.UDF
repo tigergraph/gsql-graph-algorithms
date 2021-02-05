@@ -5,4 +5,4 @@ Some algorithms require the use of User Defined Functions :
 
 Please place the ExprFunctions.hpp file into this directory on your TigerGraph installation system :
 
-~/tigergraph/app//dev/gdk/gsql/src/QueryUdf/
+~/tigergraph/app/<version_number>/dev/gdk/gsql/src/QueryUdf/
