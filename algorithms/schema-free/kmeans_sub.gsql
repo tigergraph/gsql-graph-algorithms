@@ -1,0 +1,151 @@
+CREATE QUERY kMeans_sub(int k, float maxChange = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING file_path="") returns (ListAccum<Float>) {
+  /*
+    This query will run k-means clustering computation for a given K number of clusters.
+    K-means clustering utilizes the the euclidean distance formula to compute distance between vectors (centroids).
+
+    There are a few changes that need to be made in order to tailor this query to your use case.
+      Line 21 & 22       : change the second index of each Array to a larger value if your vectors have more than 100 values.
+      Line 42 & 93 & 107 : change embeddings to the name of your vector attribute
+
+    Parameters :
+      k : # of centroids
+      maxChange : maximum centroid vector change condition
+      v_type    : vertex type to start from
+      e_type    : edge type to traverse
+      random    : boolean to start from either random or non-random centroid positions 
+      print_accum : print JSON output
+      file_path   : file to write CSV output to
+  */
+  TypeDef Tuple<int center, float value> distanceTuple; # tuple to store results in the Heap
+  HeapAccum<distanceTuple> (1,value asc) @distanceHeap; # stores the closest centroid and distance from it
+  ArrayAccum<AvgAccum> @@centroids[100][100];           # current centroids/vectors
+  ArrayAccum<AvgAccum> @@newCentroids[100][100];        # updated centroids/vectors 
+  SumAccum<int> @closestCenter;                         # value of closest center for each vertex 
+  MaxAccum<float> @@change, @@attrMaxValue;             # total change per iteration, high end of attribute range
+  GroupByAccum<int numofClusters, MinAccum<float> minDist, MaxAccum<float> maxDist, AvgAccum avgDist> @@kVariation; # min,max,avg distances for each centroid
+  MapAccum<int, int> @@clusterCounts;                   # number of vertices closest to each centroid 
+  AvgAccum @@avgClusterCount;                           # avg number of closest vertices to each centroid
+  ListAccum<Float> @@res;                               # return list of results per each K clusters
+  MapAccum<int, int> @@clusterSizes;                    # end result cluster sizes 
+  MinAccum<float> @@attrMinValue;                       # low end of attribute range
+  FLOAT arrayDistance, attrRange;                       # distance between vectors/centroid and vertex, range of values for given attribute
+
+  # for populating starting array
+  FLOAT rangeDiv;
+  FLOAT current = 0;
+  file f (file_path);
+
+  Start = {v_type.*};
+  getRange = SELECT t 
+             FROM Start:s-(e_type:e)-:t
+             POST-ACCUM 
+               FOREACH item IN t.embeddings DO
+                 @@attrMinValue += item,
+                 @@attrMaxValue += item
+               END;
+  
+  attrRange = @@attrMaxValue - @@attrMinValue;
+
+  # for populating starting array
+  current = @@attrMinValue;
+  rangeDiv = abs(attrRange / (k-1.0));
+
+  @@change = 99999;
+
+  @@centroids.reallocate(k,100);
+  @@newCentroids.reallocate(k,100);
+
+  allProds = SELECT t 
+             FROM Start:s-(e_type:e)-:t;
+
+  # init array values based on distribution of data points
+  IF random == false THEN
+    FOREACH i IN range[0,k-1] DO
+      FOREACH j IN range[0,99] DO
+        @@centroids[i][j] = current;
+      END;
+      current = current + rangeDiv;
+    END;
+  END;
+
+  # init random array values
+  IF random == TRUE THEN
+    FOREACH i IN range[0,k-1] DO
+      FOREACH j IN range[0,99] DO
+        @@centroids[i][j] = rand_int(-2,5)-0.123*0.4;
+      END;
+    END;
+  END;
+
+  // while center points value change more than the threshold
+  WHILE @@change > maxChange DO
+    @@change = 0;
+    arrayDistance = 0;
+    @@clusterCounts.clear();
+
+    // get closest centers for each product
+    allProds = SELECT s 
+               FROM allProds:s
+               ACCUM 
+                 FOREACH i IN range [0,k-1] DO
+                   double distance = 0,
+                   FOREACH j IN range [0,99] DO
+                     distance = distance + pow(@@centroids[i][j] - s.embeddings.get(j),2)
+                   END,
+                   s.@distanceHeap += distanceTuple(i,sqrt(distance))
+                 END
+               POST-ACCUM 
+                 s.@closestCenter = s.@distanceHeap.top().center,
+                 @@clusterCounts += (s.@distanceHeap.top().center -> 1),
+                 s.@distanceHeap.clear();
+
+    // recalculate centers
+    recalculate = SELECT t 
+                  FROM Start:s-(e_type:e)-:t
+                  POST-ACCUM 
+                    FOREACH j IN range [0,99] DO
+                      @@newCentroids[t.@closestCenter][j] += t.embeddings.get(j)
+                    END;
+
+    FOREACH i IN RANGE [0,k-1] DO
+      FOREACH j IN RANGE [0,99] DO
+        arrayDistance = arrayDistance + pow(@@newCentroids[i][j] - @@centroids[i][j],2);
+      END;
+    END;
+
+    @@kVariation += (k -> sqrt(arrayDistance),sqrt(arrayDistance),sqrt(arrayDistance));
+    @@change += sqrt(arrayDistance);
+    @@centroids = @@newCentroids;
+
+  END; // end while
+
+  FOREACH (key,value) IN @@clusterCounts DO
+    @@avgClusterCount += value;
+  END;
+
+  # output
+  IF print_accum OR file_path != "" THEN
+    allProds = SELECT s 
+               FROM allProds:s
+               ACCUM @@clusterSizes += (s.@closestCenter -> 1);
+
+    IF file_path != "" THEN
+      f.println(@@centroids, @@kVariation, @@clusterSizes);
+    END;
+
+    IF print_accum THEN
+      PRINT @@kVariation as clusterInfo;
+      PRINT @@centroids as centroids;
+      PRINT @@clusterSizes as groupsSizes;
+    END;
+  END; # end output if condition
+
+  # return
+  FOREACH item IN @@kVariation DO
+    @@res += item.maxDist;
+    @@res += item.avgDist;
+    @@res += @@avgClusterCount;
+  END;
+
+  RETURN @@res;
+}
