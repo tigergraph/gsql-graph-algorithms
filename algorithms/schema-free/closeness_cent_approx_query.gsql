@@ -193,7 +193,7 @@ CREATE QUERY closeness_approx (
 							
 					# clear the BFS visited accumulator and the distance recorded
 					Conn = SELECT s FROM Conn:s
-							   POOST-ACCUM s.@visited = False, s.@sdist = 0;
+							   POST-ACCUM s.@visited = False, s.@sdist = 0;
           LOG(debug > 1,"one sample_node end");
   
   
