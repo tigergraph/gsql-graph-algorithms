@@ -1,0 +1,231 @@
+CREATE QUERY louvain_single_node(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, INT iter1 = 10, INT iter2 = 10, FLOAT tolerence = 0.0001,
+    BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") {
+
+    /*
+    * Louvain Method with optimizede for single node
+    * https://arxiv.org/pdf/1304.4453
+    * The minimum label heuristics are implemented: https://doi.org/10.1016/j.parco.2015.03.003
+
+    Parameters:
+    * v_type: vertex types to traverse
+    * e_type: edge types to traverse
+    * wt_attr: attribute for edge weights. The wt_attr data type is hardcoded to INT, FLOAT, or DOUBLE.
+      types can be supported by changing "FLOAT" to "INT"/"DOUBLE" (~10 instances) below.
+    * iter: There are three phases in the algorithm -- move, merge and refine. Their max number of iterations are set by iter1, iter2 respectively.
+    * tolerence: modularity difference for stoping iteration
+    * print_accum: print JSON
+    * result_attr: INT attr to store results to
+    * file_path: file to write CSV output to
+    */
+
+    TYPEDEF TUPLE <INT csize, INT number> ClusterNum;
+    TYPEDEF TUPLE <FLOAT deltaQ, INT cid, VERTEX node> vDeltaQ;
+	
+    // special global accum for improvment
+    MapAccum<INT, FLOAT> @@weightToCluster;
+    MaxAccum<VERTEX> @@currVertex;
+    MaxAccum<float> @@maxDeltaQ;
+    MaxAccum<INT> @@bestCluster;
+	
+    MaxAccum<vDeltaQ> @largestDeltaQ;   # if deltaQ is the same, select the one with mininal vid 
+    MapAccum<INT, FLOAT> @@totIncidentCluster;   # sun of weight incident to clusters
+    MapAccum<INT, FLOAT> @@withinCluster;
+    MapAccum<INT, INT> @@clusterSizes;                # size of a cluster
+    SumAccum<FLOAT> @@totalWeight, @@totalWeight_merge;   # total weight of all edges
+    SumAccum<FLOAT> @weight;          # total weight incident to this vertex
+    SumAccum<FLOAT> @cweight;       # total weight incident to this aggregate vertex
+    MaxAccum<INT> @cid;        # which cluster it belongs to
+    MaxAccum<INT> @cid_new;
+    SumAccum<FLOAT> @deltaQ;         # contribution to the modularity
+    SumAccum<FLOAT> @@modularity;
+    MapAccum<INT, MapAccum<INT, FLOAT>> @@weightToClusterMap;   # calculate edges between communities 
+    MapAccum<INT, MinAccum<INT>> @@moveComm; # map of communities that changed its community id
+    MapAccum<INT, MinAccum<VERTEX>> @@representMap;
+    SetAccum<VERTEX> @@representSet;
+
+    FLOAT last_modularity = 0;
+    INT iteration;
+    INT Iter1; 
+    FLOAT epsilon = 0.000001;
+    INT iteration2;
+    INT debug = 1;  # debug: 0, no modularity info; 1, show debug log; 2, modularity for each iteration
+    INT mod1 = 0;
+    FILE f (file_path);
+        
+    # Initialize: count edges and set a unique cluster ID for each vertex
+    Start = {v_type};
+    Start = SELECT s FROM Start:s
+        POST-ACCUM s.@cid = getvid(s), s.@cid_new = s.@cid;   # Label each vertex with its own internal ID
+
+    S = SELECT s FROM Start:s -(e_type:e)- :t
+    ACCUM
+        @@totalWeight += e.getAttr(wt_attr,"FLOAT")*0.5,
+        s.@weight += e.getAttr(wt_attr,"FLOAT")*1.0
+    POST-ACCUM @@totIncidentCluster += (s.@cid -> s.@weight);
+	
+    # Special first iteration of Phase 1 
+    S = SELECT s FROM Start:s -(:e)- :t
+        WHERE s.@cid > t.@cid
+        ACCUM s.@largestDeltaQ += vDeltaQ( e.getAttr(wt_attr,"FLOAT")*1.0 / @@totalWeight - s.@weight * t.@weight / (2*@@totalWeight*@@totalWeight), -1 * t.@cid, t)
+        POST-ACCUM INT bestCluster = -1 * getCid(s.@largestDeltaQ),
+            IF getDeltaQ(s.@largestDeltaQ) > 0 and s.@cid != bestCluster THEN 
+                s.@cid = bestCluster, 
+	        s.@cid_new = bestCluster
+            END;
+        
+    S = SELECT s
+        FROM Start:s -(:e)- :t
+        WHERE s.@cid == t.@cid
+        ACCUM @@modularity += e.getAttr(wt_attr,"FLOAT")*1.0 / (2 * @@totalWeight) - s.@weight * t.@weight / (4 * @@totalWeight * @@totalWeight);
+	
+    # print
+    IF print_accum THEN
+        PRINT 1 AS Phase1Iter, @@modularity;
+    END;
+    IF file_path != "" THEN
+        f.println(1, @@modularity);
+    END;
+    log(debug > 0, "[redrain]#move", 1, @@modularity);
+  
+    # Phase 1 -- Move
+    # For each vertex, calculate the change in modularity FROM adding it to each of the nearby clusters
+    # Add vertex to cluster with highest positive change in modularity
+    # Repeat the above until no vertices change cluster anymore
+    iteration = 1;
+    Iter1 = iter1 - 1;
+    
+    WHILE (iteration < 2 OR @@modularity - last_modularity > tolerence) LIMIT Iter1 DO
+        iteration = iteration + 1;
+	
+        S = SELECT s FROM Start:s -(:e)-> :t
+            # At least one cluster not singlet(a cluster on its own). If both clusters are singlets, consider only when the label of target is smaller to avoid swap 
+            WHERE (abs(s.@weight - @@totIncidentCluster.get(s.@cid)) > epsilon   # s is not a singlet
+                OR abs(t.@weight - @@totIncidentCluster.get(t.@cid)) > epsilon    # or t is not a singlet
+                OR (s.@cid > t.@cid))                                             # consider only when target label is smaller
+	        AND t.outdegree() != 1
+            ACCUM 
+                CASE WHEN s.outdegree() == 1 and t.outdegree() > 1 THEN 
+                    s.@cid = t.@cid
+	        ELSE
+	            float toT = @@totIncidentCluster.get(t.@cid),
+	            CASE WHEN t.@cid == s.@cid THEN toT = toT - s.@weight END,
+                    s.@cid = louvain_UDF(__ENGINE__CONTEXT,                                                                                                                                            __ENGINE__SERVICEAPI,
+                        __ENGINE__REQUEST,
+                        t.@cid, e.getAttr(wt_attr,"FLOAT")*1.0, s, toT,
+                        s.@weight, @@totalWeight, epsilon)
+	        END
+	    POST-ACCUM
+                CASE WHEN s.@cid != s.@cid' THEN
+                    @@totIncidentCluster += (s.@cid' -> -1 * s.@cweight),
+                    @@totIncidentCluster += (s.@cid -> s.@cweight)
+                END;
+ 
+        last_modularity = @@modularity;
+        @@modularity = 0;
+
+        T1 = SELECT s FROM Start:s -(:e)- :t
+            WHERE s.@cid == t.@cid
+            ACCUM @@modularity += e.getAttr(wt_attr,"FLOAT")*1.0 / (2 * @@totalWeight) - s.@weight * t.@weight / (4 * @@totalWeight * @@totalWeight);
+
+        # print
+        IF print_accum THEN
+            PRINT iteration AS Phase1Iter, @@modularity;
+        END;
+        IF file_path != "" THEN
+            f.println(iteration, @@modularity);
+        END;
+        log(debug > 0, "[redrain]#move", iteration, @@modularity);
+    END;
+
+
+    # Phase 2 --  Merge
+    iteration2 = 0;
+    @@totalWeight_merge = @@totalWeight;
+    WHILE (iteration2 < 2 OR @@modularity - last_modularity > tolerence) LIMIT iter2 DO
+        iteration2 = iteration2 + 1;
+
+        # Select the vertices with minimal internal id to represent the coarsened graph
+        Start = SELECT s FROM Start:s
+            POST-ACCUM @@representMap += (s.@cid -> s), s.@cid_new = s.@cid;
+
+        FOREACH (key, value) IN @@representMap DO
+            @@representSet += value;
+        END;
+        represent = {@@representSet};
+	
+        @@moveComm.clear();
+        @@representMap.clear();
+        @@representSet.clear();
+        @@weightToClusterMap.clear();
+        @@totIncidentCluster.clear();
+        @@totalWeight_merge = 0;
+	
+        S = SELECT s FROM Start:s -(:e)- :t
+        ACCUM
+            CASE WHEN s.@cid != t.@cid THEN
+                @@totIncidentCluster += (s.@cid -> e.getAttr(wt_attr,"FLOAT")*1.0),
+                @@totalWeight_merge += e.getAttr(wt_attr,"FLOAT")*0.5,
+                CASE WHEN s.@cid > t.@cid THEN
+	            @@weightToClusterMap += (s.@cid -> (t.@cid -> e.getAttr(wt_attr,"FLOAT")*1.0))
+                END
+	    END
+        POST-ACCUM
+            s.@cweight += @@totIncidentCluster.get(s.@cid);  # from s, incident to some clusters. Not consider the same cluster
+
+        IF @@totalWeight_merge == 0 THEN BREAK; END;
+
+        represent = SELECT s FROM represent:s
+            POST-ACCUM INT bestCluster = s.@cid,
+            FLOAT maxDeltaQ = 0.0,
+            FLOAT deltaQ_new = 0.0,
+            INT  maxWeightToC = 0,
+            FOREACH (cluster, weightToC) IN @@weightToClusterMap.get(s.@cid) DO
+                deltaQ_new = weightToC/@@totalWeight_merge 
+                    - (@@totIncidentCluster.get(cluster)*s.@cweight)/(2*@@totalWeight_merge*@@totalWeight_merge),
+                IF deltaQ_new > maxDeltaQ OR (abs(deltaQ_new - maxDeltaQ) < epsilon AND cluster < bestCluster) THEN      
+                    maxDeltaQ = deltaQ_new,
+                    bestCluster = cluster,
+                    maxWeightToC = weightToC
+                END
+            END,
+            IF s.@cid != bestCluster THEN
+                @@moveComm += (s.@cid -> bestCluster)
+            END;
+	
+        # move nodes
+        S1 = SELECT s FROM Start:s
+            WHERE @@moveComm.containsKey(s.@cid)
+            POST-ACCUM s.@cid_new = @@moveComm.get(s.@cid);
+
+        last_modularity = @@modularity;
+        @@modularity = 0;
+
+        T1 = SELECT s FROM Start:s -(:e)- :t
+            WHERE s.@cid_new == t.@cid_new
+            ACCUM @@modularity += e.getAttr(wt_attr,"FLOAT")*1.0 / (2 * @@totalWeight) - s.@weight * t.@weight / (4 * @@totalWeight * @@totalWeight);
+	
+        # print
+        IF print_accum THEN
+            PRINT iteration2 AS Phase2Iter, @@modularity;
+        END;
+        IF file_path != "" THEN
+            f.println(iteration2, @@modularity);
+        END;
+        log(debug > 0, "[redrain]#2_merge", iteration2, @@modularity);
+
+        CASE WHEN @@modularity - last_modularity > tolerence THEN
+            Start = SELECT s FROM Start:s
+                POST-ACCUM s.@cid = s.@cid_new, s.@cid_new = s.@cid;
+        END;
+    END;
+    
+    # save and print result
+    Start = {v_type};
+    Start = SELECT s FROM Start:s
+        POST-ACCUM 
+            IF result_attr != "" THEN s.setAttr(result_attr, s.@cid) END,
+            IF file_path != "" THEN f.println(s, s.@cid) END;
+    IF print_accum THEN
+	    PRINT Start[Start.@cid];
+	END;
+}

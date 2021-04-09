@@ -1,0 +1,133 @@
+CREATE QUERY louvain_distributed(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, INT max_iter = 10, FLOAT tolerence = 0.0001,
+    BOOL intermediateResult = TRUE, BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") {
+
+	TYPEDEF TUPLE <FLOAT deltaQ, FLOAT weight, VERTEX cc> move; 
+	SumAccum<FLOAT> @ac; #sum of the degrees of all the vertices in community C of the vertex
+	ListAccum<VERTEX> @cc; #the community center
+	SumAccum<FLOAT> @weight; # total weight incident to this vertex
+    SumAccum<FLOAT> @ccWeight; # total weight incident to the cc vertex
+	MapAccum<VERTEX,SumAccum<FLOAT>> @A; #A[c]: sum of the edge weights for the edges in community c
+	MaxAccum<move> @best_move; # highest dQ, highest -Outdegree, highest cc
+	ListAccum<VERTEX> @cm;  #community member list
+	SumAccum<FLOAT> @@m; # total edge weight
+	ListAccum<INT> @ccIntermediate;
+	OrAccum<BOOL> @@ccChange;
+	FILE f (file_path);
+
+	Start = {v_type}; 
+	
+	// initialize
+	Start = SELECT s FROM Start:s-(e_type:e)->:t 
+		ACCUM 
+			@@m += e.getAttr(wt_attr,"FLOAT")*0.5,
+			s.@weight += e.getAttr(wt_attr,"FLOAT")*1.0,
+			s.@ccWeight += e.getAttr(wt_attr,"FLOAT")*1.0
+		POST-ACCUM 
+			s.@cc += s,
+			IF intermediateResult THEN s.@ccIntermediate += getvid(s) END
+	;
+
+	// special @cc update in the first iteration
+	Start = SELECT t FROM Start:s-(e_type:e)->:t
+		ACCUM
+			t.@best_move += move(e.getAttr(wt_attr,"FLOAT")*1.0 + @@m*t.@weight * (t.@weight - s.@weight), -s.@ccWeight, s.@cc.get(0))
+		POST-ACCUM
+			IF getDeltaQ(t.@best_move) > 0 THEN
+				IF -getWeight(t.@best_move) < t.@ccWeight THEN  //
+					t.@cc.clear(), 
+					t.@cc += getCc(t.@best_move),
+					t.@ccWeight = -getWeight(t.@best_move),
+					@@ccChange += TRUE
+				ELSE 
+					IF -getWeight(t.@best_move) == t.@ccWeight AND getvid(t) < getvid(getCc(t.@best_move))  THEN
+						t.@cc.clear(),
+						t.@cc += getCc(t.@best_move),
+						t.@ccWeight = -getWeight(t.@best_move),
+						@@ccChange += TRUE
+					END
+				END
+			END,
+			IF intermediateResult THEN t.@ccIntermediate += getvid(t.@cc.get(0)) END
+	;
+  
+	// main loop
+	WHILE @@ccChange LIMIT max_iter DO
+		// initialize for iteration
+		@@ccChange = FALSE;
+		Start = SELECT s FROM Start:s 
+			POST-ACCUM 
+				s.@ac = 0,
+				s.@cm.clear(),
+				s.@A.clear()
+		;
+
+		Start = SELECT s FROM Start:s 
+			ACCUM FOREACH v IN s.@cc DO
+				CASE WHEN getvid(v) != -1 THEN v.@cm += s END
+			END
+		;
+
+		Start = SELECT s FROM Start:s-(e_type:e)->:t 
+			ACCUM s.@A += (t.@cc.get(0)->1)
+		;
+		
+		Start = SELECT s FROM Start:s 
+			ACCUM FOREACH v IN s.@cc DO
+				CASE WHEN getvid(v) != -1 THEN v.@ac += s.@weight END
+			END
+		;
+
+		Start = SELECT s FROM Start:s 
+			ACCUM FOREACH v IN s.@cm DO
+				CASE WHEN getvid(v) != -1 THEN v.@ac = s.@ac END
+			END
+		;
+
+		// compute @max_dQ
+		Start = SELECT s FROM Start:s-(e_type:e)->:t
+			ACCUM
+				INT A_s = 0,
+				IF s.@A.containsKey(s) THEN
+					A_s = s.@A.get(s)
+				END,
+				s.@best_move += move(s.@A.get(t.@cc.get(0)) - A_s + 1/@@m*s.@weight*(s.@ac-t.@ac), -t.@ccWeight, t.@cc.get(0))
+			POST-ACCUM
+				IF getDeltaQ(s.@best_move) > 0 THEN
+					IF -getWeight(s.@best_move) < s.@ccWeight THEN
+						s.@cc.clear(),
+						s.@cc += getCc(s.@best_move),
+						s.@ccWeight = -getWeight(s.@best_move),
+						@@ccChange += TRUE
+					ELSE 
+						IF -getWeight(s.@best_move) == s.@ccWeight AND getvid(s.@cc.get(0)) < getvid(getCc(s.@best_move))  THEN
+							s.@cc.clear(),
+							s.@cc += getCc(s.@best_move),
+							s.@ccWeight = -getWeight(s.@best_move),
+							@@ccChange += TRUE
+						END
+					END
+				END,
+				IF intermediateResult THEN s.@ccIntermediate += getvid(s.@cc.get(0)) END
+		;
+	END;
+
+	// save and print result
+	Start = SELECT s FROM Start:s
+		POST-ACCUM
+			IF result_attr != "" THEN s.setAttr(result_attr, getvid(s.@cc.get(0))) END,
+			IF file_path != "" THEN
+				IF intermediateResult THEN
+					f.println(s, getvid(s.@cc.get(0)), s.@ccIntermediate)
+				ELSE
+					f.println(s, getvid(s.@cc.get(0)))
+				END
+			END
+	;
+	IF print_accum THEN
+		IF intermediateResult THEN
+			PRINT Start [Start.@cc.get(0), Start.@ccIntermediate];
+		ELSE
+			PRINT Start [Start.@cc.get(0)];
+		END;
+    END;
+}
