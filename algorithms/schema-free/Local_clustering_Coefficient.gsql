@@ -22,34 +22,35 @@ CREATE QUERY Local_clustering_Coefficient(STRING v_type, STRING e_type,INT top_k
    FILE f (file_path);
   # Here we compute the intersection for 2 points on the triangle.
   
-  start = {v_type};
-  start = SELECT s FROM start:s-(e_type)-v_type:t
-              ACCUM 
+  Start = {v_type};
+  Start = SELECT s FROM Start:s-(e_type)-v_type:t
+          ACCUM 
               IF getvid(s) != getvid(t) THEN 
-              t.@neighbors += getvid(s)
-              ELSE t.@self_con+=TRUE END;# check id the vertex is self-connect
-              
-              
-  start = SELECT s FROM start:s-(e_type)-v_type:t
-        WHERE s.outdegree(e_type)>1
-        ACCUM 
-        s.@tri+=COUNT((s.@neighbors INTERSECT t.@neighbors))
-        
-        POST-ACCUM 
-        IF s.@self_con  AND s.outdegree(e_type)<3
-        THEN s.@lcc+=0
-        ELSE IF s.@self_con AND s.outdegree(e_type)>2
-        THEN s.@lcc+= (((s.@tri+1-s.outdegree(e_type)))/((s.outdegree(e_type)-2)*(s.outdegree(e_type)-1)))
-        ELSE s.@lcc+= ((s.@tri)/((s.outdegree(e_type)-0)*(s.outdegree(e_type)-1)))
-        END   ;
+                  t.@neighbors += getvid(s)
+              ELSE   
+                  t.@self_con+=TRUE 
+              END;# check id the vertex is self-connect
+                           
+  Start = SELECT s FROM Start:s-(e_type)-v_type:t
+          WHERE s.outdegree(e_type)>1
+          ACCUM 
+              s.@tri+=COUNT((s.@neighbors INTERSECT t.@neighbors))
+          POST-ACCUM 
+              IF s.@self_con  AND s.outdegree(e_type)<3 THEN 
+                      s.@lcc+=0
+              ELSE IF s.@self_con AND s.outdegree(e_type)>2 THEN 
+                      s.@lcc+= (((s.@tri+1-s.outdegree(e_type)))/((s.outdegree(e_type)-2)*(s.outdegree(e_type)-1)))
+              ELSE 
+                      s.@lcc+= ((s.@tri)/((s.outdegree(e_type)-0)*(s.outdegree(e_type)-1)))
+              END;
         
   #output
-    Start = SELECT s FROM start:s
+  Start = SELECT s FROM Start:s
 			# Calculate Closeness Centrality for each vertex
-			POST-ACCUM 
-					IF result_attr != "" THEN s.setAttr(result_attr, s.@lcc) END,
-					IF print_accum THEN @@topScores += VertexScore(s, s.@lcc) END,
-					IF file_path != "" THEN f.println(s, s.@lcc) END;
+			    POST-ACCUM 
+					    IF result_attr != "" THEN s.setAttr(result_attr, s.@lcc) END,
+					    IF print_accum THEN @@topScores += VertexScore(s, s.@lcc) END,
+					    IF file_path != "" THEN f.println(s, s.@lcc) END;
   IF file_path != "" THEN
 			f.println("Vertex_ID", "lcc");
 	END;

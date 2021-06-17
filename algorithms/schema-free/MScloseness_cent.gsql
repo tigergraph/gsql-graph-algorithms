@@ -21,70 +21,65 @@ CREATE QUERY MScloseness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re_t
   BitwiseOrAccum @visit; 
   SumAccum<INT> @@count=1;#used to set unique ID
   SumAccum<INT> @id; #store the unique ID
-  SetAccum<INT> @@a; #used to set unique ID
+  SetAccum<INT> @@batchSet; #used to set unique ID
   MapAccum<INT,INT> @@map; #used to set unique ID 
   SetAccum<EDGE> @@edgeSet;
-
   INT empty=0;
   FILE f (file_path);
 	INT numVert;
   INT batch_number;
-
 # Compute closeness	
-
   all = {v_type};
   
   numVert = all.size();
   batch_number = numVert/60;
   IF batch_number==0 THEN batch_number=1; END;
+    
   #Calculate the sum of distance to other vertex for each vertex
   FOREACH i IN RANGE[0, batch_number-1] do
-      Start = SELECT s FROM all:s
-              WHERE getvid(s)%batch_number == i
-              POST-ACCUM @@map+=(getvid(s)->0),@@a+=getvid(s);
+          Start = SELECT s FROM all:s
+                  WHERE getvid(s)%batch_number == i
+                  POST-ACCUM @@map+=(getvid(s)->0),@@batchSet+=getvid(s);
   
-      FOREACH ver in @@a DO @@map+=(ver->@@count); @@count+=1;END; #set a unique ID for each vertex, ID from 1-63
-      Start = SELECT s FROM Start:s POST-ACCUM s.@id=@@map.get(getvid(s));
-      Start = Select s FROM Start:s
-            POST-ACCUM s.@seen=1<<s.@id,s.@visit=1<<s.@id; # set initial seen and visit
-      @@a.clear();
-      @@map.clear();
-      @@count=0;
+          FOREACH ver in @@batchSet DO @@map+=(ver->@@count); @@count+=1;END; #set a unique ID for each vertex, ID from 1-63
+          Start = SELECT s FROM Start:s POST-ACCUM s.@id=@@map.get(getvid(s));
+          Start = Select s FROM Start:s
+                POST-ACCUM s.@seen=1<<s.@id,s.@visit=1<<s.@id; # set initial seen and visit s.@seen1 s.@seen2 
+          @@batchSet.clear();
+          @@map.clear();
+          @@count=0;
       
-      WHILE (Start.size() > 0) LIMIT max_hops DO
-        
-            @@currDist+=1;
-            Start = SELECT t FROM Start:s -(re_type:e)-v_type:t
-                    WHERE s.@visit&-t.@seen-1>0 and s!=t #use -t.@seen-1 to get the trverse of t.@seen
-                    ACCUM
-                      INT c = s.@visit&-t.@seen-1,
-                      IF c>0 THEN
-                          t.@visitNext+=c,
-                          t.@seen+=c
-                      END
-                    POST-ACCUM
-                        
-                        t.@visit=t.@visitNext,
-                        INT r = t.@visitNext,
-                        WHILE r>0 DO 
-                          r=r&(r-1),t.@res+=@@currDist,t.@size+=1 #count how many 1 in the number, same as setAccum,size()
-                        END,
-                    
-                        t.@visitNext=0;
-        END;
-        @@currDist=0;
-        Start = SELECT s FROM all:s 
-                POST-ACCUM s.@seen=0,s.@visit=0;
+          WHILE (Start.size() > 0) LIMIT max_hops DO
+                @@currDist+=1;
+                Start = SELECT t FROM Start:s -(re_type:e)-v_type:t
+                        WHERE s.@visit&-t.@seen-1>0 and s!=t #use -t.@seen-1 to get the trverse of t.@seen
+                        ACCUM
+                              INT c = s.@visit&-t.@seen-1,
+                              IF c>0 THEN
+                                  t.@visitNext+=c,
+                                  t.@seen+=c
+                              END
+                        POST-ACCUM
+                              t.@visit=t.@visitNext,
+                              INT r = t.@visitNext,
+                              WHILE r>0 DO 
+                                    r=r&(r-1),t.@res+=@@currDist,t.@size+=1 #count how many 1 in the number, same as setAccum,size()
+                              END,
+                              t.@visitNext=0;
+          END;
+          @@currDist=0;
+          Start = SELECT s FROM all:s 
+                  POST-ACCUM s.@seen=0,s.@visit=0;
   END;
   
   Start = SELECT s FROM all:s
 			# Calculate Closeness Centrality for each vertex
-      WHERE s.@res>0
-			POST-ACCUM 
-          IF wf THEN s.@score = (s.@size*1.0/(numVert-1))*(s.@size*1.0/s.@res) ELSE s.@score = s.@size*1.0/s.@res*1.0 END,
-					IF result_attr != "" THEN s.setAttr(result_attr, s.@score) END,
-					IF print_accum THEN @@topScores += VertexScore(s, s.@score) END,
-					IF file_path != "" THEN f.println(s, s.@score) END;
+          WHERE s.@res>0
+			    POST-ACCUM 
+              IF wf THEN s.@score = (s.@size*1.0/(numVert-1))*(s.@size*1.0/s.@res) ELSE s.@score = s.@size*1.0/s.@res*1.0 END,
+					    IF result_attr != "" THEN s.setAttr(result_attr, s.@score) END,
+					    IF print_accum THEN @@topScores += VertexScore(s, s.@score) END,
+					    IF file_path != "" THEN f.println(s, s.@score) END;
       #test
 
 #Output
