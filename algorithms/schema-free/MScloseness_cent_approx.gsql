@@ -1,0 +1,4 @@
+CREATE QUERY MScloseness_cent_approx(/* Parameters here */) FOR GRAPH ldbc_snb { 
+  /* Write query logic here */ 
+  PRINT "MScloseness_cent_approx works!"; 
+}
