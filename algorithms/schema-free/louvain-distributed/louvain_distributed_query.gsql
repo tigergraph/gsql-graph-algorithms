@@ -1,11 +1,28 @@
 CREATE QUERY louvain_distributed(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, INT max_iter = 10, FLOAT tolerence = 0.0001,
-    BOOL intermediateResult = TRUE, BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") {
+    BOOL intermediateResult = FALSE, BOOL print_accum = FALSE, STRING result_attr = "", STRING file_path = "") {
+
+	/*
+	Distributed version louvain community detection algorithm
+
+	Parameters:
+	v_type: vertex types to traverse
+	e_type: edge types to traverse
+	wt_attr: attribute name for edge weights
+	         wt_attr type is hardcoded to FLOAT
+			 INT or DOUBLE can be supported by changing "FLOAT" to "INT"/"DOUBLE" (~10 instances) below
+	max_iter: maximum iteration of louvain optimization
+	tolerence: deltaQ tolerence for terminating louvain optimization
+	intermediateResult: save intermediate results
+	print_accum: print accumulator JSON
+	result_attr: attribute name to assign community results to
+	file_path: file path to write CSV output to
+	*/
 
 	TYPEDEF TUPLE <FLOAT deltaQ, FLOAT weight, VERTEX cc> move; 
 	SumAccum<FLOAT> @ac; #sum of the degrees of all the vertices in community C of the vertex
 	ListAccum<VERTEX> @cc; #the community center
 	SumAccum<FLOAT> @weight; # total weight incident to this vertex
-    SumAccum<FLOAT> @ccWeight; # total weight incident to the cc vertex
+	SumAccum<FLOAT> @ccWeight; # total weight incident to the cc vertex
 	MapAccum<VERTEX,SumAccum<FLOAT>> @A; #A[c]: sum of the edge weights for the edges in community c
 	MaxAccum<move> @best_move; # highest dQ, highest -Outdegree, highest cc
 	ListAccum<VERTEX> @cm;  #community member list
