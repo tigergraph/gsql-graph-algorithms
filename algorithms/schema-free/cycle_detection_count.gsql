@@ -35,8 +35,6 @@ FOREACH batch_number IN RANGE[0,batches-1] DO
                      HAVING t.@currList.size() > 0;  # IF receive no sequences, deactivate it;
         END;
     
-        ClearSet = Active;
-  
         WHILE Active.size() > 0 LIMIT loop_depth DO 
     
               Active = SELECT t FROM Active:s -(e_type:e)-> v_type:t
