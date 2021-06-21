@@ -1,6 +1,6 @@
-README for GSQL Algorithm Library
-for TigerGraph version 3.0 or higher
-8/19/2020
+# GSQL Algorithm Library
+For TigerGraph version 3.0 or higher
+6/21/2021
 
 The GSQL Graph Algorithm Library is a collection of high-performance GSQL queries,
 each of which implements a standard graph algorithm. Each algorithm is ready to be
@@ -20,21 +20,21 @@ well-suited for graph algorithms:
 * Open-Source. Users can study the GSQL implementations to learn by
   example, and they can develop and submit additions to the library.
 
-Key Changes since version 3.0
------------------------------
-* New algorithms: estimate_diameter, kcore, maximal_indep_set
+## Key Changes since version 3.0
+* New Graph/ML node embedding algorithm `node2vec` added in `/algorithms/examples/Graph+ML`
+* New schema-free algorithms: `greedy_graph_coloring`, `closeness_cent_approx_query`, `cosine_batch`, `jaccard_batch`
 * Nearly all the algorithms now work as schema-free algorithms, making them much easier
   to use
 * Instead of having up to 3 versions of an algorithm, to handle 3 different choices
-  for output style, they have been merge to one version, with parameters for output
+  for output style, they have been merged into one version, with parameters for output
   filename and/or attribute to store the result.
-* Parameter lists have been updated:
-  - to make an algorithm schema-free, runtime parameters are needed
-  - to specify how to handle the results
-  - other parameters may have been added to make the algorithms easier to tune
+* Parameter list updates:
+  - Runtime vertex and edge type parameters are added to make algorithms schema-free
+  - Result format parameters (`print_accum`, `result_attr` and `file_path`) are added 
+  - Other parameters were added to make the algorithms easier to tune
 
-Library Structure
------------------
+## Library Structure
+
 
 You can download the library from github:
 https://github.com/tigergraph/gsql-graph-algorithms
@@ -61,38 +61,43 @@ result for each algorithm. The graphs are small enough that you can manually cal
 and sometimes intuitively see what the answers should be.
 
 
-List of GSQL Graph Algorithms
------------------------------
-as of Aug 19, 2020
+## Table of GSQL Graph Algorithms
+As of June 21st, 2021
 
-betweenness_cent                Betweenness Centrality
-closeness_cent                  Closeness Centrality
-conn_comp                       Connected Component Detection
-kcore                           K-Core
-wcc_fast                        Connected Components (Fast)
-scc                             Strongly Connected Component Detection
-label_prop                      Label Propagation Method for Community Detection
-louvain_parallel                Parallel Louvain Modularity Method with Refinement for Community Detection
-pageRank [2]                    PageRank measurement of relative influence of each vertex
-pageRank_wt [2]                 Weighted PageRank
-pageRank_pers [2]               Personalized PageRank
-shortest_ss_no_wt               Single-Source Shortest Paths without weight
-shortest_ss_pos_wt              Single-Source Shortest Paths with positive weight
-shortest_ss_any_wt              Single-Source Shortest Paths
-maximal_indep_set               Maximal Independent Set
-mst                             Minimum Spanning Tree (MST)
-msf                             Minimum Spanning Forest (MSF)
-cycle_detection                 Rocha–Thatte algorithm for cycle detection
-estimate_diameter               Heuristic estimate of graph diameter
-tri_count [1]                   Count all the triangles, memory effient
-tri_count_fast [1]              Count all the triangles, faster but using more memory
-cosine_nbor_ss                  Cosine Similarity from a single vertex
-cosine_nbor_ap                  Cosine Similarity for each pair of vertices
-jaccard_nbor_ss [2]             Jaccard Similarity from a single vertex
-jaccard_nbor_ap [2]             Jaccard Similarity for each pair of vertices
-knn_cosine_ss       k-Nearest Neighbor classification, using Cosine Similarity, single source
-knn_cosine_all      k-Nearest Neighbor classification, using Cosine Similarity, batch
-knn_cosine_cv       Cross validation for k-Nearest Neighbor, using Cosine Similarity
+| Query name              | Description                                                                |
+|-------------------------|----------------------------------------------------------------------------|
+| `betweenness_cent`      | Betweenness centrality                                                     |
+| `closeness_cent_approx` | Approximate closeness centrality                                           |
+| `closeness_cent`        | Closeness centrality                                                       |
+| `conn_comp`             | Connected component detection                                              |
+| `cosine_batch`          | Cosine similarity for each pair of vertices, computed in batches           |
+| `cosine_nbor_ap`        | Cosine similarity for each pair of vertices                                |
+| `cosine_nbor_ss`        | Cosine similarity from a single vertex                                     |
+| `cycle_detection`       | Rocha–Thatte algorithm for cycle detection                                 |
+| `estimate_diameter`     | Heuristic estimate of graph diameter                                       |
+| `greedy_graph_coloring` | Greedy graph coloring                                                      |
+| `jaccard_batch`         | Jaccard similarity for each pair of vertices, computed in batches          |
+| `jaccard_nbor_ap` [2]   | Jaccard similarity for each pair of vertices                               |
+| `jaccard_nbor_ss` [2]   | Jaccard similarity from a single vertex                                    |
+| `kcore`                 | K-Core                                                                     |
+| `knn_cosine_all`        | k-Nearest Neighbor classification, using cosine similarity, batch          |
+| `knn_cosine_cv`         | Cross validation for k-Nearest Neighbor, using cosine similarity           |
+| `knn_cosine_ss`         | k-Nearest Neighbor classification, using cosine similarity, single source  |
+| `label_prop`            | Label propagation method for community detection                           |
+| `louvain_parallel`      | Parallel Louvain Modularity Method with refinement for community detection |
+| `maximal_indep_set`     | Maximal independent set                                                    |
+| `msf`                   | Minimum spanning forest (MSF)                                              |
+| `mst`                   | Minimum spanning tree (MST)                                                |
+| `pageRank_pers` [2]     | Personalized PageRank                                                      |
+| `pageRank_wt` [2]       | Weighted PageRank                                                          |
+| `pageRank` [2]          | PageRank measurement of relative influence of each vertex                  |
+| `scc`                   | Strongly connected component detection                                     |
+| `shortest_ss_any_wt`    | Single-Source shortest paths                                               |
+| `shortest_ss_no_wt`     | Single-Source shortest paths without weight                                |
+| `shortest_ss_pos_wt`    | Single-Source shortest paths with positive weight                          |
+| `tri_count_fast` [1]    | Count all the triangles, faster but using more memory                      |
+| `tri_count` [1]         | Count all the triangles, memory effient                                    |
+| `wcc_fast`              | Connected Components (Fast)                                                |
 
 Notes:
 [1] This algorithm is not in the schema-first folder; use the install.sh script to customize it
@@ -113,8 +118,8 @@ pageRank_attr.gsql - Results are written to vertex or edge attributes
 
 The schema-free algorithms ofter all three options in one algorithm.
 
-Get Started
------------
+## Get Started
+
 If you want to use one of the test graphs, load it before installing the algorithms:
 See the README.test file in the tests folder
 
