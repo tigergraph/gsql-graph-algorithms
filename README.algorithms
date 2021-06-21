@@ -31,7 +31,7 @@ well-suited for graph algorithms:
 * Parameter list updates:
   - Runtime vertex and edge type parameters are added to make algorithms schema-free
   - Result format parameters (`print_accum`, `result_attr` and `file_path`) are added 
-  - Other parameters were added to make the algorithms easier to tune
+  - Other parameters are added to make the algorithms easier to tune
 
 ## Library Structure
 
@@ -124,16 +124,14 @@ If you want to use one of the test graphs, load it before installing the algorit
 See the README.test file in the tests folder
 
 
-* Install Algorithms:
-1) You should create a graph schema in GSQL first.
-2) Change into the algorithms folder.
-3) Run a installation script, i.e.,
-   bash install.sh
-   and answer the questions.
+* Template algorithms:
+  1. Create a graph schema in GSQL first.
+  2. Change into the algorithms folder.
+  3. Run the installation script `install.sh` and answer the questions.
    
-* Schema free Algorithms:
-1) Change the graph name specified in CREATE statement.
-2) Use the script directly.
+* Schema-free algorithms:
+  1. Change the graph name specified in CREATE statement.
+  2. Use the script directly.
 
 More detailed documentation and examples are available on the web at
 https://docs.tigergraph.com/graph-algorithm-library
