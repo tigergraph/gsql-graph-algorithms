@@ -13,7 +13,7 @@ CREATE QUERY Local_clustering_Coefficient(STRING v_type, STRING e_type,INT top_k
    
    */
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
-	HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
   SumAccum<FLOAT> @tri; #number of trangles
   SumAccum<FLOAT> @lcc; #lcc value
   SetAccum<int> @neighbors; #neighbors set
