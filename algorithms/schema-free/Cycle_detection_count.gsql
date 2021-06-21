@@ -23,12 +23,9 @@ loop_depth = depth-1; // as we are performing the first step outside the loop
 FOREACH batch_number IN RANGE[0,batches-1] DO  
     
         Active = {v_type};
-    
         Active = SELECT vv FROM Active:vv
-                 POST-ACCUM vv.@currList.clear();
-    
-        Active = SELECT vv FROM Active:vv
-                 WHERE getvid(vv)%batches==batch_number;
+                 POST-ACCUM vv.@currList.clear()
+                 HAVING getvid(vv)%batches==batch_number;
     
         IF depth > 0 THEN
             Active = SELECT t FROM Active:s -(e_type)-> v_type:t
