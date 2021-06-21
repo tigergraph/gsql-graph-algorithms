@@ -1,4 +1,4 @@
-CREATE QUERY MSbetweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re_type,INT max_hops=10,
+CREATE QUERY Betweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re_type,INT max_hops=10,
   INT top_k=100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE){ 
   /* Compute Closeness Centrality for each VERTEX. 
@@ -11,7 +11,7 @@ CREATE QUERY MSbetweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re
   top_k: report only this many top scores          display_edges: output edges for visualization
   wf: Wasserman and Faust normalization factor for multi-component graphs */ 
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
-	HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
   SumAccum<INT> @@currDist; #current distance
   BitwiseOrAccum @visitNext; #use bitwise instead of setAccum
   BitwiseOrAccum @seen;
@@ -58,7 +58,7 @@ CREATE QUERY MSbetweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re
                   @@currDist+=1;
                   Start = SELECT t FROM Start:s -(re_type:e)-v_type:t
                           WHERE s.@visit&-t.@seen-1>0 and s!=t #use -t.@seen-1 to get the trverse of t.@seen
-                          ACCUM
+                          ACCUM                               #updatevisitNext
                                 INT c = s.@visit&-t.@seen-1,
                                 IF c>0 THEN
                                     t.@visitNext+=c,
@@ -69,25 +69,25 @@ CREATE QUERY MSbetweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re
                                 t.@visit=t.@visitNext,
                                 t.@times+=(@@currDist->t.@visit),
                                 t.@visitNext=0;
-        END;
-        @@currDist+=-1;
+          END;
+          @@currDist+=-1;
     
-        Start = Select s from all:s WHERE s.@sigma.get(@@currDist)!=0;
-        WHILE (Start.size()>0) LIMIT max_hops DO
-                  @@currDist+=-1;
-                  Start = SELECT t FROM Start:s -(re_type:e)-> v_type:t
-				                  WHERE t.@times.get(@@currDist)&s.@times.get(@@currDist+1)!=0  
-				                  ACCUM 
-                                FLOAT currValue=t.@sigma.get(@@currDist)/(s.@sigma.get(@@currDist+1)*(1+s.@delta)),
-                                INT r=t.@times.get(@@currDist)&s.@times.get(@@currDist+1),
-                                INT plus=0,
-                                WHILE r>0 DO 
+          Start = Select s from all:s WHERE s.@sigma.get(@@currDist)!=0;
+          WHILE (Start.size()>0) LIMIT max_hops DO
+                    @@currDist+=-1;
+                    Start = SELECT t FROM Start:s -(re_type:e)-> v_type:t
+			    WHERE t.@times.get(@@currDist)&s.@times.get(@@currDist+1)!=0  
+	                    ACCUM 
+                                 FLOAT currValue=t.@sigma.get(@@currDist)/(s.@sigma.get(@@currDist+1)*(1+s.@delta)),
+                                 INT r=t.@times.get(@@currDist)&s.@times.get(@@currDist+1),
+                                 INT plus=0,
+                                 WHILE r>0 DO 
                                         r=r&(r-1),plus=plus+1 #count how many 1 in the number, same as setAccum,size()
-                                END,
-                                FLOAT value = currValue*plus/2.0,
-                                t.@delta+=value;
+                                 END,
+                                 FLOAT value = currValue*plus/2.0,
+                                 t.@delta+=value;
                   
-		             Start = Select s from all:s WHERE s.@sigma.get(@@currDist)!=0;	
+		    Start = Select s from all:s WHERE s.@sigma.get(@@currDist)!=0;	
         END;
         @@currDist=0;
         Start = SELECT s FROM all:s 
