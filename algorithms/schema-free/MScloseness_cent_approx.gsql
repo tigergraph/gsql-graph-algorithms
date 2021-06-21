@@ -3,39 +3,39 @@ CREATE QUERY MScloseness_cent_approx (
     SET<STRING> e_type,
     STRING re_type,
     INT top_k=100,
-		int k = 100,  # sample num
-		int maxHops = 10,  # max BFS explore steps 
-		double epsilon = 0.1,  # error parameter
-    bool print_accum = true, # output to console
-		string file_path = "",  # output file 
-		int debug = 0,  # debug flag -- 0: No LOG;1: LOG without the sample-node bfs loop;2: ALL LOG.
-		int sample_index = 0,  # random sample group
-		int maxsize = 1000,  # max size of connected components using exact closeness algorithm
-		bool wf = True # Wasserman and Faust formula 
+    INT k = 100,  # sample num
+    INT maxHops = 10,  # max BFS explore steps 
+    DOUBLE epsilon = 0.1,  # error parameter
+    BOOL print_accum = true, # output to console
+    STRING file_path = "",  # output file 
+    INT debug = 0,  # debug flag -- 0: No LOG;1: LOG without the sample-node bfs loop;2: ALL LOG.
+    INT sample_index = 0,  # random sample group
+    INT maxsize = 1000,  # max size of connected components using exact closeness algorithm
+    BOOL wf = True # Wasserman and Faust formula 
   
 ) {
-		TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
-	  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
-		MinAccum<int> @cc_id;      # each vertex's tentative component id
-		MapAccum<int,int> @@cc_size;    # component size 
-		MapAccum<vertex,int> @@cc_map;   # closeness centrality of each node
-		SumAccum<int> @vid;  # internal id
-		SumAccum<int> @deltav;  # the distance from the pivot
-		SumAccum<int> @@curDist,@@dist;  # the distance of BFS algorithm 
-		MaxAccum<vertex> @pivot;  # the pivot of the node
-		SetAccum<vertex> @@sample;  # sample node set
-		OrAccum<bool> @sampled;  # sample node
-		OrAccum<bool> @visited,@visited0;  # visited node in BFS
-		SumAccum<int> @@totalDist;  # the sum distance of the sample node
-		SumAccum<int> @@nonsample;  # the size of non-sample node in the visiting node
-		MapAccum<vertex,int> @@cdist;  # the shortest distance between the sample node
-		AvgAccum @lavg; # LAVG: the average distance from the sample node within the threshold radius
-		SumAccum<int> @hcsum; # HCSUM: the sum distance from the sample node outside the threshold radius
-		SumAccum<int> @sdist; # record the distance when the sample node cannot be decided
-		SumAccum<int> @lnum; # number of nodes within the threshold radius
-		SumAccum<int> @hsum; # HSUM: the sum distance from non sample node outside the threshold radius
-		SumAccum<float> @totalDist; # the sum distance of the nodes
-		SumAccum<float> @closeness; # the closeness centrality
+    TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
+    HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+    MinAccum<int> @cc_id;      # each vertex's tentative component id
+    MapAccum<int,int> @@cc_size;    # component size 
+    MapAccum<vertex,int> @@cc_map;   # closeness centrality of each node
+    SumAccum<int> @vid;  # internal id
+    SumAccum<int> @deltav;  # the distance from the pivot
+    SumAccum<int> @@curDist,@@dist;  # the distance of BFS algorithm 
+    MaxAccum<vertex> @pivot;  # the pivot of the node
+    SetAccum<vertex> @@sample;  # sample node set
+    OrAccum<bool> @sampled;  # sample node
+    OrAccum<bool> @visited,@visited0;  # visited node in BFS
+    SumAccum<int> @@totalDist;  # the sum distance of the sample node
+    SumAccum<int> @@nonsample;  # the size of non-sample node in the visiting node
+    MapAccum<vertex,int> @@cdist;  # the shortest distance between the sample node
+    AvgAccum @lavg; # LAVG: the average distance from the sample node within the threshold radius
+    SumAccum<int> @hcsum; # HCSUM: the sum distance from the sample node outside the threshold radius
+    SumAccum<int> @sdist; # record the distance when the sample node cannot be decided
+    SumAccum<int> @lnum; # number of nodes within the threshold radius
+    SumAccum<int> @hsum; # HSUM: the sum distance from non sample node outside the threshold radius
+    SumAccum<float> @totalDist; # the sum distance of the nodes
+    SumAccum<float> @closeness; # the closeness centrality
     SumAccum<INT> @@count=1;#used to set unique ID
     SumAccum<INT> @id; #store the unique ID
     SetAccum<INT> @@a; #used to set unique ID
