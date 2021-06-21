@@ -11,7 +11,7 @@ CREATE QUERY MScloseness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re_t
   top_k: report only this many top scores          display_edges: output edges for visualization
   wf: Wasserman and Faust normalization factor for multi-component graphs */ 
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
-	HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
   SumAccum<INT> @@currDist; #current distance
   BitwiseOrAccum @visitNext; #use bitwise instead of setAccum
   SumAccum<INT> @res; #Result, sum of distance
