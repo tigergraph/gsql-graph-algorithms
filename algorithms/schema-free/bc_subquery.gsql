@@ -35,8 +35,8 @@ returns a map of (s.id->s.@delta)
 	WHILE (@@currDist>0) DO
 		@@currDist += -1;
 		Start = SELECT s FROM Start:s -(e_type:e)-> v_type:t
-				WHERE t.@dist == s.@dist-1
-				ACCUM t.@delta += t.@sigma/s.@sigma*(1+s.@delta);
+				WHERE s.@dist == t.@dist-1
+				ACCUM s.@delta += s.@sigma/t.@sigma*(1+t.@delta);
   
 		Start = SELECT s FROM All:s
 				WHERE s.@dist == @@currDist;	         
@@ -44,10 +44,10 @@ returns a map of (s.id->s.@delta)
 
 	Start = SELECT s FROM All:s
 			ACCUM
-				CASE WHEN s!=source THEN
-						@@MapDelta += (s->s.@delta/2)
-				ELSE @@MapDelta += (s->0)
-				END;
-
+				#CASE WHEN s!=source THEN
+				#		@@MapDelta += (s->s.@delta/2)
+				#ELSE @@MapDelta += (s->0)
+				#END;
+                                @@MapDelta += (s->s.@delta);
 	return @@MapDelta;
  }
