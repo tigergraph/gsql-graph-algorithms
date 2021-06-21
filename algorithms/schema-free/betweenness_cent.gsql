@@ -1,5 +1,5 @@
 CREATE QUERY Betweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re_type,INT max_hops=10,
-  INT top_k=100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
+  INT top_k=100, BOOL print_accum = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE){ 
   /* Compute Closeness Centrality for each VERTEX. 
   Use multi-sourse BFS.
@@ -9,7 +9,7 @@ CREATE QUERY Betweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re_t
   e_type: edge types to traverse                   result_attr: INT attr to store results to
   max_hops: look only this far from each vertex    file_path: file to write CSV output to
   top_k: report only this many top scores          display_edges: output edges for visualization
-  wf: Wasserman and Faust normalization factor for multi-component graphs */ 
+   */ 
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
   HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
   SumAccum<INT> @@currDist; #current distance
