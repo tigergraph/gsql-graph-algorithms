@@ -46,12 +46,11 @@ CREATE QUERY MScloseness_cent_approx (
     SumAccum<INT> @@currDist; #current distance
     SumAccum<INT> @res; #Result, sum of distance
     SumAccum<INT> @size; #get graph size
-		FILE f(file_path);
-		
+    FILE f(file_path);
     INT batch_num;
-		INT numVert,partition,i;
-		datetime t1,t2;
-	  float eps = 0.00001;
+    INT numVert,partition,i;
+    datetime t1,t2;
+    float eps = 0.00001;
 	
 		Start = {v_type};
 		LOG(debug > 0,"query start",Start.size());
