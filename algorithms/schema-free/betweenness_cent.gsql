@@ -27,7 +27,7 @@ CREATE QUERY Betweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re_t
   ListAccum<INT> @test;
   INT empty=0;
   FILE f (file_path);
-	INT numVert;
+  INT numVert;
   INT batch_number;
 
 # Compute betweenness	
@@ -64,7 +64,7 @@ CREATE QUERY Betweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re_t
                                     t.@visitNext+=c,
                                     t.@seen+=c
                                 END,
-                                t.@sigma+=(@@currDist->s.@sigma.get(@@currDist-1))
+                                t.@sigma+=(@@currDist->s.@sigma.get(@@currDist-1)) #set sigma based on depth
                           POST-ACCUM
                                 t.@visit=t.@visitNext,
                                 t.@times+=(@@currDist->t.@visit),
