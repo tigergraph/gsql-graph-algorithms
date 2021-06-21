@@ -10,8 +10,8 @@ CREATE QUERY Local_clustering_Coefficient(STRING v_type, STRING e_type,INT top_k
   e_type: edge types to traverse                   result_attr: INT attr to store results to
   top_k: report only this many top scores          file_path: file to write CSV output to
   display_edges: output edges for visualization
-   
    */
+   
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
   HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
   SumAccum<FLOAT> @tri; #number of trangles
@@ -19,7 +19,7 @@ CREATE QUERY Local_clustering_Coefficient(STRING v_type, STRING e_type,INT top_k
   SetAccum<int> @neighbors; #neighbors set
   OrAccum @self_con; #check if the vertex is self-connect
   SetAccum<EDGE> @@edgeSet;
-   FILE f (file_path);
+  FILE f (file_path);
   # Here we compute the intersection for 2 points on the triangle.
   
   Start = {v_type};
