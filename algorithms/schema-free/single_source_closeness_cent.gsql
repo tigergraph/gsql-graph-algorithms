@@ -1,5 +1,5 @@
 CREATE QUERY cc_subquery (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
- INT num_vert, INT max_hops, BOOL wf = TRUE)  RETURNS (FLOAT) {
+ INT num_vert, INT max_hops, BOOL wf = TRUE){
   /*
   Subquery returns closeness centrality for vertex source in graph with numVert vertices
   wf: Wasserman and Faust normalization factor for multi-component graphs 
@@ -26,11 +26,11 @@ CREATE QUERY cc_subquery (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
 
 	IF @@totalDist > 0 THEN
 			IF wf == TRUE THEN
-					RETURN (@@n*1.0/(num_vert-1))*(@@n*1.0/@@totalDist);
+					PRINT (@@n*1.0/(num_vert-1))*(@@n*1.0/@@totalDist);
 			ELSE 
-					RETURN (@@n*1.0/@@totalDist);
+					PRINT (@@n*1.0/@@totalDist);
 			END;
 	ELSE
-			RETURN (-1.0);
+			PRINT (-1.0);
 	END;
  }
