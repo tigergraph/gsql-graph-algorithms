@@ -1,42 +1,56 @@
-CREATE QUERY closeness_approx (
+CREATE QUERY MScloseness_cent_approx (
     SET<STRING> v_type, 
     SET<STRING> e_type,
-		int k = 100,  # sample num
-		int maxHops = 10,  # max BFS explore steps 
-		double epsilon = 0.1,  # error parameter
-    bool print_accum = true, # output to console
-		string file_path = "",  # output file 
-		int debug = 0,  # debug flag -- 0: No LOG;1: LOG without the sample-node bfs loop;2: ALL LOG.
-		int sample_index = 0,  # random sample group
-		int maxsize = 1000,  # max size of connected components using exact closeness algorithm
-		bool wf = True # Wasserman and Faust formula 
+    STRING re_type,
+    INT top_k=100,
+    INT k = 100,  # sample num
+    INT maxHops = 10,  # max BFS explore steps 
+    DOUBLE epsilon = 0.1,  # error parameter
+    BOOL print_accum = true, # output to console
+    STRING file_path = "",  # output file 
+    INT debug = 0,  # debug flag -- 0: No LOG;1: LOG without the sample-node bfs loop;2: ALL LOG.
+    INT sample_index = 0,  # random sample group
+    INT maxsize = 1000,  # max size of connected components using exact closeness algorithm
+    BOOL wf = True # Wasserman and Faust formula 
+  
 ) {
-		
-		MinAccum<int> @cc_id;      # each vertex's tentative component id
-		MapAccum<int,int> @@cc_size;    # component size 
-		MapAccum<vertex,int> @@cc_map;   # closeness centrality of each node
-		SumAccum<int> @vid;  # internal id
-		SumAccum<int> @deltav;  # the distance from the pivot
-		SumAccum<int> @@curDist,@@dist;  # the distance of BFS algorithm 
-		MaxAccum<vertex> @pivot;  # the pivot of the node
-		SetAccum<vertex> @@sample;  # sample node set
-		OrAccum<bool> @sampled;  # sample node
-		OrAccum<bool> @visited,@visited0;  # visited node in BFS
-		SumAccum<int> @@totalDist;  # the sum distance of the sample node
-		SumAccum<int> @@nonsample;  # the size of non-sample node in the visiting node
-		MapAccum<vertex,int> @@cdist;  # the shortest distance between the sample node
-		AvgAccum @lavg; # LAVG: the average distance from the sample node within the threshold radius
-		SumAccum<int> @hcsum; # HCSUM: the sum distance from the sample node outside the threshold radius
-		SumAccum<int> @sdist; # record the distance when the sample node cannot be decided
-		SumAccum<int> @lnum; # number of nodes within the threshold radius
-		SumAccum<int> @hsum; # HSUM: the sum distance from non sample node outside the threshold radius
-		SumAccum<float> @totalDist; # the sum distance of the nodes
-		SumAccum<float> @closeness; # the closeness centrality
-		FILE f(file_path);
-		
-		int numVert,partition,i;
-		datetime t1,t2;
-	  float eps = 0.00001;
+    TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
+    HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+    MinAccum<int> @cc_id;      # each vertex's tentative component id
+    MapAccum<int,int> @@cc_size;    # component size 
+    MapAccum<vertex,int> @@cc_map;   # closeness centrality of each node
+    SumAccum<int> @vid;  # internal id
+    SumAccum<int> @deltav;  # the distance from the pivot
+    SumAccum<int> @@curDist,@@dist;  # the distance of BFS algorithm 
+    MaxAccum<vertex> @pivot;  # the pivot of the node
+    SetAccum<vertex> @@sample;  # sample node set
+    OrAccum<bool> @sampled;  # sample node
+    OrAccum<bool> @visited,@visited0;  # visited node in BFS
+    SumAccum<int> @@totalDist;  # the sum distance of the sample node
+    SumAccum<int> @@nonsample;  # the size of non-sample node in the visiting node
+    MapAccum<vertex,int> @@cdist;  # the shortest distance between the sample node
+    AvgAccum @lavg; # LAVG: the average distance from the sample node within the threshold radius
+    SumAccum<int> @hcsum; # HCSUM: the sum distance from the sample node outside the threshold radius
+    SumAccum<int> @sdist; # record the distance when the sample node cannot be decided
+    SumAccum<int> @lnum; # number of nodes within the threshold radius
+    SumAccum<int> @hsum; # HSUM: the sum distance from non sample node outside the threshold radius
+    SumAccum<float> @totalDist; # the sum distance of the nodes
+    SumAccum<float> @closeness; # the closeness centrality
+    SumAccum<INT> @@count=1;#used to set unique ID
+    SumAccum<INT> @id; #store the unique ID
+    SetAccum<INT> @@a; #used to set unique ID
+    MapAccum<INT,INT> @@map; #used to set unique ID 
+    BitwiseOrAccum @seen;
+    BitwiseOrAccum @visit; 
+    BitwiseOrAccum @visitNext; #use bitwise instead of setAccum
+    SumAccum<INT> @@currDist; #current distance
+    SumAccum<INT> @res; #Result, sum of distance
+    SumAccum<INT> @size; #get graph size
+    FILE f(file_path);
+    INT batch_num;
+    INT numVert,partition,i;
+    datetime t1,t2;
+    float eps = 0.00001;
 	
 		Start = {v_type};
 		LOG(debug > 0,"query start",Start.size());
@@ -62,41 +76,42 @@ CREATE QUERY closeness_approx (
 		LOG(debug > 0,"size of connected components",@@cc_size.size());
 	
 		FOREACH (cc_id,cc_num) IN @@cc_size DO			
-			Conn = SELECT s FROM Start:s
-					   WHERE s.@cc_id == cc_id;
 			
-			IF cc_num < maxsize THEN
-				# for small components, get exact closeness centrality for each vertex
-				Conn = SELECT s FROM Conn:s
-						   ACCUM s.@closeness = closeness_approx_sub(s,v_type,e_type,numVert,maxHops,wf);
-			ELSE
+			
+			IF cc_num > maxsize THEN
 				# for large components, get estimate closeness centrality for each vertex
 				# partition size
+        Conn = SELECT s FROM Start:s
+					   WHERE s.@cc_id == cc_id;
+ 
 				IF cc_num % k == 0 THEN
 					partition = cc_num/k;
 				ELSE
 					partition = cc_num/k + 1;
 				END;
-	  
+	      print partition;
+        PRINT cc_num;
+         
 				# sampling
 				snode = SELECT s FROM Conn:s
 						    ACCUM s.@vid += getvid(s)
-						    HAVING s.@vid % partition == sample_index
+						    HAVING s.@vid % partition== sample_index
 						    LIMIT k;
 				i = sample_index;
+        
 				WHILE snode.size() < k do
 					i = (i + 1) % partition;
 					snode = SELECT s FROM Conn:s
 							    HAVING s.@vid % partition == i
 							    LIMIT k;
 				END;
-	
+	      
 				snode = SELECT s FROM snode:s
 						    ACCUM s.@sampled += True,
 						          @@sample += s;
 				LOG(debug > 0, "sampling finished", snode.size());
 				PRINT snode.size();		
-		
+		    
 				# Set all sample node as the starting point
         @@curDist = 0;
 				src = SELECT s FROM snode:s
@@ -116,7 +131,7 @@ CREATE QUERY closeness_approx (
 				END;
 				LOG(debug > 0, "pivot query finished", @@curDist);
 		
-				# run BFS from each sample node
+				# get closeness for community which is larger than maxsize
 				FOREACH sample_node IN @@sample DO
 					# set one sample node as starting node
           LOG(debug > 1,"one sample_node begin");
@@ -198,20 +213,32 @@ CREATE QUERY closeness_approx (
   
   
 				END;
+        
 				LOG(debug > 0, "BFS from sample node finished");
-		
-				# calculate closeness estimation for all nodes
-				Conn = SELECT s FROM Conn:s
+		    #END;
+        #IF cc_num>maxsize THEN 
+            Conn = SELECT s FROM Conn:s
+                
 						   ACCUM
 							   IF s.@sampled == False THEN
 								   s.@totalDist = s.@lavg * s.@lnum + s.@hcsum + s.@hsum
 							   END
 						   POST-ACCUM 
+                IF s.@totalDist>0 Then
 							   IF wf == True THEN
 								   s.@closeness = ((cc_num-1) * 1.0 / (numVert-1)) * ((cc_num-1) * 1.0 /s.@totalDist)
 							   ELSE
 								   s.@closeness = ((cc_num - 1) * 1.0) / (s.@totalDist * 1.0)
-							   END;
+							   END
+                END,
+                
+					
+					IF print_accum THEN @@topScores += VertexScore(s, s.@closeness) END,
+					IF file_path != "" THEN f.println(s, s.@closeness) END;
+        
+  
+				# calculate closeness estimation for all nodes
+				
 
 				LOG(debug > 0, "closeness_est end", Start.size());
 				
@@ -220,7 +247,56 @@ CREATE QUERY closeness_approx (
 			END;
 		END;
 		LOG(debug > 0,"closeness finished");
-    
+  
+  all = SELECT s FROM Start:s 
+        WHERE @@cc_size.get(s.@cc_id)<maxsize;
+  numVert = all.size();
+  batch_num = numVert/62;
+  IF batch_num==0 THEN batch_num=1; END;
+  #Calculate the sum of distance to other vertex for each vertex
+  FOREACH index IN RANGE[0, batch_num-1] do
+      Start = SELECT s FROM all:s
+              WHERE getvid(s)%batch_num == index
+              POST-ACCUM @@map+=(getvid(s)->0),@@a+=getvid(s);
+  
+      FOREACH ver in @@a DO @@map+=(ver->@@count); @@count+=1;END; #set a unique ID for each vertex, ID from 1-63
+      Start = SELECT s FROM Start:s POST-ACCUM s.@id=@@map.get(getvid(s));
+      Start = Select s FROM Start:s
+            POST-ACCUM s.@seen=1<<s.@id,s.@visit=1<<s.@id; # set initial seen and visit
+      @@a.clear();
+      @@map.clear();
+      @@count=0;
+      WHILE (Start.size() > 0) LIMIT maxHops DO
+        
+            @@currDist+=1;
+            Start = SELECT t FROM Start:s -(re_type:e)-v_type:t
+                    WHERE s.@visit&-t.@seen-1>0 and s!=t #use -t.@seen-1 to get the trverse of t.@seen
+                    ACCUM
+                      INT c = s.@visit&-t.@seen-1,
+                      IF c>0 THEN
+                          t.@visitNext+=c,
+                          t.@seen+=c
+                      END
+                    POST-ACCUM
+                        t.@visit=t.@visitNext,
+                        INT r = t.@visitNext,
+                        WHILE r>0 DO 
+                          r=r&(r-1),t.@res+=@@currDist,t.@size+=1 #count how many 1 in the number, same as setAccum,size()
+                        END,
+                    
+                        t.@visitNext=0;
+        END;
+        @@currDist=0;
+        Start = SELECT s FROM all:s 
+                POST-ACCUM s.@seen=0,s.@visit=0;
+  END;
+  Start = SELECT s FROM all:s
+			# Calculate Closeness Centrality for each vertex
+      WHERE s.@res>0
+			POST-ACCUM 
+          IF wf THEN s.@closeness = (s.@size/(numVert-1))*(s.@size/s.@res) ELSE s.@closeness = s.@size/s.@res END;
+			
+
     #output
 		Start = SELECT s FROM Start:s
 				    POST-ACCUM
