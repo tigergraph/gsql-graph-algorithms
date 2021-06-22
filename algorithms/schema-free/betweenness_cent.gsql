@@ -102,7 +102,7 @@ CREATE QUERY Betweenness_cent(SET<STRING> v_type, SET<STRING> e_type,STRING re_t
 					IF file_path != "" THEN f.println(s, s.@delta) END;
   #Output
 	IF file_path != "" THEN
-			f.println("Vertex_ID", "Betweennessness");
+			f.println("Vertex_ID", "Betweenness");
 	END;
 
 	IF print_accum THEN
