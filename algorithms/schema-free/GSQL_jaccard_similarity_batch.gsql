@@ -1,0 +1,88 @@
+CREATE QUERY GSQL_jaccard_similarity_batch (
+  INT topK = 10,
+  STRING s_type,
+  STRING t_type,
+  STRING e_type,
+  STRING re_type,
+  STRING similarity_edge = "",
+  INT num_of_batches = 10,
+  BOOL print_accum = true,
+  INT print_limit = 50,
+  STRING file_path = "") {
+  /*
+    Calculates the Jaccard Similarity between all vertices using a common feature vertex type.
+      Jaccard Similarity = intersection_size / (setSize_all + setSize_self - intersection_size)
+
+    Parameters :
+      topK    : # of top scores to report for each vertex
+      s_type  : vertex type to compare
+      t_type  : feature vertex type
+      e_type  : edge type from source vertex to feature vertex type
+      re_type  : edge type from feature vertex to source vertex
+      similarity_edge : edge type for storing vertex-vertex similarity scores
+      num_of_batches  : how many batches to split up the query into (trade off parallelism for memory optimization)
+      print_accum : print JSON output
+      print_limit : number of source vertices to print
+      file_path : file to write CSV output to
+  */
+
+  TYPEDEF TUPLE<VERTEX ver, float val> res_tup; // storing results in the Heap
+  MapAccum<VERTEX, INT> @@set_size_all, @intersection_size; // set sizes of all vertices
+  HeapAccum<res_tup>(topK, val desc) @heap; // stores topK similarity results
+  FILE f (file_path);
+
+  Start = {s_type.*};
+
+  // store number of features for each source vertex
+  Start = SELECT s
+          FROM Start:s
+          ACCUM
+            @@set_size_all += (s -> s.outdegree(e_type));
+
+  // store number of source vertices that share common features
+  CommonFeatures = SELECT t
+             FROM Start:s-(e_type:e)-t_type:t
+             ACCUM t.@intersection_size += (s -> 1);
+
+  // source vertices are split into batches to prevent memory overload
+  FOREACH i IN RANGE[0,num_of_batches-1] DO
+    Others = SELECT t
+            FROM CommonFeatures:s-(re_type:e)-s_type:t
+            WHERE getvid(t) % num_of_batches == i
+            ACCUM
+              t.@intersection_size += s.@intersection_size
+            POST-ACCUM
+              // perform similarity computation and store results
+              FOREACH (k,v) IN t.@intersection_size DO
+                IF k == t THEN
+                  CONTINUE
+                END,
+                FLOAT div = @@set_size_all.get(k) + t.outdegree(e_type) - v,
+                IF div > 0 THEN
+                  t.@heap += res_tup(k, v/div)
+                END
+              END,
+              t.@intersection_size.clear();
+  END;
+
+  // optionally output to file and/or insert edge
+  Start = SELECT s
+          FROM Start:s
+          POST-ACCUM
+            FOREACH tup IN s.@heap DO
+              CASE WHEN tup.val > 0 THEN
+                  IF file_path != "" THEN
+                    f.println(s, tup.ver, tup.val)
+                  END,
+                  IF similarity_edge != "" THEN
+                    INSERT INTO EDGE similarity_edge VALUES (s, tup.ver, tup.val)
+                  END
+              END
+            END;
+
+  // optionally print JSON output
+  IF print_accum THEN
+    Start = SELECT s FROM Start:s WHERE s.@heap.size() > 0 LIMIT print_limit;
+    PRINT Start[Start.@heap];
+  END;
+}
