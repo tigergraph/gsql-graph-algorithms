@@ -15,7 +15,7 @@ CREATE QUERY estimate_diameter(SET<STRING> v_type, SET<STRING> e_type, INT seed_
   
         start = SELECT s
                 FROM start:s
-                ACCUM @@diameter += max_BFS_depth(s, e_type);
+                ACCUM @@diameter += tg_max_BFS_depth(s, e_type);
         
         IF print_accum THEN
           PRINT @@diameter as diameter;
