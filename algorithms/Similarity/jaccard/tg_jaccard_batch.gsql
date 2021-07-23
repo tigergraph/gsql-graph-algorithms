@@ -1,4 +1,4 @@
-CREATE QUERY jaccard_batch (string v_type, string e_type, string re_type, int topK, bool print_accum = true, string similarity_edge, string file_path, int num_of_batches = 1) {
+CREATE QUERY tg_jaccard_batch (string v_type, string e_type, string re_type, int topK, bool print_accum = true, string similarity_edge, string file_path, int num_of_batches = 1) {
   /*
     Calculates the Jaccard Simiarlity between a given vertex and every other vertex.
       Jaccard Similarity = intersection_size / (setSize_all + setSize_self - intersection_size)

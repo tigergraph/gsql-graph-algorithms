@@ -1,4 +1,4 @@
-CREATE QUERY conn_comp (SET<STRING> v_type, SET<STRING> e_type, INT output_limit = 100,
+CREATE QUERY tg_conn_comp (SET<STRING> v_type, SET<STRING> e_type, INT output_limit = 100,
  BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") {
 /*
  This query identifies the Connected Components (undirected edges). When finished, each

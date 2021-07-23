@@ -1,4 +1,4 @@
-CREATE QUERY max_BFS_depth(VERTEX source, SET<STRING> e_type) RETURNS (INT){ 
+CREATE QUERY tg_max_BFS_depth(VERTEX source, SET<STRING> e_type) RETURNS (INT){ 
 	OrAccum @visited;
 	INT depth=-1;
   start = {source};

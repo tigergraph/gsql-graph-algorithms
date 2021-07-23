@@ -1,4 +1,4 @@
-CREATE QUERY louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr,
+CREATE QUERY tg_louvain_parallel (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr,
   INT iter1=10, INT iter2=10, INT iter3=10, INT split=10, BOOL print_accum = TRUE,
   STRING result_attr = "", STRING file_path = "", BOOL comm_by_size = TRUE) {
  /*

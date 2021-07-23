@@ -1,4 +1,4 @@
-CREATE QUERY louvain_distributed(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, INT max_iter = 10, FLOAT tolerence = 0.0001,
+CREATE QUERY tg_louvain_distributed(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, INT max_iter = 10, FLOAT tolerence = 0.0001,
     BOOL intermediateResult = FALSE, BOOL print_accum = FALSE, STRING result_attr = "", STRING file_path = "") {
 
 	/*
