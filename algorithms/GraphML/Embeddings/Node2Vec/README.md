@@ -17,7 +17,7 @@ $ vim ~/tigergraph/app/<TGversion>/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp
 
 ### Getting Word2vec file
 There are multiple options to get `word2vec.h`
-1. Download/Copy `word2vec.h` file into `~/tigergraph/app/<TGversion>/dev/gdk/gsdk/include` directory\
+1. Download/Copy `word2vec.h` file into `~/tigergraph/app/<TGversion>/dev/gdk/gsdk/include` directory
 2. Create the file and copy the code from `word2vec.h` and paste it into the newly created file (steps shown below)
 ```bash
 # Go to correct directory
@@ -37,13 +37,18 @@ Once inside the text editor, paste the following line of `C++` code into under t
 #include "/home/tigergraph/tigergraph/app/3.0.5/dev/gdk/gsdk/include/word2vec.h"
 ```
 ### Multiple machines(cluster) or Single Machine?
-If you are working on a single machine, remove the `Distributed` GSQL keyword from the header of the `random_walk` query \
-`CREATE DISTRIBUTED QUERY random_walk(...) {...}` -> `CREATE QUERY random_walk(...) {...}` \ 
+If you are working on a single machine, remove the `Distributed` GSQL keyword from the header of the `random_walk` query 
+```bash
+# Change first header to the second header
+
+CREATE DISTRIBUTED QUERY random_walk(...) {...}         
+CREATE QUERY random_walk(...) {...}
+```
 After doing this, proceed to the next section(Running Queries)
 
 If you are on multiple machines or a cluster
 ```bash
-# For every machine in cluster
+# For every machine in cluster  
 
 $ gssh <machine>
 $ PUT ExprFunctions from "/home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp"
