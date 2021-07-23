@@ -1,4 +1,4 @@
-CREATE QUERY cosine_nbor_ap_sub (VERTEX source, SET<STRING> e_type, SET<STRING> re_type, STRING weight, INT top_k, BOOL store_accum, STRING similarity_edge, STRING file_path, FILE f) RETURNS (MapAccum<VERTEX, FLOAT>){
+CREATE QUERY tg_cosine_nbor_ap_sub (VERTEX source, SET<STRING> e_type, SET<STRING> re_type, STRING weight, INT top_k, BOOL store_accum, STRING similarity_edge, STRING file_path, FILE f) RETURNS (MapAccum<VERTEX, FLOAT>){
 /* This subquery calculates the Cosine Similarity between a given vertex and every other vertex.
 Cosine similarity = A \dot B / ||A|| \dot ||B||
 */

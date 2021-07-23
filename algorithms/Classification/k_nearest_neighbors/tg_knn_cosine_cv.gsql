@@ -1,4 +1,4 @@
-CREATE QUERY knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, STRING label, INT min_k, INT max_k) RETURNS (INT){
+CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, STRING label, INT min_k, INT max_k) RETURNS (INT){
 /* Leave-one-out cross validation for selecting optimal k. 
    The input is a range of k, output is the k with highest correct prediction rate.
    Note: When one vertex has no neighbor with known label, the prediction is considered false
@@ -18,7 +18,7 @@ CREATE QUERY knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> 
         start = SELECT s
                 FROM start:s 
                 WHERE s.getAttr(label, "STRING") != ""  // get the vertices with known label
-                ACCUM s.@predicted_label_list = knn_cosine_cv_sub(s, e_type, re_type, label, weight, max_k)  // get a list of predicted label wrt different k
+                ACCUM s.@predicted_label_list = tg_knn_cosine_cv_sub(s, e_type, re_type, label, weight, max_k)  // get a list of predicted label wrt different k
                 POST-ACCUM FOREACH pred_label IN s.@predicted_label_list DO
                                    IF s.getAttr(label, "STRING") == pred_label THEN  # *vStrAttrOld*  means no neighbor with label
                                            s.@is_correct_list += 1

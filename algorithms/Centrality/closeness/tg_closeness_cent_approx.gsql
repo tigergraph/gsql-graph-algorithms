@@ -1,4 +1,4 @@
-CREATE QUERY MScloseness_cent_approx (
+CREATE QUERY tg_closeness_cent_approx (
     SET<STRING> v_type, 
     SET<STRING> e_type,
     STRING re_type,

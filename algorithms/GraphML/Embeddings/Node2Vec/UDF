@@ -1,5 +1,5 @@
  // node2vec function: given random walk sequence, this function trains vector using skip-gram model
- inline void node2vec(int dimension, string input_file, string output_file){
+ inline void tg_node2vec_sub(int dimension, string input_file, string output_file){
     Model model(dimension);
     model.sample_ = 0;
     // model.window = 10;

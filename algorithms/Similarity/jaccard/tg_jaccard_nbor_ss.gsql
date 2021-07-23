@@ -1,4 +1,4 @@
-CREATE QUERY jaccard_nbor_ss (VERTEX source, STRING e_type, STRING rev_e_type, 
+CREATE QUERY tg_jaccard_nbor_ss (VERTEX source, STRING e_type, STRING rev_e_type, 
  INT top_k = 100, BOOL print_accum = TRUE, STRING similarity_edge_type = "", STRING file_path = "") {
 /* 
 Calculates the Jaccard Similarity between a given vertex and every other vertex.

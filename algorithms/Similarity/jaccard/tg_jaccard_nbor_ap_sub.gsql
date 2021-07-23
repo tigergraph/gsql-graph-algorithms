@@ -1,4 +1,4 @@
-CREATE QUERY jaccard_nbor_ap_sub(VERTEX source, STRING e_type, STRING re_type, INT top_k, BOOL return_accum, STRING file_path, FILE f, STRING similarity_edge) RETURNS (MapAccum<VERTEX, FLOAT>){
+CREATE QUERY tg_jaccard_nbor_ap_sub(VERTEX source, STRING e_type, STRING re_type, INT top_k, BOOL return_accum, STRING file_path, FILE f, STRING similarity_edge) RETURNS (MapAccum<VERTEX, FLOAT>){
 /* This subquery calculates the Jaccard Similarity between a given vertex and every other vertex.
 Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
 */

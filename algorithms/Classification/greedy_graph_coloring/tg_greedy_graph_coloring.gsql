@@ -1,4 +1,4 @@
-CREATE QUERY greedy_graph_coloring(SET<STRING> v_type,
+CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,
                                    SET<STRING> e_type,
                                    UINT max_colors = 999999,
                                    BOOL print_color_count = TRUE,

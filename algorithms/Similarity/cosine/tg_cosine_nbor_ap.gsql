@@ -1,5 +1,5 @@
-CREATE QUERY cosine_nbor_ap (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, INT top_k, INT output_limit, BOOL print_accum = TRUE, STRING similarity_edge = "", STRING file_path = ""){
-/* This query calls the subquery cosine_nbor_ap_sub to get the similarity score of every pair of vertices.
+CREATE QUERY tg_cosine_nbor_ap (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, INT top_k, INT output_limit, BOOL print_accum = TRUE, STRING similarity_edge = "", STRING file_path = ""){
+/* This query calls the subquery tg_cosine_nbor_ap_sub to get the similarity score of every pair of vertices.
 */
         MapAccum<VERTEX, FLOAT> @result;
         FILE f (file_path);
@@ -12,8 +12,8 @@ CREATE QUERY cosine_nbor_ap (SET<STRING> v_type, SET<STRING> e_type, SET<STRING>
         start = SELECT s
                 FROM start:s
                 POST-ACCUM 
-                   IF print_accum THEN s.@result = cosine_nbor_ap_sub(s, e_type, re_type, weight, top_k, TRUE, similarity_edge, file_path, f)
-                   ELSE cosine_nbor_ap_sub(s, e_type, re_type, weight, top_k, FALSE, similarity_edge, file_path, f) END
+                   IF print_accum THEN s.@result = tg_cosine_nbor_ap_sub(s, e_type, re_type, weight, top_k, TRUE, similarity_edge, file_path, f)
+                   ELSE tg_cosine_nbor_ap_sub(s, e_type, re_type, weight, top_k, FALSE, similarity_edge, file_path, f) END
                 LIMIT output_limit;
         
         IF print_accum THEN

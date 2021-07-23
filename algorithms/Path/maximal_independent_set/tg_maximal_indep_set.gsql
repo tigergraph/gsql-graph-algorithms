@@ -1,4 +1,4 @@
-CREATE QUERY maximal_indep_set(STRING v_type, STRING e_type, INT max_iter = 100, BOOL print_accum = TRUE, STRING file_path = ""){ 
+CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT max_iter = 100, BOOL print_accum = TRUE, STRING file_path = ""){ 
     /*
     Maximal Independent Set query only supports one edge type and works only for undirected graphs at the moment (8/12/20).
     */

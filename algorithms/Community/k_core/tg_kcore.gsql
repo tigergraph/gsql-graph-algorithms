@@ -1,4 +1,4 @@
-CREATE QUERY kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_accum = TRUE, STRING attr = "", STRING file_path = "", BOOL show_membership = FALSE, BOOL show_shells=FALSE){ 
+CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_accum = TRUE, STRING attr = "", STRING file_path = "", BOOL show_membership = FALSE, BOOL show_shells=FALSE){ 
 /* An implementation of Algorithm 2 in
  * Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
  * Tripathy et al., IEEE Big Data 2018.

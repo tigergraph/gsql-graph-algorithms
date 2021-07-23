@@ -1,4 +1,4 @@
-CREATE DISTRIBUTED QUERY random_walk(int step = 8, int path_size = 4, string filepath = "/home/tigergraph/path.csv", set<string> edge_types, int sample_num) FOR GRAPH nodeEmbedding {
+CREATE QUERY tg_random_walk(int step = 8, int path_size = 4, string filepath = "/home/tigergraph/path.csv", set<string> edge_types, int sample_num) FOR GRAPH nodeEmbedding {
 
  FILE f(filepath);
  ListAccum<ListAccum<vertex>> @recv_seque;

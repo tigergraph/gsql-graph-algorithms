@@ -1,4 +1,4 @@
-CREATE QUERY Cycle_detection_count(SET<STRING> v_type, SET<STRING> e_type, INT depth, INT batches, BOOL print_accum = TRUE)  {
+CREATE QUERY tg_cycle_detection_count(SET<STRING> v_type, SET<STRING> e_type, INT depth, INT batches, BOOL print_accum = TRUE)  {
 
 /* Rocha–Thatte cycle detection algorithm + fixes
 This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
