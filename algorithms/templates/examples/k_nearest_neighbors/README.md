@@ -1,5 +1,5 @@
 ## k_nearest_neighbors
-### Documentation : link 
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
 ### Install k_nearest_neighbors via Tigergraph CLI
 ```bash
 $ tg box algos install k_nearest_neighbors

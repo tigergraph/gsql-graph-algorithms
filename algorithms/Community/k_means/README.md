@@ -1,5 +1,5 @@
 ## k_means
-### Documentation : link 
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
 ### Install k_means via Tigergraph CLI
 ```bash
 $ tg box algos install k_means

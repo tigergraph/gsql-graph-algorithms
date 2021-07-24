@@ -1,5 +1,5 @@
 ## greedy_graph_coloring
-### Documentation : link 
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
 ### Install greedy_graph_coloring via Tigergraph CLI
 ```bash
 $ tg box algos install greedy_graph_coloring

@@ -1,5 +1,5 @@
 ## estimated_diameter
-### Documentation : link 
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
 ### Install estimated_diameter via Tigergraph CLI
 ```bash
 $ tg box algos install estimated_diameter

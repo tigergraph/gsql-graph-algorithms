@@ -1,5 +1,5 @@
 ## connected_components
-### Documentation : link 
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
 ### Install connected_components via Tigergraph CLI
 ```bash
 $ tg box algos install connected_components

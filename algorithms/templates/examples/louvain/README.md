@@ -1,5 +1,5 @@
 ## louvain
-### Documentation : link 
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
 ### Install louvain via Tigergraph CLI
 ```bash
 $ tg box algos install louvain
