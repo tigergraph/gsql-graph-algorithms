@@ -1,0 +1,63 @@
+CREATE QUERY cosine_content_recommender (SET<STRING> v_type_user, SET<STRING> v_type_content, SET<STRING> e_type, STRING filtering_attr_type, STRING input_attr) {
+  /*
+    Algorithm that ranks content for a filtered group of users (or a single user) based on cosine similarity score
+    
+    Scoring is determined by the interactions of users (that are not in the filtered group) with content
+    
+    [[[PARAMETERS]]]
+    
+        v_type_user: STRING with the exact user vertex name from graph schema (i.e. "Person")
+    
+        v_type_content: STRING with the exact content vertex name from graph schema (i.e. "Message" or "Video")
+    
+        e_type: STRING with the exact edge name from graph schema (i.e. "Liked" or "Watched")
+            [Note that the UNDIRECTED e_type must connect v_type_user to v_type_content]
+    
+        filtering_attr_type: STRING with the exact attribute name that will be used to filter a v_type_user set (i.e. "Name")
+    
+        input_attr: STRING with the desired value of filtering_attr_type to be matched (i.e. "Leo")
+        
+    SAMPLE CALL: recommendContentToUser("Person", "Message", "Liked", "Name", "Leo")
+  */
+  
+  SumAccum<int> @contentInCommon = 0;
+  SumAccum<int> @contentCnt = 0 ;
+  SumAccum<int> @@InputPersonContentCnt = 0;
+  SumAccum<float> @similarityScore;
+  SumAccum<float> @rank;
+  OrAccum @e_type_exists = false;
+  float sqrtOfInputUserContentCnt;
+
+  #1. mark content connected by e_type to user with matching input_attr
+  #2. find common content between input user and other users
+  Start = {v_type_user};
+
+  targetContent = SELECT v
+                  FROM Start:s -(e_type:e)-> v_type_content:v
+                  WHERE input_attr == s.getAttr(filtering_attr_type, "STRING")
+                  ACCUM v.@e_type_exists = true, @@InputPersonContentCnt += 1;
+    
+  targetUsers = SELECT t
+                FROM targetContent:s -(e_type:e) -> :t
+                ACCUM t.@contentInCommon += 1;
+    
+  sqrtOfInputUserContentCnt = sqrt(@@InputPersonContentCnt);
+
+  #calculate cosine similarity score
+  #|AxB|/(sqrt(Sum(A_i^2)) * sqrt(Sum(B_i^2)))
+  targetUsers = SELECT o
+                FROM targetUsers:o -(e_type)-> v_type_content:v
+                ACCUM o.@contentCnt += 1
+                POST-ACCUM o.@similarityScore = o.@contentInCommon/(sqrtOfInputUserContentCnt * sqrt(o.@contentCnt));
+
+  #recommend new content to input user that he/she does not already point to with an e_type
+  recommendedContent =
+             SELECT v
+             FROM targetUsers:o-(e_type)-> v_type_content:v
+             WHERE  v.@e_type_exists == false
+             ACCUM v.@rank +=o.@similarityScore
+             ORDER BY v.@rank DESC // query must be INSTALLED for ordering to work (not INTERPRETED)
+             LIMIT 3;
+
+  PRINT recommendedContent;
+}
