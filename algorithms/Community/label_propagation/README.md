@@ -1,5 +1,5 @@
 ## label_propagation
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#label-propagation
 ### Install label_propagation via Tigergraph CLI
 ```bash
 $ tg box algos install label_propagation

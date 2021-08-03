@@ -1,5 +1,5 @@
 ## closeness
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#closeness-centrality
 ### Install closeness via Tigergraph CLI
 ```bash
 $ tg box algos install closeness

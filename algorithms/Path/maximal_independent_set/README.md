@@ -1,5 +1,5 @@
 ## maximal_independent_set
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#maximal-independent-set
 ### Install maximal_independent_set via Tigergraph CLI
 ```bash
 $ tg box algos install maximal_independent_set

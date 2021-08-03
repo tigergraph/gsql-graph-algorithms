@@ -1,5 +1,5 @@
 ## minimum_spanning_tree
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#minimum-spanning-tree-mst
 ### Install minimum_spanning_tree via Tigergraph CLI
 ```bash
 $ tg box algos install minimum_spanning_tree

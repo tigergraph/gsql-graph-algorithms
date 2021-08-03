@@ -34,7 +34,7 @@ $ vim ~/tigergraph/app/<TGversion>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp
 ```
 Once inside the text editor, paste the following line of `C++` code into under the other include statements 
 ```c++
-#include "/home/tigergraph/tigergraph/app/3.0.5/dev/gdk/gsdk/include/word2vec.h"
+#include "/home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gsdk/include/word2vec.h"
 ```
 ### Multiple machines(cluster) or Single Machine?
 If you are working on a single machine, remove the `Distributed` GSQL keyword from the header of the `random_walk` query 

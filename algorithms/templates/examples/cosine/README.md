@@ -1,5 +1,5 @@
 ## cosine
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#cosine-similarity-of-neighborhoods-batch
 ### Install cosine via Tigergraph CLI
 ```bash
 $ tg box algos install cosine

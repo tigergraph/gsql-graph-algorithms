@@ -1,5 +1,5 @@
 ## betweenness_centrality
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#betweenness-centrality
 ### Install betweenness_centrality via Tigergraph CLI
 ```bash
 $ tg box algos install betweenness_centrality

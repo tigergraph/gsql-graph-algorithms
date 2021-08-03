@@ -1,5 +1,5 @@
 ## jaccard
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#jaccard-similarity-of-neighborhoods-batch
 ### Install jaccard via Tigergraph CLI
 ```bash
 $ tg box algos install jaccard

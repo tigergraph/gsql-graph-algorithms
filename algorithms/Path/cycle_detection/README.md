@@ -1,5 +1,5 @@
 ## cycle_detection
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#cycle-detection
 ### Install cycle_detection via Tigergraph CLI
 ```bash
 $ tg box algos install cycle_detection

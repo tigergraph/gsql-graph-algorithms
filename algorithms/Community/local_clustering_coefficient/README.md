@@ -1,5 +1,5 @@
 ## local_clustering_coefficient
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#local-clustering-coefficient
 ### Install local_clustering_coefficient via Tigergraph CLI
 ```bash
 $ tg box algos install local_clustering_coefficient

@@ -1,5 +1,5 @@
 ## minimum_spanning_forest
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#minimum-spanning-forest-msf
 ### Install minimum_spanning_forest via Tigergraph CLI
 ```bash
 $ tg box algos install minimum_spanning_forest

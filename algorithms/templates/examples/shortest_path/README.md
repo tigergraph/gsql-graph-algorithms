@@ -1,5 +1,5 @@
 ## shortest_path
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#single-source-shortest-path-weighted
 ### Install shortest_path via Tigergraph CLI
 ```bash
 $ tg box algos install shortest_path

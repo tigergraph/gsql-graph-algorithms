@@ -1,5 +1,5 @@
 ## triangle_counting
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#triangle-counting
 ### Install triangle_counting via Tigergraph CLI
 ```bash
 $ tg box algos install triangle_counting

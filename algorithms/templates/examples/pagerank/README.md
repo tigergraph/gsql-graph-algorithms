@@ -1,5 +1,5 @@
 ## pagerank
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#pagerank
 ### Install pagerank via Tigergraph CLI
 ```bash
 $ tg box algos install pagerank

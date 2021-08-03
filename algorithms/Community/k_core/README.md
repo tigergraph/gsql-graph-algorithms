@@ -1,5 +1,5 @@
 ## k_core
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#k-core-decomposition
 ### Install k_core via Tigergraph CLI
 ```bash
 $ tg box algos install k_core

@@ -1,5 +1,5 @@
 ## strongly_connected_components
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#strongly-connected-components-1
 ### Install strongly_connected_components via Tigergraph CLI
 ```bash
 $ tg box algos install strongly_connected_components

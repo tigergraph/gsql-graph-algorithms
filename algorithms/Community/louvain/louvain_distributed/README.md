@@ -1,5 +1,5 @@
 ## louvain_distributed
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#
+### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#louvain-method-with-parallelism-and-refinement
 ### Install louvain_distributed via Tigergraph CLI
 ```bash
 $ tg box algos install louvain_distributed
