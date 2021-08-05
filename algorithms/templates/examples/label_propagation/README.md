@@ -1,5 +1,5 @@
-## label_propagation
-### Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#label-propagation
+# label_propagation
+## Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#label-propagation
 ### Install label_propagation via Tigergraph CLI
 ```bash
 $ tg box algos install label_propagation
@@ -13,4 +13,44 @@ $ BEGIN
 $ <label_propagation_gsql_code>
 $ END 
 $ INSTALL QUERY label_propagation
+```
+## label_propagation Change Logs
+
+### `social_label_prop_file` Logs
+
+```
+"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
+"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
+"2170f21   WilliamH3O  Tue Jul 13 14:31:49 2021 -0700   dash to underscore"
+"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
+"245f462   Suxiaocai   Thu May 16 20:04:37 2019 +0000   finish up knn cv template"
+"c5530eb   Suxiaocai   Tue Jan 29 22:25:10 2019 +0000   add plmr  "
+"9c78d4e   Suxiaocai   Sat Dec 15 01:36:41 2018 +0000   fixed format issues, regenerated .gsql files, updated README"
+"5373c48   Heqing Ya   Fri Oct 26 15:07:48 2018 -0700   Add graph algorithms"
+```
+
+### `social_label_prop` Logs
+
+```
+"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
+"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
+"2170f21   WilliamH3O  Tue Jul 13 14:31:49 2021 -0700   dash to underscore"
+"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
+"245f462   Suxiaocai   Thu May 16 20:04:37 2019 +0000   finish up knn cv template"
+"c5530eb   Suxiaocai   Tue Jan 29 22:25:10 2019 +0000   add plmr  "
+"9c78d4e   Suxiaocai   Sat Dec 15 01:36:41 2018 +0000   fixed format issues, regenerated .gsql files, updated README"
+"5373c48   Heqing Ya   Fri Oct 26 15:07:48 2018 -0700   Add graph algorithms"
+```
+
+### `social_label_prop_attr` Logs
+
+```
+"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
+"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
+"2170f21   WilliamH3O  Tue Jul 13 14:31:49 2021 -0700   dash to underscore"
+"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
+"245f462   Suxiaocai   Thu May 16 20:04:37 2019 +0000   finish up knn cv template"
+"c5530eb   Suxiaocai   Tue Jan 29 22:25:10 2019 +0000   add plmr  "
+"9c78d4e   Suxiaocai   Sat Dec 15 01:36:41 2018 +0000   fixed format issues, regenerated .gsql files, updated README"
+"5373c48   Heqing Ya   Fri Oct 26 15:07:48 2018 -0700   Add graph algorithms"
 ```
