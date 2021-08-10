@@ -17,11 +17,13 @@ $ INSTALL QUERY louvain_distributed
 ## louvain_distributed Change Logs
 
 ### `tg_louvain_distributed` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"fecc0ca   Boyu Jiang  Sun Jun 20 00:34:35 2021 -0400   add docs for louvain-distributed"
-"45aec7f   Boyu Jiang   Fri Apr 9 11:39:36 2021 -0400   init louvain"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2021-06-20 
+	 fecc0ca : add docs for louvain-distributed
+### 2021-04-09 
+	 45aec7f : init louvain

@@ -17,32 +17,47 @@ $ INSTALL QUERY cycle_detection
 ## cycle_detection Change Logs
 
 ### `tg_cycle_detection_count` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"2170f21   WilliamH3O  Tue Jul 13 14:31:49 2021 -0700   dash to underscore"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"dcf065d   Yiming Pan  Mon Jun 21 18:14:13 2021 -0400   Update cycle_detection_count.gsql"
-"5101753   Yiming Pan  Mon Jun 21 18:01:02 2021 -0400   Rename Cycle_detection_count.gsql to cycle_detection_count.gsql"
-"b7fc908   Yiming Pan  Mon Jun 21 17:47:17 2021 -0400   Update Cycle_detection_count.gsql"
-"c65ad50   Yiming Pan  Thu Jun 17 14:44:38 2021 -0400   Update bc,cc,cc_approx,add cycle-detection-count,LCC"
-"5ca04ea   Yiming Pan  Thu Jun 17 14:42:19 2021 -0400   Delete Cycle_detection_count.gsql"
-"0f5a3f5   Yiming Pan  Thu Jun 17 14:38:57 2021 -0400   Add files via upload"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 2170f21 : dash to underscore
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2021-06-21 
+	 dcf065d : Update cycle_detection_count.gsql
+### 2021-06-21 
+	 5101753 : Rename Cycle_detection_count.gsql to cycle_detection_count.gsql
+### 2021-06-21 
+	 b7fc908 : Update Cycle_detection_count.gsql
+### 2021-06-17 
+	 c65ad50 : Update bc,cc,cc_approx,add cycle-detection-count,LCC
+### 2021-06-17 
+	 5ca04ea : Delete Cycle_detection_count.gsql
+### 2021-06-17 
+	 0f5a3f5 : Add files via upload
 
 ### `tg_cycle_detection` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"2170f21   WilliamH3O  Tue Jul 13 14:31:49 2021 -0700   dash to underscore"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"14d3d6b   Victor Lee  Fri Sep 18 02:17:18 2020 -0400   add 3.0 branch"
-"1da86dc   Ramko9999   Thu Aug 13 14:50:04 2020 -0700   Schema Less Queries"
-"671858d   rkahhaleh    Fri May 8 13:22:24 2020 -0700   Update cycle_detection.gtmp"
-"80e08c1   Suxiaocai   Tue Apr 30 01:14:29 2019 +0000   update names"
-"58ee1a5   Suxiaocai    Mon Apr 8 21:22:44 2019 +0000   update cycle_dtection,install.sh and test schema"
-"1a9017e   Suxiaocai    Mon Apr 8 17:46:23 2019 +0000   update cycle_detection"
-"3d73762   Suxiaocai    Mon Apr 1 18:13:07 2019 +0000   add cycle_detection"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 2170f21 : dash to underscore
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2020-09-18 
+	 14d3d6b : add 3.0 branch
+### 2020-08-13 
+	 1da86dc : Schema Less Queries
+### 2020-05-08 
+	 671858d : Update cycle_detection.gtmp
+### 2019-04-30 
+	 80e08c1 : update names
+### 2019-04-08 
+	 58ee1a5 : update cycle_dtection,install.sh and test schema
+### 2019-04-08 
+	 1a9017e : update cycle_detection
+### 2019-04-01 
+	 3d73762 : add cycle_detection

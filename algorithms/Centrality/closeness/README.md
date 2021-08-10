@@ -17,34 +17,51 @@ $ INSTALL QUERY closeness
 ## closeness Change Logs
 
 ### `tg_closeness_cent` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"99a6853   Yiming Pan  Tue Jun 22 13:32:06 2021 -0400   Update closeness_cent.gsql"
-"5405380   Yiming Pan  Tue Jun 22 13:09:28 2021 -0400   Update closeness_cent.gsql"
-"e158ae7   Yiming Pan  Tue Jun 22 12:48:15 2021 -0400   Rename MScloseness_cent.gsql to closeness_cent.gsql"
-"869bdaa   Yiming Pan  Mon Jun 21 18:12:25 2021 -0400   Update MScloseness_cent.gsql"
-"d8a3713   Yiming Pan  Mon Jun 21 18:02:08 2021 -0400   Update MScloseness_cent.gsql"
-"d516f1b   Yiming Pan  Mon Jun 21 18:01:49 2021 -0400   Update MScloseness_cent.gsql"
-"c65ad50   Yiming Pan  Thu Jun 17 14:44:38 2021 -0400   Update bc,cc,cc_approx,add cycle-detection-count,LCC"
-"3c59bfe   Yiming Pan  Thu Jun 17 14:42:38 2021 -0400   Delete MScloseness_cent.gsql"
-"0f5a3f5   Yiming Pan  Thu Jun 17 14:38:57 2021 -0400   Add files via upload"
-"d77347c   Yiming Pan  Tue May 25 13:34:29 2021 -0400   Add lcc, cc and cc_aprox"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2021-06-22 
+	 99a6853 : Update closeness_cent.gsql
+### 2021-06-22 
+	 5405380 : Update closeness_cent.gsql
+### 2021-06-22 
+	 e158ae7 : Rename MScloseness_cent.gsql to closeness_cent.gsql
+### 2021-06-21 
+	 869bdaa : Update MScloseness_cent.gsql
+### 2021-06-21 
+	 d8a3713 : Update MScloseness_cent.gsql
+### 2021-06-21 
+	 d516f1b : Update MScloseness_cent.gsql
+### 2021-06-17 
+	 c65ad50 : Update bc,cc,cc_approx,add cycle-detection-count,LCC
+### 2021-06-17 
+	 3c59bfe : Delete MScloseness_cent.gsql
+### 2021-06-17 
+	 0f5a3f5 : Add files via upload
+### 2021-05-25 
+	 d77347c : Add lcc, cc and cc_aprox
 
 ### `tg_closeness_cent_approx` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"8581447   Yiming Pan  Mon Jun 21 18:03:58 2021 -0400   Rename MScloseness_cent_approx.gsql to closeness_cent_approx_query.gsql"
-"34b7696   Yiming Pan  Mon Jun 21 18:02:56 2021 -0400   Update MScloseness_cent_approx.gsql"
-"e946c0e   Yiming Pan  Mon Jun 21 17:55:57 2021 -0400   Update MScloseness_cent_approx.gsql"
-"7fa30ac   Yiming Pan  Fri Jun 18 12:44:17 2021 -0400   Update MScloseness_cent_approx.gsql"
-"c65ad50   Yiming Pan  Thu Jun 17 14:44:38 2021 -0400   Update bc,cc,cc_approx,add cycle-detection-count,LCC"
-"0808f29   Yiming Pan  Thu Jun 17 14:42:34 2021 -0400   Delete MScloseness_cent_approx.gsql"
-"58a70b2   Yiming Pan  Thu Jun 17 14:41:45 2021 -0400   Add files via upload"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2021-06-21 
+	 8581447 : Rename MScloseness_cent_approx.gsql to closeness_cent_approx_query.gsql
+### 2021-06-21 
+	 34b7696 : Update MScloseness_cent_approx.gsql
+### 2021-06-21 
+	 e946c0e : Update MScloseness_cent_approx.gsql
+### 2021-06-18 
+	 7fa30ac : Update MScloseness_cent_approx.gsql
+### 2021-06-17 
+	 c65ad50 : Update bc,cc,cc_approx,add cycle-detection-count,LCC
+### 2021-06-17 
+	 0808f29 : Delete MScloseness_cent_approx.gsql
+### 2021-06-17 
+	 58a70b2 : Add files via upload

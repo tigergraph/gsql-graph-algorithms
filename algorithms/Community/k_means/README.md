@@ -17,27 +17,37 @@ $ INSTALL QUERY k_means
 ## k_means Change Logs
 
 ### `tg_kmeans_sub` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"15849ea   WilliamH3O  Fri Jul 16 17:23:35 2021 -0700   add tg prefixes"
-"2170f21   WilliamH3O  Tue Jul 13 14:31:49 2021 -0700   dash to underscore"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"4df197d   kcai2TG     Sat Jan 16 01:28:34 2021 +0000   PR updates"
-"6606a3a   kcai2TG      Thu Jan 7 02:29:16 2021 +0000   jaccard/cosine update, kmeans in progress"
-"5c761ec   kcai2TG      Tue Jan 5 00:02:16 2021 +0000   kmeans/jaccard/cosine/closenss_cent_approx"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-16 
+	 15849ea : add tg prefixes
+### 2021-07-13 
+	 2170f21 : dash to underscore
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2021-01-16 
+	 4df197d : PR updates
+### 2021-01-07 
+	 6606a3a : jaccard/cosine update, kmeans in progress
+### 2021-01-05 
+	 5c761ec : kmeans/jaccard/cosine/closenss_cent_approx
 
 ### `tg_kmeans` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"a5ef77e   WilliamH3O  Mon Jul 19 16:46:20 2021 -0700   fix tg prefix for some dependencies"
-"4c5f65d   WilliamH3O  Fri Jul 16 17:21:20 2021 -0700   add tg prefix to kmeans dependency"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"2170f21   WilliamH3O  Tue Jul 13 14:31:49 2021 -0700   dash to underscore"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"4df197d   kcai2TG     Sat Jan 16 01:28:34 2021 +0000   PR updates"
-"6606a3a   kcai2TG      Thu Jan 7 02:29:16 2021 +0000   jaccard/cosine update, kmeans in progress"
-"5c761ec   kcai2TG      Tue Jan 5 00:02:16 2021 +0000   kmeans/jaccard/cosine/closenss_cent_approx"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-19 
+	 a5ef77e : fix tg prefix for some dependencies
+### 2021-07-16 
+	 4c5f65d : add tg prefix to kmeans dependency
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 2170f21 : dash to underscore
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2021-01-16 
+	 4df197d : PR updates
+### 2021-01-07 
+	 6606a3a : jaccard/cosine update, kmeans in progress
+### 2021-01-05 
+	 5c761ec : kmeans/jaccard/cosine/closenss_cent_approx

@@ -17,61 +17,89 @@ $ INSTALL QUERY closeness
 ## closeness Change Logs
 
 ### `social_closeness_cent_tmp` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"245f462   Suxiaocai   Thu May 16 20:04:37 2019 +0000   finish up knn cv template"
-"6d20d1a   Suxiaocai   Wed Mar 13 07:11:58 2019 +0000   [GF945]Add batch mode choice"
-"0af113a   Suxiaocai   Tue Mar 12 23:24:36 2019 +0000   [GF-1028]fix Closeness Centrality"
-"0b60b48   Suxiaocai   Tue Jan 15 19:12:59 2019 +0000   Added topK for similarity ATTR version. Revised names."
-"9c78d4e   Suxiaocai   Sat Dec 15 01:36:41 2018 +0000   fixed format issues, regenerated .gsql files, updated README"
-"ddbb2e3   Suxiaocai   Fri Dec 14 21:40:00 2018 +0000   change display choice"
-"39752dd   Suxiaocai   Fri Dec 14 19:25:21 2018 +0000   fixed all indentation and key words"
-"946b08a   Suxiaocai   Fri Dec 14 01:53:40 2018 +0000   change VSET logic, delete path choice, fix indentation"
-"aaf2de4   Suxiaocai   Fri Nov 30 18:30:02 2018 +0000   add similarity algo and revised install.sh"
-"5373c48   Heqing Ya   Fri Oct 26 15:07:48 2018 -0700   Add graph algorithms"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2019-05-16 
+	 245f462 : finish up knn cv template
+### 2019-03-13 
+	 6d20d1a : [GF945]Add batch mode choice
+### 2019-03-12 
+	 0af113a : [GF-1028]fix Closeness Centrality
+### 2019-01-15 
+	 0b60b48 : Added topK for similarity ATTR version. Revised names.
+### 2018-12-15 
+	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
+### 2018-12-14 
+	 ddbb2e3 : change display choice
+### 2018-12-14 
+	 39752dd : fixed all indentation and key words
+### 2018-12-14 
+	 946b08a : change VSET logic, delete path choice, fix indentation
+### 2018-11-30 
+	 aaf2de4 : add similarity algo and revised install.sh
+### 2018-10-26 
+	 5373c48 : Add graph algorithms
 
 ### `social_closeness_cent_attr` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"245f462   Suxiaocai   Thu May 16 20:04:37 2019 +0000   finish up knn cv template"
-"0af113a   Suxiaocai   Tue Mar 12 23:24:36 2019 +0000   [GF-1028]fix Closeness Centrality"
-"c5530eb   Suxiaocai   Tue Jan 29 22:25:10 2019 +0000   add plmr  "
-"0b60b48   Suxiaocai   Tue Jan 15 19:12:59 2019 +0000   Added topK for similarity ATTR version. Revised names."
-"9c78d4e   Suxiaocai   Sat Dec 15 01:36:41 2018 +0000   fixed format issues, regenerated .gsql files, updated README"
-"5373c48   Heqing Ya   Fri Oct 26 15:07:48 2018 -0700   Add graph algorithms"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2019-05-16 
+	 245f462 : finish up knn cv template
+### 2019-03-12 
+	 0af113a : [GF-1028]fix Closeness Centrality
+### 2019-01-29 
+	 c5530eb : add plmr
+### 2019-01-15 
+	 0b60b48 : Added topK for similarity ATTR version. Revised names.
+### 2018-12-15 
+	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
+### 2018-10-26 
+	 5373c48 : Add graph algorithms
 
 ### `social_closeness_cent_file` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"245f462   Suxiaocai   Thu May 16 20:04:37 2019 +0000   finish up knn cv template"
-"0af113a   Suxiaocai   Tue Mar 12 23:24:36 2019 +0000   [GF-1028]fix Closeness Centrality"
-"c5530eb   Suxiaocai   Tue Jan 29 22:25:10 2019 +0000   add plmr  "
-"0b60b48   Suxiaocai   Tue Jan 15 19:12:59 2019 +0000   Added topK for similarity ATTR version. Revised names."
-"9c78d4e   Suxiaocai   Sat Dec 15 01:36:41 2018 +0000   fixed format issues, regenerated .gsql files, updated README"
-"5373c48   Heqing Ya   Fri Oct 26 15:07:48 2018 -0700   Add graph algorithms"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2019-05-16 
+	 245f462 : finish up knn cv template
+### 2019-03-12 
+	 0af113a : [GF-1028]fix Closeness Centrality
+### 2019-01-29 
+	 c5530eb : add plmr
+### 2019-01-15 
+	 0b60b48 : Added topK for similarity ATTR version. Revised names.
+### 2018-12-15 
+	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
+### 2018-10-26 
+	 5373c48 : Add graph algorithms
 
 ### `social_closeness_cent` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"245f462   Suxiaocai   Thu May 16 20:04:37 2019 +0000   finish up knn cv template"
-"0af113a   Suxiaocai   Tue Mar 12 23:24:36 2019 +0000   [GF-1028]fix Closeness Centrality"
-"c5530eb   Suxiaocai   Tue Jan 29 22:25:10 2019 +0000   add plmr  "
-"0b60b48   Suxiaocai   Tue Jan 15 19:12:59 2019 +0000   Added topK for similarity ATTR version. Revised names."
-"9c78d4e   Suxiaocai   Sat Dec 15 01:36:41 2018 +0000   fixed format issues, regenerated .gsql files, updated README"
-"5373c48   Heqing Ya   Fri Oct 26 15:07:48 2018 -0700   Add graph algorithms"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2019-05-16 
+	 245f462 : finish up knn cv template
+### 2019-03-12 
+	 0af113a : [GF-1028]fix Closeness Centrality
+### 2019-01-29 
+	 c5530eb : add plmr
+### 2019-01-15 
+	 0b60b48 : Added topK for similarity ATTR version. Revised names.
+### 2018-12-15 
+	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
+### 2018-10-26 
+	 5373c48 : Add graph algorithms

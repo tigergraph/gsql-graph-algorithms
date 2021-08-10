@@ -17,17 +17,25 @@ $ INSTALL QUERY local_clustering_coefficient
 ## local_clustering_coefficient Change Logs
 
 ### `tg_local_clustering_coefficient` Logs
-
-```
-"ac43583   WilliamH3O  Fri Jul 23 11:58:00 2021 -0700   moved examples to template and updated query names"
-"f37701b   WilliamH3O  Tue Jul 13 15:47:02 2021 -0700   more descriptive naming convention"
-"2170f21   WilliamH3O  Tue Jul 13 14:31:49 2021 -0700   dash to underscore"
-"ec58568   WilliamH3O  Tue Jul 13 12:03:54 2021 -0700   New schema-free layout"
-"9694e14   Yiming Pan  Mon Jun 21 18:00:42 2021 -0400   Rename Local_clustering_Coefficient.gsql to local_clustering_coefficient.gsql"
-"a07a82f   Yiming Pan  Mon Jun 21 17:48:21 2021 -0400   Update Local_clustering_Coefficient.gsql"
-"eda59d3   Yiming Pan  Mon Jun 21 17:47:55 2021 -0400   Update Local_clustering_Coefficient.gsql"
-"c65ad50   Yiming Pan  Thu Jun 17 14:44:38 2021 -0400   Update bc,cc,cc_approx,add cycle-detection-count,LCC"
-"beece90   Yiming Pan  Thu Jun 17 14:42:24 2021 -0400   Delete Local_clustering_Coefficient.gsql"
-"0f5a3f5   Yiming Pan  Thu Jun 17 14:38:57 2021 -0400   Add files via upload"
-"d77347c   Yiming Pan  Tue May 25 13:34:29 2021 -0400   Add lcc, cc and cc_aprox"
-```
+### 2021-07-23 
+	 ac43583 : moved examples to template and updated query names
+### 2021-07-13 
+	 f37701b : more descriptive naming convention
+### 2021-07-13 
+	 2170f21 : dash to underscore
+### 2021-07-13 
+	 ec58568 : New schema-free layout
+### 2021-06-21 
+	 9694e14 : Rename Local_clustering_Coefficient.gsql to local_clustering_coefficient.gsql
+### 2021-06-21 
+	 a07a82f : Update Local_clustering_Coefficient.gsql
+### 2021-06-21 
+	 eda59d3 : Update Local_clustering_Coefficient.gsql
+### 2021-06-17 
+	 c65ad50 : Update bc,cc,cc_approx,add cycle-detection-count,LCC
+### 2021-06-17 
+	 beece90 : Delete Local_clustering_Coefficient.gsql
+### 2021-06-17 
+	 0f5a3f5 : Add files via upload
+### 2021-05-25 
+	 d77347c : Add lcc, cc and cc_aprox
