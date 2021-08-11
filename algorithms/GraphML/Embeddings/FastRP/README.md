@@ -17,7 +17,7 @@ $ mv eigen /home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gsdk/include/thir
 
 ### Getting UDF
 `fastRP()` is a user-defined function utilized in `tg_fastRP_query.gsql` \
-**The code defined in `fastRP.cpp` should be pasted inside the `UDIMPL` namespace inside of `ExprFunctions.hpp`
+The code defined in `fastRP.cpp` should be pasted inside the `UDIMPL` namespace inside of `ExprFunctions.hpp`. Be sure to also paste the proper `include` statements at the top of the `ExprFunctions.hpp`
 ```bash
 # open file and paste code
 
@@ -38,16 +38,16 @@ using Eigen::SparseMatrix;
 ```
 
 ### Multiple machines(cluster) or Single Machine?
-If you are working on a single machine, include the `Distributed` GSQL keyword in the header of the `tg_fastRP_query` query 
+If the data is on a single machine, proceed to the next section
+If the data is spread across multiple machines, include the `DISTRIBUTED` GSQL keyword in the header of the `tg_fastRP_query` query 
 ```bash
 # Change first header to the second header
 
 CREATE QUERY tg_fastRP_query(...) {...}         
 CREATE DISTRIBUTED QUERY tg_fastRP_query(...) {...}
 ```
-After doing this, proceed to the next section(Running Queries)
 
-If you are on multiple machines or a cluster
+If you are on multiple machines or a cluster, do the following `PUT` command in every machine
 ```bash
 # For every machine in cluster  
 
@@ -56,13 +56,11 @@ $ PUT ExprFunctions from "/home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gs
 ```
 
 ### Running Queries
-** The following instructions can be done with GraphStudio or GSQL terminal
+The following instructions can be done with GraphStudio or GSQL terminal
 1. Install the `tg_fastRP_query` query
 2. Run query `tg_fastRP_query` with desired parameters. Parameters following notation names defined in the original research paper : https://arxiv.org/pdf/1908.11512.pdf
 3. (optional) Inspect output of random_walk query
 
 ```bash
-# For the default filepath parameter
-
 $ cat ~/parameters.txt
 ```
