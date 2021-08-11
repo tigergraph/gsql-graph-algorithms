@@ -1,0 +1,13 @@
+CREATE QUERY fastRP_query(int num_edges, int num_nodes, int k, int sampling_constant, int reduced_dimension, double normalization_strength, string weights_filepath) FOR GRAPH socialNet { 
+  ListAccum<Int> @@degree_diagonal;
+
+  Start = {ANY};
+  
+  info = SELECT s
+         FROM Start:s-(:e)-:t
+         POST-ACCUM
+            @@degree_diagonal += s.outdegree();
+ 
+  fastRP(@@degree_diagonal, num_edges, num_nodes, k, sampling_constant, reduced_dimension, normalization_strength, weights_filepath);
+}
+
