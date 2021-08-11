@@ -1,161 +1,87 @@
-# jaccard
-## Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#jaccard-similarity-of-neighborhoods-batch
-### Install jaccard via Tigergraph CLI
+# Jaccard
+## [TigerGraph Jaccard Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#jaccard-similarity-of-neighborhoods-batch)
+
+### Install movie_jaccard_nbor_ap_file via Tigergraph CLI
+
 ```bash
-$ tg box algos install jaccard
+$ tg box algos install movie_jaccard_nbor_ap_file
 ```
-### Install jaccard via GSQL terminal
+
+### Install movie_jaccard_nbor_ap_file via GSQL terminal
+
 ```bash
-$ BEGIN 
-
-# Paste query code after BEGIN command
-
-$ <jaccard_gsql_code>
+$ BEGIN
+# Paste movie_jaccard_nbor_ap_file code after BEGIN command
 $ END 
-$ INSTALL QUERY jaccard
+$ INSTALL QUERY movie_jaccard_nbor_ap_file
 ```
-## jaccard Change Logs
+### Install movie_jaccard_nbor_ss_file via Tigergraph CLI
 
-### `movie_jaccard_nbor_ap_file` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-05-16 
-	 245f462 : finish up knn cv template
-### 2019-03-12 
-	 0af113a : [GF-1028]fix Closeness Centrality
-### 2019-02-14 
-	 bf92e45 : revise similarity algos, change topK logic
-### 2019-02-01 
-	 e7f77af : fix test graph install and Jaccard topK
-### 2019-01-29 
-	 c5530eb : add plmr
-### 2019-01-15 
-	 0b60b48 : Added topK for similarity ATTR version. Revised names.
-### 2018-12-20 
-	 ae35bd2 : changed names, added install all choice
-### 2018-12-15 
-	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
-### 2018-12-14 
-	 c511113 : revise install_free
-### 2018-12-13 
-	 379d0f7 : change jaccard to gtmp, revise install.sh
+```bash
+$ tg box algos install movie_jaccard_nbor_ss_file
+```
 
-### `movie_jaccard_nbor_ss_file` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-05-16 
-	 245f462 : finish up knn cv template
-### 2019-02-14 
-	 bf92e45 : revise similarity algos, change topK logic
-### 2019-01-29 
-	 c5530eb : add plmr
-### 2019-01-15 
-	 0b60b48 : Added topK for similarity ATTR version. Revised names.
-### 2018-12-20 
-	 ae35bd2 : changed names, added install all choice
-### 2018-12-15 
-	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
-### 2018-12-13 
-	 379d0f7 : change jaccard to gtmp, revise install.sh
+### Install movie_jaccard_nbor_ss_file via GSQL terminal
 
-### `movie_jaccard_nbor_ss` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-05-16 
-	 245f462 : finish up knn cv template
-### 2019-02-14 
-	 bf92e45 : revise similarity algos, change topK logic
-### 2019-01-29 
-	 c5530eb : add plmr
-### 2019-01-15 
-	 0b60b48 : Added topK for similarity ATTR version. Revised names.
-### 2018-12-20 
-	 ae35bd2 : changed names, added install all choice
-### 2018-12-15 
-	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
+```bash
+$ BEGIN
+# Paste movie_jaccard_nbor_ss_file code after BEGIN command
+$ END 
+$ INSTALL QUERY movie_jaccard_nbor_ss_file
+```
+### Install movie_jaccard_nbor_ss via Tigergraph CLI
 
-### `movie_jaccard_nbor_ss_attr` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-05-16 
-	 245f462 : finish up knn cv template
-### 2019-04-12 
-	 e2fda3f : add jaccard_ss, update cosine_ss
-### 2019-02-14 
-	 bf92e45 : revise similarity algos, change topK logic
-### 2019-01-29 
-	 c5530eb : add plmr
-### 2019-01-15 
-	 0b60b48 : Added topK for similarity ATTR version. Revised names.
-### 2018-12-20 
-	 ae35bd2 : changed names, added install all choice
-### 2018-12-15 
-	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
-### 2018-12-13 
-	 379d0f7 : change jaccard to gtmp, revise install.sh
+```bash
+$ tg box algos install movie_jaccard_nbor_ss
+```
 
-### `movie_jaccard_nbor_ap` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-05-16 
-	 245f462 : finish up knn cv template
-### 2019-02-14 
-	 bf92e45 : revise similarity algos, change topK logic
-### 2019-02-01 
-	 e7f77af : fix test graph install and Jaccard topK
-### 2019-01-29 
-	 c5530eb : add plmr
-### 2019-01-15 
-	 0b60b48 : Added topK for similarity ATTR version. Revised names.
-### 2018-12-20 
-	 ae35bd2 : changed names, added install all choice
-### 2018-12-15 
-	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
-### 2018-12-14 
-	 c511113 : revise install_free
-### 2018-12-13 
-	 379d0f7 : change jaccard to gtmp, revise install.sh
+### Install movie_jaccard_nbor_ss via GSQL terminal
 
-### `movie_jaccard_nbor_ap_attr` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-05-16 
-	 245f462 : finish up knn cv template
-### 2019-02-14 
-	 bf92e45 : revise similarity algos, change topK logic
-### 2019-02-01 
-	 e7f77af : fix test graph install and Jaccard topK
-### 2019-01-29 
-	 c5530eb : add plmr
-### 2019-01-15 
-	 0b60b48 : Added topK for similarity ATTR version. Revised names.
-### 2018-12-20 
-	 ae35bd2 : changed names, added install all choice
-### 2018-12-15 
-	 9c78d4e : fixed format issues, regenerated .gsql files, updated README
-### 2018-12-13 
-	 379d0f7 : change jaccard to gtmp, revise install.sh
+```bash
+$ BEGIN
+# Paste movie_jaccard_nbor_ss code after BEGIN command
+$ END 
+$ INSTALL QUERY movie_jaccard_nbor_ss
+```
+### Install movie_jaccard_nbor_ss_attr via Tigergraph CLI
+
+```bash
+$ tg box algos install movie_jaccard_nbor_ss_attr
+```
+
+### Install movie_jaccard_nbor_ss_attr via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste movie_jaccard_nbor_ss_attr code after BEGIN command
+$ END 
+$ INSTALL QUERY movie_jaccard_nbor_ss_attr
+```
+### Install movie_jaccard_nbor_ap via Tigergraph CLI
+
+```bash
+$ tg box algos install movie_jaccard_nbor_ap
+```
+
+### Install movie_jaccard_nbor_ap via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste movie_jaccard_nbor_ap code after BEGIN command
+$ END 
+$ INSTALL QUERY movie_jaccard_nbor_ap
+```
+### Install movie_jaccard_nbor_ap_attr via Tigergraph CLI
+
+```bash
+$ tg box algos install movie_jaccard_nbor_ap_attr
+```
+
+### Install movie_jaccard_nbor_ap_attr via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste movie_jaccard_nbor_ap_attr code after BEGIN command
+$ END 
+$ INSTALL QUERY movie_jaccard_nbor_ap_attr
+```

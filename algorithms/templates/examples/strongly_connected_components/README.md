@@ -1,83 +1,45 @@
-# strongly_connected_components
-## Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#strongly-connected-components-1
-### Install strongly_connected_components via Tigergraph CLI
+# Strongly Connected Components
+## [TigerGraph Strongly Connected Components Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#strongly-connected-components-1)
+
+### Install social_scc via Tigergraph CLI
+
 ```bash
-$ tg box algos install strongly_connected_components
+$ tg box algos install social_scc
 ```
-### Install strongly_connected_components via GSQL terminal
+
+### Install social_scc via GSQL terminal
+
 ```bash
-$ BEGIN 
-
-# Paste query code after BEGIN command
-
-$ <strongly_connected_components_gsql_code>
+$ BEGIN
+# Paste social_scc code after BEGIN command
 $ END 
-$ INSTALL QUERY strongly_connected_components
+$ INSTALL QUERY social_scc
 ```
-## strongly_connected_components Change Logs
+### Install social_scc_attr via Tigergraph CLI
 
-### `social_scc` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-08-02 
-	 fab713e : delete trim_end_iter
-### 2019-08-02 
-	 fb3ba39 : fix install script
-### 2019-07-23 
-	 e84fa48 : Update scc.gsql
-### 2019-07-19 
-	 f932b80 : update scc install
-### 2019-07-17 
-	 60a4916 : update install.sh
-### 2019-07-16 
-	 64ded1c : add scc
+```bash
+$ tg box algos install social_scc_attr
+```
 
-### `social_scc_attr` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-08-02 
-	 fab713e : delete trim_end_iter
-### 2019-08-02 
-	 fb3ba39 : fix install script
-### 2019-07-23 
-	 e84fa48 : Update scc.gsql
-### 2019-07-19 
-	 f932b80 : update scc install
-### 2019-07-17 
-	 60a4916 : update install.sh
-### 2019-07-16 
-	 64ded1c : add scc
+### Install social_scc_attr via GSQL terminal
 
-### `social_scc_file` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-08-02 
-	 fab713e : delete trim_end_iter
-### 2019-08-02 
-	 fb3ba39 : fix install script
-### 2019-07-23 
-	 e84fa48 : Update scc.gsql
-### 2019-07-19 
-	 f932b80 : update scc install
-### 2019-07-17 
-	 60a4916 : update install.sh
-### 2019-07-16 
-	 64ded1c : add scc
+```bash
+$ BEGIN
+# Paste social_scc_attr code after BEGIN command
+$ END 
+$ INSTALL QUERY social_scc_attr
+```
+### Install social_scc_file via Tigergraph CLI
+
+```bash
+$ tg box algos install social_scc_file
+```
+
+### Install social_scc_file via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste social_scc_file code after BEGIN command
+$ END 
+$ INSTALL QUERY social_scc_file
+```

@@ -1,89 +1,73 @@
-# k_nearest_neighbors
-## Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#k-nearest-neighbors-cosine-neighbor-similarity-all-vertices-batch
-### Install k_nearest_neighbors via Tigergraph CLI
+# K Nearest Neighbors
+## [TigerGraph K Nearest Neighbors Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#k-nearest-neighbors-cosine-neighbor-similarity-all-vertices-batch)
+
+### Install tg_knn_cosine_cv via Tigergraph CLI
+
 ```bash
-$ tg box algos install k_nearest_neighbors
+$ tg box algos install tg_knn_cosine_cv
 ```
-### Install k_nearest_neighbors via GSQL terminal
+
+### Install tg_knn_cosine_cv via GSQL terminal
+
 ```bash
-$ BEGIN 
-
-# Paste query code after BEGIN command
-
-$ <k_nearest_neighbors_gsql_code>
+$ BEGIN
+# Paste tg_knn_cosine_cv code after BEGIN command
 $ END 
-$ INSTALL QUERY k_nearest_neighbors
+$ INSTALL QUERY tg_knn_cosine_cv
 ```
-## k_nearest_neighbors Change Logs
+### Install tg_knn_cosine_ss via Tigergraph CLI
 
-### `tg_knn_cosine_cv` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+```bash
+$ tg box algos install tg_knn_cosine_ss
+```
 
-### `tg_knn_cosine_ss` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+### Install tg_knn_cosine_ss via GSQL terminal
 
-### `tg_knn_cosine_all` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-19 
-	 bb48267 : Fixed writing to file problems
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+```bash
+$ BEGIN
+# Paste tg_knn_cosine_ss code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_knn_cosine_ss
+```
+### Install tg_knn_cosine_all via Tigergraph CLI
 
-### `tg_knn_cosine_all_sub` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+```bash
+$ tg box algos install tg_knn_cosine_all
+```
 
-### `tg_knn_cosine_cv_sub` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+### Install tg_knn_cosine_all via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste tg_knn_cosine_all code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_knn_cosine_all
+```
+### Install tg_knn_cosine_all_sub via Tigergraph CLI
+
+```bash
+$ tg box algos install tg_knn_cosine_all_sub
+```
+
+### Install tg_knn_cosine_all_sub via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste tg_knn_cosine_all_sub code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_knn_cosine_all_sub
+```
+### Install tg_knn_cosine_cv_sub via Tigergraph CLI
+
+```bash
+$ tg box algos install tg_knn_cosine_cv_sub
+```
+
+### Install tg_knn_cosine_cv_sub via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste tg_knn_cosine_cv_sub code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_knn_cosine_cv_sub
+```

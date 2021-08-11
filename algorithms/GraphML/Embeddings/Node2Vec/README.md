@@ -71,5 +71,3 @@ $ PUT ExprFunctions from "/home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gs
 
     $ cat ~/embedding.csv
     ```
-
-

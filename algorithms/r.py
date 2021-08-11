@@ -3,6 +3,9 @@ import os
 import git
 import time
 TIGERGRAPH_DOCUMENTATION_LINK = 'https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#'
+# Readme shields for working versions of TG,
+# write something about benchmarking (open-source testing)
+# benchmark -> CLI tester
 
 Documentation = {
     'betweenness_centrality': 'betweenness-centrality',
@@ -59,20 +62,20 @@ def has_subdirectories(path):
     return False
 
 def fetch_change_log(algo_lib_dir, title):
-    change_log = f'\n## {title} Change Logs\n'
+    change_log = f'\n# {title} Change Logs\n'
     gsql_git = git.Git('~/Documents/GitHub/gsql-graph-algorithms')
     for file in os.listdir(algo_lib_dir):
         if '.gsql' in file:
             gsql_path = os.path.join(algo_lib_dir, file)
             gsql_algo_name = file.replace('.gsql','')
             
-            change_log += f'\n### `{gsql_algo_name}` Logs\n'
+            change_log += f'\n## `{gsql_algo_name}` Logs\n'
             gsql_logs = gsql_git.log('--follow', '--pretty=format:%h!!%an!!%as!!%s', f'{gsql_path}')
             # change_log += f'\n```\n{gsql_logs}\n```\n'
 
             for log in gsql_logs.splitlines():
                 hashid, author, date, message = log.split('!!')
-                change_log += f'### {date} \n\t {hashid} : {message}\n'
+                change_log += f'> ## {date}\n> #### ({hashid}) {author} : {message}\n'
         
     return change_log
 
@@ -82,19 +85,21 @@ def write_readme_files(paths):
     for dir in paths:
         specific_readme = ['algorithms/GraphML/Embeddings/Node2Vec', 'algorithms/GraphML/Embeddings/FastRP']
         title = dir.split('/')[-1]
+        doc_title = title.replace('_',' ').title()
         link = TIGERGRAPH_DOCUMENTATION_LINK + Documentation[title]
         if dir not in specific_readme:
             with open(os.path.join(dir, 'README.md'), 'w') as handler:
-                template = f'# {title}\n## Documentation : {link}\n'
-                template += f'### Install {title} via Tigergraph CLI\n'
-                template += f'```bash\n$ tg box algos install {title}\n```\n'
-                template += f'### Install {title} via GSQL terminal\n'
-                template += f'```bash\n$ BEGIN \n\n# Paste query code after BEGIN command\n\n$ <{title}_gsql_code>\n$ END \n$ INSTALL QUERY {title}\n```'
-                template += fetch_change_log(dir,title)
+                template = f'# {doc_title}\n## [TigerGraph {doc_title} Documentation]({link})\n'
+                for algo in os.listdir(dir):
+                    if algo.endswith('.gsql'):
+                        algo_name = algo.replace('.gsql','')
+                        template += f'\n### Install {algo_name} via Tigergraph CLI\n'
+                        template += f'\n```bash\n$ tg box algos install {algo_name}\n```\n'
+                        template += f'\n### Install {algo_name} via GSQL terminal\n'
+                        template += f'\n```bash\n$ BEGIN\n# Paste {algo_name} code after BEGIN command\n$ END \n$ INSTALL QUERY {algo_name}\n```'
                 handler.write(template)
-        else:
-            with open(os.path.join(dir, 'README.md'), 'a') as handler:
-                handler.write(fetch_change_log(dir,title))
+        with open(os.path.join(dir, 'CHANGELOG.md'), 'w') as handler:
+            handler.write(fetch_change_log(dir,doc_title))
 
 
 

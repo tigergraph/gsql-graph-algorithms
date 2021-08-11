@@ -1,67 +1,59 @@
-# jaccard
-## Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#jaccard-similarity-of-neighborhoods-batch
-### Install jaccard via Tigergraph CLI
+# Jaccard
+## [TigerGraph Jaccard Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#jaccard-similarity-of-neighborhoods-batch)
+
+### Install tg_jaccard_nbor_ap via Tigergraph CLI
+
 ```bash
-$ tg box algos install jaccard
+$ tg box algos install tg_jaccard_nbor_ap
 ```
-### Install jaccard via GSQL terminal
+
+### Install tg_jaccard_nbor_ap via GSQL terminal
+
 ```bash
-$ BEGIN 
-
-# Paste query code after BEGIN command
-
-$ <jaccard_gsql_code>
+$ BEGIN
+# Paste tg_jaccard_nbor_ap code after BEGIN command
 $ END 
-$ INSTALL QUERY jaccard
+$ INSTALL QUERY tg_jaccard_nbor_ap
 ```
-## jaccard Change Logs
+### Install tg_jaccard_nbor_ap_sub via Tigergraph CLI
 
-### `tg_jaccard_nbor_ap` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+```bash
+$ tg box algos install tg_jaccard_nbor_ap_sub
+```
 
-### `tg_jaccard_nbor_ap_sub` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+### Install tg_jaccard_nbor_ap_sub via GSQL terminal
 
-### `tg_jaccard_batch` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2021-01-07 
-	 6606a3a : jaccard/cosine update, kmeans in progress
-### 2021-01-05 
-	 5c761ec : kmeans/jaccard/cosine/closenss_cent_approx
+```bash
+$ BEGIN
+# Paste tg_jaccard_nbor_ap_sub code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_jaccard_nbor_ap_sub
+```
+### Install tg_jaccard_batch via Tigergraph CLI
 
-### `tg_jaccard_nbor_ss` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-22 
-	 54e697a : standardize 1st batch of algorithms
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+```bash
+$ tg box algos install tg_jaccard_batch
+```
+
+### Install tg_jaccard_batch via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste tg_jaccard_batch code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_jaccard_batch
+```
+### Install tg_jaccard_nbor_ss via Tigergraph CLI
+
+```bash
+$ tg box algos install tg_jaccard_nbor_ss
+```
+
+### Install tg_jaccard_nbor_ss via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste tg_jaccard_nbor_ss code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_jaccard_nbor_ss
+```

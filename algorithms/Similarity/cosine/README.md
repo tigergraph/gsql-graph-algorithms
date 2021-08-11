@@ -1,65 +1,59 @@
-# cosine
-## Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#cosine-similarity-of-neighborhoods-batch
-### Install cosine via Tigergraph CLI
+# Cosine
+## [TigerGraph Cosine Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#cosine-similarity-of-neighborhoods-batch)
+
+### Install tg_cosine_batch via Tigergraph CLI
+
 ```bash
-$ tg box algos install cosine
+$ tg box algos install tg_cosine_batch
 ```
-### Install cosine via GSQL terminal
+
+### Install tg_cosine_batch via GSQL terminal
+
 ```bash
-$ BEGIN 
-
-# Paste query code after BEGIN command
-
-$ <cosine_gsql_code>
+$ BEGIN
+# Paste tg_cosine_batch code after BEGIN command
 $ END 
-$ INSTALL QUERY cosine
+$ INSTALL QUERY tg_cosine_batch
 ```
-## cosine Change Logs
+### Install tg_cosine_nbor_ap_sub via Tigergraph CLI
 
-### `tg_cosine_batch` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2021-01-07 
-	 6606a3a : jaccard/cosine update, kmeans in progress
-### 2021-01-05 
-	 5c761ec : kmeans/jaccard/cosine/closenss_cent_approx
+```bash
+$ tg box algos install tg_cosine_nbor_ap_sub
+```
 
-### `tg_cosine_nbor_ap_sub` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+### Install tg_cosine_nbor_ap_sub via GSQL terminal
 
-### `tg_cosine_nbor_ap` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+```bash
+$ BEGIN
+# Paste tg_cosine_nbor_ap_sub code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_cosine_nbor_ap_sub
+```
+### Install tg_cosine_nbor_ap via Tigergraph CLI
 
-### `tg_cosine_nbor_ss` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2020-09-18 
-	 14d3d6b : add 3.0 branch
-### 2020-08-13 
-	 1da86dc : Schema Less Queries
+```bash
+$ tg box algos install tg_cosine_nbor_ap
+```
+
+### Install tg_cosine_nbor_ap via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste tg_cosine_nbor_ap code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_cosine_nbor_ap
+```
+### Install tg_cosine_nbor_ss via Tigergraph CLI
+
+```bash
+$ tg box algos install tg_cosine_nbor_ss
+```
+
+### Install tg_cosine_nbor_ss via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste tg_cosine_nbor_ss code after BEGIN command
+$ END 
+$ INSTALL QUERY tg_cosine_nbor_ss
+```

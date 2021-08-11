@@ -1,53 +1,45 @@
-# betweenness_centrality
-## Documentation : https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#betweenness-centrality
-### Install betweenness_centrality via Tigergraph CLI
+# Betweenness Centrality
+## [TigerGraph Betweenness Centrality Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#betweenness-centrality)
+
+### Install social_betweenness_cent via Tigergraph CLI
+
 ```bash
-$ tg box algos install betweenness_centrality
+$ tg box algos install social_betweenness_cent
 ```
-### Install betweenness_centrality via GSQL terminal
+
+### Install social_betweenness_cent via GSQL terminal
+
 ```bash
-$ BEGIN 
-
-# Paste query code after BEGIN command
-
-$ <betweenness_centrality_gsql_code>
+$ BEGIN
+# Paste social_betweenness_cent code after BEGIN command
 $ END 
-$ INSTALL QUERY betweenness_centrality
+$ INSTALL QUERY social_betweenness_cent
 ```
-## betweenness_centrality Change Logs
+### Install social_betweenness_cent_file via Tigergraph CLI
 
-### `social_betweenness_cent` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-08-17 
-	 fd94b1d : added betweenness centrality
+```bash
+$ tg box algos install social_betweenness_cent_file
+```
 
-### `social_betweenness_cent_file` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-08-17 
-	 fd94b1d : added betweenness centrality
+### Install social_betweenness_cent_file via GSQL terminal
 
-### `social_betweenness_cent_attr` Logs
-### 2021-07-23 
-	 ac43583 : moved examples to template and updated query names
-### 2021-07-13 
-	 f37701b : more descriptive naming convention
-### 2021-07-13 
-	 2170f21 : dash to underscore
-### 2021-07-13 
-	 ec58568 : New schema-free layout
-### 2019-08-17 
-	 fd94b1d : added betweenness centrality
+```bash
+$ BEGIN
+# Paste social_betweenness_cent_file code after BEGIN command
+$ END 
+$ INSTALL QUERY social_betweenness_cent_file
+```
+### Install social_betweenness_cent_attr via Tigergraph CLI
+
+```bash
+$ tg box algos install social_betweenness_cent_attr
+```
+
+### Install social_betweenness_cent_attr via GSQL terminal
+
+```bash
+$ BEGIN
+# Paste social_betweenness_cent_attr code after BEGIN command
+$ END 
+$ INSTALL QUERY social_betweenness_cent_attr
+```
