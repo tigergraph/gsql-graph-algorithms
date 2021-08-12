@@ -38,7 +38,8 @@ using Eigen::SparseMatrix;
 ```
 
 ### Multiple machines(cluster) or Single Machine?
-If the data is on a single machine, proceed to the next section
+If the data is on a single machine, proceed to the next section.
+\
 If the data is spread across multiple machines, include the `DISTRIBUTED` GSQL keyword in the header of the `tg_fastRP_query` query 
 ```bash
 # Change first header to the second header
