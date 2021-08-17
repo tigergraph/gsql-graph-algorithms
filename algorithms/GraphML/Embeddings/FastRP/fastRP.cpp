@@ -10,7 +10,7 @@
 
 inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, int d, double beta, string input_weights) {
   // parameters
-  std::ofstream foutput("/home/tigergraph/parameters.txt");
+  std::ofstream foutput("/home/tigergraph/output.txt");
   foutput << "|E|:" << m << std::endl;
   foutput << "|V|:" << n << std::endl;
   foutput << "K:" << k << std::endl;
@@ -60,7 +60,6 @@ inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, i
   Eigen::SparseMatrix<double> R(n,d);
   R.setFromTriplets(std::begin(triplets_R), std::end(triplets_R));
 
-  // foutput << "R\n" << R << std::endl;
 
   // create D, L and similar matrices
   std::vector<Eigen::Triplet<double>> triplets_A;
@@ -77,8 +76,6 @@ inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, i
   A.setFromTriplets(std::begin(triplets_A), std::end(triplets_A));
   Eigen::SparseMatrix<double> L(n,n);
   L.setFromTriplets(std::begin(triplets_L), std::end(triplets_L));
-  // foutput << "A\n" << A.outerSize() << std::endl;
-  // foutput << "L\n" << L.outerSize() << std::endl;
   
   //embeddings vector
   std::vector<Eigen::SparseMatrix<double>> N_i;
@@ -86,12 +83,10 @@ inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, i
   // store embeddings
   Eigen::SparseMatrix<double> N_1 = A * L * R;
   N_i.push_back(N_1);
-  // foutput << "N_1\n" << N_1 << std::endl;
 
-  for(int i = 1; i < k; i++) {
-    // foutput << "N_" << i << std::endl << A * N_i[i-1] << std::endl; 
+  for(int i = 1; i < k; i++) 
     N_i.push_back(A * N_i[i-1]);
-  }
+
   // apply weights and compute N
   Eigen::SparseMatrix<double>  N(n,d);
   for (int i = 0; i < k; i++)
