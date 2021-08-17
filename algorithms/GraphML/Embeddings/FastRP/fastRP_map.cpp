@@ -30,6 +30,7 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
     foutput << "\t" << current_weight << std::endl;
     weights.push_back(std::stod(current_weight));
   }
+  foutput.close();
 
   // random number generation
   std::random_device rd;
@@ -61,8 +62,6 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
   Eigen::SparseMatrix<double> R(n, d);
   R.setFromTriplets(std::begin(triplets_R), std::end(triplets_R));
 
-  // foutput << "R\n" << R << std::endl;
-
   // create D, L and similar matrices
   std::vector<Eigen::Triplet<double>> triplets_A;
   triplets_A.reserve(n);
@@ -86,22 +85,17 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
   // store embeddings
   Eigen::SparseMatrix<double> N_1 = A * L * R;
   N_i.push_back(N_1);
-  // foutput << "N_1\n" << N_1 << std::endl;
 
-  for (int i = 1; i < k; i++) {
-    // foutput << "N_" << i << std::endl << A * N_i[i-1] << std::endl;
+  for (int i = 1; i < k; i++) 
     N_i.push_back(A * N_i[i - 1]);
-  }
+
 
   // apply weights and compute N
   Eigen::SparseMatrix<double> N(n, d);
   for (int i = 0; i < k; i++)
     N += weights[i] * N_i[i];
 
-  // Output N
-  // foutput << "Final Embedding N\n" << N<< std::endl;
-  foutput.close();
-
+  // return n x d MapAccum
   MapAccum<int, ListAccum<double>> res;
   i = 0;
   for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); i++, it++) {
