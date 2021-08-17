@@ -4,11 +4,12 @@
 #include <gle/engine/cpplib/headers.hpp>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <random>
 #include <vector>
 #include <map>
 
-inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagonal, int m, int n, int k, int s, int d, double beta, string weights_filepath) {
+inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagonal, int m, int n, int k, int s, int d, double beta, string input_weights) {
   // parameters
   std::ofstream foutput("/home/tigergraph/parameters.txt");
   foutput << "|E|:" << m << std::endl;
@@ -17,19 +18,18 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
   foutput << "Random Projection S:" << s << std::endl;
   foutput << "Embedding Dimension:" << d << std::endl;
   foutput << "Normalization Strength:" << beta << std::endl;
-  foutput << "Weights filepath:" << weights_filepath << std::endl;
   foutput << "Weights:" << std::endl;
 
   // get weights
-  // weights should be formatted in a file, where there is one weight per line, in order
+  // weights should be formatted as a single string seperated by a comma
+  std::stringstream s_stream(input_weights);
   std::vector<double> weights;
-  std::ifstream finput(weights_filepath);
   string current_weight;
-  while (std::getline(finput, current_weight)) {
+  while (s_stream.good()) {
+    std::getline(finput, current_weight,',');
     foutput << "\t" << current_weight << std::endl;
     weights.push_back(std::stod(current_weight));
   }
-  finput.close();
 
   // random number generation
   std::random_device rd;
