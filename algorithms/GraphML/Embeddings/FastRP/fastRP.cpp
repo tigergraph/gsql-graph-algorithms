@@ -24,7 +24,7 @@ inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, i
   std::vector<double> weights;
   std::ifstream finput(weights_filepath);
   string current_weight;
-  while (getline(finput, current_weight)) {
+  while (std::getline(finput, current_weight)) {
     foutput << "\t" << current_weight << std::endl;
     weights.push_back(std::stod(current_weight));
   }
@@ -58,7 +58,7 @@ inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, i
     }
   }
   Eigen::SparseMatrix<double> R(n,d);
-  R.setFromTriplets(begin(triplets_R), end(triplets_R));
+  R.setFromTriplets(std::begin(triplets_R), std::end(triplets_R));
 
   // foutput << "R\n" << R << std::endl;
 
@@ -69,14 +69,14 @@ inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, i
   triplets_L.reserve(n);
   for (int i = 0; i < degree_diagonal.size(); i++) {
       int value = degree_diagonal.get(i);
-      triplets_A.push_back(Eigen::Triplet<double>(i,i, pow((.5/m)* value, beta)));
-      triplets_L.push_back(Eigen::Triplet<double>(i,i, 1.0/value ));
+      triplets_L.push_back(Eigen::Triplet<double>(i,i, pow((.5/m)* value, beta)));
+      triplets_A.push_back(Eigen::Triplet<double>(i,i, 1.0/value ));
   }
 
   Eigen::SparseMatrix<double> A(n,n);
-  A.setFromTriplets(begin(triplets_A), end(triplets_A));
+  A.setFromTriplets(std::begin(triplets_A), std::end(triplets_A));
   Eigen::SparseMatrix<double> L(n,n);
-  L.setFromTriplets(begin(triplets_L), end(triplets_L));
+  L.setFromTriplets(std::begin(triplets_L), std::end(triplets_L));
   // foutput << "A\n" << A.outerSize() << std::endl;
   // foutput << "L\n" << L.outerSize() << std::endl;
   

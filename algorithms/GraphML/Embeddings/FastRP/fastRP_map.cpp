@@ -25,7 +25,7 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
   std::vector<double> weights;
   std::ifstream finput(weights_filepath);
   string current_weight;
-  while (getline(finput, current_weight)) {
+  while (std::getline(finput, current_weight)) {
     foutput << "\t" << current_weight << std::endl;
     weights.push_back(std::stod(current_weight));
   }
@@ -59,7 +59,7 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
     }
   }
   Eigen::SparseMatrix<double> R(n, d);
-  R.setFromTriplets(begin(triplets_R), end(triplets_R));
+  R.setFromTriplets(std::begin(triplets_R), std::end(triplets_R));
 
   // foutput << "R\n" << R << std::endl;
 
@@ -71,16 +71,14 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
   int i = 0;
   for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); i++, it++) {
     int value = it->second;
-    triplets_A.push_back(Eigen::Triplet<double>(i, i, pow((.5 / m) * value, beta)));
-    triplets_L.push_back(Eigen::Triplet<double>(i, i, 1.0 / value));
+    triplets_L.push_back(Eigen::Triplet<double>(i, i, pow((.5 / m) * value, beta)));
+    triplets_A.push_back(Eigen::Triplet<double>(i, i, 1.0 / value));
   }
 
   Eigen::SparseMatrix<double> A(n, n);
-  A.setFromTriplets(begin(triplets_A), end(triplets_A));
+  A.setFromTriplets(std::begin(triplets_A), std::end(triplets_A));
   Eigen::SparseMatrix<double> L(n, n);
-  L.setFromTriplets(begin(triplets_L), end(triplets_L));
-  // foutput << "A\n" << A.outerSize() << std::endl;
-  // foutput << "L\n" << L.outerSize() << std::endl;
+  L.setFromTriplets(std::begin(triplets_L), std::end(triplets_L));
 
   //embeddings vector
   std::vector<Eigen::SparseMatrix<double>> N_i;
@@ -94,6 +92,7 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
     // foutput << "N_" << i << std::endl << A * N_i[i-1] << std::endl;
     N_i.push_back(A * N_i[i - 1]);
   }
+
   // apply weights and compute N
   Eigen::SparseMatrix<double> N(n, d);
   for (int i = 0; i < k; i++)
