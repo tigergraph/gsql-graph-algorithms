@@ -76,9 +76,9 @@ def fetch_change_log(algo_lib_dir, title):
     # CHANGE THIS
     gsql_git = git.Git('~/Documents/GitHub/gsql-graph-algorithms')
     for file in os.listdir(algo_lib_dir):
-        if '.gsql' in file or '.cpp' in file:
+        if '.gsql' in file or '.cpp' in file or '.hpp' in file:
             gsql_path = os.path.join(algo_lib_dir, file)
-            gsql_algo_name = file.replace('.gsql','').replace('.cpp','')
+            gsql_algo_name = file.replace('.gsql','').replace('.cpp','').replace('.hpp','')
             
             change_log += f'\n### `{gsql_algo_name}`\n'
             gsql_logs = gsql_git.log('--follow', '--pretty=format:%H!!%h!!%an!!%as!!%s', f'{gsql_path}')
