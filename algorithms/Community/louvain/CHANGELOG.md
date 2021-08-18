@@ -3,6 +3,18 @@
 
 ### `tg_louvain_distributed`
 
+> [`35f17a7`](https://github.com/tigergraph/gsql-graph-algorithms/commit/35f17a784d90acd69b82b0c79677361f30730b77) refactor: change structure of louvain folder
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`fecc0ca`](https://github.com/tigergraph/gsql-graph-algorithms/commit/fecc0cab282ed46ed6d407a429781ea9dc40aba3) add docs for louvain-distributed
+
+> [`45aec7f`](https://github.com/tigergraph/gsql-graph-algorithms/commit/45aec7ff1ce581e24ffff027a1abe658a1bea485) init louvain
+
 ### `tg_louvain_parallel`
 
 > [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
@@ -18,3 +30,15 @@
 > [`ee2b9d4`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ee2b9d4523dbe52068e37c8d0f3a863666709f7e) move louvain_parallel to schema-first
 
 ### `ExprFunctions`
+
+> [`35f17a7`](https://github.com/tigergraph/gsql-graph-algorithms/commit/35f17a784d90acd69b82b0c79677361f30730b77) refactor: change structure of louvain folder
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`45aec7f`](https://github.com/tigergraph/gsql-graph-algorithms/commit/45aec7ff1ce581e24ffff027a1abe658a1bea485) init louvain
+
+> [`038ff96`](https://github.com/tigergraph/gsql-graph-algorithms/commit/038ff96d6972b4899b90c14244d17043436b3761) UDF + readme update
+
+> [`cc4420c`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cc4420c6fbd5721494141ab195235089d5bb337d) UDF for algos
