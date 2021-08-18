@@ -1,45 +1,33 @@
+
 # Shortest Path
+
+#### [Shortest Path Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Path/shortest_path/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph Shortest Path Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#single-source-shortest-path-weighted)
 
-### Install tg_shortest_ss_any_wt via Tigergraph CLI
+## Available Shortest Path Algorithms 
+
+* [`tg_shortest_ss_any_wt`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Path/shortest_path/tg_shortest_ss_any_wt.gsql)
+
+* [`tg_shortest_ss_pos_wt`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Path/shortest_path/tg_shortest_ss_pos_wt.gsql)
+
+* [`tg_shortest_ss_no_wt`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Path/shortest_path/tg_shortest_ss_no_wt.gsql)
+
+## Installation 
+
+### Replace `<Shortest Path Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install tg_shortest_ss_any_wt
+$ tg box algos install <Shortest Path Algorithm>
 ```
 
-### Install tg_shortest_ss_any_wt via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste tg_shortest_ss_any_wt code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_shortest_ss_any_wt
-```
-### Install tg_shortest_ss_pos_wt via Tigergraph CLI
-
-```bash
-$ tg box algos install tg_shortest_ss_pos_wt
-```
-
-### Install tg_shortest_ss_pos_wt via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste tg_shortest_ss_pos_wt code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_shortest_ss_pos_wt
-```
-### Install tg_shortest_ss_no_wt via Tigergraph CLI
-
-```bash
-$ tg box algos install tg_shortest_ss_no_wt
-```
-
-### Install tg_shortest_ss_no_wt via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste tg_shortest_ss_no_wt code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_shortest_ss_no_wt
+GSQL > BEGIN
+# Paste <Shortest Path Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <Shortest Path Algorithm>
 ```

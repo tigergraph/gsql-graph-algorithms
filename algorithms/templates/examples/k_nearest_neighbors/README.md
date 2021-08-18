@@ -1,101 +1,41 @@
+
 # K Nearest Neighbors
+
+#### [K Nearest Neighbors Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/k_nearest_neighbors/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph K Nearest Neighbors Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#k-nearest-neighbors-cosine-neighbor-similarity-all-vertices-batch)
 
-### Install movie_knn_cosine_all via Tigergraph CLI
+## Available K Nearest Neighbors Algorithms 
+
+* [`movie_knn_cosine_all`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/k_nearest_neighbors/movie_knn_cosine_all.gsql)
+
+* [`movie_knn_cosine_all_file`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/k_nearest_neighbors/movie_knn_cosine_all_file.gsql)
+
+* [`movie_knn_cosine_ss`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/k_nearest_neighbors/movie_knn_cosine_ss.gsql)
+
+* [`movie_knn_cosine_ss_attr`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/k_nearest_neighbors/movie_knn_cosine_ss_attr.gsql)
+
+* [`movie_knn_cosine_all_attr`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/k_nearest_neighbors/movie_knn_cosine_all_attr.gsql)
+
+* [`movie_knn_cosine_cv`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/k_nearest_neighbors/movie_knn_cosine_cv.gsql)
+
+* [`movie_knn_cosine_ss_file`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/k_nearest_neighbors/movie_knn_cosine_ss_file.gsql)
+
+## Installation 
+
+### Replace `<K Nearest Neighbors Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install movie_knn_cosine_all
+$ tg box algos install <K Nearest Neighbors Algorithm>
 ```
 
-### Install movie_knn_cosine_all via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste movie_knn_cosine_all code after BEGIN command
-$ END 
-$ INSTALL QUERY movie_knn_cosine_all
-```
-### Install movie_knn_cosine_all_file via Tigergraph CLI
-
-```bash
-$ tg box algos install movie_knn_cosine_all_file
-```
-
-### Install movie_knn_cosine_all_file via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste movie_knn_cosine_all_file code after BEGIN command
-$ END 
-$ INSTALL QUERY movie_knn_cosine_all_file
-```
-### Install movie_knn_cosine_ss via Tigergraph CLI
-
-```bash
-$ tg box algos install movie_knn_cosine_ss
-```
-
-### Install movie_knn_cosine_ss via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste movie_knn_cosine_ss code after BEGIN command
-$ END 
-$ INSTALL QUERY movie_knn_cosine_ss
-```
-### Install movie_knn_cosine_ss_attr via Tigergraph CLI
-
-```bash
-$ tg box algos install movie_knn_cosine_ss_attr
-```
-
-### Install movie_knn_cosine_ss_attr via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste movie_knn_cosine_ss_attr code after BEGIN command
-$ END 
-$ INSTALL QUERY movie_knn_cosine_ss_attr
-```
-### Install movie_knn_cosine_all_attr via Tigergraph CLI
-
-```bash
-$ tg box algos install movie_knn_cosine_all_attr
-```
-
-### Install movie_knn_cosine_all_attr via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste movie_knn_cosine_all_attr code after BEGIN command
-$ END 
-$ INSTALL QUERY movie_knn_cosine_all_attr
-```
-### Install movie_knn_cosine_cv via Tigergraph CLI
-
-```bash
-$ tg box algos install movie_knn_cosine_cv
-```
-
-### Install movie_knn_cosine_cv via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste movie_knn_cosine_cv code after BEGIN command
-$ END 
-$ INSTALL QUERY movie_knn_cosine_cv
-```
-### Install movie_knn_cosine_ss_file via Tigergraph CLI
-
-```bash
-$ tg box algos install movie_knn_cosine_ss_file
-```
-
-### Install movie_knn_cosine_ss_file via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste movie_knn_cosine_ss_file code after BEGIN command
-$ END 
-$ INSTALL QUERY movie_knn_cosine_ss_file
+GSQL > BEGIN
+# Paste <K Nearest Neighbors Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <K Nearest Neighbors Algorithm>
 ```

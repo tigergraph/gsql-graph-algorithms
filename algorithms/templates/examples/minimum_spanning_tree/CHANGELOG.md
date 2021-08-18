@@ -1,64 +1,64 @@
 
-# Minimum Spanning Tree Change Logs
+## v3.2.0 Minimum Spanning Tree Change Logs - Release Date
 
-## `social_mst` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-04-26
-> #### (479ce99) Suxiaocai : update examples
-> ## 2019-04-24
-> #### (cc624c3) Suxiaocai : fix typo
-> ## 2019-03-14
-> #### (b84eeac) Suxiaocai : add&test distributed, add test example for MST
-> ## 2019-03-12
-> #### (0af113a) Suxiaocai : [GF-1028]fix Closeness Centrality
-> ## 2019-02-14
-> #### (675b2f9) Suxiaocai : Add MST
+### `social_mst`
 
-## `social_mst_attr` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-04-26
-> #### (479ce99) Suxiaocai : update examples
-> ## 2019-04-24
-> #### (cc624c3) Suxiaocai : fix typo
-> ## 2019-03-14
-> #### (b84eeac) Suxiaocai : add&test distributed, add test example for MST
-> ## 2019-02-14
-> #### (675b2f9) Suxiaocai : Add MST
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
 
-## `social_mst_file` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-04-26
-> #### (479ce99) Suxiaocai : update examples
-> ## 2019-04-24
-> #### (cc624c3) Suxiaocai : fix typo
-> ## 2019-03-14
-> #### (b84eeac) Suxiaocai : add&test distributed, add test example for MST
-> ## 2019-02-14
-> #### (675b2f9) Suxiaocai : Add MST
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`479ce99`](https://github.com/tigergraph/gsql-graph-algorithms/commit/479ce99982102e6d13dcc42a104522cce196c51f) update examples
+
+> [`cc624c3`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cc624c3b8587eef96325a994fef22f534a266739) fix typo
+
+> [`b84eeac`](https://github.com/tigergraph/gsql-graph-algorithms/commit/b84eeac3a079e8765c0b9ac064faac638bcbe5db) add&test distributed, add test example for MST
+
+> [`0af113a`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0af113ab6628b6a724101d6fee39f70bb58f0451) [GF-1028]fix Closeness Centrality
+
+> [`675b2f9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/675b2f93368258df0ae828e0b9b352409b5042ec) Add MST
+
+### `social_mst_attr`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`479ce99`](https://github.com/tigergraph/gsql-graph-algorithms/commit/479ce99982102e6d13dcc42a104522cce196c51f) update examples
+
+> [`cc624c3`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cc624c3b8587eef96325a994fef22f534a266739) fix typo
+
+> [`b84eeac`](https://github.com/tigergraph/gsql-graph-algorithms/commit/b84eeac3a079e8765c0b9ac064faac638bcbe5db) add&test distributed, add test example for MST
+
+> [`675b2f9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/675b2f93368258df0ae828e0b9b352409b5042ec) Add MST
+
+### `social_mst_file`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`479ce99`](https://github.com/tigergraph/gsql-graph-algorithms/commit/479ce99982102e6d13dcc42a104522cce196c51f) update examples
+
+> [`cc624c3`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cc624c3b8587eef96325a994fef22f534a266739) fix typo
+
+> [`b84eeac`](https://github.com/tigergraph/gsql-graph-algorithms/commit/b84eeac3a079e8765c0b9ac064faac638bcbe5db) add&test distributed, add test example for MST
+
+> [`675b2f9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/675b2f93368258df0ae828e0b9b352409b5042ec) Add MST

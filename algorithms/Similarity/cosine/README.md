@@ -1,59 +1,35 @@
+
 # Cosine
+
+#### [Cosine Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Similarity/cosine/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph Cosine Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#cosine-similarity-of-neighborhoods-batch)
 
-### Install tg_cosine_batch via Tigergraph CLI
+## Available Cosine Algorithms 
+
+* [`tg_cosine_batch`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Similarity/cosine/tg_cosine_batch.gsql)
+
+* [`tg_cosine_nbor_ap_sub`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Similarity/cosine/tg_cosine_nbor_ap_sub.gsql)
+
+* [`tg_cosine_nbor_ap`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Similarity/cosine/tg_cosine_nbor_ap.gsql)
+
+* [`tg_cosine_nbor_ss`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Similarity/cosine/tg_cosine_nbor_ss.gsql)
+
+## Installation 
+
+### Replace `<Cosine Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install tg_cosine_batch
+$ tg box algos install <Cosine Algorithm>
 ```
 
-### Install tg_cosine_batch via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste tg_cosine_batch code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_cosine_batch
-```
-### Install tg_cosine_nbor_ap_sub via Tigergraph CLI
-
-```bash
-$ tg box algos install tg_cosine_nbor_ap_sub
-```
-
-### Install tg_cosine_nbor_ap_sub via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste tg_cosine_nbor_ap_sub code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_cosine_nbor_ap_sub
-```
-### Install tg_cosine_nbor_ap via Tigergraph CLI
-
-```bash
-$ tg box algos install tg_cosine_nbor_ap
-```
-
-### Install tg_cosine_nbor_ap via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste tg_cosine_nbor_ap code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_cosine_nbor_ap
-```
-### Install tg_cosine_nbor_ss via Tigergraph CLI
-
-```bash
-$ tg box algos install tg_cosine_nbor_ss
-```
-
-### Install tg_cosine_nbor_ss via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste tg_cosine_nbor_ss code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_cosine_nbor_ss
+GSQL > BEGIN
+# Paste <Cosine Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <Cosine Algorithm>
 ```

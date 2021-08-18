@@ -1,18 +1,18 @@
 
-# K Core Change Logs
+## v3.2.0 K Core Change Logs - Release Date
 
-## `tg_kcore` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-09-18
-> #### (14d3d6b) Victor Lee : add 3.0 branch
-> ## 2020-08-13
-> #### (feead52) Ramko9999 : Kcore Max Implementation Change
-> ## 2020-08-13
-> #### (1da86dc) Ramko9999 : Schema Less Queries
+### `tg_kcore`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`14d3d6b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/14d3d6b2684705a8917bf491084d3786809f0141) add 3.0 branch
+
+> [`feead52`](https://github.com/tigergraph/gsql-graph-algorithms/commit/feead5266fc42d1e96983b8bd70268d9c67b7b6b) Kcore Max Implementation Change
+
+> [`1da86dc`](https://github.com/tigergraph/gsql-graph-algorithms/commit/1da86dc6c1c1751f58241c2ae8e056169867ac31) Schema Less Queries

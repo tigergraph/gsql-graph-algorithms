@@ -1,45 +1,33 @@
+
 # Label Propagation
+
+#### [Label Propagation Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/label_propagation/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph Label Propagation Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#label-propagation)
 
-### Install social_label_prop_file via Tigergraph CLI
+## Available Label Propagation Algorithms 
+
+* [`social_label_prop_file`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/label_propagation/social_label_prop_file.gsql)
+
+* [`social_label_prop`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/label_propagation/social_label_prop.gsql)
+
+* [`social_label_prop_attr`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/label_propagation/social_label_prop_attr.gsql)
+
+## Installation 
+
+### Replace `<Label Propagation Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install social_label_prop_file
+$ tg box algos install <Label Propagation Algorithm>
 ```
 
-### Install social_label_prop_file via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste social_label_prop_file code after BEGIN command
-$ END 
-$ INSTALL QUERY social_label_prop_file
-```
-### Install social_label_prop via Tigergraph CLI
-
-```bash
-$ tg box algos install social_label_prop
-```
-
-### Install social_label_prop via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste social_label_prop code after BEGIN command
-$ END 
-$ INSTALL QUERY social_label_prop
-```
-### Install social_label_prop_attr via Tigergraph CLI
-
-```bash
-$ tg box algos install social_label_prop_attr
-```
-
-### Install social_label_prop_attr via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste social_label_prop_attr code after BEGIN command
-$ END 
-$ INSTALL QUERY social_label_prop_attr
+GSQL > BEGIN
+# Paste <Label Propagation Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <Label Propagation Algorithm>
 ```

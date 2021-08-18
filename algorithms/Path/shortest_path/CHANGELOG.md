@@ -1,96 +1,96 @@
 
-# Shortest Path Change Logs
+## v3.2.0 Shortest Path Change Logs - Release Date
 
-## `tg_shortest_ss_any_wt` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-09-25
-> #### (1007534) Victor Lee : fix closeness_cent & shortest_ss_pos_wt
-> ## 2020-09-22
-> #### (54e697a) Victor Lee : standardize 1st batch of algorithms
-> ## 2020-09-21
-> #### (ee2b9d4) Victor Lee : move louvain_parallel to schema-first
-> ## 2020-09-18
-> #### (14d3d6b) Victor Lee : add 3.0 branch
-> ## 2020-08-13
-> #### (1da86dc) Ramko9999 : Schema Less Queries
+### `tg_shortest_ss_any_wt`
 
-## `tg_shortest_ss_pos_wt` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-09-25
-> #### (1007534) Victor Lee : fix closeness_cent & shortest_ss_pos_wt
-> ## 2020-09-23
-> #### (a816887) Victor Lee : fix pageRank, more standardized elsewhere
-> ## 2020-09-22
-> #### (54e697a) Victor Lee : standardize 1st batch of algorithms
-> ## 2020-09-21
-> #### (ee2b9d4) Victor Lee : move louvain_parallel to schema-first
-> ## 2020-09-18
-> #### (14d3d6b) Victor Lee : add 3.0 branch
-> ## 2020-08-13
-> #### (1da86dc) Ramko9999 : Schema Less Queries
-> ## 2020-01-15
-> #### (cdaafd9) Suxiaocai : update SSSP wt
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-03-12
-> #### (0af113a) Suxiaocai : [GF-1028]fix Closeness Centrality
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-12-14
-> #### (c511113) Suxiaocai : revise install_free
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
 
-## `tg_shortest_ss_no_wt` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-09-22
-> #### (54e697a) Victor Lee : standardize 1st batch of algorithms
-> ## 2020-09-21
-> #### (ee2b9d4) Victor Lee : move louvain_parallel to schema-first
-> ## 2020-09-18
-> #### (14d3d6b) Victor Lee : add 3.0 branch
-> ## 2020-08-19
-> #### (bb48267) Ramko9999 : Fixed writing to file problems
-> ## 2020-08-13
-> #### (1da86dc) Ramko9999 : Schema Less Queries
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-03-14
-> #### (b84eeac) Suxiaocai : add&test distributed, add test example for MST
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-12-14
-> #### (ddbb2e3) Suxiaocai : change display choice
-> ## 2018-12-14
-> #### (c511113) Suxiaocai : revise install_free
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`1007534`](https://github.com/tigergraph/gsql-graph-algorithms/commit/10075347fee6195c9044e7af7fb57b574139fc6c) fix closeness_cent & shortest_ss_pos_wt
+
+> [`54e697a`](https://github.com/tigergraph/gsql-graph-algorithms/commit/54e697a7c552b33134b4991b33f67bf368ee9e66) standardize 1st batch of algorithms
+
+> [`ee2b9d4`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ee2b9d4523dbe52068e37c8d0f3a863666709f7e) move louvain_parallel to schema-first
+
+> [`14d3d6b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/14d3d6b2684705a8917bf491084d3786809f0141) add 3.0 branch
+
+> [`1da86dc`](https://github.com/tigergraph/gsql-graph-algorithms/commit/1da86dc6c1c1751f58241c2ae8e056169867ac31) Schema Less Queries
+
+### `tg_shortest_ss_pos_wt`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`1007534`](https://github.com/tigergraph/gsql-graph-algorithms/commit/10075347fee6195c9044e7af7fb57b574139fc6c) fix closeness_cent & shortest_ss_pos_wt
+
+> [`a816887`](https://github.com/tigergraph/gsql-graph-algorithms/commit/a816887d55b4f2ddf8829fba0cd5c4fbc96491c5) fix pageRank, more standardized elsewhere
+
+> [`54e697a`](https://github.com/tigergraph/gsql-graph-algorithms/commit/54e697a7c552b33134b4991b33f67bf368ee9e66) standardize 1st batch of algorithms
+
+> [`ee2b9d4`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ee2b9d4523dbe52068e37c8d0f3a863666709f7e) move louvain_parallel to schema-first
+
+> [`14d3d6b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/14d3d6b2684705a8917bf491084d3786809f0141) add 3.0 branch
+
+> [`1da86dc`](https://github.com/tigergraph/gsql-graph-algorithms/commit/1da86dc6c1c1751f58241c2ae8e056169867ac31) Schema Less Queries
+
+> [`cdaafd9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cdaafd9b21f5943a395a46521f3b8334a733f91c) update SSSP wt
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`0af113a`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0af113ab6628b6a724101d6fee39f70bb58f0451) [GF-1028]fix Closeness Centrality
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`c511113`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c511113ac0052fde8c12ce70d7da95155ef1bfbd) revise install_free
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries
+
+### `tg_shortest_ss_no_wt`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`54e697a`](https://github.com/tigergraph/gsql-graph-algorithms/commit/54e697a7c552b33134b4991b33f67bf368ee9e66) standardize 1st batch of algorithms
+
+> [`ee2b9d4`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ee2b9d4523dbe52068e37c8d0f3a863666709f7e) move louvain_parallel to schema-first
+
+> [`14d3d6b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/14d3d6b2684705a8917bf491084d3786809f0141) add 3.0 branch
+
+> [`bb48267`](https://github.com/tigergraph/gsql-graph-algorithms/commit/bb482679984d4af6c6a9230ee7f4b5eeecc7d360) Fixed writing to file problems
+
+> [`1da86dc`](https://github.com/tigergraph/gsql-graph-algorithms/commit/1da86dc6c1c1751f58241c2ae8e056169867ac31) Schema Less Queries
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`b84eeac`](https://github.com/tigergraph/gsql-graph-algorithms/commit/b84eeac3a079e8765c0b9ac064faac638bcbe5db) add&test distributed, add test example for MST
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`ddbb2e3`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ddbb2e3e3221fd4fb9810913e5fde1f91a2902a1) change display choice
+
+> [`c511113`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c511113ac0052fde8c12ce70d7da95155ef1bfbd) revise install_free
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries

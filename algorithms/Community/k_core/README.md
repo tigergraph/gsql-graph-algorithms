@@ -1,17 +1,29 @@
+
 # K Core
+
+#### [K Core Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Community/k_core/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph K Core Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#k-core-decomposition)
 
-### Install tg_kcore via Tigergraph CLI
+## Available K Core Algorithms 
+
+* [`tg_kcore`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Community/k_core/tg_kcore.gsql)
+
+## Installation 
+
+### Replace `<K Core Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install tg_kcore
+$ tg box algos install <K Core Algorithm>
 ```
 
-### Install tg_kcore via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste tg_kcore code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_kcore
+GSQL > BEGIN
+# Paste <K Core Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <K Core Algorithm>
 ```

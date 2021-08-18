@@ -17,7 +17,7 @@ $ mv eigen /home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gsdk/include/thir
 
 ### Getting UDF
 `fastRP()` is a user-defined function utilized in `tg_fastRP_query.gsql` \
-The code defined in `fastRP.cpp` should be pasted inside the `UDIMPL` namespace inside of `ExprFunctions.hpp`. Be sure to also paste the proper `include` statements at the top of the `ExprFunctions.hpp`
+The code defined in `tg_fastRP.cpp` should be pasted inside the `UDIMPL` namespace inside of `ExprFunctions.hpp`. Be sure to also paste the proper `include` statements at the top of the `ExprFunctions.hpp`
 ```bash
 # open file and paste code
 

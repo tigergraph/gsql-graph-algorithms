@@ -1,24 +1,24 @@
 
-# Label Propagation Change Logs
+## v3.2.0 Label Propagation Change Logs - Release Date
 
-## `tg_label_prop` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-09-18
-> #### (14d3d6b) Victor Lee : add 3.0 branch
-> ## 2020-08-13
-> #### (1da86dc) Ramko9999 : Schema Less Queries
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-10-26
-> #### (5373c48) Heqing Ya : Add graph algorithms
+### `tg_label_prop`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`14d3d6b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/14d3d6b2684705a8917bf491084d3786809f0141) add 3.0 branch
+
+> [`1da86dc`](https://github.com/tigergraph/gsql-graph-algorithms/commit/1da86dc6c1c1751f58241c2ae8e056169867ac31) Schema Less Queries
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`5373c48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/5373c482fc2bda5c0d5582e6349559aba18c36be) Add graph algorithms

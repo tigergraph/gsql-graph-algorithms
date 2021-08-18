@@ -1,20 +1,20 @@
 
-# Minimum Spanning Tree Change Logs
+## v3.2.0 Minimum Spanning Tree Change Logs - Release Date
 
-## `tg_mst` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-09-22
-> #### (54e697a) Victor Lee : standardize 1st batch of algorithms
-> ## 2020-09-21
-> #### (ee2b9d4) Victor Lee : move louvain_parallel to schema-first
-> ## 2020-09-18
-> #### (14d3d6b) Victor Lee : add 3.0 branch
-> ## 2020-08-13
-> #### (1da86dc) Ramko9999 : Schema Less Queries
+### `tg_mst`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`54e697a`](https://github.com/tigergraph/gsql-graph-algorithms/commit/54e697a7c552b33134b4991b33f67bf368ee9e66) standardize 1st batch of algorithms
+
+> [`ee2b9d4`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ee2b9d4523dbe52068e37c8d0f3a863666709f7e) move louvain_parallel to schema-first
+
+> [`14d3d6b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/14d3d6b2684705a8917bf491084d3786809f0141) add 3.0 branch
+
+> [`1da86dc`](https://github.com/tigergraph/gsql-graph-algorithms/commit/1da86dc6c1c1751f58241c2ae8e056169867ac31) Schema Less Queries

@@ -1,129 +1,45 @@
+
 # Pagerank
+
+#### [Pagerank Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph Pagerank Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#pagerank)
 
-### Install PR_pageRank_wt_file via Tigergraph CLI
+## Available Pagerank Algorithms 
+
+* [`PR_pageRank_wt_file`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/PR_pageRank_wt_file.gsql)
+
+* [`social_pageRank_pers_attr`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/social_pageRank_pers_attr.gsql)
+
+* [`social_pageRank_attr`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/social_pageRank_attr.gsql)
+
+* [`social_pageRank_wt`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/social_pageRank_wt.gsql)
+
+* [`social_pageRank_pers`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/social_pageRank_pers.gsql)
+
+* [`social_pageRank`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/social_pageRank.gsql)
+
+* [`PR_pageRank_wt_attr`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/PR_pageRank_wt_attr.gsql)
+
+* [`social_pageRank_file`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/social_pageRank_file.gsql)
+
+* [`social_pageRank_pers_file`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/templates/examples/pagerank/social_pageRank_pers_file.gsql)
+
+## Installation 
+
+### Replace `<Pagerank Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install PR_pageRank_wt_file
+$ tg box algos install <Pagerank Algorithm>
 ```
 
-### Install PR_pageRank_wt_file via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste PR_pageRank_wt_file code after BEGIN command
-$ END 
-$ INSTALL QUERY PR_pageRank_wt_file
-```
-### Install social_pageRank_pers_attr via Tigergraph CLI
-
-```bash
-$ tg box algos install social_pageRank_pers_attr
-```
-
-### Install social_pageRank_pers_attr via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste social_pageRank_pers_attr code after BEGIN command
-$ END 
-$ INSTALL QUERY social_pageRank_pers_attr
-```
-### Install social_pageRank_attr via Tigergraph CLI
-
-```bash
-$ tg box algos install social_pageRank_attr
-```
-
-### Install social_pageRank_attr via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste social_pageRank_attr code after BEGIN command
-$ END 
-$ INSTALL QUERY social_pageRank_attr
-```
-### Install social_pageRank_wt via Tigergraph CLI
-
-```bash
-$ tg box algos install social_pageRank_wt
-```
-
-### Install social_pageRank_wt via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste social_pageRank_wt code after BEGIN command
-$ END 
-$ INSTALL QUERY social_pageRank_wt
-```
-### Install social_pageRank_pers via Tigergraph CLI
-
-```bash
-$ tg box algos install social_pageRank_pers
-```
-
-### Install social_pageRank_pers via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste social_pageRank_pers code after BEGIN command
-$ END 
-$ INSTALL QUERY social_pageRank_pers
-```
-### Install social_pageRank via Tigergraph CLI
-
-```bash
-$ tg box algos install social_pageRank
-```
-
-### Install social_pageRank via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste social_pageRank code after BEGIN command
-$ END 
-$ INSTALL QUERY social_pageRank
-```
-### Install PR_pageRank_wt_attr via Tigergraph CLI
-
-```bash
-$ tg box algos install PR_pageRank_wt_attr
-```
-
-### Install PR_pageRank_wt_attr via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste PR_pageRank_wt_attr code after BEGIN command
-$ END 
-$ INSTALL QUERY PR_pageRank_wt_attr
-```
-### Install social_pageRank_file via Tigergraph CLI
-
-```bash
-$ tg box algos install social_pageRank_file
-```
-
-### Install social_pageRank_file via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste social_pageRank_file code after BEGIN command
-$ END 
-$ INSTALL QUERY social_pageRank_file
-```
-### Install social_pageRank_pers_file via Tigergraph CLI
-
-```bash
-$ tg box algos install social_pageRank_pers_file
-```
-
-### Install social_pageRank_pers_file via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste social_pageRank_pers_file code after BEGIN command
-$ END 
-$ INSTALL QUERY social_pageRank_pers_file
+GSQL > BEGIN
+# Paste <Pagerank Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <Pagerank Algorithm>
 ```

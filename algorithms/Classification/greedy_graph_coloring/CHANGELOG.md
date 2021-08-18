@@ -1,26 +1,26 @@
 
-# Greedy Graph Coloring Change Logs
+## v3.2.0 Greedy Graph Coloring Change Logs - Release Date
 
-## `tg_greedy_graph_coloring` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2021-02-01
-> #### (6656b24) Monil Shah : Updated changes and added a max_colors argument.
-> ## 2021-01-28
-> #### (a49ec65) Monil Shah : Updated print details
-> ## 2021-01-28
-> #### (c317bf3) Monil Shah : Updated as per PR
-> ## 2021-01-27
-> #### (39589c0) Monil Shah : Generalized query
-> ## 2021-01-15
-> #### (ced352e) Monil Shah : display edge set
-> ## 2021-01-15
-> #### (de29bc0) Monil Shah : added capability to write edgeset to a file
-> ## 2021-01-15
-> #### (d237638) Monil Shah : added greedy graph coloring algorithm
+### `tg_greedy_graph_coloring`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`6656b24`](https://github.com/tigergraph/gsql-graph-algorithms/commit/6656b24eec9258752a69c9077955a8da08855707) Updated changes and added a max_colors argument.
+
+> [`a49ec65`](https://github.com/tigergraph/gsql-graph-algorithms/commit/a49ec6537a4909fea88256e396d876293e5e625d) Updated print details
+
+> [`c317bf3`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c317bf3d75ca1167a244137eb3a038a2ace0337d) Updated as per PR
+
+> [`39589c0`](https://github.com/tigergraph/gsql-graph-algorithms/commit/39589c0b53ff7b144507dfcefce8022f05db74cb) Generalized query
+
+> [`ced352e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ced352ef6062e795d991fa5645dbf7988a624ac1) display edge set
+
+> [`de29bc0`](https://github.com/tigergraph/gsql-graph-algorithms/commit/de29bc01c907104ede081c98579a3245b6808375) added capability to write edgeset to a file
+
+> [`d237638`](https://github.com/tigergraph/gsql-graph-algorithms/commit/d23763851ca98ed4347d77fc4f2b85d488c57651) added greedy graph coloring algorithm

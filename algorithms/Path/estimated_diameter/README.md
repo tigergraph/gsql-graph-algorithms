@@ -1,31 +1,31 @@
+
 # Estimated Diameter
+
+#### [Estimated Diameter Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Path/estimated_diameter/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph Estimated Diameter Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#estimated-diameter)
 
-### Install tg_max_BFS_depth via Tigergraph CLI
+## Available Estimated Diameter Algorithms 
+
+* [`tg_max_BFS_depth`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Path/estimated_diameter/tg_max_BFS_depth.gsql)
+
+* [`tg_estimate_diameter`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Path/estimated_diameter/tg_estimate_diameter.gsql)
+
+## Installation 
+
+### Replace `<Estimated Diameter Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install tg_max_BFS_depth
+$ tg box algos install <Estimated Diameter Algorithm>
 ```
 
-### Install tg_max_BFS_depth via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste tg_max_BFS_depth code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_max_BFS_depth
-```
-### Install tg_estimate_diameter via Tigergraph CLI
-
-```bash
-$ tg box algos install tg_estimate_diameter
-```
-
-### Install tg_estimate_diameter via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste tg_estimate_diameter code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_estimate_diameter
+GSQL > BEGIN
+# Paste <Estimated Diameter Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <Estimated Diameter Algorithm>
 ```

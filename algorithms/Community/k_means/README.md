@@ -1,31 +1,31 @@
+
 # K Means
+
+#### [K Means Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Community/k_means/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph K Means Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#https://raw.githubusercontent.com/tigergraph/gsql-graph-algorithms/master/algorithms/schema-free/kmeans.gsql)
 
-### Install tg_kmeans_sub via Tigergraph CLI
+## Available K Means Algorithms 
+
+* [`tg_kmeans_sub`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Community/k_means/tg_kmeans_sub.gsql)
+
+* [`tg_kmeans`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Community/k_means/tg_kmeans.gsql)
+
+## Installation 
+
+### Replace `<K Means Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install tg_kmeans_sub
+$ tg box algos install <K Means Algorithm>
 ```
 
-### Install tg_kmeans_sub via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste tg_kmeans_sub code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_kmeans_sub
-```
-### Install tg_kmeans via Tigergraph CLI
-
-```bash
-$ tg box algos install tg_kmeans
-```
-
-### Install tg_kmeans via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste tg_kmeans code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_kmeans
+GSQL > BEGIN
+# Paste <K Means Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <K Means Algorithm>
 ```

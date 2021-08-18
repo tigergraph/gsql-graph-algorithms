@@ -1,31 +1,31 @@
+
 # Closeness
+
+#### [Closeness Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/closeness/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph Closeness Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#closeness-centrality)
 
-### Install tg_closeness_cent via Tigergraph CLI
+## Available Closeness Algorithms 
+
+* [`tg_closeness_cent`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/closeness/tg_closeness_cent.gsql)
+
+* [`tg_closeness_cent_approx`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/closeness/tg_closeness_cent_approx.gsql)
+
+## Installation 
+
+### Replace `<Closeness Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install tg_closeness_cent
+$ tg box algos install <Closeness Algorithm>
 ```
 
-### Install tg_closeness_cent via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste tg_closeness_cent code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_closeness_cent
-```
-### Install tg_closeness_cent_approx via Tigergraph CLI
-
-```bash
-$ tg box algos install tg_closeness_cent_approx
-```
-
-### Install tg_closeness_cent_approx via GSQL terminal
-
-```bash
-$ BEGIN
-# Paste tg_closeness_cent_approx code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_closeness_cent_approx
+GSQL > BEGIN
+# Paste <Closeness Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <Closeness Algorithm>
 ```

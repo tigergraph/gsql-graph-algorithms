@@ -1,17 +1,29 @@
+
 # Maximal Independent Set
+
+#### [Maximal Independent Set Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Path/maximal_independent_set/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+
 ## [TigerGraph Maximal Independent Set Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#maximal-independent-set)
 
-### Install tg_maximal_indep_set via Tigergraph CLI
+## Available Maximal Independent Set Algorithms 
+
+* [`tg_maximal_indep_set`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Path/maximal_independent_set/tg_maximal_indep_set.gsql)
+
+## Installation 
+
+### Replace `<Maximal Independent Set Algorithm>` with desired algorithm listed above 
+
+#### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install tg_maximal_indep_set
+$ tg box algos install <Maximal Independent Set Algorithm>
 ```
 
-### Install tg_maximal_indep_set via GSQL terminal
+#### Via GSQL terminal
 
 ```bash
-$ BEGIN
-# Paste tg_maximal_indep_set code after BEGIN command
-$ END 
-$ INSTALL QUERY tg_maximal_indep_set
+GSQL > BEGIN
+# Paste <Maximal Independent Set Algorithm> code after BEGIN command
+GSQL > END 
+GSQL > INSTALL QUERY <Maximal Independent Set Algorithm>
 ```

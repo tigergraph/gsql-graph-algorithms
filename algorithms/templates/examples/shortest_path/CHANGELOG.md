@@ -1,240 +1,240 @@
 
-# Shortest Path Change Logs
+## v3.2.0 Shortest Path Change Logs - Release Date
 
-## `social_shortest_ss_pos_wt` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-01-15
-> #### (cdaafd9) Suxiaocai : update SSSP wt
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-03-12
-> #### (0af113a) Suxiaocai : [GF-1028]fix Closeness Centrality
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-12-14
-> #### (c511113) Suxiaocai : revise install_free
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
+### `social_shortest_ss_pos_wt`
 
-## `generic_shortest_ss_no_wt_file` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-12-14
-> #### (c511113) Suxiaocai : revise install_free
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
 
-## `generic_shortest_ss_no_wt_attr` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-12-14
-> #### (c511113) Suxiaocai : revise install_free
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
 
-## `social_shortest_ss_no_wt` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-03-14
-> #### (b84eeac) Suxiaocai : add&test distributed, add test example for MST
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-12-14
-> #### (ddbb2e3) Suxiaocai : change display choice
-> ## 2018-12-14
-> #### (c511113) Suxiaocai : revise install_free
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
 
-## `social_shortest_ss_any_wt_attr` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-01-17
-> #### (ce3816f) Suxiaocai : add exception
-> ## 2020-01-15
-> #### (cdaafd9) Suxiaocai : update SSSP wt
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
-> ## 2018-10-26
-> #### (5373c48) Heqing Ya : Add graph algorithms
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
 
-## `social_shortest_ss_any_wt` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-01-17
-> #### (ce3816f) Suxiaocai : add exception
-> ## 2020-01-15
-> #### (cdaafd9) Suxiaocai : update SSSP wt
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-12-14
-> #### (c511113) Suxiaocai : revise install_free
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
-> ## 2018-10-26
-> #### (5373c48) Heqing Ya : Add graph algorithms
+> [`cdaafd9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cdaafd9b21f5943a395a46521f3b8334a733f91c) update SSSP wt
 
-## `social_shortest_ss_pos_wt_attr` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-01-15
-> #### (cdaafd9) Suxiaocai : update SSSP wt
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-12-14
-> #### (c511113) Suxiaocai : revise install_free
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
 
-## `work_shortest_sp_pos_wt` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-04-24
-> #### (cc624c3) Suxiaocai : fix typo
+> [`0af113a`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0af113ab6628b6a724101d6fee39f70bb58f0451) [GF-1028]fix Closeness Centrality
 
-## `social_shortest_ss_any_wt_file` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-01-17
-> #### (ce3816f) Suxiaocai : add exception
-> ## 2020-01-15
-> #### (cdaafd9) Suxiaocai : update SSSP wt
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
-> ## 2018-10-26
-> #### (5373c48) Heqing Ya : Add graph algorithms
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
 
-## `social_shortest_ss_pos_wt_file` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (2170f21) WilliamH3O : dash to underscore
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2020-01-15
-> #### (cdaafd9) Suxiaocai : update SSSP wt
-> ## 2019-05-16
-> #### (245f462) Suxiaocai : finish up knn cv template
-> ## 2019-01-29
-> #### (c5530eb) Suxiaocai : add plmr
-> ## 2019-01-15
-> #### (0b60b48) Suxiaocai : Added topK for similarity ATTR version. Revised names.
-> ## 2018-12-15
-> #### (9c78d4e) Suxiaocai : fixed format issues, regenerated .gsql files, updated README
-> ## 2018-12-14
-> #### (c511113) Suxiaocai : revise install_free
-> ## 2018-11-21
-> #### (7d895bb) Suxiaocai : add 2 shortest path queries
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`c511113`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c511113ac0052fde8c12ce70d7da95155ef1bfbd) revise install_free
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries
+
+### `generic_shortest_ss_no_wt_file`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`c511113`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c511113ac0052fde8c12ce70d7da95155ef1bfbd) revise install_free
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries
+
+### `generic_shortest_ss_no_wt_attr`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`c511113`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c511113ac0052fde8c12ce70d7da95155ef1bfbd) revise install_free
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries
+
+### `social_shortest_ss_no_wt`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`b84eeac`](https://github.com/tigergraph/gsql-graph-algorithms/commit/b84eeac3a079e8765c0b9ac064faac638bcbe5db) add&test distributed, add test example for MST
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`ddbb2e3`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ddbb2e3e3221fd4fb9810913e5fde1f91a2902a1) change display choice
+
+> [`c511113`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c511113ac0052fde8c12ce70d7da95155ef1bfbd) revise install_free
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries
+
+### `social_shortest_ss_any_wt_attr`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`ce3816f`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ce3816f33efe7583729dfc5bffdb8a99c655b7bd) add exception
+
+> [`cdaafd9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cdaafd9b21f5943a395a46521f3b8334a733f91c) update SSSP wt
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries
+
+> [`5373c48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/5373c482fc2bda5c0d5582e6349559aba18c36be) Add graph algorithms
+
+### `social_shortest_ss_any_wt`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`ce3816f`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ce3816f33efe7583729dfc5bffdb8a99c655b7bd) add exception
+
+> [`cdaafd9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cdaafd9b21f5943a395a46521f3b8334a733f91c) update SSSP wt
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`c511113`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c511113ac0052fde8c12ce70d7da95155ef1bfbd) revise install_free
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries
+
+> [`5373c48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/5373c482fc2bda5c0d5582e6349559aba18c36be) Add graph algorithms
+
+### `social_shortest_ss_pos_wt_attr`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`cdaafd9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cdaafd9b21f5943a395a46521f3b8334a733f91c) update SSSP wt
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`c511113`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c511113ac0052fde8c12ce70d7da95155ef1bfbd) revise install_free
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries
+
+### `work_shortest_sp_pos_wt`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`cc624c3`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cc624c3b8587eef96325a994fef22f534a266739) fix typo
+
+### `social_shortest_ss_any_wt_file`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`ce3816f`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ce3816f33efe7583729dfc5bffdb8a99c655b7bd) add exception
+
+> [`cdaafd9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cdaafd9b21f5943a395a46521f3b8334a733f91c) update SSSP wt
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries
+
+> [`5373c48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/5373c482fc2bda5c0d5582e6349559aba18c36be) Add graph algorithms
+
+### `social_shortest_ss_pos_wt_file`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`cdaafd9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cdaafd9b21f5943a395a46521f3b8334a733f91c) update SSSP wt
+
+> [`245f462`](https://github.com/tigergraph/gsql-graph-algorithms/commit/245f462df49aceb3afc09d68d65c2a7f81c4da4c) finish up knn cv template
+
+> [`c5530eb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c5530eb68c9753a628e969c7168fd9d7ae3ec392) add plmr
+
+> [`0b60b48`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0b60b48514cb73e78abd7c0880c148ef4969a3b7) Added topK for similarity ATTR version. Revised names.
+
+> [`9c78d4e`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9c78d4ebb9ede34f286a8887f230d57f6a30568f) fixed format issues, regenerated .gsql files, updated README
+
+> [`c511113`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c511113ac0052fde8c12ce70d7da95155ef1bfbd) revise install_free
+
+> [`7d895bb`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7d895bb84bdff3c348f5cc14ed00e7f1167097db) add 2 shortest path queries

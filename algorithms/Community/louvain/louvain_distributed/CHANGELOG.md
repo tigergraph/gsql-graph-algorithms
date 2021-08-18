@@ -1,14 +1,14 @@
 
-# Louvain Distributed Change Logs
+## v3.2.0 Louvain Distributed Change Logs - Release Date
 
-## `tg_louvain_distributed` Logs
-> ## 2021-07-23
-> #### (ac43583) WilliamH3O : moved examples to template and updated query names
-> ## 2021-07-13
-> #### (f37701b) WilliamH3O : more descriptive naming convention
-> ## 2021-07-13
-> #### (ec58568) WilliamH3O : New schema-free layout
-> ## 2021-06-20
-> #### (fecc0ca) Boyu Jiang : add docs for louvain-distributed
-> ## 2021-04-09
-> #### (45aec7f) Boyu Jiang : init louvain
+### `tg_louvain_distributed`
+
+> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+
+> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+
+> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`fecc0ca`](https://github.com/tigergraph/gsql-graph-algorithms/commit/fecc0cab282ed46ed6d407a429781ea9dc40aba3) add docs for louvain-distributed
+
+> [`45aec7f`](https://github.com/tigergraph/gsql-graph-algorithms/commit/45aec7ff1ce581e24ffff027a1abe658a1bea485) init louvain
