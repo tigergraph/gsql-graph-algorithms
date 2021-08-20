@@ -11,7 +11,6 @@
 ```bash
 $ cd
 $ git clone https://gitlab.com/libeigen/eigen.git
-$ mv eigen /home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gsdk/include/thirdparty
 ```
 
 
@@ -31,7 +30,7 @@ $ vim ~/tigergraph/app/<TGversion>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp
 ```
 Once inside the text editor, paste the following line of `C++` code into under the other include statements 
 ```c++
-#include "/home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gsdk/include/thirdparty/eigen/Eigen/SparseCore"
+#include "/home/tigergraph/eigen/Eigen/SparseCore"
 
 using Eigen::Triplet;
 using Eigen::SparseMatrix;
