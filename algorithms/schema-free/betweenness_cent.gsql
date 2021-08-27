@@ -12,8 +12,8 @@ CREATE QUERY Betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
   top_k: report only this many top scores          display_edges: output edges for visualization
   
    */ 
-  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
-  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore; #tuple to store harmonic centrality score
+  HeapAccum<VertexScore>(top_k, score DESC) @@topScores; #heap to store top K score
   SumAccum<INT> @@currDist; #current distance
   BitwiseOrAccum @visitNext; #use bitwise instead of setAccum
   BitwiseOrAccum @seen;
