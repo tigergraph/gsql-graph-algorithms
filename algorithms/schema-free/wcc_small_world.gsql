@@ -1,4 +1,4 @@
-CREATE QUERY WCC_SmallWorld(STRING v_type, STRING e_type, UINT threshold = 100000,
+CREATE QUERY wcc_small_world(STRING v_type, STRING e_type, UINT threshold = 100000,
   BOOL to_show_cc_count=FALSE) {
   ##
   # This query detects weakly connected components based on the following paper:
