@@ -1,0 +1,80 @@
+CREATE QUERY q3(STRING origin , STRING destination) FOR GRAPH TransportSystem { 
+	MinAccum<INT> @@minDistance;
+	MaxAccum<INT> @@maxDistance;
+  OrAccum @visited=FALSE;
+	SumAccum<INT> @time = -1;
+  //SumAccum<INT>@money = 0;
+  SumAccum<STRING> @path;
+	SetAccum<VERTEX> @@visitedSet;
+	SetAccum<VERTEX> @@unvisitedSet;
+	
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Mark everything unvisited and set time as -1
+  vertexList = {City.*};
+	currentVertex = SELECT p FROM vertexList:p-(ViaRoad:e)->City:t 
+	                  	  WHERE p.cityId == origin 
+	                  	  ACCUM t.@time = e.timeTaken, t.@path = p.cityId + "->", 
+                                     @@maxDistance += e.timeTaken
+	                  	   POST-ACCUM  p.@visited = TRUE, p.@time = 0, 
+                                     @@visitedSet += p;	
+ ///////////////////////////////////////////////////////////////////////////////////////////////////////// 
+  
+	unvisitedSet = SELECT v FROM vertexList:v 
+                                   WHERE v.@visited == FALSE 
+                                   ACCUM @@unvisitedSet += v;  
+	choiceSet = unvisitedSet;
+ //////////////////////////////////////////////////////////////////////////////////////////////////////////
+	WHILE choiceSet.size() > 0 DO
+ 
+		currentVertex = SELECT v FROM currentVertex:v 
+                                       	ACCUM v.@visited = TRUE, v.@path = v.@path + v.cityId;
+	
+	  /* Calculate the time of the current vertex neighbors through the 
+  		current vertex pick up the neighbours and then relax them    */
+	  	unvisitedNeighbors = SELECT n FROM currentVertex:v-(ViaRoad:e)->City:n
+                                     		ACCUM 
+                                               		IF n.@visited == FALSE THEN
+	                         				IF (n.@time < 0 ) THEN
+	                           					n.@time = e.timeTaken + v.@time,
+	                           					n.@path += v.@path + "->"                                     
+	                        	 			ELSE IF (e.timeTaken + v.@time < n.@time) THEN
+	                            					n.@time = e.timeTaken + v.@time,
+	                            					n.@path = v.@path + "->"
+                                        
+	                         				END 
+	                       				END;
+   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
+		
+		currentVertex = SELECT v FROM currentVertex:v POST-ACCUM @@visitedSet += v;
+	
+	 	choiceSet = unvisitedNeighbors UNION unvisitedSet;
+	
+		choiceSet = SELECT n FROM choiceSet:n 
+ 	                                  WHERE n.@visited == FALSE AND n.@time > 0 
+  	                                  ACCUM @@maxDistance += n.@time;
+	  
+		
+			@@minDistance = @@maxDistance;
+		
+	 
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		currentVertex = SELECT n FROM choiceSet:n 
+                                     		WHERE n.@visited == FALSE AND n.@time > 0 
+                                     		ACCUM @@minDistance += n.@time 
+                                     		HAVING n.@time == @@minDistance LIMIT 1;
+ 
+	END;
+	
+	
+	
+    
+	shortestTimeResults = unvisitedSet;
+	
+  
+  
+    ans = SELECT s FROM shortestTimeResults:s
+  WHERE s.cityId==destination;
+  
+  PRINT ans;
+  
+  
+}
