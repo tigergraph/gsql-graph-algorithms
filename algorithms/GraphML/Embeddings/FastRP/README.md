@@ -57,9 +57,11 @@ $ PUT ExprFunctions from "/home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gs
 
 ### Running Queries
 The following instructions can be done with GraphStudio or GSQL terminal
-1. Install the `tg_fastRP_query` query
-2. Run query `tg_fastRP_query` with desired parameters. Parameters following notation names defined in the original research paper : https://arxiv.org/pdf/1908.11512.pdf
-3. (optional) Inspect output of random_walk query
+1. Install the `tg_fastRP_preprocessing_query` query
+2. Run `tg_fastRP_preprocessing_query`
+3. Install the `tg_fastRP_query` or `tg_fastRP_map_query` query
+4. Run query `tg_fastRP_query` or `tg_fastRP_map_query` with desired parameters. Parameters following notation names defined in the original research paper : https://arxiv.org/pdf/1908.11512.pdf
+5. (optional) Inspect output of random_walk query
 
 ```bash
 $ cat ~/parameters.txt
