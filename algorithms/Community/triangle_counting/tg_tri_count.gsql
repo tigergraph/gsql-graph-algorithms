@@ -1,9 +1,9 @@
-CREATE QUERY tri_count*EXT*() FOR GRAPH *graph* {
+CREATE QUERY tg_tri_count(STRING edge_type, STRING vertex_type) {
 # Compute the total number of triangles in the GRAPH. No input parameters are needed.
-        SumAccum<int> @@cnt;
-              SetAccum<VERTEX> @self;
+        SumAccum<INT> @@cnt;
+        SetAccum<VERTEX> @self;
 
-        all = {*vertex-types*};
+        all = {vertex_type.*};
         all = SELECT s
               FROM all:s 
               ACCUM s.@self += s;
@@ -12,9 +12,9 @@ CREATE QUERY tri_count*EXT*() FOR GRAPH *graph* {
 # to the number of common neighbors between vertices s and t 
         
         tmp = SELECT t
-              FROM all:s -(*edge-types*:e) -:t
+              FROM all:s -((edge_type):e) -:t
               WHERE getvid(s) > getvid(t)
-              ACCUM INT c = COUNT((*s_neighbors* MINUS s.@self) INTERSECT (*t_neighbors* MINUS t.@self)),
+              ACCUM INT c = COUNT((s.neighbors(edge_type) MINUS s.@self) INTERSECT (t.neighbors(edge_type) MINUS t.@self)),
                     @@cnt += c;
                             
 # Each triangle is counted 3 times for each edge, so final result is divided by 3

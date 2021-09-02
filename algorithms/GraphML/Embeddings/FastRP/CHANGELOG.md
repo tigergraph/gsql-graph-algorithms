@@ -17,6 +17,8 @@
 
 ### `tg_fastRP_query`
 
+> [`92b2344`](https://github.com/tigergraph/gsql-graph-algorithms/commit/92b2344978452b4ae2af6c3d2a8200fa40d11f9e) refactor: change parameter name of weights
+
 > [`80d2f96`](https://github.com/tigergraph/gsql-graph-algorithms/commit/80d2f96adb21242523a21a5b9ed8734750f5a19d) FastRP initial Version
 
 ### `tg_fastRP`
@@ -31,7 +33,11 @@
 
 > [`80d2f96`](https://github.com/tigergraph/gsql-graph-algorithms/commit/80d2f96adb21242523a21a5b9ed8734750f5a19d) FastRP initial Version
 
+### `tg_fastRP_preprocessing`
+
 ### `tg_fastRP_map_query`
+
+> [`92b2344`](https://github.com/tigergraph/gsql-graph-algorithms/commit/92b2344978452b4ae2af6c3d2a8200fa40d11f9e) refactor: change parameter name of weights
 
 > [`ac4a84a`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac4a84a1bdac3806ff481e3f833f20317458edb2) Added gsql query for fastRP_map version
 

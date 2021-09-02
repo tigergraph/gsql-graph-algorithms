@@ -1,4 +1,4 @@
-CREATE QUERY tri_count_fast(STRING edge_type, STRING vertex_type) {
+CREATE QUERY tg_tri_count_fast(STRING edge_type, STRING vertex_type) {
 # Compute the total number of triangles in the graph
 # This algorithm is faster than tri_count but uses additional memory for temporary storage
         SumAccum<INT> @@cnt;
