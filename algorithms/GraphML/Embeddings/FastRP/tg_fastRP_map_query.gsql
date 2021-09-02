@@ -1,13 +1,17 @@
-CREATE QUERY tg_fastRP_map_query(int num_edges, int num_nodes, int k, int sampling_constant, int reduced_dimension, double normalization_strength, string input_weights) FOR GRAPH fbpages { 
+CREATE QUERY tg_fastRP_map_query(INT num_edges, INT num_nodes, INT k, INT sampling_constant, INT reduced_dimension, DOUBLE normalization_strength, STRING input_weights, STRING index_attr) { 
   MapAccum<INT,INT> @@degree_diagonal;
-  MapAccum<int, ListAccum<double>> @@result;
+  MapAccum<INT, ListAccum<DOUBLE>> @@result;
+  ListAccum<ListAccum<INT>> @@edge_list;
   Start = {ANY};
-  
+
   info = SELECT s
          FROM Start:s-(:e)-:t
+         ACCUM
+            @@edge_list += [s.getAttr(index_attr, "INT"),t.getAttr(index_attr, "INT")]
          POST-ACCUM
-            @@degree_diagonal += (getvid(s) -> s.outdegree());
+            @@degree_diagonal += (s.getAttr(index_attr, "INT") -> s.outdegree());
+
  
-  @@result = fastRP(@@degree_diagonal, num_edges, num_nodes, k, sampling_constant, reduced_dimension, normalization_strength, input_weights);
+  @@result = fastRP(@@degree_diagonal, @@edge_list, num_edges, num_nodes, k, sampling_constant, reduced_dimension, normalization_strength, input_weights);
   PRINT @@result;
 }
