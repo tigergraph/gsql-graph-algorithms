@@ -1,29 +1,29 @@
 
-# Betweenness Centrality
+# Betweenness
 
-#### [Betweenness Centrality Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/betweenness_centrality/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Betweenness Changelog](https://github.com/tigergraph/gsql-graph-algorithms/algorithms/Centrality/betweenness/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Betweenness Centrality Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#betweenness-centrality)
+## [TigerGraph Betweenness Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#betweenness-centrality)
 
-## Available Betweenness Centrality Algorithms 
+## Available Betweenness Algorithms 
 
-* [`tg_betweenness_cent`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/betweenness_centrality/tg_betweenness_cent.gsql)
+* [`tg_betweenness_cent`](https://github.com/tigergraph/gsql-graph-algorithms/algorithms/Centrality/betweenness/tg_betweenness_cent.gsql)
 
 ## Installation 
 
-### Replace `<Betweenness Centrality Algorithm>` with desired algorithm listed above 
+### Replace `<Betweenness Algorithm>` with desired algorithm listed above 
 
 #### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install <Betweenness Centrality Algorithm>
+$ tg box algos install <Betweenness Algorithm>
 ```
 
 #### Via GSQL terminal
 
 ```bash
 GSQL > BEGIN
-# Paste <Betweenness Centrality Algorithm> code after BEGIN command
+# Paste <Betweenness Algorithm> code after BEGIN command
 GSQL > END 
-GSQL > INSTALL QUERY <Betweenness Centrality Algorithm>
+GSQL > INSTALL QUERY <Betweenness Algorithm>
 ```

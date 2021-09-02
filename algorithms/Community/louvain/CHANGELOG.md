@@ -1,5 +1,5 @@
 
-## v3.2.0 Louvain Change Logs - Release Date
+## v3.2.0 Louvain Change Logs - 2021-09-02T20:41:06.683197
 
 ### `tg_louvain_distributed`
 
@@ -28,17 +28,3 @@
 > [`a816887`](https://github.com/tigergraph/gsql-graph-algorithms/commit/a816887d55b4f2ddf8829fba0cd5c4fbc96491c5) fix pageRank, more standardized elsewhere
 
 > [`ee2b9d4`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ee2b9d4523dbe52068e37c8d0f3a863666709f7e) move louvain_parallel to schema-first
-
-### `ExprFunctions`
-
-> [`35f17a7`](https://github.com/tigergraph/gsql-graph-algorithms/commit/35f17a784d90acd69b82b0c79677361f30730b77) refactor: change structure of louvain folder
-
-> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
-
-> [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
-
-> [`45aec7f`](https://github.com/tigergraph/gsql-graph-algorithms/commit/45aec7ff1ce581e24ffff027a1abe658a1bea485) init louvain
-
-> [`038ff96`](https://github.com/tigergraph/gsql-graph-algorithms/commit/038ff96d6972b4899b90c14244d17043436b3761) UDF + readme update
-
-> [`cc4420c`](https://github.com/tigergraph/gsql-graph-algorithms/commit/cc4420c6fbd5721494141ab195235089d5bb337d) UDF for algos
