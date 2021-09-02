@@ -3,6 +3,8 @@
 
 ### `tg_fastRP_map`
 
+> [`49b36cf`](https://github.com/tigergraph/gsql-graph-algorithms/commit/49b36cf786252ac978e728990a5fda073e57ad1f) fix: correct math among fastRP cpp files
+
 > [`b3e32b8`](https://github.com/tigergraph/gsql-graph-algorithms/commit/b3e32b8a1c7a508421f5d2709cd8baa5a146beb5) refactor: change names of FastRP files
 
 > [`0c19002`](https://github.com/tigergraph/gsql-graph-algorithms/commit/0c190022bcbf734cdc5016ab92e7b170bc4a4ee9) refactor: add more informative comments
@@ -17,11 +19,15 @@
 
 ### `tg_fastRP_query`
 
+> [`fbf8e0d`](https://github.com/tigergraph/gsql-graph-algorithms/commit/fbf8e0d948ef61af5590b8f9398be9f5196245be) style: change types to follow gsql conventions
+
 > [`92b2344`](https://github.com/tigergraph/gsql-graph-algorithms/commit/92b2344978452b4ae2af6c3d2a8200fa40d11f9e) refactor: change parameter name of weights
 
 > [`80d2f96`](https://github.com/tigergraph/gsql-graph-algorithms/commit/80d2f96adb21242523a21a5b9ed8734750f5a19d) FastRP initial Version
 
 ### `tg_fastRP`
+
+> [`49b36cf`](https://github.com/tigergraph/gsql-graph-algorithms/commit/49b36cf786252ac978e728990a5fda073e57ad1f) fix: correct math among fastRP cpp files
 
 > [`b3e32b8`](https://github.com/tigergraph/gsql-graph-algorithms/commit/b3e32b8a1c7a508421f5d2709cd8baa5a146beb5) refactor: change names of FastRP files
 
@@ -35,7 +41,11 @@
 
 ### `tg_fastRP_preprocessing`
 
+> [`ee7c796`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ee7c796636c78fafe23951d3c5a49fe8189e71af) feat: add preprocessing query. Should be ran first
+
 ### `tg_fastRP_map_query`
+
+> [`fbf8e0d`](https://github.com/tigergraph/gsql-graph-algorithms/commit/fbf8e0d948ef61af5590b8f9398be9f5196245be) style: change types to follow gsql conventions
 
 > [`92b2344`](https://github.com/tigergraph/gsql-graph-algorithms/commit/92b2344978452b4ae2af6c3d2a8200fa40d11f9e) refactor: change parameter name of weights
 
