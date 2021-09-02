@@ -1,3 +1,0 @@
-CREATE QUERY node2vec_query(string filepath = "/home/tigergraph/path.csv", string output_file = "/home/tigergraph/embedding.csv", int dimension) FOR GRAPH nodeEmbedding {
-   node2vec(dimension, filepath, output_file);
-}

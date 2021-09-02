@@ -1,0 +1,19 @@
+CREATE QUERY preprocessing_fastRP(string index_attr) FOR GRAPH fbpages { 
+  SumAccum<INT> @@index;
+  SetAccum<VERTEX> @@vertices;
+  Start = {Any};
+  
+  start = SELECT s 
+          FROM Start:s 
+          POST-ACCUM
+            @@vertices += s;
+
+  FOREACH v in @@vertices DO 
+    temp = {v};
+    temp = SELECT s
+           FROM temp:s
+           POST-ACCUM
+            s.setAttr(index_attr,@@index);
+    @@index += 1;
+  END; 
+}

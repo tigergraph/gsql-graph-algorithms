@@ -1,0 +1,34 @@
+CREATE QUERY tg_jaccard_nbor_ap_sub(VERTEX source, STRING e_type, STRING re_type, INT top_k, BOOL return_accum, STRING file_path, FILE f, STRING similarity_edge) RETURNS (MapAccum<VERTEX, FLOAT>){
+/* This subquery calculates the Jaccard Similarity between a given vertex and every other vertex.
+Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
+*/
+    
+        MapAccum<VERTEX, FLOAT> @@topK_result;
+        SumAccum<INT> @intersection_size, @@set_size_A, @set_size_B;
+        SumAccum<FLOAT> @similarity;
+
+        Start (ANY) = {source};
+        Start = SELECT s
+                FROM Start:s
+                ACCUM @@set_size_A += s.outdegree(e_type);
+
+        Subjects = SELECT t
+                   FROM Start:s-(e_type:e)-:t;
+
+        Others = SELECT t
+                 FROM Subjects:s -(re_type:e)- :t
+                 WHERE t != source 
+                 ACCUM t.@intersection_size += 1, 
+                       t.@set_size_B = t.outdegree(e_type)
+                 POST-ACCUM t.@similarity = t.@intersection_size*1.0/(@@set_size_A + t.@set_size_B - t.@intersection_size)
+                 ORDER BY t.@similarity DESC
+                 LIMIT top_k;
+        
+        Others =  SELECT s
+                  FROM Others: s
+                  POST-ACCUM 
+                      IF similarity_edge != "" THEN INSERT INTO EDGE similarity_edge VALUES(source, s, s.@similarity) END,
+                      IF file_path != "" THEN f.println(source, s, s.@similarity) END,
+                      IF return_accum THEN @@topK_result += (s -> s.@similarity) END;
+      return @@topK_result;
+}
