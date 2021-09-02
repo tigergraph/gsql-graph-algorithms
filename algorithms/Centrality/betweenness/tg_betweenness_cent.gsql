@@ -1,17 +1,19 @@
 CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re_type,INT max_hops=10,
   INT top_k=100, BOOL print_accum = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE){ 
-  /* Compute Closeness Centrality for each VERTEX. 
+  /* Compute Betweenness Centrality for each VERTEX. 
   Use multi-sourse BFS.
   Link of the paper: http://www.vldb.org/pvldb/vol8/p449-then.pdf
   Parameters:
   v_type: vertex types to traverse                 print_accum: print JSON output
   e_type: edge types to traverse                   result_attr: INT attr to store results to
+  re_type: reverse edge type in directed graph, in undirected graph set re_type=e_type
   max_hops: look only this far from each vertex    file_path: file to write CSV output to
   top_k: report only this many top scores          display_edges: output edges for visualization
+  
    */ 
-  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
-  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore; #tuple to store betweenness centrality score
+  HeapAccum<VertexScore>(top_k, score DESC) @@topScores; #heap to store top K score
   SumAccum<INT> @@currDist; #current distance
   BitwiseOrAccum @visitNext; #use bitwise instead of setAccum
   BitwiseOrAccum @seen;

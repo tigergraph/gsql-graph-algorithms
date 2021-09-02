@@ -1,9 +1,8 @@
-CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re_type,INT max_hops=10,
+CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type,INT max_hops=10,
   INT top_k=100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE){ 
-  /* Compute Closeness Centrality for each VERTEX. 
+  /* Compute Harmonic Centrality for each VERTEX. 
   Use multi-sourse BFS.
-  Link of the paper: http://www.vldb.org/pvldb/vol8/p449-then.pdf
   Parameters:
   v_type: vertex types to traverse                 print_accum: print JSON output
   e_type: edge types to traverse                   result_attr: INT attr to store results to
@@ -11,7 +10,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
   max_hops: look only this far from each vertex    file_path: file to write CSV output to
   top_k: report only this many top scores          display_edges: output edges for visualization
   wf: Wasserman and Faust normalization factor for multi-component graphs */ 
-  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore; #tuple to store closeness centrality score
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore; #tuple to store harmonic centrality score
   HeapAccum<VertexScore>(top_k, score DESC) @@topScores; #heap to store top K score
   SumAccum<INT> @@currDist; #current distance
   BitwiseOrAccum @visitNext; #use bitwise instead of setAccum
@@ -77,7 +76,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
 			# Calculate Closeness Centrality for each vertex
           WHERE s.@res>0
           POST-ACCUM 
-                    IF wf THEN s.@score = (s.@size*1.0/(numVert-1))*(s.@size*1.0/s.@res) ELSE s.@score = s.@size*1.0/s.@res*1.0 END,
+                    IF wf THEN s.@score = (1.0/(numVert-1))*(1.0/s.@res) ELSE s.@score = 1.0/s.@res*1.0 END,
 		    IF result_attr != "" THEN s.setAttr(result_attr, s.@score) END,
 	            IF print_accum THEN @@topScores += VertexScore(s, s.@score) END,
 		    IF file_path != "" THEN f.println(s, s.@score) END;
@@ -89,9 +88,6 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
 	END;
 
 	IF print_accum THEN
-		Start = SELECT s FROM all:s
-            		WHERE s.@res<=0 
-            		POST-ACCUM @@topScores += VertexScore(s, -1);
 		PRINT @@topScores AS top_scores;
 		IF display_edges THEN
 			PRINT Start[Start.@score];

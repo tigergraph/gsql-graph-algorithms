@@ -1,0 +1,29 @@
+CREATE QUERY tg_random_walk_batch(int batches, int step, int path_size, string filepath = "/home/tigergraph/path.csv", set<string> edge_types, int sample_num) FOR GRAPH ldbc_snb {
+  FILE f(filepath);
+  ListAccum<ListAccum<vertex>> @recv_seque;
+  ListAccum<ListAccum<vertex>> @send_seque;
+  start (ANY) = {ANY};
+  
+  FOREACH i in range [0, batches - 1] DO
+    tmp = SELECT s FROM start:s WHERE getvid(s) % batches == i;
+    start = select s from tmp:s
+      POST-ACCUM s.@send_seque.clear(),
+                 s.@send_seque += [s];
+    while true limit step do
+      tmp = select t from tmp:s-(edge_types:e)->:t
+            SAMPLE sample_num EDGE when s.outdegree() >= 1
+              accum t.@recv_seque += s.@send_seque
+                POST-ACCUM
+                  t.@send_seque.clear(),
+                  foreach path in t.@recv_seque do
+                    case when path.size() == path_size - 1 THEN
+                      f.println(path + [t])
+                    else
+                      t.@send_seque += path + [t]
+                    end
+                  end,
+                  t.@send_seque += [t],
+                  t.@recv_seque.clear();
+                end;
+  END;
+}

@@ -1,21 +1,21 @@
-CREATE QUERY tg_tri_count_fast(STRING edge_type, STRING vertex_type) {
+CREATE QUERY tg_tri_count_fast(STRING v_type, STRING e_type) {
 # Compute the total number of triangles in the graph
 # This algorithm is faster than tri_count but uses additional memory for temporary storage
         SumAccum<INT> @@cnt;
         SetAccum<VERTEX> @neighbors;
       
-        all = {vertex_type.*};
+        all = {v_type.*};
 
 # We build up our neighbor lists manually because we'll only build them up on the 2 smaller vertices on a triangle. 
 
         tmp = SELECT t
-              FROM all:s-((edge_type))-> :t
-              WHERE s.outdegree(edge_type) > t.outdegree(edge_type) OR (s.outdegree(edge_type) == t.outdegree(edge_type) AND getvid(s) > getvid(t))
+              FROM all:s-((e_type))-> :t
+              WHERE s.outdegree(e_type) > t.outdegree(e_type) OR (s.outdegree(e_type) == t.outdegree(e_type) AND getvid(s) > getvid(t))
               ACCUM t.@neighbors += getvid(s);
 
 # Here we compute the intersection for 2 points on the triangle.
         tmp = SELECT t
-              FROM all:s-((edge_type))-> :t
+              FROM all:s-((e_type))-> :t
               WHERE s != t
               ACCUM @@cnt += COUNT(s.@neighbors INTERSECT t.@neighbors);
                    
