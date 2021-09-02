@@ -1,15 +1,16 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <string>
+#include <stdlib.h>
+#include <Eigen/SparseCore>
+#include <fstream>
 #include <gle/engine/cpplib/headers.hpp>
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <random>
-#include <vector>
 #include <map>
+#include <random>
+#include <sstream>
+#include <string>
+#include <vector>
 
-inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagonal, int m, int n, int k, int s, int d, double beta, string input_weights) {
+inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagonal, ListAccum<ListAccum<int>> edge_list, int m, int n, int k, int s, int d, double beta, string input_weights) {
   // parameters
   std::ofstream foutput("/home/tigergraph/parameters.txt");
   foutput << "|E|:" << m << std::endl;
@@ -26,7 +27,7 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
   std::vector<double> weights;
   string current_weight;
   while (s_stream.good()) {
-    std::getline(finput, current_weight,',');
+    std::getline(s_stream, current_weight, ',');
     foutput << "\t" << current_weight << std::endl;
     weights.push_back(std::stod(current_weight));
   }
@@ -62,22 +63,37 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
   Eigen::SparseMatrix<double> R(n, d);
   R.setFromTriplets(std::begin(triplets_R), std::end(triplets_R));
 
-  // create D, L and similar matrices
-  std::vector<Eigen::Triplet<double>> triplets_A;
-  triplets_A.reserve(n);
+  // create D,L,S and similar matrices
   std::vector<Eigen::Triplet<double>> triplets_L;
   triplets_L.reserve(n);
-  int i = 0;
-  for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); i++, it++) {
-    int value = it->second;
+
+  std::vector<Eigen::Triplet<double>> triplets_Dinv;
+  triplets_Dinv.reserve(n);
+
+  std::vector<Eigen::Triplet<double>> triplets_S;
+  triplets_S.reserve(m);
+
+  for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); it++) {
+    int value = it->second, i = it->first;
     triplets_L.push_back(Eigen::Triplet<double>(i, i, pow((.5 / m) * value, beta)));
-    triplets_A.push_back(Eigen::Triplet<double>(i, i, 1.0 / value));
+    triplets_Dinv.push_back(Eigen::Triplet<double>(i, i, 1.0 / value));
   }
 
-  Eigen::SparseMatrix<double> A(n, n);
-  A.setFromTriplets(std::begin(triplets_A), std::end(triplets_A));
+  for (int e = 0; e < m; e++) {
+    int source = edge_list.get(e).get(0);
+    int target = edge_list.get(e).get(1);
+    triplets_S.push_back(Eigen::Triplet<double>(source, target, 1));
+  }
   Eigen::SparseMatrix<double> L(n, n);
   L.setFromTriplets(std::begin(triplets_L), std::end(triplets_L));
+
+  Eigen::SparseMatrix<double> Dinv(n, n);
+  Dinv.setFromTriplets(std::begin(triplets_Dinv), std::end(triplets_Dinv));
+
+  Eigen::SparseMatrix<double> S(n, n);
+  S.setFromTriplets(std::begin(triplets_S), std::end(triplets_S));
+
+  Eigen::SparseMatrix<double> A = Dinv * S;
 
   //embeddings vector
   std::vector<Eigen::SparseMatrix<double>> N_i;
@@ -86,9 +102,8 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
   Eigen::SparseMatrix<double> N_1 = A * L * R;
   N_i.push_back(N_1);
 
-  for (int i = 1; i < k; i++) 
+  for (int i = 1; i < k; i++)
     N_i.push_back(A * N_i[i - 1]);
-
 
   // apply weights and compute N
   Eigen::SparseMatrix<double> N(n, d);
@@ -97,10 +112,10 @@ inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagona
 
   // return n x d MapAccum
   MapAccum<int, ListAccum<double>> res;
-  i = 0;
-  for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); i++, it++) {
+  for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); it++) {
+    int i = it->first;
     for (int j = 0; j < d; j++) {
-      MapAccum<int, ListAccum<double>> temp(it->first, ListAccum<double>(N.coeff(i, j)));
+      MapAccum<int, ListAccum<double>> temp(i, ListAccum<double>(N.coeff(i, j)));
       res += temp;
     }
   }

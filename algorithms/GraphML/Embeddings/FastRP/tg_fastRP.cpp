@@ -1,14 +1,15 @@
-#include <stdlib.h>
 #include <stdio.h>
-#include <string>
+#include <stdlib.h>
+#include <Eigen/SparseCore>
+#include <fstream>
 #include <gle/engine/cpplib/headers.hpp>
 #include <iostream>
-#include <fstream>
 #include <random>
 #include <sstream>
-#include <vector>  
+#include <string>
+#include <vector>
 
-inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, int d, double beta, string input_weights) {
+inline void fastRP(MapAccum<int, int> degree_diagonal, ListAccum<ListAccum<int>> edge_list, int m, int n, int k, int s, int d, double beta, string input_weights) {
   // parameters
   std::ofstream foutput("/home/tigergraph/output.txt");
   foutput << "|E|:" << m << std::endl;
@@ -18,65 +19,80 @@ inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, i
   foutput << "Embedding Dimension:" << d << std::endl;
   foutput << "Normalization Strength:" << beta << std::endl;
   foutput << "Weights:" << std::endl;
-  
+
   // get weights
   // weights should be formatted as a single string seperated by a comma
   std::stringstream s_stream(input_weights);
   std::vector<double> weights;
   string current_weight;
   while (s_stream.good()) {
-    std::getline(finput, current_weight,',');
+    std::getline(finput, current_weight, ',');
     foutput << "\t" << current_weight << std::endl;
     weights.push_back(std::stod(current_weight));
   }
-  
+
   // random number generation
-  std::random_device rd;  
-  std::mt19937 gen(rd()); 
+  std::random_device rd;
+  std::mt19937 gen(rd());
   std::uniform_real_distribution<double> distribution(0.0, 1.0);
 
   // number of non zeros for matrix R
-  size_t nnz_R = (size_t) (n * d * 1.0/s);
+  size_t nnz_R = (size_t)(n * d * 1.0 / s);
 
   // R matrix fill version 2
   std::vector<Eigen::Triplet<double>> triplets_R;
   triplets_R.reserve(nnz_R);
-  double p1 = 0.5/s, p2 = p1, p3 = 1- 1.0/s;
+  double p1 = 0.5 / s, p2 = p1, p3 = 1 - 1.0 / s;
   double v1 = sqrt(s), v2 = -v1, v3 = 0.0;
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < d; j++) {
       double random_value = distribution(gen);
       double triplet_value;
       if (random_value <= p1)
-          triplet_value = v1;
-      else if (random_value <= p1 + p2) 
-          triplet_value = v2;
+        triplet_value = v1;
+      else if (random_value <= p1 + p2)
+        triplet_value = v2;
       else
-          triplet_value = v3;
+        triplet_value = v3;
 
-      triplets_R.push_back(Eigen::Triplet<double>(i,j, triplet_value));
+      triplets_R.push_back(Eigen::Triplet<double>(i, j, triplet_value));
     }
   }
-  Eigen::SparseMatrix<double> R(n,d);
+  Eigen::SparseMatrix<double> R(n, d);
   R.setFromTriplets(std::begin(triplets_R), std::end(triplets_R));
 
-
-  // create D, L and similar matrices
-  std::vector<Eigen::Triplet<double>> triplets_A;
-  triplets_A.reserve(n);
+  // create D,L,S and similar matrices
   std::vector<Eigen::Triplet<double>> triplets_L;
   triplets_L.reserve(n);
-  for (int i = 0; i < degree_diagonal.size(); i++) {
-      int value = degree_diagonal.get(i);
-      triplets_L.push_back(Eigen::Triplet<double>(i,i, pow((.5/m)* value, beta)));
-      triplets_A.push_back(Eigen::Triplet<double>(i,i, 1.0/value ));
+
+  std::vector<Eigen::Triplet<double>> triplets_Dinv;
+  triplets_Dinv.reserve(n);
+
+  std::vector<Eigen::Triplet<double>> triplets_S;
+  triplets_S.reserve(m);
+
+  for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); it++) {
+    int value = it->second, i = it->first;
+    triplets_L.push_back(Eigen::Triplet<double>(i, i, pow((.5 / m) * value, beta)));
+    triplets_Dinv.push_back(Eigen::Triplet<double>(i, i, 1.0 / value));
   }
 
-  Eigen::SparseMatrix<double> A(n,n);
-  A.setFromTriplets(std::begin(triplets_A), std::end(triplets_A));
-  Eigen::SparseMatrix<double> L(n,n);
+  for (int e = 0; e < m; e++) {
+    int source = edge_list.get(e).get(0);
+    int target = edge_list.get(e).get(1);
+    triplets_S.push_back(Eigen::Triplet<double>(source, target, 1));
+  }
+  Eigen::SparseMatrix<double> L(n, n);
   L.setFromTriplets(std::begin(triplets_L), std::end(triplets_L));
-  
+
+  Eigen::SparseMatrix<double> Dinv(n, n);
+  Dinv.setFromTriplets(std::begin(triplets_Dinv), std::end(triplets_Dinv));
+
+  Eigen::SparseMatrix<double> S(n, n);
+  S.setFromTriplets(std::begin(triplets_S), std::end(triplets_S));
+
+  Eigen::SparseMatrix<double> A = Dinv * S;
+
   //embeddings vector
   std::vector<Eigen::SparseMatrix<double>> N_i;
 
@@ -84,15 +100,15 @@ inline void fastRP(ListAccum<int> degree_diagonal, int m, int n, int k, int s, i
   Eigen::SparseMatrix<double> N_1 = A * L * R;
   N_i.push_back(N_1);
 
-  for(int i = 1; i < k; i++) 
-    N_i.push_back(A * N_i[i-1]);
+  for (int i = 1; i < k; i++)
+    N_i.push_back(A * N_i[i - 1]);
 
   // apply weights and compute N
-  Eigen::SparseMatrix<double>  N(n,d);
+  Eigen::SparseMatrix<double> N(n, d);
   for (int i = 0; i < k; i++)
-      N += weights[i] * N_i[i];
-  
+    N += weights[i] * N_i[i];
+
   // Output N
-  foutput << "Final Embedding N\n" << N<< std::endl;
+  foutput << "Final Embedding N\n" << N << std::endl;
   foutput.close();
 }
