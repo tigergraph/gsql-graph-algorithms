@@ -7,11 +7,11 @@
 
 ## Available Pagerank Algorithms 
 
-* [`tg_pageRank_pers`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/pagerank/tg_pageRank_pers.gsql)
+* [`tg_pagerank_wt`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/pagerank/tg_pagerank_wt.gsql)
 
-* [`tg_pageRank_wt`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/pagerank/tg_pageRank_wt.gsql)
+* [`tg_pagerank_pers`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/pagerank/tg_pagerank_pers.gsql)
 
-* [`tg_pageRank`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/pagerank/tg_pageRank.gsql)
+* [`tg_pagerank`](https://github.com/karimsaraipour/gsql-graph-algorithms/tree/algorithm-folder-restructure/algorithms/Centrality/pagerank/tg_pagerank.gsql)
 
 ## Installation 
 
