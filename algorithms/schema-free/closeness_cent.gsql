@@ -11,7 +11,7 @@ CREATE QUERY closeness_cent(SET<STRING> v_type, SET<STRING> e_type, set<STRING> 
   max_hops: look only this far from each vertex    file_path: file to write CSV output to
   top_k: report only this many top scores          display_edges: output edges for visualization
   wf: Wasserman and Faust normalization factor for multi-component graphs */ 
-  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore; #tuple to store harmonic centrality score
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore; #tuple to store closeness centrality score
   HeapAccum<VertexScore>(top_k, score DESC) @@topScores; #heap to store top K score
   SumAccum<INT> @@currDist; #current distance
   BitwiseOrAccum @visitNext; #use bitwise instead of setAccum
