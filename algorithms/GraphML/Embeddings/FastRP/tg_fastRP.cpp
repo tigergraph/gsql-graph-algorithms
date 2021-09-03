@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <Eigen/SparseCore>
 #include <fstream>
 #include <gle/engine/cpplib/headers.hpp>
 #include <iostream>
@@ -26,7 +25,7 @@ inline void fastRP(MapAccum<int, int> degree_diagonal, ListAccum<ListAccum<int>>
   std::vector<double> weights;
   string current_weight;
   while (s_stream.good()) {
-    std::getline(finput, current_weight, ',');
+    std::getline(s_stream, current_weight, ',');
     foutput << "\t" << current_weight << std::endl;
     weights.push_back(std::stod(current_weight));
   }

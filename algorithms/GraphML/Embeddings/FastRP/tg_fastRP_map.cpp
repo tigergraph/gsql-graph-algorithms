@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <Eigen/SparseCore>
 #include <fstream>
 #include <gle/engine/cpplib/headers.hpp>
 #include <iostream>
