@@ -1,15 +1,17 @@
 
-## v3.2.0 Louvain Change Logs - September 02, 2021
+## v3.2.0 Louvain Change Logs - September 03, 2021
 
 ### `tg_louvain_distributed`
 
-> [`35f17a7`](https://github.com/tigergraph/gsql-graph-algorithms/commit/35f17a784d90acd69b82b0c79677361f30730b77) refactor: change structure of louvain folder
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
-> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
-
-> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+> [`6cc5cab`](https://github.com/tigergraph/gsql-graph-algorithms/commit/6cc5cab0086dbf8a33f6008b898ed75700322358) Merge pull request #44 from tigergraph/LCC-and-Closeness_cent
 
 > [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`bb52bc0`](https://github.com/tigergraph/gsql-graph-algorithms/commit/bb52bc0903ffd2684b70b9fb7499f8b3749f0f6b) Merge pull request #36 from tigergraph/LCC-and-Closeness_cent
+
+> [`e390bc2`](https://github.com/tigergraph/gsql-graph-algorithms/commit/e390bc2300f9deab0bd612a40ba386c5306d2525) Merge pull request #31 from tigergraph/louvain-algorithm
 
 > [`fecc0ca`](https://github.com/tigergraph/gsql-graph-algorithms/commit/fecc0cab282ed46ed6d407a429781ea9dc40aba3) add docs for louvain-distributed
 
@@ -17,11 +19,11 @@
 
 ### `tg_louvain_parallel`
 
-> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
-
-> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
 > [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`9000bd2`](https://github.com/tigergraph/gsql-graph-algorithms/commit/9000bd2051006c93f5b04a3e10d141185c77baaf) Merge pull request #24 from tigergraph/3.0
 
 > [`1007534`](https://github.com/tigergraph/gsql-graph-algorithms/commit/10075347fee6195c9044e7af7fb57b574139fc6c) fix closeness_cent & shortest_ss_pos_wt
 

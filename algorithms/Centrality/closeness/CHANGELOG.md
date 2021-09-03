@@ -1,13 +1,25 @@
 
-## v3.2.0 Closeness Change Logs - September 02, 2021
+## v3.2.0 Closeness Change Logs - September 03, 2021
 
 ### `tg_closeness_cent`
 
-> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
-> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
+
+> [`6cc5cab`](https://github.com/tigergraph/gsql-graph-algorithms/commit/6cc5cab0086dbf8a33f6008b898ed75700322358) Merge pull request #44 from tigergraph/LCC-and-Closeness_cent
+
+> [`772ce81`](https://github.com/tigergraph/gsql-graph-algorithms/commit/772ce8168770f330339127dde51ad2a8df73f23a) Update closeness_cent.gsql
+
+> [`2f229d4`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2f229d40821d5e8dbe81857fe6ba6636a37ab366) Update closeness_cent.gsql
+
+> [`578296a`](https://github.com/tigergraph/gsql-graph-algorithms/commit/578296afe0ccd86fe760aef40a6ba8c2ef69fe51) Update closeness_cent.gsql
+
+> [`a715c64`](https://github.com/tigergraph/gsql-graph-algorithms/commit/a715c64257a693cf44bd356649996943eecae061) Update closeness_cent.gsql
 
 > [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`bb52bc0`](https://github.com/tigergraph/gsql-graph-algorithms/commit/bb52bc0903ffd2684b70b9fb7499f8b3749f0f6b) Merge pull request #36 from tigergraph/LCC-and-Closeness_cent
 
 > [`99a6853`](https://github.com/tigergraph/gsql-graph-algorithms/commit/99a6853ce11942b8f694c17b04f8ea9d906961b4) Update closeness_cent.gsql
 
@@ -31,11 +43,13 @@
 
 ### `tg_closeness_cent_approx`
 
-> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
-
-> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
 > [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`bb52bc0`](https://github.com/tigergraph/gsql-graph-algorithms/commit/bb52bc0903ffd2684b70b9fb7499f8b3749f0f6b) Merge pull request #36 from tigergraph/LCC-and-Closeness_cent
+
+> [`e390bc2`](https://github.com/tigergraph/gsql-graph-algorithms/commit/e390bc2300f9deab0bd612a40ba386c5306d2525) Merge pull request #31 from tigergraph/louvain-algorithm
 
 > [`8581447`](https://github.com/tigergraph/gsql-graph-algorithms/commit/8581447c4ee5ddd552fd11e774a1ab5392857727) Rename MScloseness_cent_approx.gsql to closeness_cent_approx_query.gsql
 

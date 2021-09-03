@@ -1,15 +1,13 @@
 
-## v3.2.0 Cycle Detection Change Logs - September 02, 2021
+## v3.2.0 Cycle Detection Change Logs - September 03, 2021
 
 ### `tg_cycle_detection_count`
 
-> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
-
-> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
-
-> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
 > [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`bb52bc0`](https://github.com/tigergraph/gsql-graph-algorithms/commit/bb52bc0903ffd2684b70b9fb7499f8b3749f0f6b) Merge pull request #36 from tigergraph/LCC-and-Closeness_cent
 
 > [`dcf065d`](https://github.com/tigergraph/gsql-graph-algorithms/commit/dcf065dba9caa1e885f01cdefdcb60fe1c6d12cd) Update cycle_detection_count.gsql
 
@@ -25,21 +23,27 @@
 
 ### `tg_cycle_detection`
 
-> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
-
-> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
-
-> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
 > [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
 
+> [`3b5dacc`](https://github.com/tigergraph/gsql-graph-algorithms/commit/3b5daccfdf9ec1a7653e0bcd70108e73debb40dc) Merge pull request #23 from tigergraph/3.0
+
 > [`14d3d6b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/14d3d6b2684705a8917bf491084d3786809f0141) add 3.0 branch
 
-> [`1da86dc`](https://github.com/tigergraph/gsql-graph-algorithms/commit/1da86dc6c1c1751f58241c2ae8e056169867ac31) Schema Less Queries
+> [`93685aa`](https://github.com/tigergraph/gsql-graph-algorithms/commit/93685aad73cc1bb3db16f8c89ca9d62e50e9a718) Merge pull request #22 from Ramko9999/master
+
+> [`d920e3f`](https://github.com/tigergraph/gsql-graph-algorithms/commit/d920e3f101f38087dd38e5d7edec161fc0710782) Merge pull request #18 from tigergraph/Regression_Testing
+
+> [`8e24484`](https://github.com/tigergraph/gsql-graph-algorithms/commit/8e244844ff5afbdbeecb3392e1200b50631dba54) Merge branch 'master' into Regression_Testing
 
 > [`671858d`](https://github.com/tigergraph/gsql-graph-algorithms/commit/671858df8e2f9482d8ac8d28ee04d0c3601d6b0a) Update cycle_detection.gtmp
 
+> [`95bb6a8`](https://github.com/tigergraph/gsql-graph-algorithms/commit/95bb6a8abcec371e5acd07fb3f94f5480be616ce) Merge branch 'master' of github.com:tigergraph/gsql-graph-algorithms
+
 > [`80e08c1`](https://github.com/tigergraph/gsql-graph-algorithms/commit/80e08c1c976fff00c76f014c79a75233730d1d38) update names
+
+> [`48bae2b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/48bae2b679169fc19b223a625e2080a042aac7c9) Merge branch 'master' into add_examples
 
 > [`58ee1a5`](https://github.com/tigergraph/gsql-graph-algorithms/commit/58ee1a510c8b5ad877dd67fa896bfa4047b7cc8f) update cycle_dtection,install.sh and test schema
 
