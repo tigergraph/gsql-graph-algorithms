@@ -1,7 +1,9 @@
 
-## v3.2.0 Fastrp Change Logs - 2021-09-02T20:48:12.933973
+## v3.2.0 Fastrp Change Logs - September 02, 2021
 
 ### `tg_fastRP_map`
+
+> [`d1305c2`](https://github.com/tigergraph/gsql-graph-algorithms/commit/d1305c23469317a47e1806971259c96d03b4c565) chore: remove include of SparseCore and fix names
 
 > [`49b36cf`](https://github.com/tigergraph/gsql-graph-algorithms/commit/49b36cf786252ac978e728990a5fda073e57ad1f) fix: correct math among fastRP cpp files
 
@@ -27,6 +29,8 @@
 
 ### `tg_fastRP`
 
+> [`c4340c8`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c4340c899850f5962a502c5558f12b506ace72e0) fix: change stream for weights
+
 > [`49b36cf`](https://github.com/tigergraph/gsql-graph-algorithms/commit/49b36cf786252ac978e728990a5fda073e57ad1f) fix: correct math among fastRP cpp files
 
 > [`b3e32b8`](https://github.com/tigergraph/gsql-graph-algorithms/commit/b3e32b8a1c7a508421f5d2709cd8baa5a146beb5) refactor: change names of FastRP files
@@ -40,6 +44,8 @@
 > [`80d2f96`](https://github.com/tigergraph/gsql-graph-algorithms/commit/80d2f96adb21242523a21a5b9ed8734750f5a19d) FastRP initial Version
 
 ### `tg_fastRP_preprocessing`
+
+> [`d1305c2`](https://github.com/tigergraph/gsql-graph-algorithms/commit/d1305c23469317a47e1806971259c96d03b4c565) chore: remove include of SparseCore and fix names
 
 > [`ee7c796`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ee7c796636c78fafe23951d3c5a49fe8189e71af) feat: add preprocessing query. Should be ran first
 

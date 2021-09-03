@@ -1,5 +1,5 @@
 
-## v3.2.0 K Nearest Neighbors Change Logs - 2021-09-02T20:48:12.933973
+## v3.2.0 K Nearest Neighbors Change Logs - September 02, 2021
 
 ### `tg_knn_cosine_cv`
 

@@ -1,5 +1,5 @@
 
-## v3.2.0 Cycle Detection Change Logs - 2021-09-02T20:48:12.933973
+## v3.2.0 Cycle Detection Change Logs - September 02, 2021
 
 ### `tg_cycle_detection_count`
 
