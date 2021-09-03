@@ -1,4 +1,4 @@
-CREATE QUERY preprocessing_fastRP(string index_attr) FOR GRAPH fbpages { 
+CREATE QUERY tg_fastRP_preprocessing (string index_attr) { 
   SumAccum<INT> @@index;
   SetAccum<VERTEX> @@vertices;
   Start = {Any};
