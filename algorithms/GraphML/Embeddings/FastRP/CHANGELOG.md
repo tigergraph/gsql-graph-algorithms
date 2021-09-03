@@ -1,9 +1,11 @@
 
-## v3.2.0 Fastrp Change Logs - September 02, 2021
+## v3.2.0 Fastrp Change Logs - September 03, 2021
 
 ### `tg_fastRP_map`
 
 > [`d1305c2`](https://github.com/tigergraph/gsql-graph-algorithms/commit/d1305c23469317a47e1806971259c96d03b4c565) chore: remove include of SparseCore and fix names
+
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
 > [`49b36cf`](https://github.com/tigergraph/gsql-graph-algorithms/commit/49b36cf786252ac978e728990a5fda073e57ad1f) fix: correct math among fastRP cpp files
 
@@ -21,6 +23,8 @@
 
 ### `tg_fastRP_query`
 
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
+
 > [`fbf8e0d`](https://github.com/tigergraph/gsql-graph-algorithms/commit/fbf8e0d948ef61af5590b8f9398be9f5196245be) style: change types to follow gsql conventions
 
 > [`92b2344`](https://github.com/tigergraph/gsql-graph-algorithms/commit/92b2344978452b4ae2af6c3d2a8200fa40d11f9e) refactor: change parameter name of weights
@@ -30,6 +34,8 @@
 ### `tg_fastRP`
 
 > [`c4340c8`](https://github.com/tigergraph/gsql-graph-algorithms/commit/c4340c899850f5962a502c5558f12b506ace72e0) fix: change stream for weights
+
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
 > [`49b36cf`](https://github.com/tigergraph/gsql-graph-algorithms/commit/49b36cf786252ac978e728990a5fda073e57ad1f) fix: correct math among fastRP cpp files
 
@@ -47,9 +53,13 @@
 
 > [`d1305c2`](https://github.com/tigergraph/gsql-graph-algorithms/commit/d1305c23469317a47e1806971259c96d03b4c565) chore: remove include of SparseCore and fix names
 
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
+
 > [`ee7c796`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ee7c796636c78fafe23951d3c5a49fe8189e71af) feat: add preprocessing query. Should be ran first
 
 ### `tg_fastRP_map_query`
+
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
 > [`fbf8e0d`](https://github.com/tigergraph/gsql-graph-algorithms/commit/fbf8e0d948ef61af5590b8f9398be9f5196245be) style: change types to follow gsql conventions
 

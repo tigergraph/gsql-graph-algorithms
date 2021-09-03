@@ -1,15 +1,17 @@
 
-## v3.2.0 Greedy Graph Coloring Change Logs - September 02, 2021
+## v3.2.0 Greedy Graph Coloring Change Logs - September 03, 2021
 
 ### `tg_greedy_graph_coloring`
 
-> [`ac43583`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ac435831c1e0f8a254f52dfa1390d2e3b48f161f) moved examples to template and updated query names
-
-> [`f37701b`](https://github.com/tigergraph/gsql-graph-algorithms/commit/f37701be48f14093bc2e82c078c152124de35fd6) more descriptive naming convention
-
-> [`2170f21`](https://github.com/tigergraph/gsql-graph-algorithms/commit/2170f218a86c28359ebfdeb90e35749ba0794d1f) dash to underscore
+> [`4245e43`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4245e43a22b913d135841349a2b0754e7ab8968e) Merge remote-tracking branch 'upstream/master'
 
 > [`ec58568`](https://github.com/tigergraph/gsql-graph-algorithms/commit/ec58568cdd7e608bd7af13d6bce2eaf781c9798f) New schema-free layout
+
+> [`7a7b5b7`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7a7b5b7d53003ffd71b28b999ae99af0550d78fd) Merge pull request #26 from tigergraph/kmeans_branch
+
+> [`7242afe`](https://github.com/tigergraph/gsql-graph-algorithms/commit/7242afe895a6e1cbace374f19198240966712292) Merge pull request #27 from tigergraph/greedy_graph_coloring
+
+> [`4bdc6ea`](https://github.com/tigergraph/gsql-graph-algorithms/commit/4bdc6eace0a34730409c67ae4e3168f194337d1b) changes
 
 > [`6656b24`](https://github.com/tigergraph/gsql-graph-algorithms/commit/6656b24eec9258752a69c9077955a8da08855707) Updated changes and added a max_colors argument.
 
