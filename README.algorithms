@@ -1,6 +1,6 @@
 # GSQL Algorithm Library
-For TigerGraph version 3.0 or higher
-6/21/2021
+For TigerGraph version 3.1 or higher
+9/4/2021
 
 The GSQL Graph Algorithm Library is a collection of high-performance GSQL queries,
 each of which implements a standard graph algorithm. Each algorithm is ready to be
@@ -19,8 +19,37 @@ well-suited for graph algorithms:
 
 * Open-Source. Users can study the GSQL implementations to learn by
   example, and they can develop and submit additions to the library.
+  
+## 9/9/21
+* Format Changes
+  > Algorithms are now organized into category folders, e.g. Centrality.
+  > The prefix "tg_" has been appended to all algorithms, to more easily distinguish
+    them from user-authored queries.  Some queries have been renamed to follow
+    naming conventions more closely.
+  > All algorithms are now available Schema-Free.
+  > Change log for each individual algorithm.
+  
+* Algorithms, cumulative changes since 6/21/21
+  * Graph Embedding
+    > Node2vec (NEW, beta)
+    > FastRP (NEW, beta, 2 versions)
+    > Random Walk (NEW, beta, 2 versions)
+  * Centrality
+    > Harmonic Centrality (NEW, beta)
+    > Betweenness (speed improvement)
+    > Closeness (speed improvement)
+  * Community Detection
+    > Local Clustering Coefficient (NEW, beta)
+    > Louvain (NEW version for distributed graphs)
+    > Weakly Connected Component (NEW version optimized for small world graphs)
+    > Strongly Connected Component (NEW version optimized for small world graphs)
+    > Triangle Count (Converted to Schema-Free, requires TigerGraph 3.1+)
+ * Similarity
+    > Cosine (batch version for better memory efficiency)
+    > Jaccard (batch version for better memory efficiency)
 
-## Key Changes since version 3.0
+
+## 6/21/21 Key Changes since version 3.0
 * New Graph/ML node embedding algorithm `node2vec` added in `/algorithms/examples/Graph+ML`
 * New schema-free algorithms: `greedy_graph_coloring`, `closeness_cent_approx_query`, `cosine_batch`, `jaccard_batch`
 * Nearly all the algorithms now work as schema-free algorithms, making them much easier
