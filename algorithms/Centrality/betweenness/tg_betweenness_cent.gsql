@@ -96,16 +96,18 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
                 POST-ACCUM s.@seen=0,s.@visit=0,s.@sigma.clear(),s.@times.clear();
   END;
   
+  #Output
+	IF file_path != "" THEN
+			f.println("Vertex_ID", "Betweenness");
+	END;
+	
   #PRINT all [all.@delta];
   Start = SELECT s FROM all:s
 			POST-ACCUM 
 					IF result_attr != "" THEN s.setAttr(result_attr, s.@delta) END,
 					IF print_accum THEN @@topScores += VertexScore(s, s.@delta) END,
 					IF file_path != "" THEN f.println(s, s.@delta) END;
-  #Output
-	IF file_path != "" THEN
-			f.println("Vertex_ID", "Betweenness");
-	END;
+  
 
 	IF print_accum THEN
 		PRINT @@topScores AS top_scores;
