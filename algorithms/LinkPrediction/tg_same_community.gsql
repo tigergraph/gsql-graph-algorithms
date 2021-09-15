@@ -1,0 +1,21 @@
+CREATE QUERY tg_common_neighbors(VERTEX a, VERTEX b, STRING communityAttribute) { 
+  /*
+    This query returns 1 if the two vertices are in the same community, and 0 otherwise.
+    Assumes that a community dedection algorithm has already
+    been run and the results are stored in an integer vertex attribute.
+
+    Parameters :
+      a : Input vertex one
+      b : Input vertex two
+      communityAttribute: the attribute community information is stored in the graph
+  */
+  avs = {a};
+  bvs = {b};
+  
+  IF a.getAttr(communityAttribute, INT) == b.getAttr(communityAttribute, INT) THEN // Check if in same community
+    PRINT 1;
+  ELSE // Not in same community
+    PRINT 0;
+  END;
+
+}
