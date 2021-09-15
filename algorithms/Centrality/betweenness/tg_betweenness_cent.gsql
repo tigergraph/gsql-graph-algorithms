@@ -26,7 +26,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
   SumAccum<FLOAT> @delta=0;
   MapAccum<INT,BitwiseOrAccum> @times;
   MapAccum<INT,SumAccum<INT>> @sigma;
-  ListAccum<INT> @test;
+  
   INT empty=0;
   FILE f (file_path);
   INT numVert;
