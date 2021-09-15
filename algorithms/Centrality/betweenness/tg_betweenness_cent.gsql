@@ -101,7 +101,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
 			f.println("Vertex_ID", "Betweenness");
 	END;
 	
-  #PRINT all [all.@delta];
+  
   Start = SELECT s FROM all:s
 			POST-ACCUM 
 					IF result_attr != "" THEN s.setAttr(result_attr, s.@delta) END,
