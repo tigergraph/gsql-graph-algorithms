@@ -1,0 +1,34 @@
+CREATE QUERY ANN(int k) FOR GRAPH blogcatalog { 
+  TYPEDEF TUPLE<node VERTEX, similarity DOUBLE> info;
+  HeapAccum<info>(k, similarity DESC) @approximate_nn;
+  HeapAccum<info>(k, similarity DESC) @reverse_nn;
+  HeapAccum<info>(k, similarity DESC) @general_nn;
+  INT c;
+  DOUBLE l;
+  Start = {ANY};
+  
+  WHILE(true) DO 
+    c = 0;
+    preprocessing = SELECT s
+                    FROM Start:s 
+                    POST-ACCUM
+                      s.@reverse_nn.clear(),
+                      s.@general_nn.clear(),
+                      FOREACH (node, similarity) in s.@approximate_nn DO
+                        IF s in node.@approximate_nn THEN s.@reverse_nn += info(node, similarity); END;
+                      END;
+                      s.@general_nn = s.@approximate_nn + s.@reverse_nn;
+  
+    processing = SELECT s
+                 FROM Start:s 
+                 POST-ACCUM
+                    FOREACH (node, similarity) in s.@general_nn DO 
+                      FOREACH (node_inner, similarity_inner) in node.@general_nn DO 
+                        l = similarityUDF(s, node_inner);      // any of the similarity UDFs
+                        c += updateCount(s.@approximate_nn, l);
+                        s.@approximate_nn += info(s,l);
+                       END;
+                     END;
+    IF c == 0 THEN BREAK;
+ END;
+}
