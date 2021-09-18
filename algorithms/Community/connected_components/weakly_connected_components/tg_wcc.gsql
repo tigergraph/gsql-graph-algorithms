@@ -27,7 +27,7 @@ CREATE QUERY tg_wcc (SET<STRING> v_type, SET<STRING> e_type, INT output_limit = 
 			S = SELECT t
 				FROM S:s -(e_type:e)- v_type:t
 				ACCUM t.@cc_id += s.@cc_id // If s has smaller id than t, copy the id to t
-				HAVING t.@cc_id != t.@cc_id'
+				HAVING t.@cc_id != t.@cc_id
 			;
 	END;
 
