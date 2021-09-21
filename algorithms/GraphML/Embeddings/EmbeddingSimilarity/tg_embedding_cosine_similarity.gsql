@@ -1,0 +1,22 @@
+CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, INT embeddingDim, INT k) { 
+  ListAccum<DOUBLE> @@embedding1;
+  MapAccum<INT, ListAccum<DOUBLE>> @@embeddings;
+  MapAccum<INT, DOUBLE> @@similarity;
+  SumAccum<DOUBLE> @similarityScore;
+  
+  v1_set = {v1};
+  start = {vert_types};
+
+  info = SELECT s
+         FROM v1_set:s
+         POST-ACCUM
+            @@embedding1 += s.embedding;
+  res = SELECT s
+         FROM start:s
+         ACCUM
+            @@embeddings += (s.vert_index->s.embedding);
+  
+  @@similarity = cosine_similarity(@@embedding1, @@embeddings, embeddingDim);
+  kMostSimilar = SELECT s FROM start:s POST-ACCUM s.@similarityScore += @@similarity.get(s.vert_index) ORDER BY s.@similarityScore DESC LIMIT k;
+  PRINT kMostSimilar;
+}
