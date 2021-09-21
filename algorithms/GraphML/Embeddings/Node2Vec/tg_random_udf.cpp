@@ -17,7 +17,10 @@ inline int random_range(int start, int end){
 // generate a random value based on probability distribution
 // For example: given {0.5,0.3,0.2}, this function will generate {0,1,2} based on its probability	
 inline int random_distribution(ListAccum<float> p){
-    std::vector<float> a = p.data_;
+    std::vector<float> a;
+    for (auto it : p.data_){
+        a.push_back(it);
+    }
     std::random_device rd;
     std::mt19937 gen(rd());
     std::discrete_distribution<> dis(a.begin(), a.end());

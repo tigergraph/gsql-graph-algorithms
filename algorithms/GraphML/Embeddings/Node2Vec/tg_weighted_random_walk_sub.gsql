@@ -1,4 +1,4 @@
-CREATE QUERY random_walk_sub(VERTEX source, INT length, INT num_walks, FLOAT p, FLOAT q, FILE f, SET<STRING> edge_types) { 
+CREATE QUERY tg_weighted_random_walk_sub(VERTEX source, INT length, INT num_walks, FLOAT p, FLOAT q, FILE f) { 
     /* This query impletemented random walk in Node2vec paper. Link: https://cs.stanford.edu/~jure/pubs/node2vec-kdd16.pdf
     Input: source vertex, random walk length, walk times for each vertex, output file, set of valid edge types
     Output: random walk sequence
@@ -24,11 +24,11 @@ CREATE QUERY random_walk_sub(VERTEX source, INT length, INT num_walks, FLOAT p, 
                     FROM Start:s-(edge_types:e)-:t
                     POST-ACCUM 
                         IF t.@d_tx ==0 THEN
-                            t.@score = (1/p) *t.score
+                            t.@score = (1/p) //* e.score
                         ELSE IF t.@d_tx == 1 THEN
-                            t.@score = t.score
+                            t.@score = 1 //t.score
                         ELSE
-                            t.@score = (1/q) * t.score
+                            t.@score = (1/q) //* e.score
                         END;
                 // Reset candidates @d_tx =2, start vertex @d_dx = 0
                 // store score and vertex of candidates
