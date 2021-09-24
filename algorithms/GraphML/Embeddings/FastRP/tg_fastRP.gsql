@@ -1,7 +1,8 @@
-CREATE QUERY tg_fastRP_map_query(INT num_edges, INT num_nodes, INT k, INT sampling_constant, INT reduced_dimension, DOUBLE normalization_strength, STRING input_weights, STRING index_attr) { 
+CREATE QUERY tg_fastRP(INT num_edges, INT num_nodes, INT k, INT sampling_constant, INT reduced_dimension, DOUBLE normalization_strength, STRING input_weights, STRING index_attr, BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "") { 
   MapAccum<INT,INT> @@degree_diagonal;
   MapAccum<INT, ListAccum<DOUBLE>> @@result;
   ListAccum<ListAccum<INT>> @@edge_list;
+  FILE f (file_path);
   Start = {ANY};
 
   info = SELECT s
@@ -13,5 +14,13 @@ CREATE QUERY tg_fastRP_map_query(INT num_edges, INT num_nodes, INT k, INT sampli
 
  
   @@result = fastRP(@@degree_diagonal, @@edge_list, num_edges, num_nodes, k, sampling_constant, reduced_dimension, normalization_strength, input_weights);
-  PRINT @@result;
+  IF print_accum THEN
+    PRINT @@result;
+  END;
+  IF result_attr != "" THEN
+    storeEmbeddings = SELECT s FROM Start:s POST-ACCUM s.fastrp_embedding = @@result.get(s.getAttr(index_attr, "INT"));
+  END;
+  IF file_path != "" THEN
+    f.println(@@result);
+  END;
 }

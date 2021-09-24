@@ -8,9 +8,9 @@
 #include <string>
 #include <vector>
 
-inline void fastRP(MapAccum<int, int> degree_diagonal, ListAccum<ListAccum<int>> edge_list, int m, int n, int k, int s, int d, double beta, string input_weights) {
+inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagonal, ListAccum<ListAccum<int>> edge_list, int m, int n, int k, int s, int d, double beta, string input_weights) {
   // parameters
-  std::ofstream foutput("/home/tigergraph/output.txt");
+  std::ofstream foutput("/home/tigergraph/parameters.txt");
   foutput << "|E|:" << m << std::endl;
   foutput << "|V|:" << n << std::endl;
   foutput << "K:" << k << std::endl;
@@ -29,6 +29,7 @@ inline void fastRP(MapAccum<int, int> degree_diagonal, ListAccum<ListAccum<int>>
     foutput << "\t" << current_weight << std::endl;
     weights.push_back(std::stod(current_weight));
   }
+  foutput.close();
 
   // random number generation
   std::random_device rd;
@@ -92,22 +93,23 @@ inline void fastRP(MapAccum<int, int> degree_diagonal, ListAccum<ListAccum<int>>
 
   Eigen::SparseMatrix<double> A = Dinv * S;
 
-  //embeddings vector
-  std::vector<Eigen::SparseMatrix<double>> N_i;
-
   // store embeddings
-  Eigen::SparseMatrix<double> N_1 = A * L * R;
-  N_i.push_back(N_1);
-
-  for (int i = 1; i < k; i++)
-    N_i.push_back(A * N_i[i - 1]);
+  Eigen::SparseMatrix<double> N_1 = L * R;
 
   // apply weights and compute N
   Eigen::SparseMatrix<double> N(n, d);
-  for (int i = 0; i < k; i++)
-    N += weights[i] * N_i[i];
-
-  // Output N
-  foutput << "Final Embedding N\n" << N << std::endl;
-  foutput.close();
+  for (int i = 0; i < k; i++){
+    N_1 = (A*N_1);
+    N += weights[i] * N_1;
+  }
+  // return n x d MapAccum
+  MapAccum<int, ListAccum<double>> res;
+  for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); it++) {
+    int i = it->first;
+    for (int j = 0; j < d; j++) {
+      MapAccum<int, ListAccum<double>> temp(i, ListAccum<double>(N.coeff(i, j)));
+      res += temp;
+    }
+  }
+  return res;
 }
