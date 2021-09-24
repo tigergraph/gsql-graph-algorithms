@@ -11,5 +11,5 @@ CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, STRIN
 
  
   similarity = cosine_similarity(@@embeddings);
-  PRINT @@result;
+  PRINT similarity;
 }

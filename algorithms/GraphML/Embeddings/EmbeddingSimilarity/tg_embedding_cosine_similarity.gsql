@@ -12,7 +12,7 @@ CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, I
          POST-ACCUM
             @@embedding1 += s.embedding;
   res = SELECT s
-         FROM start:s
+         FROM start:s WHERE s != v1
          ACCUM
             @@embeddings += (s.vert_index->s.embedding);
   
