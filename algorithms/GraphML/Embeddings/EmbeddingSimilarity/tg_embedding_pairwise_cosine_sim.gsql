@@ -1,15 +1,19 @@
-CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, STRING embedding_attr, STRING index_attr) { 
-  MapAccum<INT, ListAccum<DOUBLE>> @@embeddings;
+CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT embedding_dim) { 
+  ListAccum<DOUBLE> @@emb1;
+  ListAccum<DOUBLE> @@emb2;
   DOUBLE similarity;
   
-  v_s = {v1, v2};
+  vs1 = {v1};
+  vs2 = {v2};
 
   info = SELECT s
-         FROM v_s:s
-         POST-ACCUM
-            @@embeddings += (s.getAttr(index_attr, "INT") -> s.embedding_attr);
-
+         FROM vs1:s
+         POST-ACCUM @@emb1 += s.fastrp_embedding;
+  
+  info = SELECT s 
+         FROM vs2:s 
+         POST-ACCUM @@emb2 += s.fastrp_embedding;
  
-  similarity = cosine_similarity(@@embeddings);
+  similarity = pairwise_cosine_similarity(@@emb1, @@emb2, embedding_dim);
   PRINT similarity;
 }
