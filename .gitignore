@@ -1,6 +1,4 @@
 **/.DS_Store
-algorithms/r.py
-algorithms/automdfiles.py
 .vscode/settings.json
 
 
@@ -10,3 +8,4 @@ UDF/numerical/*
 
 
 
+automdfiles.env
