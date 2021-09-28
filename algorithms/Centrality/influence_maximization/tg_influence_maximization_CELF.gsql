@@ -1,0 +1,76 @@
+CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING weight,INT top_k,
+  BOOL print_accum = True, STRING file_path = "") {  
+  /* get the vertex which has maximum influence. 
+  Parameters:
+  v_type: vertex types to traverse                 
+  e_type: edge types to traverse                   
+  weight: enter weight attribute name
+  top_k: report only this many top scores          
+  file_path: file to write CSV output to
+  print_accum: weather print the result
+   */  
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
+  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+  OrAccum @inSeed;
+  OrAccum @influenced;
+  SumAccum<FLOAT> @influence_value;
+  ListAccum<VertexScore> @@res;
+  VERTEX k;
+  FLOAT score;
+  BOOL skip=FALSE;
+  FILE f (file_path);
+  @@topScores.resize(top_k+3);
+  all = {v_type};
+  start = SELECT s FROM all:s-(e_type:e)-v_type:v 
+                  ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"INT") 
+                        ELSE  s.@influence_value+=1 END
+                  POST-ACCUM @@topScores+=VertexScore(s,s.@influence_value),s.@influence_value=0;
+  @@res+=@@topScores.top();
+  k= @@topScores.pop().Vertex_ID;
+  temp = SELECT s FROM start:s-(e_type:e)-v_type:v 
+                WHERE s==k
+                ACCUM v.@influenced+=TRUE,s.@inSeed+=TRUE;
+  k= @@topScores.pop().Vertex_ID;
+  score = @@topScores.top().score;
+  WHILE @@res.size()<top_k DO
+          one = SELECT s FROM all:s-(e_type:e)-v_type:v 
+                WHERE s==k AND s.@inSeed == FALSE AND v.@influenced == FALSE
+                ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"INT") 
+                      ELSE  s.@influence_value+=1 END 
+                POST-ACCUM IF s.@influence_value>=score THEN @@res+=VertexScore(s,s.@influence_value),skip=TRUE END,
+                           s.@influence_value=0;
+          IF skip THEN 
+              skip=FALSE;
+              one = SELECT v FROM all:s-(e_type:e)-v_type:v 
+                    WHERE s==k
+                    ACCUM v.@influenced+=TRUE,s.@inSeed+=TRUE;
+              k= @@topScores.pop().Vertex_ID;
+              score = @@topScores.top().score;
+              CONTINUE;
+          END;
+          @@topScores.clear();
+          start = SELECT s FROM all:s-(e_type:e)-v_type:v 
+                  WHERE s.@inSeed == FALSE and v.@influenced == FALSE 
+                  ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"INT") 
+                        ELSE  s.@influence_value+=1 END
+                  POST-ACCUM @@topScores+=VertexScore(s,s.@influence_value),s.@influence_value=0;
+          @@res+=@@topScores.top();
+          k= @@topScores.pop().Vertex_ID;
+          temp = SELECT s FROM start:s-(e_type:e)-v_type:v 
+                WHERE s==k
+                ACCUM v.@influenced+=TRUE,s.@inSeed+=TRUE;
+          k= @@topScores.pop().Vertex_ID;
+          score = @@topScores.top().score;
+  END;
+  #Output
+  IF file_path != "" THEN
+			f.println("Vertex_ID", "Vertex Rank");
+      FOREACH i IN RANGE[0,@@res.size()-1] DO
+              f.println(@@res.get(i).Vertex_ID,i+1);
+      END;
+  END;
+  
+  IF print_accum THEN
+		 PRINT @@res;
+  END;
+}
