@@ -1,10 +1,10 @@
 CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, BOOL in_degree = TRUE, BOOL out_degree = TRUE,
-  INT top_k = 100, BOOL print_accum = True, STRING result_attr = "",STRING file_path = "") { 
+  INT top_k=100, BOOL print_accum = True, STRING result_attr = "",STRING file_path = "") { 
   /* Compute degree Centrality for each VERTEX. 
   Parameters:
-  v_type: vertex types to traverse                 print_accum: print JSON output
-  e_type: edge types to traverse                   result_attr: INT attr to store results to
-  re_type: reverse edge type in directed graph, in undirected graph set re_type=e_type
+  v_type: vertex types to traverse                 
+  e_type: edge types to traverse                   
+  re_type: for indegree use
   in_degree: if you want to count incoming relationships, set it to TRUE
   out_degree: if you want to count outcoming relationships, set it to TRUE
   top_k: report only this many top scores          print_accum: weather print the result
