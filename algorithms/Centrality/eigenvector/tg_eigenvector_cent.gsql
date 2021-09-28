@@ -1,0 +1,57 @@
+CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, Int maxIter = 100, Float convLimit = 0.000001,
+ Int top_k = 100, BOOL print_accum = True, STRING result_attr = "",STRING file_path = ""
+ ) { 
+ /* Compute eigenvector Centrality for each VERTEX. 
+  Parameters:
+  v_type: vertex types to traverse                 
+  e_type: edge types to traverse                   
+  maxIter: max iteration
+  convLimit: convergence limitation
+  top_k: report only this many top scores          print_accum: weather print the result
+  result_attr: attribute to write result to        file_path: file to write CSV output to
+   */ 
+ TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
+ HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+ SumAccum<Float> @@sumSquaresEigenValues;
+ SumAccum<Float> @received_value;
+ SumAccum<Float> @eigen_value = 1;
+ SumAccum<Float> @@curNormValues;
+ SumAccum<Float> @@prevNormValues;
+ Float convValue = 9999;
+ FILE f (file_path);
+ Start = {v_type};
+ WHILE convValue > convLimit LIMIT maxIter DO
+       @@sumSquaresEigenValues = 0;
+       @@curNormValues = 0;
+       V = SELECT s FROM Start:s - (e_type:e) -> v_type:t
+                    ACCUM t.@received_value += s.@eigen_value
+                    POST-ACCUM s.@eigen_value = s.@received_value,
+                               @@sumSquaresEigenValues += s.@eigen_value * s.@eigen_value,
+                               s.@received_value = 0;
+       p = SELECT s FROM V:s LIMIT 10;
+       PRINT p[p.@eigen_value];
+       V = SELECT s FROM V:s
+                    POST-ACCUM s.@eigen_value = s.@eigen_value / sqrt(@@sumSquaresEigenValues),
+                               @@curNormValues += s.@eigen_value;
+                               convValue = abs(@@curNormValues - @@prevNormValues);
+                               @@prevNormValues = @@curNormValues;
+    	                         
+   p = SELECT s FROM V:s LIMIT 10;
+       PRINT p[p.@eigen_value];
+ END;
+ #Output
+ IF file_path != "" THEN
+			f.println("Vertex_ID", "egien vector");
+ END;
+ Start = SELECT s FROM Start:s
+      ACCUM IF s.@eigen_value==1.0 THEN s.@eigen_value+=-1 END
+			POST-ACCUM 
+					IF result_attr != "" THEN s.setAttr(result_attr, s.@eigen_value) END,
+					IF print_accum THEN @@topScores += VertexScore(s, s.@eigen_value) END,
+					IF file_path != "" THEN f.println(s, s.@eigen_value) END;
+
+ IF print_accum THEN
+		PRINT @@topScores AS top_scores;
+ END;
+
+}
