@@ -1,4 +1,4 @@
-CREATE QUERY tg_weighted_random_walk(INT batches, INT walk_length = 20, INT num_walks = 4, FLOAT p = 1, FLOAT q = 1, STRING filepath = "/home/tigergraph/path.csv") { 
+CREATE QUERY tg_weighted_random_walk_batch(INT batches, INT walk_length = 20, INT num_walks = 4, FLOAT p = 1, FLOAT q = 1, STRING filepath = "/home/tigergraph/path.csv") { 
     FILE f (filepath);
     Start = {ANY};
     FOREACH i IN RANGE [0, batches-1] DO
