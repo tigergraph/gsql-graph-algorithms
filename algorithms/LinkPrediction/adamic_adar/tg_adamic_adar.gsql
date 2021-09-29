@@ -37,7 +37,7 @@ CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type) {
     END;
     res = SELECT p 
           FROM tmp:p 
-          ACCUM @@closeness += 1/LOG(p.@numNeighbors);  # calculates closeness measure
+          ACCUM @@closeness += 1/log10(p.@numNeighbors);  # calculates closeness measure
 
     PRINT @@closeness; 
 }
