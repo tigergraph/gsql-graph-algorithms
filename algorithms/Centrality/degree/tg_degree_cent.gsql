@@ -9,7 +9,7 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> 
   out_degree: if you want to count outcoming relationships, set it to TRUE
   top_k: report only this many top scores          print_accum: weather print the result
   result_attr: attribute to write result to        file_path: file to write CSV output to
-  
+  for undirected graph, you onlt need to set e_type and indegree
    */ 
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
   HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
