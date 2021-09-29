@@ -14,7 +14,7 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, Int max
  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
  SumAccum<Float> @@sumSquaresEigenValues;
  SumAccum<Float> @received_value;
- SumAccum<Float> @eigen_value = 0.15;
+ SumAccum<Float> @eigen_value = 1;
  SumAccum<Float> @@curNormValues;
  SumAccum<Float> @@prevNormValues;
  Float convValue = 9999;
@@ -36,8 +36,6 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, Int max
                                convValue = abs(@@curNormValues - @@prevNormValues);
                                @@prevNormValues = @@curNormValues;
     	                         
-   p = SELECT s FROM V:s LIMIT 10;
-       PRINT p[p.@eigen_value];
  END;
  #Output
  IF file_path != "" THEN
