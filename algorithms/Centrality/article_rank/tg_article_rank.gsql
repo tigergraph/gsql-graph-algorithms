@@ -17,12 +17,12 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
 
  This query supports only taking in a single edge for the time being (8/13/2020).
 */
-	TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
-	HeapAccum<Vertex_Score>(top_k, score DESC) @@topScores;
-	MaxAccum<FLOAT> @@max_diff = 9999;    # max score change in an iteration
-	SumAccum<FLOAT> @recvd_score = 0; # sum of scores each vertex receives FROM neighbors
-	SumAccum<FLOAT> @score = 0.15;           # initial score for every vertex is 0.15.
-	SetAccum<EDGE> @@edgeSet;             # list of all edges, if display is needed
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
+  HeapAccum<Vertex_Score>(top_k, score DESC) @@topScores;
+  MaxAccum<FLOAT> @@max_diff = 9999;    # max score change in an iteration
+  SumAccum<FLOAT> @recvd_score = 0; # sum of scores each vertex receives FROM neighbors
+  SumAccum<FLOAT> @score = 0.15;           # initial score for every vertex is 0.15.
+  SetAccum<EDGE> @@edgeSet;             # list of all edges, if display is needed
   AvgAccum @@averageOut;
   SumAccum<INT> @outDegree;
 	FILE f (file_path);
