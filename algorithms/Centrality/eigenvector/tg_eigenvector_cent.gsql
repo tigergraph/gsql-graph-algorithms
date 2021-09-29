@@ -29,7 +29,7 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, Int max
                                @@sumSquaresEigenValues += s.@eigen_value * s.@eigen_value,
                                s.@received_value = 0;
        p = SELECT s FROM V:s LIMIT 10;
-       PRINT p[p.@eigen_value];
+       
        V = SELECT s FROM V:s
                     POST-ACCUM s.@eigen_value = s.@eigen_value / sqrt(@@sumSquaresEigenValues),
                                @@curNormValues += s.@eigen_value;
