@@ -23,4 +23,4 @@ CREATE QUERY tg_common_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type) {
     # Get neighbors in common
     u = na INTERSECT nb; 
     PRINT u.size() as closeness; 
-}∂
+}
