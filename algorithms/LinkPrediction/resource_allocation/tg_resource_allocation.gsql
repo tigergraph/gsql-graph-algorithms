@@ -10,7 +10,7 @@ CREATE QUERY tg_resource_allocation(VERTEX a, VERTEX b, SET<STRING> e_type){
         b : Input vertex two
         e_type: edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
     */
-    SumAccum<INT> @numNeighbors;
+    SumAccum<DOUBLE> @numNeighbors;
     SumAccum<DOUBLE> @@closeness;
     avs = {a};
     bvs = {b};
