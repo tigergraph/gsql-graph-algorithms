@@ -6,14 +6,13 @@ CREATE QUERY tg_total_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type) {
     Parameters :
         a : Input vertex one
         b : Input vertex two
-        e_type: edge types to traverse. 
-                If none are defined, then all edge types will be used.
+        e_type: edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
     */
 
     avs = {a};
     bvs = {b};
 
-    IF e_type.size() != 0 THEN  # Specific edge types defined as parameters
+    IF "ALL" NOT IN e_type THEN  # Specific edge types defined as parameters
         na = SELECT n 
              FROM avs -(e_type)-> :n;  # Get vertex A's neighbors
         nb = SELECT n 

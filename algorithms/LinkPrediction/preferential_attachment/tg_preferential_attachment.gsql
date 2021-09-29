@@ -8,13 +8,13 @@ CREATE QUERY tg_preferential_attachment(VERTEX a, VERTEX b, SET<STRING> e_type) 
     Parameters :
         a : Input vertex one
         b : Input vertex two
-        e_type: edge types to traverse. If none are defined, then all edge types will be used.
+        e_type: edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
     */
     avs = {a};
     bvs = {b};
 
     # See if user specified edge types to traverse
-    IF e_type.size() != 0 THEN
+    IF "ALL" NOT IN e_type THEN
         na = SELECT n 
              FROM avs -(e_type)-> :n;  # Get neighbors of vertex A
         nb = SELECT n 
