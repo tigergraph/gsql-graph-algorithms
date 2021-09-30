@@ -35,7 +35,7 @@ display: output edges for visualization
 
 	Tgt = SELECT s FROM Tgt:s 
 	        POST-ACCUM x1 = s.latitude,
-				       y1 = s.longitude;
+		           y1 = s.longitude;
     
 	Start = {source_vertex};   # the optimal node
 	Opt = {source_vertex};    # all of the optimal nodes
