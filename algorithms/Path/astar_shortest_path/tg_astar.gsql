@@ -1,4 +1,4 @@
-CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type, STRING wt_type,
+CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type, STRING wt_type, STRING latitude, STRING longitude,
 STRING wt_attr, BOOL display = False){
 /* The A* (pronounced "A-Star") Shortest Path algorithm computes the shortest path between two nodes. 
 A* is an informed search algorithm as it uses a heuristic function to guide the graph traversal.
@@ -20,8 +20,8 @@ display: output edges for visualization
 	ListAccum<VERTEX> @@tmp;  # the optimal node
 	SumAccum<FLOAT> @@totalDist;  # the shortest distance 
 	SetAccum<EDGE> @@display_edge;
-    SetAccum<VERTEX> @@parent_node,@@display_node;
-    INT hop;
+  SetAccum<VERTEX> @@parent_node,@@display_node;
+  INT hop;
 	FLOAT x1,y1;
 	    
     # Check wt_type parameter
@@ -34,8 +34,8 @@ display: output edges for visualization
     Tgt = {target_vertex};
 
 	Tgt = SELECT s FROM Tgt:s 
-	        POST-ACCUM x1 = s.latitude,
-		           y1 = s.longitude;
+	        POST-ACCUM x1 = s.getAttr(latitude,"FLOAT"),
+		           y1 = s.getAttr(longitude,"FLOAT");
     
 	Start = {source_vertex};   # the optimal node
 	Opt = {source_vertex};    # all of the optimal nodes
@@ -53,11 +53,11 @@ display: output edges for visualization
 			ACCUM 
                 # we use Haversine formula as the heuristic function here
                 CASE wt_type WHEN "INT" THEN
-					t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "INT") +  GetDistance(t.latitude,t.longitude,x1,y1),s)
+					          t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "INT") +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
                 WHEN "FLOAT" THEN
-                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "FLOAT") +  GetDistance(t.latitude,t.longitude,x1,y1),s)
+                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "FLOAT") +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
                 WHEN "DOUBLE" THEN
-                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "DOUBLE") +  GetDistance(t.latitude,t.longitude,x1,y1),s)
+                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "DOUBLE") +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
                 END;
   
 		Opt = SELECT t FROM Start:s-(e_type:e)-> :t
