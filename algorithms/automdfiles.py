@@ -127,7 +127,6 @@ def write_md_files(paths):
             empty_log = f'\n## {TIGERGRAPH_CURRENT_GSQL_VERSION} {doc_title} Change Logs - {TIGERGRAPH_CURRENT_VERSION_DATE_READABLE}\n'
             print(empty_log.strip(),change_log.strip())
             if change_log.strip() != empty_log.strip():
-                print('hree')
                 handler.write(change_log + previous_changelog)
             else:
                 handler.write(previous_changelog)
