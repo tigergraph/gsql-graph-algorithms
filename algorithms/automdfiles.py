@@ -90,13 +90,13 @@ def fetch_change_log(algo_lib_dir, title):
             gsql_path = os.path.join(algo_lib_dir, file)
             gsql_algo_name = file.replace('.gsql','').replace('.cpp','').replace('.hpp','')
             
-            change_log += f'\n### `{gsql_algo_name}`\n'
             gsql_logs = list(gsql_git.log('-m','--follow', '--date=iso', '--pretty=format:%H!!%h!!%an!!%as!!%s', f'--since="{get_last_merge_date_iso()}"', f'{gsql_path}').splitlines())
             gsql_logs += list(gsql_git.log('--full-history','--follow','--date=iso', '--pretty=format:%H!!%h!!%an!!%as!!%s', f'--since="{get_last_merge_date_iso()}"', f'{gsql_path}').splitlines())
             gsql_logs = set(gsql_logs)
 
             if not gsql_logs:
                 continue
+            change_log += f'\n### `{gsql_algo_name}`\n'
             for log in gsql_logs:
                 hashid_long, hashid_short, author, date, message = log.split('!!')
                 commit_link = TIGERGRAPH_COMMITS_LINK + hashid_long
@@ -123,7 +123,14 @@ def write_md_files(paths):
             with open(os.path.join(dir, 'CHANGELOG.md'), 'r') as handler:
                 previous_changelog = handler.read()
         with open(os.path.join(dir, 'CHANGELOG.md'), 'w') as handler:
-            handler.write(fetch_change_log(dir,doc_title) + previous_changelog)
+            change_log = fetch_change_log(dir,doc_title)
+            empty_log = f'\n## {TIGERGRAPH_CURRENT_GSQL_VERSION} {doc_title} Change Logs - {TIGERGRAPH_CURRENT_VERSION_DATE_READABLE}\n'
+            print(empty_log.strip(),change_log.strip())
+            if change_log.strip() != empty_log.strip():
+                print('hree')
+                handler.write(change_log + previous_changelog)
+            else:
+                handler.write(previous_changelog)
         if dir not in specific_readme:
             with open(os.path.join(dir, 'README.md'), 'w') as handler:
                 template = f'\n# {doc_title}\n'
