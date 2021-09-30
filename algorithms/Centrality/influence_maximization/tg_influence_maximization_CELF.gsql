@@ -22,7 +22,7 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
   @@topScores.resize(top_k+3);
   all = {v_type};
   start = SELECT s FROM all:s-(e_type:e)-v_type:v 
-                  ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"INT") 
+                  ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"FLOAT") 
                         ELSE  s.@influence_value+=1 END
                   POST-ACCUM @@topScores+=VertexScore(s,s.@influence_value),s.@influence_value=0;
   @@res+=@@topScores.top();
