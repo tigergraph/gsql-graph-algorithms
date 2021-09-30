@@ -17,7 +17,6 @@ CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING
                   ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"INT") 
                         ELSE  s.@influence_value+=1 END
                   POST-ACCUM @@topScores+=VertexScore(s,s.@influence_value),s.@influence_value=0;
-          PRINT start;
           
           k= @@topScores.top().Vertex_ID ;
           @@res += @@topScores.top();
