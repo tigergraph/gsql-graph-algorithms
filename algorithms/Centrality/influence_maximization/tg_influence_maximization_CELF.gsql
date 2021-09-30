@@ -35,7 +35,7 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
   WHILE @@res.size()<top_k DO
           one = SELECT s FROM all:s-(e_type:e)-v_type:v 
                 WHERE s==k AND s.@inSeed == FALSE AND v.@influenced == FALSE
-                ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"INT") 
+                ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"FLOAT") 
                       ELSE  s.@influence_value+=1 END 
                 POST-ACCUM IF s.@influence_value>=score THEN @@res+=VertexScore(s,s.@influence_value),skip=TRUE END,
                            s.@influence_value=0;
@@ -51,7 +51,7 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
           @@topScores.clear();
           start = SELECT s FROM all:s-(e_type:e)-v_type:v 
                   WHERE s.@inSeed == FALSE and v.@influenced == FALSE 
-                  ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"INT") 
+                  ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"FLOAT") 
                         ELSE  s.@influence_value+=1 END
                   POST-ACCUM @@topScores+=VertexScore(s,s.@influence_value),s.@influence_value=0;
           @@res+=@@topScores.top();
