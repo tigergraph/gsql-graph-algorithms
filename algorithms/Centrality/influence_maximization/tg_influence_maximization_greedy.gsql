@@ -14,7 +14,7 @@ CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING
   FOREACH i in RANGE[0,top_k-1] DO
           start = SELECT s FROM start:s-(e_type:e)-v_type:v 
                   WHERE s.@inSeed == FALSE and v.@influenced == FALSE 
-                  ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"INT") 
+                  ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"FLOAT") 
                         ELSE  s.@influence_value+=1 END
                   POST-ACCUM @@topScores+=VertexScore(s,s.@influence_value),s.@influence_value=0;
           
