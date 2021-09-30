@@ -1,0 +1,122 @@
+CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type, STRING wt_type,
+STRING wt_attr, BOOL display = False){
+/* The A* (pronounced "A-Star") Shortest Path algorithm computes the shortest path between two nodes. 
+A* is an informed search algorithm as it uses a heuristic function to guide the graph traversal.
+The heuristic function must be admissible, which means it is always less or equal to the distance to the target.
+The algorithm supports weighted graphs with positive relationship weights.
+Parameters:
+source_vertex:start vertex 
+target_vertex:target vertex
+e_type: edge types to traverse
+wt_attr: attribute for edge weights            
+wt_type: weight data type (INT,FLOAT,DOUBLE) 
+display: output edges for visualization
+*/
+
+    TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
+	HeapAccum<pathTuple>(1, dist ASC) @@findminv;  # retain 1 shortest path
+	HeapAccum<pathTuple>(1, dist ASC) @minDist;
+	OrAccum @visited;
+	ListAccum<VERTEX> @@tmp;  # the optimal node
+	SumAccum<FLOAT> @@totalDist;  # the shortest distance 
+	SetAccum<EDGE> @@display_edge;
+    SetAccum<VERTEX> @@parent_node,@@display_node;
+    INT hop;
+	FLOAT x1,y1;
+	    
+    # Check wt_type parameter
+	IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+		PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+		RETURN;
+	END;
+  
+	# record target latitude and longitude
+    Tgt = {target_vertex};
+
+	Tgt = SELECT s FROM Tgt:s 
+	        POST-ACCUM x1 = s.latitude,
+				       y1 = s.longitude;
+    
+	Start = {source_vertex};   # the optimal node
+	Opt = {source_vertex};    # all of the optimal nodes
+
+	Start = SELECT s FROM Start:s
+            ACCUM s.@visited = True,
+                  s.@minDist = pathTuple(0,s);
+		
+	# run aster to find shortest distance greedily
+	WHILE Opt.size() > 0 DO
+			
+		# find the node with shortest distance 
+		Opt = SELECT t FROM Opt:s-(e_type:e)-> :t
+			WHERE t.@visited == False
+			ACCUM 
+                # we use Haversine formula as the heuristic function here
+                CASE wt_type WHEN "INT" THEN
+					t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "INT") +  GetDistance(t.latitude,t.longitude,x1,y1),s)
+                WHEN "FLOAT" THEN
+                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "FLOAT") +  GetDistance(t.latitude,t.longitude,x1,y1),s)
+                WHEN "DOUBLE" THEN
+                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "DOUBLE") +  GetDistance(t.latitude,t.longitude,x1,y1),s)
+                END;
+  
+		Opt = SELECT t FROM Start:s-(e_type:e)-> :t
+            WHERE t.@visited == False
+			POST-ACCUM @@findminv += pathTuple(t.@minDist.top().dist,t);   
+		
+        @@tmp.clear();
+		IF @@findminv.size() > 0 THEN
+        	@@tmp += @@findminv.pop().v;
+      	END;
+		
+		Opt = {@@tmp};
+    
+		Start = Opt UNION Start;
+		Opt = SELECT t FROM Opt:t
+			POST-ACCUM t.@visited += True;
+        # Determine if it is the target point and terminate the loop if it is
+        IF @@tmp.get(0) == target_vertex THEN 
+            BREAK;
+        END;
+   
+	END;
+    # The test is whether there is a path between two points
+    Start = {target_vertex};
+  
+    Start = SELECT s FROM Start:s 
+            POST-ACCUM @@parent_node += s.@minDist.top().v,
+                       @@display_node += s;
+    
+    IF @@parent_node.size() > 0 THEN
+      # find path
+        WHILE Start.size() > 0 DO
+      
+            Start = SELECT t FROM Start:s-(e_type:e)-> :t
+                    WHERE t == s.@minDist.top().v 
+                    ACCUM @@display_edge += e,
+                        CASE wt_type WHEN "INT" THEN
+					        @@totalDist += e.getAttr(wt_attr, "INT")
+                        WHEN "FLOAT" THEN
+                            @@totalDist += e.getAttr(wt_attr, "FLOAT")
+                        WHEN "DOUBLE" THEN
+                            @@totalDist += e.getAttr(wt_attr, "DOUBLE")
+                        END,
+                        @@display_node += t;
+            hop = hop + 1;
+        END; 
+        hop = hop - 1;
+        PRINT @@totalDist;
+        PRINT hop;
+        IF display THEN 
+            tmp = {@@display_node};
+            PRINT @@display_edge,tmp;   
+    
+        END;
+        
+    ELSE 
+    
+         PRINT "not find path";
+    
+    END;
+
+}
