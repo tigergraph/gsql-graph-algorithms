@@ -17,7 +17,7 @@ Parameters:
     MapAccum<INT, INT> @@commSizes;    # <communityId, communitysize>
     SetAccum<INT> @community,@@nest,@@comm,@@index;   # communityId and nested communityId
     ListAccum<INT> @@community;    # all communityId
-    SetAccum<STRING> @@com1,@@com2,@@tmp1,@@tmp2;   # community set
+    SetAccum<INT> @@com1,@@com2,@@tmp1,@@tmp2;   # community set
     FILE f (file_path);
     Start = {v_type};
 
@@ -91,7 +91,7 @@ Parameters:
 
         Comm0 = SELECT s FROM Start:s
                 WHERE s.@community.contains(@@community.get(i))
-                POST-ACCUM @@com1 += s.id,
+                POST-ACCUM @@com1 += getvid(s),
                     FOREACH j in RANGE[i+1,@@community.size()-1] DO
                         if s.@community.contains(@@community.get(j)) THEN
                             @@index += j
@@ -105,7 +105,7 @@ Parameters:
             
             Comm1 = SELECT s FROM Start:s
                     WHERE s.@community.contains(@@community.get(j))
-                    POST-ACCUM @@com2 += s.id;
+                    POST-ACCUM @@com2 += getvid(s);
             
             @@tmp1 = @@com1 UNION @@com2 MINUS @@com1;
             @@tmp2 = @@com1 UNION @@com2 MINUS @@com2;
