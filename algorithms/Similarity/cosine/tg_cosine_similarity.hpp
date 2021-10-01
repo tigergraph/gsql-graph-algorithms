@@ -24,3 +24,19 @@ inline double tg_cosine_similarity(std::vector<T> A, std::vector<T> B) {
 }
 template <>
 inline double tg_cosine_similarity(std::vector<string> A, std::vector<string> B) = delete;
+
+template <typename T>
+inline double tg_cosine_similarity(ListAccum<T> A, ListAccum<T> B) {
+  int n = A.size();
+  double mean_A = 0.0, mean_B = 0.0, inner = 0.0, magnitude_A = 0.0, magnitude_B = 0.0;
+  for (int i = 0; i < n; i++) {
+    inner += A.get(i) * B.get(i);
+    magnitude_A += A.get(i) * A.get(i);
+    magnitude_B += B.get(i) * B.get(i);
+  }
+
+  double cosine_similarity = inner / std::sqrt(magnitude_A * magnitude_B);
+  return cosine_similarity;
+}
+template <>
+inline double tg_cosine_similarity(ListAccum<string> A, ListAccum<string> B) = delete;
