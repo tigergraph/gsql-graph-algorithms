@@ -15,7 +15,12 @@ CREATE QUERY tg_same_community(VERTEX a, VERTEX b, STRING communityAttribute, ST
     INT bCommunity;
     avs = {a};
     bvs = {b};
-    IF communityAttrType == "INT"
+
+    IF communityAttrType NOT IN ("UINT", "uint", "INT", "int", "STRING", "string") THEN
+        PRINT "communityAttrType not valid option" as errMsg;
+        RETURN;
+    END;
+    
     res = SELECT av
           FROM avs:av 
           POST-ACCUM aCommunity = av.getAttr(communityAttribute, communityAttrType);
