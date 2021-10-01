@@ -33,8 +33,8 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, Int max
        V = SELECT s FROM V:s
                     POST-ACCUM s.@eigen_value = s.@eigen_value / sqrt(@@sumSquaresEigenValues),
                                @@curNormValues += s.@eigen_value;
-                               convValue = abs(@@curNormValues - @@prevNormValues);
-                               @@prevNormValues = @@curNormValues;
+       convValue = abs(@@curNormValues - @@prevNormValues);
+       @@prevNormValues = @@curNormValues;
     	                         
  END;
  #Output
