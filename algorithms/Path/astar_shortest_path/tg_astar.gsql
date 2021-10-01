@@ -20,9 +20,9 @@ OrAccum @visited;
 ListAccum<VERTEX> @@tmp;  # the optimal node
 SumAccum<FLOAT> @@totalDist;  # the shortest distance 
 SetAccum<EDGE> @@display_edge;
- SetAccum<VERTEX> @@parent_node,@@display_node;
- INT hop;
- FLOAT x1,y1;
+SetAccum<VERTEX> @@parent_node,@@display_node;
+INT hop;
+FLOAT x1,y1;
 	    
     # Check wt_type parameter
 	IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
