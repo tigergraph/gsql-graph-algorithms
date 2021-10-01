@@ -1,4 +1,4 @@
-CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type) { 
+CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE) { 
     /*
     This query calculates the Adamic Adar value between two vertices.
     Higher the number, the closer two vertices are. A 0 value indicates two vertices are not close.
@@ -9,6 +9,7 @@ CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type) {
         a : Input vertex one
         b : Input vertex two
         e_type: edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
+        print_res: Boolean of if you want to print result (True by default)
     */
     SumAccum<INT> @numNeighbors;
     SumAccum<DOUBLE> @@closeness;
@@ -39,5 +40,7 @@ CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type) {
           FROM tmp:p 
           ACCUM @@closeness += 1/log10(p.@numNeighbors);  # calculates closeness measure
 
-    PRINT @@closeness; 
+    IF print_res THEN 
+        PRINT @@closeness; 
+    END;
 }

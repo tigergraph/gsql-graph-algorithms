@@ -1,4 +1,4 @@
-CREATE QUERY tg_same_community(VERTEX a, VERTEX b, STRING communityAttribute) { 
+CREATE QUERY tg_same_community(VERTEX a, VERTEX b, STRING communityAttribute, STRING communityAttrType, BOOL print_res = TRUE) { 
     /*
     This query returns 1 if the two vertices are in the same community, and 0 otherwise.
     Assumes that a community dedection algorithm has already
@@ -8,22 +8,28 @@ CREATE QUERY tg_same_community(VERTEX a, VERTEX b, STRING communityAttribute) {
         a : Input vertex one
         b : Input vertex two
         communityAttribute: the attribute community information is stored in the graph
+        communityAttrType: the type of the attribute that stores community info (e.g. "STRING", "INT")
+        print_res: Boolean of if you want to print result (True by default)
     */
     INT aCommunity;
     INT bCommunity;
     avs = {a};
     bvs = {b};
-    
+    IF communityAttrType == "INT"
     res = SELECT av
           FROM avs:av 
-          POST-ACCUM aCommunity = av.getAttr(communityAttribute, "INT");
+          POST-ACCUM aCommunity = av.getAttr(communityAttribute, communityAttrType);
     res = SELECT bv
           FROM bvs:bv
-          POST-ACCUM bCommunity = bv.getAttr(communityAttribute, "INT");
+          POST-ACCUM bCommunity = bv.getAttr(communityAttribute, communityAttrType);
     # Check if in same community
     IF aCommunity == bCommunity THEN 
-        PRINT 1;
+        IF print_res THEN
+            PRINT 1;
+        END;
     ELSE # Not in same community
-        PRINT 0;
+        IF print_res THEN
+            PRINT 0;
+        END;
     END;
 }
