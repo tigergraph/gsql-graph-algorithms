@@ -1,19 +1,30 @@
 CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT embedding_dim) { 
-  ListAccum<DOUBLE> @@emb1;
-  ListAccum<DOUBLE> @@emb2;
-  DOUBLE similarity;
-  
-  vs1 = {v1};
-  vs2 = {v2};
+    /*
+    This query calculates the embedding cosine similarity between one vertex and another.
+    Higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.
 
-  info = SELECT s
-         FROM vs1:s
-         POST-ACCUM @@emb1 += s.fastrp_embedding;
-  
-  info = SELECT s 
-         FROM vs2:s 
-         POST-ACCUM @@emb2 += s.fastrp_embedding;
- 
-  similarity = pairwise_cosine_similarity(@@emb1, @@emb2, embedding_dim);
-  PRINT similarity;
+    NOTE: This query needs to be modified based upon your schema to set the embedding attribute accordingly.
+
+    Parameters :
+        v1 : Input vertex one
+        v2: Input vertex two
+        embeddingDim: dimension of the vertex embedding
+    */
+    ListAccum<DOUBLE> @@emb1;
+    ListAccum<DOUBLE> @@emb2;
+    DOUBLE similarity;
+
+    vs1 = {v1};
+    vs2 = {v2};
+
+    info = SELECT s
+           FROM vs1:s
+           POST-ACCUM @@emb1 += s.embedding;
+
+    info = SELECT s 
+           FROM vs2:s 
+           POST-ACCUM @@emb2 += s.embedding;
+
+    similarity = pairwise_cosine_similarity(@@emb1, @@emb2, embedding_dim);
+    PRINT similarity;
 }
