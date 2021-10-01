@@ -25,22 +25,21 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
   SetAccum<EDGE> @@edgeSet;             # list of all edges, if display is needed
   AvgAccum @@averageOut;
   SumAccum<INT> @outDegree;
-	FILE f (file_path);
+  FILE f (file_path);
 
 # PageRank iterations	
-	Start = {v_type};                     # Start with all vertices of specified type(s)
+  Start = {v_type};                     # Start with all vertices of specified type(s)
   Start = SELECT s FROM Start:s 
           ACCUM s.@outDegree += s.outdegree(e_type),
                 @@averageOut+=s.outdegree(e_type);
-	WHILE @@max_diff > max_change LIMIT max_iter DO
+  WHILE @@max_diff > max_change LIMIT max_iter DO
 			@@max_diff = 0;
-			V = SELECT s
-				FROM Start:s -(e_type:e)-> v_type:t
-				ACCUM t.@recvd_score += s.@score/(@@averageOut+s.@outDegree) 
-				POST-ACCUM s.@score = (1.0-damping) + damping * s.@recvd_score*@@averageOut,
-						   #s.@recvd_score = 0,
-						   @@max_diff += abs(s.@score - s.@score');
-	END; # END WHILE loop
+			V = SELECT s FROM Start:s -(e_type:e)-> v_type:t
+				     ACCUM t.@recvd_score += s.@score/(@@averageOut+s.@outDegree) 
+				     POST-ACCUM s.@score = (1.0-damping) + damping * s.@recvd_score*@@averageOut,
+				                s.@recvd_score = 0,
+						@@max_diff += abs(s.@score - s.@score');
+  END; # END WHILE loop
 
 # Output
 	IF file_path != "" THEN
