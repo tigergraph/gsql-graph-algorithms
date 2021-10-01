@@ -19,25 +19,25 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> 
   all = {v_type};
   sll = SELECT s FROM all:s 
         ACCUM IF in_degree THEN 
-                            FOREACH edge_type in re_type DO 
-                                    s.@degree_score+=s.outdegree(edge_type) 
-                            END
+                 FOREACH edge_type in re_type DO 
+                         s.@degree_score+=s.outdegree(edge_type) 
+                 END
               END,
               IF out_degree THEN 
-                            FOREACH edge_type in e_type DO 
-                                    s.@degree_score+=s.outdegree(edge_type) 
-                            END
+                 FOREACH edge_type in e_type DO 
+                         s.@degree_score+=s.outdegree(edge_type) 
+                 END
               END;
   #Output
   IF file_path != "" THEN
-			f.println("Vertex_ID", "Degree");
-	END;
+     f.println("Vertex_ID", "Degree");
+  END;
   
   Start = SELECT s FROM all:s
 			POST-ACCUM 
-					IF result_attr != "" THEN s.setAttr(result_attr, s.@degree_score) END,
-					IF print_accum THEN @@topScores += VertexScore(s, s.@degree_score) END,
-					IF file_path != "" THEN f.println(s, s.@degree_score) END;
+			          IF result_attr != "" THEN s.setAttr(result_attr, s.@degree_score) END,
+				  IF print_accum THEN @@topScores += VertexScore(s, s.@degree_score) END,
+				  IF file_path != "" THEN f.println(s, s.@degree_score) END;
  
 	IF print_accum THEN
 		PRINT @@topScores AS top_scores;
