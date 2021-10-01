@@ -13,16 +13,16 @@ wt_type: weight data type (INT,FLOAT,DOUBLE)
 display: output edges for visualization
 */
 
-    TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
-	HeapAccum<pathTuple>(1, dist ASC) @@findminv;  # retain 1 shortest path
-	HeapAccum<pathTuple>(1, dist ASC) @minDist;
-	OrAccum @visited;
-	ListAccum<VERTEX> @@tmp;  # the optimal node
-	SumAccum<FLOAT> @@totalDist;  # the shortest distance 
-	SetAccum<EDGE> @@display_edge;
-  SetAccum<VERTEX> @@parent_node,@@display_node;
-  INT hop;
-	FLOAT x1,y1;
+TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
+HeapAccum<pathTuple>(1, dist ASC) @@findminv;  # retain 1 shortest path
+HeapAccum<pathTuple>(1, dist ASC) @minDist;
+OrAccum @visited;
+ListAccum<VERTEX> @@tmp;  # the optimal node
+SumAccum<FLOAT> @@totalDist;  # the shortest distance 
+SetAccum<EDGE> @@display_edge;
+ SetAccum<VERTEX> @@parent_node,@@display_node;
+ INT hop;
+ FLOAT x1,y1;
 	    
     # Check wt_type parameter
 	IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
