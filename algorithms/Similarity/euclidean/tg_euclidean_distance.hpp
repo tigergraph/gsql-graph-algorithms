@@ -23,7 +23,7 @@ template <>
 inline double tg_euclidean_distance(std::vector<string> A, std::vector<string> B) = delete;
 
 template <typename T>
-inline double tg_euclidean_distance(ListAccum<T> A, ListAccum<T> B) {
+inline double tg_euclidean_distance_accum(ListAccum<T> A, ListAccum<T> B) {
   int n = A.size();
   double euclidean_distance = 0.0;
   for (int i = 0; i < n; i++)
@@ -33,5 +33,5 @@ inline double tg_euclidean_distance(ListAccum<T> A, ListAccum<T> B) {
   return euclidean_distance;
 }
 template <>
-inline double tg_euclidean_distance(ListAccum<string> A, ListAccum<string> B) = delete;
+inline double tg_euclidean_distance_accum(ListAccum<string> A, ListAccum<string> B) = delete;
 

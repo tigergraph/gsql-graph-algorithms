@@ -26,7 +26,7 @@ template <>
 inline double tg_cosine_similarity(std::vector<string> A, std::vector<string> B) = delete;
 
 template <typename T>
-inline double tg_cosine_similarity(ListAccum<T> A, ListAccum<T> B) {
+inline double tg_cosine_similarity_accum(ListAccum<T> A, ListAccum<T> B) {
   int n = A.size();
   double mean_A = 0.0, mean_B = 0.0, inner = 0.0, magnitude_A = 0.0, magnitude_B = 0.0;
   for (int i = 0; i < n; i++) {
@@ -39,4 +39,4 @@ inline double tg_cosine_similarity(ListAccum<T> A, ListAccum<T> B) {
   return cosine_similarity;
 }
 template <>
-inline double tg_cosine_similarity(ListAccum<string> A, ListAccum<string> B) = delete;
+inline double tg_cosine_similarity_accum(ListAccum<string> A, ListAccum<string> B) = delete;
