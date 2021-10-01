@@ -53,7 +53,7 @@ FLOAT x1,y1;
 			ACCUM 
                 # we use Haversine formula as the heuristic function here
                 CASE wt_type WHEN "INT" THEN
-					          t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "INT") +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
+                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "INT") +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
                 WHEN "FLOAT" THEN
                     t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "FLOAT") +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
                 WHEN "DOUBLE" THEN
