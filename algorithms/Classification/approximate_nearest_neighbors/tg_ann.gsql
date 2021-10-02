@@ -1,75 +1,64 @@
-// CREATE QUERY ann(int k) FOR GRAPH movie { 
-//   TYPEDEF TUPLE<node VERTEX, similarity DOUBLE> info;
-//   HeapAccum<info>(k, similarity DESC) @approximate_nn;
-//   HeapAccum<info>(k, similarity DESC) @reverse_nn;
-//   HeapAccum<info>(k, similarity DESC) @general_nn;
-//   SumAccum<INT> @@c;
-//   Start = {ANY};
-  
-//   mapping = SELECT s
-//             FROM Start:s
-//             POST-ACCUM
-//               @@reverse_vid += (getvid(s) -> s);
-  
-//   WHILE(true) DO 
-//     @@c = 0;
-//     preprocessing = SELECT s
-//                     FROM Start:s 
-//                     POST-ACCUM
-//                       s.@reverse_nn.clear(),
-//                       s.@general_nn.clear(),
-//                       FOREACH (node, similarity) in s.@approximate_nn DO
-//                         IF s in node.@approximate_nn THEN s.@reverse_nn += info(node, similarity) END
-//                       END,
-//                       s.@general_nn = s.@approximate_nn + s.@reverse_nn;
-  
-//     processing = SELECT s
-//                  FROM Start:s 
-//                  POST-ACCUM
-//                     FOREACH (node, similarity) in s.@general_nn DO 
-//                       FOREACH (node_inner, similarity_inner) in node.@general_nn DO 
-//                         DOUBLE l = similarityUDF(s, node_inner),      // any of the similarity UDFs
-//                         @@c += updateCount(s.@approximate_nn, l),
-//                         s.@approximate_nn += info(s,l)
-//                       END
-//                     END;
-  
-//     IF @@c == 0 THEN BREAK; END;
-//  END;
-// }
+CREATE QUERY tg_ann(INT k, INT num_batches, STRING simType)  {
+  TYPEDEF TUPLE<node VERTEX, similarity DOUBLE> info;
+  Typedef HeapAccum<info>(k, similarity DESC) approximate_nn;
+  HeapAccum<info>(k, similarity ASC) @approximate_nn_reverse;
+  MapAccum<VERTEX, ListAccum<DOUBLE>> @@feature_map;
+  GroupByAccum<VERTEX v, approximate_nn nn_heap> @@approximate_nn_map;
+  ListAccum<VERTEX> @@random_samples;
+  SumAccum<INT> @@c;
+  Start = {ANY};
 
-// CREATE QUERY ann(int k) FOR GRAPH movie { 
-//   TYPEDEF TUPLE<node VERTEX, similarity DOUBLE> info;
-//   Typedef HeapAccum<info>(k, similarity DESC) approximate_nn;
-//   GroupByAccum<VERTEX v, approximate_nn nn_heap> @@approximate_nn_map, @@general_nn_map;
-//   HeapAccum<info>(k, similarity DESC) @reverse_nn;
-//   SumAccum<INT> @@c;
-//   Start = {ANY};
-                    
+  Init =
+    SELECT s FROM Start:s
+    ACCUM @@random_samples += s;
   
-//   WHILE(true) DO 
-//     @@c = 0;
-//     preprocessing = SELECT s
-//                     FROM Start:s 
-//                     POST-ACCUM
-//                       s.@reverse_nn.clear(),
-//                       @@general_nn_map.get(s).nn_heap.clear(),
-//                       FOREACH info_t in @@approximate_nn_map.get(s).nn_heap DO
-//                         IF s in @@approximate_nn_map.get(info_t.node).nn_heap THEN s.@reverse_nn += info(info_t.node, info_t.similarity) END
-//                       END;
-//                       //@@general_nn_map.get(s).nn_heap = @@approximate_nn_map.get(s).nn_heap + s.@reverse_nn;
+  WHILE TRUE LIMIT k DO
+    RandomSelect =
+      SELECT s FROM Start:s
+      ACCUM
+        @@feature_map += (s -> s.listAttr) // REPLACE WITH VALID LIST ATTRIBUTE
+      POST-ACCUM
+        VERTEX v = @@random_samples.get(rand_int(0, @@random_samples.size())),
+        IF v != s THEN
+          @@approximate_nn_map += (s -> info(v, similarity_UDF(@@feature_map.get(s), @@feature_map.get(v), simType)))
+        END;
+  END;
   
-//     processing = SELECT s
-//                  FROM Start:s 
-//                  POST-ACCUM
-//                     FOREACH (node, similarity) in @@general_nn_map.get(s).nn_heap DO 
-//                       FOREACH (node_inner, similarity_inner) in @@general_nn_map.get(node).nn_heap DO 
-//                         DOUBLE l = similarityUDF(s, node_inner),      // any of the similarity UDFs
-//                         @@c += updateCount(@@approximate_nn_map.get(s).nn_heap, l),
-//                         s.@approximate_nn += info(s,l)
-//                       END
-//                     END;
+  @@random_samples.clear();
+
+  WHILE TRUE DO
+    @@c = 0;
+    preprocessing 
+      = SELECT s FROM Start:s
+      ACCUM
+        FOREACH info_t in @@approximate_nn_map.get(s).nn_heap DO
+          @@approximate_nn_map += (info_t.node -> info(s, info_t.similarity))
+        END
+      POST-ACCUM
+        FOREACH info_t in @@approximate_nn_map.get(s).nn_heap DO
+          s.@approximate_nn_reverse += info_t
+        END;
+
+    processing = 
+      SELECT s FROM Start:s
+      POST-ACCUM
+        FOREACH info_t1 in @@approximate_nn_map.get(s).nn_heap DO
+          FOREACH info_t2 in @@approximate_nn_map.get(info_t1.node).nn_heap DO
+            DOUBLE l = similarity_UDF(@@feature_map.get(s), @@feature_map.get(info_t2.node), simType), // any of the similarity UDFs
+            IF s.@approximate_nn_reverse.size() < k THEN
+              @@approximate_nn_map += (s -> info(info_t2.node, l)),
+              s.@approximate_nn_reverse += info(info_t2.node, l),
+              @@c += 1
+            ELSE IF l > s.@approximate_nn_reverse.top().similarity THEN
+              @@approximate_nn_map += (s -> info(info_t2.node, l)),
+              s.@approximate_nn_reverse.pop(),
+              s.@approximate_nn_reverse += info(info_t2.node, l),
+              @@c += 1
+            END
+          END
+        END,
+        s.@approximate_nn_reverse.clear();
   
-//     IF @@c == 0 THEN BREAK; END;
-//  END;
-// }
+    IF @@c == 0 THEN BREAK; END;
+  END;
+}
