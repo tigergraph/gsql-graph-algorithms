@@ -39,17 +39,17 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, Int max
  END;
  #Output
  IF file_path != "" THEN
-			f.println("Vertex_ID", "egien vector");
+    f.println("Vertex_ID", "egien vector");
  END;
  Start = SELECT s FROM Start:s
       ACCUM IF s.@eigen_value==1.0 THEN s.@eigen_value+=-1 END
 			POST-ACCUM 
-					IF result_attr != "" THEN s.setAttr(result_attr, s.@eigen_value) END,
-					IF print_accum THEN @@topScores += VertexScore(s, s.@eigen_value) END,
-					IF file_path != "" THEN f.println(s, s.@eigen_value) END;
+			          IF result_attr != "" THEN s.setAttr(result_attr, s.@eigen_value) END,
+				  IF print_accum THEN @@topScores += VertexScore(s, s.@eigen_value) END,
+				  IF file_path != "" THEN f.println(s, s.@eigen_value) END;
 
  IF print_accum THEN
-		PRINT @@topScores AS top_scores;
+    PRINT @@topScores AS top_scores;
  END;
 
 }
