@@ -61,6 +61,6 @@ CREATE QUERY tg_wcc_small_world(STRING v_type, STRING e_type, UINT threshold = 1
      Vertices = {v_type};
      Vertices = SELECT s FROM Vertices:s
                 POST-ACCUM @@CC_count += (s.@cc_id -> 1);
-     PRINT Vertices;
+     PRINT @@CC_count;
   END;
 }

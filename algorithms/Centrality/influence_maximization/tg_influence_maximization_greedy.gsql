@@ -1,0 +1,39 @@
+CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING weight,INT top_k,
+  BOOL print_accum = True, STRING file_path = "") { 
+   
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
+  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+  OrAccum @inSeed;
+  OrAccum @influenced;
+  SumAccum<FLOAT> @influence_value;
+  ListAccum<VertexScore> @@res;
+  VERTEX k;
+  FILE f (file_path);
+  start = {v_type};
+  
+  FOREACH i in RANGE[0,top_k-1] DO
+          start = SELECT s FROM start:s-(e_type:e)-v_type:v 
+                           WHERE s.@inSeed == FALSE and v.@influenced == FALSE 
+                           ACCUM IF weight != ""  THEN s.@influence_value+=e.getAttr(weight,"FLOAT") 
+                                 ELSE  s.@influence_value+=1 END
+                           POST-ACCUM @@topScores+=VertexScore(s,s.@influence_value),s.@influence_value=0;
+          
+          k= @@topScores.top().Vertex_ID ;
+          @@res += @@topScores.top();
+          temp = SELECT s FROM start:s-(e_type:e)-v_type:v 
+                          WHERE s==k
+                          ACCUM v.@influenced+=TRUE,s.@inSeed+=TRUE;
+          @@topScores.clear();
+  END;
+  #Output
+  IF file_path != "" THEN
+      f.println("Vertex_ID", "Vertex Rank");
+      FOREACH i IN RANGE[0,@@res.size()-1] DO
+              f.println(@@res.get(i).Vertex_ID,i+1);
+      END;
+  END;
+  
+  IF print_accum THEN
+     PRINT @@res;
+  END;
+}
