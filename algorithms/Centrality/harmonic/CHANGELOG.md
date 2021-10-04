@@ -1,5 +1,7 @@
 
-## v3.2.0 Harmonic Change Logs - September 03, 2021
+## lib3.0_20211004 Harmonic Change Logs
+
+## lib3.0_210903 Harmonic Change Logs
 
 ### `tg_harmonic_cent`
 

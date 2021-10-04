@@ -1,5 +1,7 @@
 
-## v3.2.0 Label Propagation Change Logs - September 03, 2021
+## lib3.0_20211004 Label Propagation Change Logs
+
+## lib3.0_210903 Label Propagation Change Logs
 
 ### `tg_label_prop`
 

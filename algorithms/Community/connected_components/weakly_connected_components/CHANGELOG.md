@@ -1,5 +1,7 @@
 
-## v3.2.0 Weakly Connected Components Change Logs - September 03, 2021
+## lib3.0_20211004 Weakly Connected Components Change Logs
+
+## lib3.0_210903 Weakly Connected Components Change Logs
 
 ### `tg_wcc`
 

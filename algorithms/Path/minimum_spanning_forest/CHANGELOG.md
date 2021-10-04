@@ -1,5 +1,7 @@
 
-## v3.2.0 Minimum Spanning Forest Change Logs - September 03, 2021
+## lib3.0_20211004 Minimum Spanning Forest Change Logs
+
+## lib3.0_210903 Minimum Spanning Forest Change Logs
 
 ### `tg_msf`
 

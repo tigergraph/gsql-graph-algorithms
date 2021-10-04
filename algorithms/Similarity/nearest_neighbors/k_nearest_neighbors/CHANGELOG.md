@@ -1,5 +1,27 @@
 
-## v3.2.0 K Nearest Neighbors Change Logs - September 03, 2021
+## lib3.0_20211004 K Nearest Neighbors Change Logs
+
+### `tg_knn_cosine_cv`
+
+> [`946c2d6`](https://github.com/tigergraph/gsql-graph-algorithms/commit/946c2d676749ebd9e952cdf75410164fa241fc3c) chore: create nearest neighbor inside similarity
+
+### `tg_knn_cosine_all_sub`
+
+> [`946c2d6`](https://github.com/tigergraph/gsql-graph-algorithms/commit/946c2d676749ebd9e952cdf75410164fa241fc3c) chore: create nearest neighbor inside similarity
+
+### `tg_knn_cosine_ss`
+
+> [`946c2d6`](https://github.com/tigergraph/gsql-graph-algorithms/commit/946c2d676749ebd9e952cdf75410164fa241fc3c) chore: create nearest neighbor inside similarity
+
+### `tg_knn_cosine_cv_sub`
+
+> [`946c2d6`](https://github.com/tigergraph/gsql-graph-algorithms/commit/946c2d676749ebd9e952cdf75410164fa241fc3c) chore: create nearest neighbor inside similarity
+
+### `tg_knn_cosine_all`
+
+> [`946c2d6`](https://github.com/tigergraph/gsql-graph-algorithms/commit/946c2d676749ebd9e952cdf75410164fa241fc3c) chore: create nearest neighbor inside similarity
+
+## lib3.0_210903 K Nearest Neighbors Change Logs
 
 ### `tg_knn_cosine_cv`
 

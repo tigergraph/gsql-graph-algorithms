@@ -1,5 +1,7 @@
 
-## v3.2.0 Node2Vec Change Logs - September 03, 2021
+## lib3.0_20211004 Node2Vec Change Logs
+
+## lib3.0_210903 Node2Vec Change Logs
 
 ### `tg_node2vec_sub`
 

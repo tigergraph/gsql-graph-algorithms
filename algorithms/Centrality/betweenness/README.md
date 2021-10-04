@@ -1,13 +1,13 @@
 
 # Betweenness
 
-#### [Betweenness Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Centrality/betweenness/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Betweenness Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/betweenness/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Betweenness Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#betweenness-centrality)
+## [TigerGraph Betweenness Documentation](https://docs.tigergraph.com/graph-algorithm-library/centrality/betweenness-centrality)
 
 ## Available Betweenness Algorithms 
 
-* [`tg_betweenness_cent`](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Centrality/betweenness/tg_betweenness_cent.gsql)
+* [`tg_betweenness_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/betweenness/tg_betweenness_cent.gsql)
 
 ## Installation 
 

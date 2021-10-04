@@ -1,5 +1,7 @@
 
-## v3.2.0 Betweenness Change Logs - September 03, 2021
+## lib3.0_20211004 Betweenness Change Logs
+
+## lib3.0_210903 Betweenness Change Logs
 
 ### `tg_betweenness_cent`
 

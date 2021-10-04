@@ -1,5 +1,7 @@
 
-## v3.2.0 Fastrp Change Logs - September 03, 2021
+## lib3.0_20211004 Fastrp Change Logs
+
+## lib3.0_210903 Fastrp Change Logs
 
 ### `tg_fastRP_map`
 

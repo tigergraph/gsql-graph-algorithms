@@ -1,13 +1,13 @@
 
 # Local Clustering Coefficient
 
-#### [Local Clustering Coefficient Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Community/local_clustering_coefficient/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Local Clustering Coefficient Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/local_clustering_coefficient/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Local Clustering Coefficient Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#local-clustering-coefficient)
+## [TigerGraph Local Clustering Coefficient Documentation](https://docs.tigergraph.com/graph-algorithm-library/community/local-clustering-coefficient)
 
 ## Available Local Clustering Coefficient Algorithms 
 
-* [`tg_lcc`](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Community/local_clustering_coefficient/tg_lcc.gsql)
+* [`tg_lcc`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/local_clustering_coefficient/tg_lcc.gsql)
 
 ## Installation 
 

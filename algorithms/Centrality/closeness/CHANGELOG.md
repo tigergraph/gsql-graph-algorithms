@@ -1,5 +1,7 @@
 
-## v3.2.0 Closeness Change Logs - September 03, 2021
+## lib3.0_20211004 Closeness Change Logs
+
+## lib3.0_210903 Closeness Change Logs
 
 ### `tg_closeness_cent`
 

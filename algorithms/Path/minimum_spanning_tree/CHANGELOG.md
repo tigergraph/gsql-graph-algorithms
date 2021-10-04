@@ -1,5 +1,7 @@
 
-## v3.2.0 Minimum Spanning Tree Change Logs - September 03, 2021
+## lib3.0_20211004 Minimum Spanning Tree Change Logs
+
+## lib3.0_210903 Minimum Spanning Tree Change Logs
 
 ### `tg_mst`
 

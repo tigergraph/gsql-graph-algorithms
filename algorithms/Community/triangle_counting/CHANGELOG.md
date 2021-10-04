@@ -1,5 +1,7 @@
 
-## v3.2.0 Triangle Counting Change Logs - September 03, 2021
+## lib3.0_20211004 Triangle Counting Change Logs
+
+## lib3.0_210903 Triangle Counting Change Logs
 
 ### `tg_tri_count_fast`
 

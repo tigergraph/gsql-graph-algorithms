@@ -1,15 +1,15 @@
 
 # Triangle Counting
 
-#### [Triangle Counting Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Community/triangle_counting/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Triangle Counting Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/triangle_counting/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Triangle Counting Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#triangle-counting)
+## [TigerGraph Triangle Counting Documentation](https://docs.tigergraph.com/graph-algorithm-library/community/triangle-counting)
 
 ## Available Triangle Counting Algorithms 
 
-* [`tg_tri_count_fast`](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Community/triangle_counting/tg_tri_count_fast.gsql)
+* [`tg_tri_count_fast`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/triangle_counting/tg_tri_count_fast.gsql)
 
-* [`tg_tri_count`](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Community/triangle_counting/tg_tri_count.gsql)
+* [`tg_tri_count`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/triangle_counting/tg_tri_count.gsql)
 
 ## Installation 
 

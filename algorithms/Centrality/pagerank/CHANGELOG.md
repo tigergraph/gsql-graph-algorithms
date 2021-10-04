@@ -1,5 +1,7 @@
 
-## v3.2.0 Pagerank Change Logs - September 03, 2021
+## lib3.0_20211004 Pagerank Change Logs
+
+## lib3.0_210903 Pagerank Change Logs
 
 ### `tg_pagerank_wt`
 

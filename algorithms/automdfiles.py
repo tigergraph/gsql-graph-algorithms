@@ -16,7 +16,7 @@ TIGERGRAPH_GSQL_REPO_LINK = 'https://github.com/tigergraph/gsql-graph-algorithms
 TIGERGRAPH_COMMITS_LINK = 'https://github.com/tigergraph/gsql-graph-algorithms/commit/'
 
 # CHANGE TO DESIRED VERSION
-TIGERGRAPH_CURRENT_GSQL_VERSION = 'v3.2.1'  
+TIGERGRAPH_CURRENT_GSQL_VERSION = f'lib3.0_{datetime.date.today().strftime("%Y%m%d")}'  
 
 TIGERGRAPH_CURRENT_VERSION_DATE_READABLE = datetime.date.today().strftime("%B %d, %Y")
 centrality = 'centrality'
@@ -38,7 +38,7 @@ Documentation = {
     'jaccard': f'{similarity}/jaccard-similarity-of-neighborhoods-batch',
     'k_core': f'{community}/k-core-decomposition',
     'k_means': 'https://raw.githubusercontent.com/tigergraph/gsql-graph-algorithms/master/algorithms/schema-free/kmeans.gsql',
-    'k_nearest_neighbors': f'{classification}/k-nearest-neighbors-cosine-neighbor-similarity-all-vertices-batch',
+    'k_nearest_neighbors': f'{similarity}/k-nearest-neighbors-cosine-neighbor-similarity-all-vertices-batch',
     'label_propagation': f'{community}/label-propagation',
     'local_clustering_coefficient': f'{community}/local-clustering-coefficient',
     'louvain_distributed': f'{community}/louvain-method-with-parallelism-and-refinement',
@@ -82,7 +82,8 @@ def has_subdirectories(path):
     return False
 
 def fetch_change_log(algo_lib_dir, title):
-    change_log = f'\n## {TIGERGRAPH_CURRENT_GSQL_VERSION} {title} Change Logs - {TIGERGRAPH_CURRENT_VERSION_DATE_READABLE}\n'
+    # change_log = f'\n## {TIGERGRAPH_CURRENT_GSQL_VERSION} {title} Change Logs - {TIGERGRAPH_CURRENT_VERSION_DATE_READABLE}\n'
+    change_log = f'\n## {TIGERGRAPH_CURRENT_GSQL_VERSION} {title} Change Logs\n'
     # CHANGE THIS
     gsql_git = git.Git('~/Documents/GitHub/gsql-graph-algorithms')
     for file in os.listdir(algo_lib_dir):

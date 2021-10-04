@@ -1,5 +1,7 @@
 
-## v3.2.0 Estimated Diameter Change Logs - September 03, 2021
+## lib3.0_20211004 Estimated Diameter Change Logs
+
+## lib3.0_210903 Estimated Diameter Change Logs
 
 ### `tg_max_BFS_depth`
 

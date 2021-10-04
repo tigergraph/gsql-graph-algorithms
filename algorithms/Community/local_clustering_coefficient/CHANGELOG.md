@@ -1,5 +1,7 @@
 
-## v3.2.0 Local Clustering Coefficient Change Logs - September 03, 2021
+## lib3.0_20211004 Local Clustering Coefficient Change Logs
+
+## lib3.0_210903 Local Clustering Coefficient Change Logs
 
 ### `tg_lcc`
 
