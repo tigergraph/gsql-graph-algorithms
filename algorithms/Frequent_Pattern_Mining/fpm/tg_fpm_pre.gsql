@@ -1,0 +1,48 @@
+CREATE QUERY tg_fpm_pre(STRING unify_vertex_type, STRING item_vertex_type, STRING ts_attr_name,
+                         STRING ts_attr_type, STRING connect_edge){ 
+  /*
+  Precondition:
+  unify_vertex_type has a List<INT> item_list as an attribute
+  
+  Parameters:
+  unify_vertex_type: aggregate vertex
+  item_vertex_type: item vertex
+  ts_attr_name: name of ftime stamp attribute 
+  ts_attr_type: type of time stamp attribute
+  connect_edge: edge that connects unify vertex and item vertex
+  
+  Output: item_list attribute is populated.
+  */
+  TYPEDEF TUPLE<transaction INT, time_stamp UINT> trans_tup; 
+  
+  HeapAccum<trans_tup>(10000000, time_stamp ASC) @ordered_trans;
+  ListAccum<INT> @item_list;
+  
+  IF ts_attr_type NOT IN ("UINT", "INT", "FLOAT", "DOUBLE") THEN
+		PRINT "wt_type must be UINT, INT, FLOAT, or DOUBLE" AS errMsg;
+		RETURN;
+	END;
+                           
+  unify = {unify_vertex_type};
+  
+  ##### Sort and update item_list attribute #####
+  unify = SELECT s
+          FROM unify:s - (connect_edge:e) -> item_vertex_type:t 
+          ACCUM          
+            CASE ts_attr_type
+              WHEN "UINT" THEN
+                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "UINT"))
+              WHEN "INT" THEN
+                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "UINT"))
+              WHEN "FLOAT" THEN
+                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "UINT"))
+              WHEN "DOUBLE" THEN
+                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "UINT"))
+            END
+          POST-ACCUM
+            FOREACH tup in s.@ordered_trans DO
+              s.@item_list += tup.transaction            
+            END,
+            s.item_list = s.@item_list;
+                           
+}
