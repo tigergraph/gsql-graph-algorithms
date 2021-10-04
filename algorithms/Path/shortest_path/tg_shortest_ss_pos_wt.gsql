@@ -1,107 +1,85 @@
 CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
- STRING wt_attr, STRING wt_type, INT output_limit = -1, BOOL print_accum = TRUE,
- STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE) {
+ STRING wt_attr, STRING wt_type, FLOAT epsilon = 0.001,BOOL print_accum = TRUE, INT output_limit = -1, 
+ BOOL display_edges = FALSE, STRING result_attr = "", BOOL spit_to_file = FALSE, 
+ STRING file_path = "/home/tigergraph/tg_query_output.csv") {
 
 /*
  Single-source shortest path algorithm, with positive weight edges.
  From the source vertex, finds the weighted shortest path (FLOAT value).
- The Bellman-Ford algorithm is used instead of Dijkstra's, because only the former
-	works with parallel breadth-first search. Edge weights must be non-negative.
- source: start vertex to every other vertex.     print_accum: print JSON output
- v_type: vertex types to traverse                result_attr: INT attr to store results to
- e_type: edge types to traverse                  file_path: file to write CSV output to
- wt_attr: attribute for edge weights             output_limit: max #vertices to output
- wt_type: weight data type (INT,FLOAT,DOUBLE)    display_edges: output edges for visualization
+
+ source: start vertex to  every other vertex.     print_accum: print JSON output
+ v_type: vertex types to traverse                 output_limit: max #vertices to output
+ e_type: edge types to traverse                   display_edges: output edges for visualization
+ wt_attr: attribute for edge weights              result_attr: INT attr to store results to
+ wt_type: weight data type (INT,FLOAT,DOUBLE)     spit_to_file: spit data to file 
+ epsilon: min delta weight                        file_path: file to write CSV output to
 */
 
-	TYPEDEF TUPLE<FLOAT dist, VERTEX pred> Path_Tuple;    
-	HeapAccum<Path_Tuple>(1, dist ASC) @minPath;       # retain 1 shortest path
-	ListAccum<STRING> @path;         				   # shortest path FROM source
-	SetAccum<EDGE> @@edgeSet;        	# list of all edges, if display_edges is needed
-	OrAccum @visited;
+  MinAccum<FLOAT> @minPath = GSQL_INT_MAX;       # retain 1 shortest path
+  MinAccum<FLOAT> @prevMinPath = -1;
+  OrAccum @is_candidate = FALSE;
+  SetAccum<EDGE> @@edgeSet;
+   
 	FILE f(file_path);
-	INT iter;
-
-	# Check wt_type parameter
-	IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
-		PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+   
+  # Check wt_type parameter
+	IF wt_type NOT IN ("UINT", "INT", "FLOAT", "DOUBLE") THEN
+		PRINT "wt_type must be UINT, INT, FLOAT, or DOUBLE" AS errMsg;
 		RETURN;
 	END;
 
 	##### Initialize #####
 	start = {source};
-	component = {source};                 # the connected component of the source vertex
-	start = SELECT s
-			FROM start:s
-			POST-ACCUM s.@minPath += Path_Tuple(0, s),
-				  s.@visited = TRUE,
-				  s.@path += s.id;
-	
-	##### Get the connected component #####		  
-	WHILE start.size() > 0 DO
+  start = SELECT s 
+          FROM start:s
+          POST-ACCUM s.@minPath = 0;
+   
+	##### Do maximum N-1 iterations: Consider whether each edge lowers the best-known distance.
+	WHILE start.size() != 0 DO 
 		start = SELECT t
-				FROM start:s -(e_type:e)-> v_type:t
-				WHERE NOT t.@visited
-				ACCUM t.@visited = TRUE;
-		component = component UNION start;
-	END;
-	PRINT component.size();
-
-	##### Do N-1 iterations: Consider whether each edge lowers the best-known distance.
-	iter = component.size() - 1;    # the max iteration is N-1
-	WHILE TRUE LIMIT iter DO 
-		tmp = SELECT s
-			FROM component:s -(e_type:e)-> v_type:t
+			FROM start:s -(e_type:e)-> v_type:t
 			ACCUM 
-				IF s.@minPath.size()>0 /*AND s.@minPath.top().dist < GSQL_INT_MAX*1.0*/ THEN
+          t.@is_candidate = FALSE,
           CASE wt_type
-          WHEN "INT" THEN
-					  t.@minPath += Path_Tuple(s.@minPath.top().dist + e.getAttr(wt_attr, "INT"), s)
-          WHEN "FLOAT" THEN
-            t.@minPath += Path_Tuple(s.@minPath.top().dist + e.getAttr(wt_attr, "FLOAT"), s)
-          WHEN "DOUBLE" THEN
-            t.@minPath += Path_Tuple(s.@minPath.top().dist + e.getAttr(wt_attr, "DOUBLE"), s)
+            WHEN "UINT" THEN
+					    t.@minPath += s.@minPath + e.getAttr(wt_attr, "UINT")
+            WHEN "INT" THEN
+					    t.@minPath += s.@minPath + e.getAttr(wt_attr, "INT")
+            WHEN "FLOAT" THEN
+              t.@minPath += s.@minPath + e.getAttr(wt_attr, "FLOAT")
+            WHEN "DOUBLE" THEN
+              t.@minPath += s.@minPath + e.getAttr(wt_attr, "DOUBLE")
           END
-				END;
-	END;
+     POST-ACCUM
+       IF abs(t.@prevMinPath - t.@minPath) > epsilon THEN
+         t.@is_candidate = TRUE,
+         t.@prevMinPath = t.@minPath
+       END
+     HAVING t.@is_candidate;
 
-	 
-	##### Calculate the paths #####
-	start = {source};
-	tmp = SELECT s
-		  FROM component:s
-		  WHERE s != source
-		  POST-ACCUM s.@visited = FALSE;
-	WHILE start.size() > 0 LIMIT iter DO		 # Limit the number of hops
-		start = SELECT t
-				FROM start:s -(e_type:e)-> v_type:t
-				WHERE NOT t.@visited
-				ACCUM IF s == t.@minPath.top().pred THEN 
-						  t.@visited = TRUE,
-						  t.@path += s.@path,
-						  t.@path += t.id
-					  END;
 	END;
-
+  
 	##### Output #####
-	IF file_path != "" THEN
-	  f.println("Vertex_ID","Distance","Shortest_Path");
-	END;
-
-	component = SELECT s FROM component:s
-			POST-ACCUM 
-			  IF result_attr != "" THEN s.setAttr(result_attr, s.@minPath.top().dist) END,
-			  IF file_path != "" THEN f.println(s, s.@minPath.top().dist, s.@path) END;
-		  
-	IF print_accum THEN
+  component = {v_type};
+  component = SELECT s 
+              FROM component:s
+              WHERE s.@prevMinPath != -1
+              POST-ACCUM 
+			          IF result_attr != "" THEN s.setAttr(result_attr, s.@minPath) END,  
+                IF spit_to_file THEN f.println(s, s.@minPath) END;
+   
+  IF print_accum THEN
     IF output_limit >= 0 THEN
         component = SELECT s FROM component:s LIMIT output_limit;
     END;
-		PRINT component[component.@minPath.top().dist, component.@path];
+   
+		PRINT component[component.@minPath as cost];
+   
 		IF display_edges THEN
 			tmp = SELECT s
 				  FROM component:s -(e_type:e)-> v_type:t
 				  ACCUM @@edgeSet += e;
+   
 			PRINT @@edgeSet;
 		END;
 	END;
