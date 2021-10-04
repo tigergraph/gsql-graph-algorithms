@@ -16,11 +16,11 @@ display: output edges for visualization
 TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
 HeapAccum<pathTuple>(1, dist ASC) @@findminv;  # retain 1 shortest path
 HeapAccum<pathTuple>(1, dist ASC) @minDist;
-OrAccum @visited;
+OrAccum @visited, @@valid_path_exists;
 ListAccum<VERTEX> @@tmp;  # the optimal node
 SumAccum<FLOAT> @@totalDist;  # the shortest distance 
 SetAccum<EDGE> @@display_edge;
-SetAccum<VERTEX> @@parent_node,@@display_node;
+SetAccum<VERTEX> @@display_node;
 INT hop;
 FLOAT x1,y1;
 	    
@@ -84,10 +84,10 @@ FLOAT x1,y1;
     Start = {target_vertex};
   
     Start = SELECT s FROM Start:s 
-            POST-ACCUM @@parent_node += s.@minDist.top().v,
+            POST-ACCUM @@valid_path_exists += s.@minDist.size() > 0,
                        @@display_node += s;
     
-    IF @@parent_node.size() > 0 THEN
+    IF @@valid_path_exists THEN
       # find path
         WHILE Start.size() > 0 DO
             Start = SELECT t FROM Start:s-(e_type:e)-> :t
