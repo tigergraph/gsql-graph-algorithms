@@ -9,7 +9,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
    source: start vertex to  every other vertex.     cap_type: capacity data type (UINT, INT,FLOAT,DOUBLE)
    sink:   end vertex                               min_flow_threshhold: smallest epsilon for flow
    v_type: vertex types to traverse                 print_accum: print JSON output
-   e_type: edge types to traverse                   display_edges: output edges for visualization
+   e_type: edge types to traverse                   display_edges: visualization when print_accum && display_edges 
    reverse_e_type: reverse edge of e_type           spit_to_file: spit output to file
    cap_attr: attribute for edge capacity            file_path: file to write CSV output to
      
@@ -53,9 +53,10 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
           @@flow_accum += (s, t -> 0),
           IF s == source THEN @@cap_threshold += fl END;
 
+  //used for determining minimum flow of path, s.t. minimum flow > cap_threshold
   @@cap_threshold = pow(3, float_to_int(log(@@cap_threshold)/log(3)));
   
-  ##### Push one flow at a time until there is residudal graph is disconneccted #####
+  ##### Push one flow at a time until there is residudal graph is disconnected #####
   WHILE TRUE DO
     //initilize 
     init = {node.*};
@@ -159,6 +160,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
                          END;
     END;
   END;
+
   ##### Output #####
 	IF file_path != "" THEN
     f.println("Maxflow: " + to_string(@@maxflow));
@@ -172,7 +174,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
             WHERE @@flow_accum.get(s,t).flow >= min_flow_threshhold 
             ACCUM
               IF print_accum THEN @@edges += e END,
-              IF file_path != "" THEN f.println(s, t, @@flow_accum.get(s,t).flow) END;
+              IF spit_to_file THEN f.println(s, t, @@flow_accum.get(s,t).flow) END;
 
   END;
   
