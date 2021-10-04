@@ -62,24 +62,24 @@ FLOAT x1,y1;
   
 		Opt = SELECT t FROM Start:s-(e_type:e)-> :t
             WHERE t.@visited == False
-			POST-ACCUM @@findminv += pathTuple(t.@minDist.top().dist,t);   
+	    POST-ACCUM @@findminv += pathTuple(t.@minDist.top().dist,t);   
 		
         @@tmp.clear();
 		IF @@findminv.size() > 0 THEN
         	@@tmp += @@findminv.pop().v;
       	END;
-		
-		Opt = {@@tmp};
-    
-		Start = Opt UNION Start;
-		Opt = SELECT t FROM Opt:t
-			POST-ACCUM t.@visited += True;
+	
+	Opt = {@@tmp};
+
+	Start = Opt UNION Start;
+	Opt = SELECT t FROM Opt:t
+		POST-ACCUM t.@visited += True;
         # Determine if it is the target point and terminate the loop if it is
         IF @@tmp.get(0) == target_vertex THEN 
             BREAK;
         END;
    
-	END;
+    END;
     # The test is whether there is a path between two points
     Start = {target_vertex};
   
@@ -90,12 +90,11 @@ FLOAT x1,y1;
     IF @@parent_node.size() > 0 THEN
       # find path
         WHILE Start.size() > 0 DO
-      
             Start = SELECT t FROM Start:s-(e_type:e)-> :t
                     WHERE t == s.@minDist.top().v 
                     ACCUM @@display_edge += e,
                         CASE wt_type WHEN "INT" THEN
-					        @@totalDist += e.getAttr(wt_attr, "INT")
+			    @@totalDist += e.getAttr(wt_attr, "INT")
                         WHEN "FLOAT" THEN
                             @@totalDist += e.getAttr(wt_attr, "FLOAT")
                         WHEN "DOUBLE" THEN
@@ -109,14 +108,10 @@ FLOAT x1,y1;
         PRINT hop;
         IF display THEN 
             tmp = {@@display_node};
-            PRINT @@display_edge,tmp;   
-    
+            PRINT @@display_edge,tmp;
         END;
         
     ELSE 
-    
-         PRINT "not find path";
-    
+        PRINT "No viable path found.";
     END;
-
 }
