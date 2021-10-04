@@ -52,10 +52,10 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
    
           CASE wt_type
             WHEN "UINT" THEN
-					    t.@minPath += min_tup(s.@minPath.top().cost + e.getAttr(wt_attr, "UINT"), 
+			  t.@minPath += min_tup(s.@minPath.top().cost + e.getAttr(wt_attr, "UINT"), 
                                     s.@minPath.top().length + 1, s)
             WHEN "INT" THEN
-					    t.@minPath += min_tup(s.@minPath.top().cost + e.getAttr(wt_attr, "INT"), 
+			  t.@minPath += min_tup(s.@minPath.top().cost + e.getAttr(wt_attr, "INT"), 
                                     s.@minPath.top().length + 1, s)
             WHEN "FLOAT" THEN
               t.@minPath += min_tup(s.@minPath.top().cost + e.getAttr(wt_attr, "FLOAT"), 
