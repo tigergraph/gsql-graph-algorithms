@@ -1,0 +1,33 @@
+CREATE QUERY tg_preferential_attachment(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE) { 
+    /*
+    This query calculates the preferential attachment value between two vertices.
+    Higher the number, the closer two vertices are.
+
+    Preferential attachment is calculated by multiplying the number of each input vertices neighbors together.
+
+    Parameters :
+        a : Input vertex one
+        b : Input vertex two
+        e_type: edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
+        print_res: Boolean of if you want to print result (True by default)
+    */
+    avs = {a};
+    bvs = {b};
+
+    # See if user specified edge types to traverse
+    IF "ALL" NOT IN e_type THEN
+        na = SELECT n 
+             FROM avs -(e_type)-> :n;  # Get neighbors of vertex A
+        nb = SELECT n 
+             FROM bvs -(e_type)-> :n;  // Get neighbors of vertex B
+    ELSE  // traverse all edge types
+        na = SELECT n 
+             FROM avs -()-> :n;  // Get neighbors of vertex A
+        nb = SELECT n 
+             FROM bvs -()-> :n;  // Get neighbors of vertex B
+    END;
+
+    IF print_res THEN
+        PRINT na.size()*nb.size() as closeness;  // calculate and return closeness value
+    END;
+}
