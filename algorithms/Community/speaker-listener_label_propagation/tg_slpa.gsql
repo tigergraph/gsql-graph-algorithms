@@ -106,8 +106,8 @@ Parameters:
                     WHERE s.@community.contains(@@community.get(j))
                     POST-ACCUM @@com2 += getvid(s);
             
-            @@tmp1 = @@com1 UNION @@com2 MINUS @@com1;
-            @@tmp2 = @@com1 UNION @@com2 MINUS @@com2;
+            @@tmp1 = @@com2 MINUS @@com1;
+            @@tmp2 = @@com1 MINUS @@com2;
             IF @@tmp1.size() == 0 THEN   # community i is superset of community j
                 @@nest += @@community.get(j);
             END;
