@@ -1,5 +1,5 @@
 CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING connect_edge, DOUBLE support, 
-                    INT length, INT nums_sequence_lim = 10000, INT output_limit = -1, BOOL spit_to_file = FALSE,
+                    UINT length, UINT nums_sequence_lim = 10000, INT output_limit = -1, BOOL spit_to_file = FALSE,
                     STRING file_path = "/home/tigergraph/tg_query_output.csv") { 
   /*
   Schema examples: user - (buys) - product
@@ -39,6 +39,10 @@ CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING co
   INT min_support = 0;
   INT unify_size = 0;
   INT print_count = 0;
+  
+  IF length > 1000 THEN 
+    print "length > 1000 is not supported" as errMsg;
+  END;
                       
 	##### Initialize #####
   unifiy = {unify_vertex_type.*};
