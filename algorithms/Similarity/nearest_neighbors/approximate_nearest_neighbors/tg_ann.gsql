@@ -1,4 +1,4 @@
-CREATE QUERY tg_ann(INT k, INT num_batches, STRING simType)  {
+CREATE QUERY tg_ann(INT k, STRING v_type, STRING sim_type, STRING sim_edge, INT max_iters, BOOL print_accum)  {
   TYPEDEF TUPLE<node VERTEX, similarity DOUBLE> info;
   Typedef HeapAccum<info>(k, similarity DESC) approximate_nn;
   HeapAccum<info>(k, similarity ASC) @approximate_nn_reverse;
@@ -6,7 +6,8 @@ CREATE QUERY tg_ann(INT k, INT num_batches, STRING simType)  {
   GroupByAccum<VERTEX v, approximate_nn nn_heap> @@approximate_nn_map;
   ListAccum<VERTEX> @@random_samples;
   SumAccum<INT> @@c;
-  Start = {ANY};
+  
+  Start = {v_type.*};
 
   Init =
     SELECT s FROM Start:s
@@ -26,7 +27,7 @@ CREATE QUERY tg_ann(INT k, INT num_batches, STRING simType)  {
   
   @@random_samples.clear();
 
-  WHILE TRUE DO
+  WHILE TRUE LIMIT max_iters DO
     @@c = 0;
     preprocessing 
       = SELECT s FROM Start:s
@@ -60,5 +61,18 @@ CREATE QUERY tg_ann(INT k, INT num_batches, STRING simType)  {
         s.@approximate_nn_reverse.clear();
   
     IF @@c == 0 THEN BREAK; END;
+  END;
+  
+  IF sim_edge != "" THEN
+    Start =
+      SELECT s FROM Start:s
+      POST-ACCUM
+        FOREACH info_tup IN @@approximate_nn_map.get(s) DO
+          INSERT INTO sim_edge VALUES (s, info_tup.node, info_tup.similarity)
+        END;
+  END;
+  
+  IF print_accum THEN
+    PRINT Start;
   END;
 }
