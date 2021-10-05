@@ -1,13 +1,13 @@
 
 # Harmonic
 
-#### [Harmonic Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Centrality/harmonic/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Harmonic Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/harmonic/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Harmonic Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#N/A)
+## [TigerGraph Harmonic Documentation](https://docs.tigergraph.com/graph-algorithm-library/centrality/harmonic-centrality)
 
 ## Available Harmonic Algorithms 
 
-* [`tg_harmonic_cent`](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Centrality/harmonic/tg_harmonic_cent.gsql)
+* [`tg_harmonic_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/harmonic/tg_harmonic_cent.gsql)
 
 ## Installation 
 

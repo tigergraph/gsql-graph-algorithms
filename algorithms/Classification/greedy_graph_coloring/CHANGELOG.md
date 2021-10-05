@@ -1,5 +1,7 @@
 
-## v3.2.0 Greedy Graph Coloring Change Logs - September 03, 2021
+
+
+## lib3.0_210903 Greedy Graph Coloring Change Logs
 
 ### `tg_greedy_graph_coloring`
 

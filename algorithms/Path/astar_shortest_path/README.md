@@ -1,29 +1,29 @@
 
-# A Start Shortest Path
+# Astar Shortest Path
 
-#### [A Start Shortest Path Changelog](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Path/a_start_shortest_path/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Astar Shortest Path Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/astar_shortest_path/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph A Start Shortest Path Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#N/A)
+## [TigerGraph Astar Shortest Path Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
 
-## Available A Start Shortest Path Algorithms 
+## Available Astar Shortest Path Algorithms 
 
-* [`tg_astar`](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Path/a_start_shortest_path/tg_astar.gsql)
+* [`tg_astar`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/astar_shortest_path/tg_astar.gsql)
 
 ## Installation 
 
-### Replace `<A Start Shortest Path Algorithm>` with desired algorithm listed above 
+### Replace `<Astar Shortest Path Algorithm>` with desired algorithm listed above 
 
 #### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install <A Start Shortest Path Algorithm>
+$ tg box algos install <Astar Shortest Path Algorithm>
 ```
 
 #### Via GSQL terminal
 
 ```bash
 GSQL > BEGIN
-# Paste <A Start Shortest Path Algorithm> code after BEGIN command
+# Paste <Astar Shortest Path Algorithm> code after BEGIN command
 GSQL > END 
-GSQL > INSTALL QUERY <A Start Shortest Path Algorithm>
+GSQL > INSTALL QUERY <Astar Shortest Path Algorithm>
 ```

@@ -1,29 +1,29 @@
+
 # Same Community
 
-#### [Same Community Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/LinkPrediction/same_community/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Same Community Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/same_community/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Same Community Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#common-neighbors)
+## [TigerGraph Same Community Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
 
-## Available Same Community Algorithms
+## Available Same Community Algorithms 
 
-* [`tg_same_community`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/LinkPrediction/same_community/tg_same_community.gsql)
+* [`tg_same_community`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/same_community/tg_same_community.gsql)
 
 ## Installation 
-Assumes that you already have used a community finding algorithm, with results stored as attributes on your vertices.
 
-### Replace `<Same Community>` with desired algorithm listed above 
+### Replace `<Same Community Algorithm>` with desired algorithm listed above 
 
 #### Via TigerGraph CLI
 
 ```bash
-$ tg box algos install <Same Community>
+$ tg box algos install <Same Community Algorithm>
 ```
 
 #### Via GSQL terminal
 
 ```bash
 GSQL > BEGIN
-# Paste <Same Community> code after BEGIN command
+# Paste <Same Community Algorithm> code after BEGIN command
 GSQL > END 
-GSQL > INSTALL QUERY <Same Community>
+GSQL > INSTALL QUERY <Same Community Algorithm>
 ```

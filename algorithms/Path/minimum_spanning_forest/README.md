@@ -1,13 +1,13 @@
 
 # Minimum Spanning Forest
 
-#### [Minimum Spanning Forest Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Path/minimum_spanning_forest/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Minimum Spanning Forest Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/minimum_spanning_forest/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Minimum Spanning Forest Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#minimum-spanning-forest-msf)
+## [TigerGraph Minimum Spanning Forest Documentation](https://docs.tigergraph.com/graph-algorithm-library/path/minimum-spanning-forest-msf)
 
 ## Available Minimum Spanning Forest Algorithms 
 
-* [`tg_msf`](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Path/minimum_spanning_forest/tg_msf.gsql)
+* [`tg_msf`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/minimum_spanning_forest/tg_msf.gsql)
 
 ## Installation 
 

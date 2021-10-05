@@ -1,5 +1,25 @@
 
-## v3.2.0 Node2Vec Change Logs - September 03, 2021
+## lib3.0_211004 Node2Vec Change Logs
+
+### `tg_weighted_random_walk`
+
+> [`36713a9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/36713a9882094e177456795cda8173faf2fc8ce2) Merge branch 'tigergraph:master' into master
+
+### `tg_random_udf`
+
+> [`36713a9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/36713a9882094e177456795cda8173faf2fc8ce2) Merge branch 'tigergraph:master' into master
+
+### `tg_weighted_random_walk_batch`
+
+> [`36713a9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/36713a9882094e177456795cda8173faf2fc8ce2) Merge branch 'tigergraph:master' into master
+
+### `tg_weighted_random_walk_sub`
+
+> [`36713a9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/36713a9882094e177456795cda8173faf2fc8ce2) Merge branch 'tigergraph:master' into master
+
+
+
+## lib3.0_210903 Node2Vec Change Logs
 
 ### `tg_node2vec_sub`
 

@@ -1,5 +1,13 @@
 
-## v3.2.0 Shortest Path Change Logs - September 03, 2021
+## lib3.0_211004 Shortest Path Change Logs
+
+### `tg_shortest_ss_pos_wt`
+
+> [`36713a9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/36713a9882094e177456795cda8173faf2fc8ce2) Merge branch 'tigergraph:master' into master
+
+
+
+## lib3.0_210903 Shortest Path Change Logs
 
 ### `tg_shortest_ss_any_wt`
 

@@ -1,15 +1,15 @@
 
 # Closeness
 
-#### [Closeness Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Closeness Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Closeness Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#closeness-centrality)
+## [TigerGraph Closeness Documentation](https://docs.tigergraph.com/graph-algorithm-library/centrality/closeness-centrality)
 
 ## Available Closeness Algorithms 
 
-* [`tg_closeness_cent`](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/tg_closeness_cent.gsql)
+* [`tg_closeness_cent_approx`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/tg_closeness_cent_approx.gsql)
 
-* [`tg_closeness_cent_approx`](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/tg_closeness_cent_approx.gsql)
+* [`tg_closeness_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/tg_closeness_cent.gsql)
 
 ## Installation 
 
