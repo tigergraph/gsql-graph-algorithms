@@ -9,6 +9,6 @@ UDF/numerical/*
 
 
 automdfiles.env
-algorithms/automdfiles copy.py
+algorithms/automdfiles.py
 algorithms/.env
 algorithms/lmao.py
