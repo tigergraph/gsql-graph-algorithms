@@ -1,6 +1,6 @@
-# GSQL Algorithm Library
+# TigerGraph In-Database Graph Data Science Algorithm Library
 For TigerGraph version 3.1 or higher
-9/3/21
+10/5/2021
 
 The GSQL Graph Algorithm Library is a collection of high-performance GSQL queries,
 each of which implements a standard graph algorithm. Each algorithm is ready to be
@@ -114,6 +114,7 @@ As of October 5, 2021
 | `tg_wcc_small_world`       | Weakly (undirect) Connected component detection                         |
 | `tg_weighted_random_walk`  | Weighted random walk generator                                          |
 | `tg_weighted_random_walk_batch` | Weighted random walk generator, in batches for greater memory efficiency |
+
 Notes:
 [1] The schema-free version of this algorithm can use only one edge type.
 
