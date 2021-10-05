@@ -77,7 +77,7 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
 	END;
   
 	##### Output #####
-	IF file_path != "" THEN
+	IF spit_to_file THEN
 	  f.println("Vertex_ID","Distance","Shortest_Path");
 	END;
   
@@ -130,7 +130,7 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
                 s.@path_receiver.clear();
     END;
    
-    IF file_path != "" THEN
+    IF spit_to_file THEN
       tmp = SELECT s
             FROM tmp:s
             POST-ACCUM
