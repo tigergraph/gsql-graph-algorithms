@@ -10,7 +10,7 @@
 typedef std::string string;
 
 template <typename T>
-inline double tg_pearson_similarity(std::vector<T> A, std::vector<T> B) {
+inline double tg_pearson_similarity(std::vector<T>& A, std::vector<T>& B) {
   int n = A.size();
   double mean_A = 0.0, mean_B = 0.0, covariance = 0.0, std_dev_A = 0.0, std_dev_B = 0.0;
   for (int i = 0; i < n; i++) {
