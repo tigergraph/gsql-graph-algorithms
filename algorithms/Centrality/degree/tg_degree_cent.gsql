@@ -1,0 +1,46 @@
+CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, BOOL in_degree = TRUE, BOOL out_degree = TRUE,
+  INT top_k=100, BOOL print_accum = True, STRING result_attr = "",STRING file_path = "") { 
+  /* Compute degree Centrality for each VERTEX. 
+  Parameters:
+  v_type: vertex types to traverse                 
+  e_type: edge types to traverse                   
+  re_type: for indegree use
+  in_degree: if you want to count incoming relationships, set it to TRUE
+  out_degree: if you want to count outcoming relationships, set it to TRUE
+  top_k: report only this many top scores          print_accum: weather print the result
+  result_attr: attribute to write result to        file_path: file to write CSV output to
+  for undirected graph, you onlt need to set e_type and indegree
+   */ 
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
+  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
+  SumAccum<INT> @degree_score;
+  FILE f (file_path);
+    
+  all = {v_type};
+  sll = SELECT s FROM all:s 
+        ACCUM IF in_degree THEN 
+                 FOREACH edge_type in re_type DO 
+                         s.@degree_score+=s.outdegree(edge_type) 
+                 END
+              END,
+              IF out_degree THEN 
+                 FOREACH edge_type in e_type DO 
+                         s.@degree_score+=s.outdegree(edge_type) 
+                 END
+              END;
+  #Output
+  IF file_path != "" THEN
+     f.println("Vertex_ID", "Degree");
+  END;
+  
+  Start = SELECT s FROM all:s
+			POST-ACCUM 
+			          IF result_attr != "" THEN s.setAttr(result_attr, s.@degree_score) END,
+				  IF print_accum THEN @@topScores += VertexScore(s, s.@degree_score) END,
+				  IF file_path != "" THEN f.println(s, s.@degree_score) END;
+ 
+	IF print_accum THEN
+		PRINT @@topScores AS top_scores;
+	END;
+
+}

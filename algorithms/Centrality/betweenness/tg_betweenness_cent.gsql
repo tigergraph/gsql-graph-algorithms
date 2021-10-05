@@ -1,5 +1,5 @@
-CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re_type,INT max_hops=10,
-  INT top_k=100, BOOL print_accum = True, STRING result_attr = "",
+CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re_type,INT max_hops = 10,
+  INT top_k = 100, BOOL print_accum = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE){ 
   /* Compute Betweenness Centrality for each VERTEX. 
   Use multi-sourse BFS.
@@ -26,7 +26,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
   SumAccum<FLOAT> @delta=0;
   MapAccum<INT,BitwiseOrAccum> @times;
   MapAccum<INT,SumAccum<INT>> @sigma;
-  ListAccum<INT> @test;
+  
   INT empty=0;
   FILE f (file_path);
   INT numVert;
@@ -96,16 +96,18 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
                 POST-ACCUM s.@seen=0,s.@visit=0,s.@sigma.clear(),s.@times.clear();
   END;
   
-  #PRINT all [all.@delta];
+  #Output
+	IF file_path != "" THEN
+			f.println("Vertex_ID", "Betweenness");
+	END;
+	
+  
   Start = SELECT s FROM all:s
 			POST-ACCUM 
 					IF result_attr != "" THEN s.setAttr(result_attr, s.@delta) END,
 					IF print_accum THEN @@topScores += VertexScore(s, s.@delta) END,
 					IF file_path != "" THEN f.println(s, s.@delta) END;
-  #Output
-	IF file_path != "" THEN
-			f.println("Vertex_ID", "Betweenness");
-	END;
+  
 
 	IF print_accum THEN
 		PRINT @@topScores AS top_scores;
