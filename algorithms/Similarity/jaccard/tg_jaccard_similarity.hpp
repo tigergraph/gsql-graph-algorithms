@@ -10,7 +10,7 @@
 typedef std::string string;
 
 template <typename T>
-inline double tg_jaccard_similarity(std::vector<T> A, std::vector<T> B) {
+inline double tg_jaccard_similarity(std::vector<T>& A, std::vector<T>& B) {
   std::sort(std::begin(A), std::end(A));
   std::sort(std::begin(B), std::end(B));
 
