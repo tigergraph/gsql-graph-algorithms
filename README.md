@@ -20,50 +20,6 @@ well-suited for graph algorithms:
 * Open-Source. Users can study the GSQL implementations to learn by
   example, and they can develop and submit additions to the library.
 
-## 9/9/21 Changes
-
-* Format Changes
-  > Algorithms are now organized into category folders, e.g. Centrality.
-  > The prefix “tg_” has been appended to all algorithms, to more easily distinguish
-    them from user-authored queries.  Some queries have been renamed to follow
-    naming conventions more closely.
-  > All algorithms are now available Schema-Free.
-  > Change log for each individual algorithm.
-  
-* Algorithms, cumulative changes since 6/21/21
-  * Graph Embedding
-    > Node2vec (NEW, beta)
-    > FastRP (NEW, beta)
-    > Random Walk (NEW, beta, 2 versions)
-  * Centrality
-    > Harmonic Centrality (NEW, beta)
-    > Betweenness (speed improvement)
-    > Closeness (speed improvement)
-  * Community Detection
-    > K-Means (NEW, beta)
-    > Local Clustering Coefficient (NEW, beta)
-    > Louvain (NEW version for distributed graphs)
-    > Weakly Connected Component (NEW version optimized for small world graphs)
-    > Strongly Connected Component (NEW version optimized for small world graphs)
-    > Triangle Count (Converted to Schema-Free, requires TigerGraph 3.1+)
- * Similarity
-    > Cosine (batch version for better memory efficiency)
-    > Jaccard (batch version for better memory efficiency)
-
-## 6/21/21 Key Changes since version 3.0
-
-* New Graph/ML node embedding algorithm `node2vec` added in `/algorithms/examples/Graph+ML`
-* New schema-free algorithms: `greedy_graph_coloring`, `closeness_cent_approx_query`, `cosine_batch`, `jaccard_batch`
-* Nearly all the algorithms now work as schema-free algorithms, making them much easier
-  to use
-* Instead of having up to 3 versions of an algorithm, to handle 3 different choices
-  for output style, they have been merged into one version, with parameters for output
-  filename and/or attribute to store the result.
-* Parameter list updates:
-  - Runtime vertex and edge type parameters are added to make algorithms schema-free
-  - Result format parameters (`print_accum`, `result_attr` and `file_path`) are added 
-  - Other parameters are added to make the algorithms easier to tune
-
 ## Library Structure
 
 You can download the library from github:
@@ -83,7 +39,7 @@ and sometimes intuitively see what the answers should be.
 
 The UDF folder contains an ExprFunctions.hpp file which contains custom C++ functons which
 extend the GSQL query language and are needed by certain algorithms.
-# NOTES:
+## NOTES:
 1. Currently, each TigerGraph installation has one global ExprFunctions.hpp which must contain
 the UDFs for all queries.  Therefore, the ExprFunctions.hpp file(s) you find here need to be merged
 with the global ExprFunctions.hpp.  Section docs.tigergraph.com for more information about
@@ -93,22 +49,33 @@ the UDF files are located in their individual subfolders.
 
 
 ## Table of GSQL Graph Algorithms
-As of Sept 3, 2021
+As of October 5, 2021
 
 | Query name                 | Description                                                             |
-|-------------------------   |-------------------------------------------------------------------------|
+|----------------------------|-------------------------------------------------------------------------|
+| `tg_adamic_adar`           | Adamic Adar Topoligical Link Prediction
+| `tg_article_rank`          | Article rank                                                            |
+| `tg_astar`                 | A* search                                                               |
 | `tg_betweenness_cent`      | Betweenness centrality                                                  |
+| `tg_bfs`                   | Breadth-first search                                                    |
 | `tg_closeness_cent_approx` | Approximate closeness centrality                                        |
-| `tg_closeness_cent`        | Closeness centrality                                                    |                                            |
+| `tg_closeness_cent`        | Closeness centrality                                                    |
+| `tg_common_neighbors`      | Common neighbors topological link prediction                            |
 | `tg_cosine_batch`          | Cosine similarity for each pair of vertices, computed in batches        |
 | `tg_cosine_nbor_ap`        | Cosine similarity for each pair of vertices                             |
 | `tg_cosine_nbor_ss`        | Cosine similarity from a single vertex                                  |
 | `tg_cycle_detection`       | Rocha–Thatte algorithm for cycle detection; output the cycles           |
 | `tg_cycle_detection_count` | Rocha–Thatte algorithm for cycle detection; output the number of cycles |
+| `tg_degree_cent`           | Degree centrality                                                       |
+| `tg_eigenvector_cent`      | Eigenvector centrality                                                  |
+| `tg_embedding_cosine_sim`  | One-to-Many embedding cosine similarity                                 |
+| `tg_embedding_pairwise_cosine_sim` | Pairwise embedding cosine similarity                            |
 | `tg_estimate_diameter`     | Heuristic estimate of graph diameter                                    |
-| `tg_fastRP_query`          | FastRP graph embedding                                                  |
+| `tg_fastRP`                | FastRP graph embedding                                                  |
 | `tg_greedy_graph_coloring` | Greedy graph coloring                                                   |
 | `tg_harmonic_cent`         | Harmonic centraliity                                                    |
+| `tg_influence_maximization_CELF` | Influence maximization using CELF                                 |
+| `tg_influence_maximization_greedy` | Influence maximization using greedy method                      |
 | `tg_jaccard_batch`         | Jaccard similarity for each pair of vertices, computed in batches       |
 | `tg_jaccard_nbor_ap` [1]   | Jaccard similarity for each pair of vertices                            |
 | `tg_jaccard_nbor_ss` [1]   | Jaccard similarity from a single vertex                                 |
@@ -121,6 +88,7 @@ As of Sept 3, 2021
 | `tg_lcc`                   | Local clustering coefficient                                            |
 | `tg_louvain_distributed`   | Distributed & parallel Louvain Modularity optimzation                   |
 | `tg_louvain_parallel`      | Parallel Louvain Modularity optimization                                |
+| `tg_maxflow`               | Maxflow                                                                 |
 | `tg_maximal_indep_set`     | Maximal independent set                                                 |
 | `tg_msf`                   | Minimum spanning forest (MSF)                                           |
 | `tg_mst`                   | Minimum spanning tree (MST)                                             |
@@ -128,17 +96,24 @@ As of Sept 3, 2021
 | `tg_pagerank_pers` [1]     | Personalized PageRank                                                   |
 | `tg_pagerank_wt` [1]       | Weighted PageRank                                                       |
 | `tg_pagerank` [1]          | PageRank measurement of relative influence of each vertex               |
+| `tg_preferential_attachment` | Preferential attachment topological link prediction                   |
 | `tg_random_walk`           | Random walk generator                                                   |
 | `tg_random_walk_batch`     | Random walk generator, in batches for greater memory efficiency         |
+| `tg_resource_allocation`   | Resource allocation topological link prediction                         |
+| `tg_same_community`        | Same community topological link prediction                              |
 | `tg_scc`                   | Strongly connected component detection                                  |
 | `tg_scc_small_world`       | Strongly connected component detection                                  |
 | `tg_shortest_ss_any_wt`    | Single-Source shortest paths                                            |
 | `tg_shortest_ss_no_wt`     | Single-Source shortest paths without weight                             |
 | `tg_shortest_ss_pos_wt`    | Single-Source shortest paths with positive weight                       |
+| `tg_slpa`                  | Speaker-Listener Label Propagation                                      |
 | `tg_tri_count_fast`        | Count all the triangles, faster but using more memory                   |
 | `tg_tri_count`             | Count all the triangles, memory effient                                 |
+| `tg_total_neighbors`       | Total neighbors topological link prediction                             |
 | `tg_wcc`                   | Weakly (undirect) Connected component detection                         |
 | `tg_wcc_small_world`       | Weakly (undirect) Connected component detection                         |
+| `tg_weighted_random_walk`  | Weighted random walk generator                                          |
+| `tg_weighted_random_walk_batch` | Weighted random walk generator, in batches for greater memory efficiency |
 Notes:
 [1] The schema-free version of this algorithm can use only one edge type.
 
