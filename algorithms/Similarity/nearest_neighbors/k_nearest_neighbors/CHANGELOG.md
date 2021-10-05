@@ -1,5 +1,5 @@
 
-## lib3.0_20211004 K Nearest Neighbors Change Logs
+
 
 ### `tg_knn_cosine_cv`
 

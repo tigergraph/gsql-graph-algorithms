@@ -1,5 +1,5 @@
 
-## lib3.0_20211004 Euclidean Change Logs
+
 
 ### `tg_euclidean_distance`
 

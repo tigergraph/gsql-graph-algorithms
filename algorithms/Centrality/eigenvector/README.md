@@ -1,13 +1,13 @@
 
 # Eigenvector
 
-#### [Eigenvector Changelog](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Centrality/eigenvector/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Eigenvector Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/eigenvector/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Eigenvector Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#N/A)
+## [TigerGraph Eigenvector Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
 
 ## Available Eigenvector Algorithms 
 
-* [`tg_eigenvector_cent`](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Centrality/eigenvector/tg_eigenvector_cent.gsql)
+* [`tg_eigenvector_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/eigenvector/tg_eigenvector_cent.gsql)
 
 ## Installation 
 

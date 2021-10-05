@@ -1,13 +1,13 @@
 
 # Article Rank
 
-#### [Article Rank Changelog](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Centrality/article_rank/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Article Rank Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/article_rank/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Article Rank Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#N/A)
+## [TigerGraph Article Rank Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
 
 ## Available Article Rank Algorithms 
 
-* [`tg_article_rank`](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Centrality/article_rank/tg_article_rank.gsql)
+* [`tg_article_rank`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/article_rank/tg_article_rank.gsql)
 
 ## Installation 
 

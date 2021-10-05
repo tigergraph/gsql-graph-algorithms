@@ -1,5 +1,11 @@
 
-## v3.2.0 Eigenvector Change Logs - September 30, 2021
+## lib3.0_211004 Eigenvector Change Logs
+
+### `tg_eigenvector_cent`
+
+> [`36713a9`](https://github.com/tigergraph/gsql-graph-algorithms/commit/36713a9882094e177456795cda8173faf2fc8ce2) Merge branch 'tigergraph:master' into master
+
+## lib3.0_210903 Eigenvector Change Logs
 
 ### `tg_eigenvector_cent`
 

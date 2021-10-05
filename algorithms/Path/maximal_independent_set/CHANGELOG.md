@@ -1,5 +1,5 @@
 
-## lib3.0_20211004 Maximal Independent Set Change Logs
+
 
 ## lib3.0_210903 Maximal Independent Set Change Logs
 

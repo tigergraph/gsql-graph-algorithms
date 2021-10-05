@@ -1,5 +1,5 @@
 
-## lib3.0_20211004 Cosine Change Logs
+
 
 ### `tg_cosine_similarity`
 

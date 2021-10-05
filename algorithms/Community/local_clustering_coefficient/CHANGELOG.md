@@ -1,5 +1,5 @@
 
-## lib3.0_20211004 Local Clustering Coefficient Change Logs
+
 
 ## lib3.0_210903 Local Clustering Coefficient Change Logs
 

@@ -1,5 +1,5 @@
 
-## lib3.0_20211004 Greedy Graph Coloring Change Logs
+
 
 ## lib3.0_210903 Greedy Graph Coloring Change Logs
 

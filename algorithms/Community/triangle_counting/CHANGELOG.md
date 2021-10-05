@@ -1,5 +1,5 @@
 
-## lib3.0_20211004 Triangle Counting Change Logs
+
 
 ## lib3.0_210903 Triangle Counting Change Logs
 

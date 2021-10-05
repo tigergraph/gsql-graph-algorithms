@@ -1,5 +1,5 @@
 
-## lib3.0_20211004 Jaccard Change Logs
+
 
 ### `tg_jaccard_similarity`
 
