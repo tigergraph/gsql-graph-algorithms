@@ -31,11 +31,9 @@ inline double tg_pearson_similarity(std::vector<T> A, std::vector<T> B) {
   double pearson_similarity = covariance / std::sqrt(std_dev_A * std_dev_B);
   return pearson_similarity;
 }
-template <>
-inline double tg_pearson_similarity(std::vector<string> A, std::vector<string> B) = delete;
 
 template <typename T>
-inline double tg_pearson_similarity_accum(ListAccum<T> A, ListAccum<T> B) {
+inline double tg_pearson_similarity_accum(ListAccum<T>& A, ListAccum<T>& B) {
   int n = A.size();
   double mean_A = 0.0, mean_B = 0.0, covariance = 0.0, std_dev_A = 0.0, std_dev_B = 0.0;
   for (int i = 0; i < n; i++) {
@@ -56,5 +54,3 @@ inline double tg_pearson_similarity_accum(ListAccum<T> A, ListAccum<T> B) {
   double pearson_similarity = covariance / std::sqrt(std_dev_A * std_dev_B);
   return pearson_similarity;
 }
-template <>
-inline double tg_pearson_similarity_accum(ListAccum<string> A, ListAccum<string> B) = delete;

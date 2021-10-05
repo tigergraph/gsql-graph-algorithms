@@ -26,7 +26,7 @@ inline double tg_jaccard_similarity(std::vector<T> A, std::vector<T> B) {
 }
 
 template <typename T>
-inline double tg_jaccard_similarity_accum(ListAccum<T> A, ListAccum<T> B) {
+inline double tg_jaccard_similarity_accum(ListAccum<T>& A, ListAccum<T>& B) {
   std::sort(std::begin(A.data_), std::end(A.data_));
   std::sort(std::begin(B.data_), std::end(B.data_));
 
