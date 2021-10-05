@@ -1,5 +1,5 @@
-CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type,INT max_hops=10,
-  INT top_k=100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
+CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type,INT max_hops = 10,
+  INT top_k = 100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE){ 
   /* Compute Harmonic Centrality for each VERTEX. 
   Use multi-sourse BFS.
@@ -63,7 +63,7 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
                               t.@visit=t.@visitNext,
                               INT r = t.@visitNext,
                               WHILE r>0 DO 
-                                    r=r&(r-1),t.@res+=@@currDist,t.@size+=1 #count how many 1 in the number, same as setAccum,size()
+                                    r=r&(r-1),t.@res+=1/@@currDist,t.@size+=1 #count how many 1 in the number, same as setAccum,size()
                               END,
                               t.@visitNext=0;
           END;
@@ -76,7 +76,7 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
 			# Calculate Closeness Centrality for each vertex
           WHERE s.@res>0
           POST-ACCUM 
-                    IF wf THEN s.@score = (1.0/(numVert-1))*(1.0/s.@res) ELSE s.@score = 1.0/s.@res*1.0 END,
+                    IF wf THEN s.@score = s.@res*1.0/(s.@size*1.0-1.0) ELSE s.@score = s.@res*1.0 END,
 		    IF result_attr != "" THEN s.setAttr(result_attr, s.@score) END,
 	            IF print_accum THEN @@topScores += VertexScore(s, s.@score) END,
 		    IF file_path != "" THEN f.println(s, s.@score) END;

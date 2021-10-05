@@ -106,7 +106,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
      Vertices = {v_type};
      Vertices = SELECT s FROM Vertices:s
                 POST-ACCUM @@CC_count += (s.@cc_id -> 1);
-    PRINT @@CC_count.size();
+    PRINT @@CC_count;
   END;
 
 }
