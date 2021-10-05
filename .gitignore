@@ -12,3 +12,4 @@ automdfiles.env
 algorithms/automdfiles.py
 algorithms/.env
 algorithms/lmao.py
+algorithms/automd.py
