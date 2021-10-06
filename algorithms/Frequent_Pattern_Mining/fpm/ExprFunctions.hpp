@@ -1,5 +1,4 @@
-/******************************************************************************
- * Copyright (c) 2015-2016, TigerGraph Inc.
+/*Copyright (c) 2015-2016, TigerGraph Inc.
  * All rights reserved.
  * Project: TigerGraph Query Language
  * udf.hpp: a library of user defined functions used in queries.
@@ -60,31 +59,18 @@ namespace UDIMPL {
 	inline int64_t float_to_int (float val) {
 	    return (int64_t) val;
 	}
-	
+
 	inline string to_string (double val) {
      	    char result[200];
 	    sprintf(result, "%g", val);
             return string(result);
-	}
-	inline float cast_to_float(SumAccum<float>& val){
-		return static_cast<float>(val.data_);
-	}
-	inline string trim_last_character(string preprocess_string){
-	    preprocess_string.pop_back();
-
-	    return preprocess_string;
 	}
 
 	inline int64_t get_hash(int64_t id){
 	    int64_t hash_val = id % MOD;
 	    return hash_val;
 	}
-        inline uint64_t get_milli(){
-                auto millisec_since_epoch = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
 
-                return millisec_since_epoch.count();
-        }
-	
 	template<typename tup>
 	inline int64_t get_pattern_key(MaxAccum<tup> t){
 		tup in_data = t;
@@ -96,12 +82,28 @@ namespace UDIMPL {
 		tup in_data = t;
 		return in_data.suffix_key;
 	}
+	inline ListAccum<int64_t> initiate_hash_const(int length){
+		ListAccum<int64_t> return_arr;
+		__int128_t promoter;
 
-	inline int64_t get_hash_without_first_element(int64_t hash_val, int64_t first, int size){
+		return_arr += 1;
+
+		for (int i = 1; i < length + 1; i++){
+			promoter = return_arr.get(i - 1);
+			
+			promoter *= BASE;
+			promoter %= MOD;
+			
+			return_arr += static_cast<int64_t>(promoter);
+		}
+		
+		return return_arr;
+	}
+	inline int64_t get_hash_without_first_element(int64_t hash_val, int64_t first, int size, const ListAccum<int64_t>& HASH_CONST){
 	    __int128_t promoter = hash_val;
-	    
+
 	    __int128_t first_hash = first;
-	    first_hash *= HASH_CONST[size - 1];
+	    first_hash *= HASH_CONST.get(size - 1);
 	    first_hash %= MOD;
 
 	    promoter -= first_hash;
@@ -138,7 +140,7 @@ namespace UDIMPL {
 	    return static_cast<int64_t>(promoter); 
 	}
 
-	inline bool is_subset(ListAccum<int64_t> subset, int64_t ending, ListAccum<int64_t> &superset){
+	inline bool is_subset(const ListAccum<int64_t>& subset, int64_t ending, ListAccum<int64_t> &superset){
 
 	    int curr_pos = 0;
 	    int i = 0;
@@ -170,7 +172,13 @@ namespace UDIMPL {
 
 	    return original_list;
 	}
-	
+	inline ListAccum<VERTEX> to_vertex_list(const ListAccum<int64_t>& l){
+		ListAccum<VERTEX> v_list;
+		for (int i = 0; i < l.size(); ++i){
+			v_list += VERTEX(l.get(i));
+		}
+		return v_list;
+	}
 	template<typename tup>
 	inline tup get_tup(MaxAccum<tup> val){
 		tup new_tup = val;

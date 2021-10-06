@@ -1,116 +1,138 @@
 CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING connect_edge, DOUBLE support, 
-                    UINT length, UINT nums_sequence_lim = 10000, INT output_limit = -1, BOOL spit_to_file = FALSE,
+                    UINT min_length, UINT lim = 10000, INT output_limit = -1, BOOL spit_to_file = FALSE,
                     STRING file_path = "/home/tigergraph/tg_query_output.csv") { 
   /*
   Schema examples: user - (buys) - product
                    user - (visits) - page
                    user - (rates) - product
-  
+
   Precondition:
   unify_vertex_type has a List<INT> item_list as an attribute (This can be achived by running pre_process query)
-  
+
   Parameters:
   unify_vertex_type - aggregate vertex
   item_vertex_type - item vertex
   connect_edge - undirected edge that connect the two vertices above
-  
+
   support: minimum frequency to be considered
-  length: maximum length of pattern 
+  min_length: minimum length to be considered 
   nums_sequence_lim: maximum number of fpm sequences 
-  output_limit: an integer to limit the length of the query result
+  lim: an integer to limit the length of the query result
   spit_to_file: output data to file
   file_path: file to write csv output to
-  
+
   Output: A list of frequenncy and pattern (list of vertices' id), ordered by frequency.
   */
-  
+
   TYPEDEF TUPLE<INT pattern_key, INT suffix_key> key_pair;
-  TYPEDEF TUPLE<INT pattern_key, DOUBLE frequency> frequent_pattern_node;
+  TYPEDEF TUPLE<INT pattern_key, DOUBLE frequency, INT length> frequent_pattern_node;
   MapAccum<INT, SumAccum<INT>> @counter;
   MapAccum<INT, MaxAccum<key_pair>> @lookup_table;
-  
   SetAccum<key_pair> @work_order;
+  OrAccum<BOOL> @is_eligible = TRUE;
   
-  MapAccum<INT, ListAccum<INT>> @@pattern_lookup;
+  MaxAccum<INT> @@max_sq_length = 0;
+  ListAccum<INT> @@HASH_CONST;
+  MapAccum<INT, ListAccum<INT>> @@pattern_lookup, @@new_pattern_lookup;
   MapAccum<INT, ListAccum<VERTEX>> @@suffix;
-  HeapAccum<frequent_pattern_node>(nums_sequence_lim, frequency DESC) @@frequent_pattern;
+  HeapAccum<frequent_pattern_node>(lim, frequency DESC, length DESC) @@frequent_pattern;
   FILE f(file_path);
-                      
+
   INT min_support = 0;
   INT unify_size = 0;
   INT print_count = 0;
-  
-  IF length > 1000 THEN 
-    print "length > 1000 is not supported" as errMsg;
-  END;
+  INT curr_length = 0;
                       
 	##### Initialize #####
-  unifiy = {unify_vertex_type.*};
-  unify_size = unifiy.size();
-  min_support = unifiy.size()*support;
+  unify = {unify_vertex_type.*};
+  unify_size = unify.size();
+                      
+  unify = SELECT s
+          FROM unify:s
+          ACCUM @@max_sq_length += s.item_list.size();
   
+  @@HASH_CONST = initiate_hash_const(@@max_sq_length);
+  min_support = CEIL(unify_size*support);
+
   items = {item_vertex_type.*};
-  
+
   items = SELECT s 
           FROM items:s - (connect_edge) -> unify_vertex_type:t
           ACCUM
             s.@counter += (get_hash(getvid(s)) -> 1)
           POST_ACCUM
             s.@lookup_table += (get_hash(getvid(s)) -> key_pair(0, getvid(s)));
-  
+
 	##### Generate sequence of length k + 1 from k #####
-  FOREACH i IN RANGE[0, length-1] DO 
-    
+  WHILE TRUE DO
+    curr_length = curr_length + 1;
+                      
     items = SELECT s 
             FROM items:s
             ACCUM 
-              FOREACH (key, val) in s.@counter DO
-                IF (val > min_support) THEN
+              FOREACH (key, cnt) in s.@counter DO
+                IF cnt >= min_support  THEN
                   INT p_key = get_pattern_key(s.@lookup_table.get(key)),
-                  INT s_key = get_suffix_key(s.@lookup_table.get(key)),
+                  INT s_key = get_suffix_key(s.@lookup_table.get(key)),     
+                      
                   INT first_element = s_key,
+                  IF curr_length > 1 THEN first_element = @@pattern_lookup.get(p_key).get(0) END,
                   
-                  IF @@pattern_lookup.get(p_key).size() != 0 THEN first_element = @@pattern_lookup.get(p_key).get(0) END,
-  
-                  @@pattern_lookup += (key -> concat(@@pattern_lookup.get(p_key), s_key)),
-                  @@frequent_pattern += frequent_pattern_node(key, val*1.0/unify_size),
-  
-                  s.@work_order += key_pair(key, get_hash_without_first_element(key, first_element, 
-                                            @@pattern_lookup.get(p_key).size() + 1)),
+                  IF curr_length < min_length THEN @@new_pattern_lookup += (key -> concat(@@pattern_lookup.get(p_key), s_key))
+                  ELSE 
+                      @@frequent_pattern += frequent_pattern_node(key, cnt*1.0/unify_size, curr_length),
+                      @@pattern_lookup += (key -> concat(@@pattern_lookup.get(p_key), s_key))
+                  END,
 
-
+                  s.@work_order += key_pair(key, get_hash_without_first_element(key, first_element, curr_length, @@HASH_CONST)),
                   @@suffix += (get_hash_without_last_element(key, getvid(s)) -> s)
                 END
               END
             POST-ACCUM
               s.@lookup_table.clear(),
-              s.@counter.clear();
+              s.@counter.clear()
+            HAVING s.@work_order.size() != 0;
     
+    IF items.size() == 0 or @@frequent_pattern.size() == lim THEN BREAK; END;
+    IF curr_length < min_length THEN
+      @@pattern_lookup = @@new_pattern_lookup;
+      @@new_pattern_lookup.clear();
+    END;
+                      
     ss = SELECT t
          FROM items:s - (connect_edge) -> unify_vertex_type:t
-         ACCUM 
+         WHERE t.@is_eligible AND t.item_list.size() >= curr_length
+         ACCUM
+            INT suffix_vid = 0,
             FOREACH wo in s.@work_order DO
               FOREACH suffix_page in @@suffix.get(wo.suffix_key) DO
-                 IF is_subset(@@pattern_lookup.get(wo.pattern_key), getvid(suffix_page), t.item_list) THEN
-                   suffix_page.@counter += (get_hash_concat(wo.pattern_key, getvid(suffix_page)) -> 1),
-                   suffix_page.@lookup_table += (get_hash_concat(wo.pattern_key, getvid(suffix_page)) 
-                                               -> key_pair(wo.pattern_key, getvid(suffix_page)))
+                 suffix_vid = getvid(suffix_page),
+                 t.@is_eligible = FALSE,
+                      
+                 IF is_subset(@@pattern_lookup.get(wo.pattern_key), suffix_vid, t.item_list) THEN
+                   suffix_page.@counter += (get_hash_concat(wo.pattern_key, suffix_vid) -> 1),
+                   suffix_page.@lookup_table += (get_hash_concat(wo.pattern_key, suffix_vid) 
+                                               -> key_pair(wo.pattern_key, suffix_vid)),
+                   t.@is_eligible += TRUE
                  END
               END
            END
          POST_ACCUM s.@work_order.clear();
-
+                      
+    @@suffix.clear();
   END;
-  
+
   ##### Output #####                    
   IF spit_to_file THEN
     f.println("FREQUENCY", "PATTERN_LIST");
   END;
-  
+
   IF output_limit != 0 OR spit_to_file THEN
     WHILE NOT @@frequent_pattern.size() == 0 DO
       IF (output_limit == -1 or output_limit > 0 and print_count < output_limit) THEN
-        PRINT @@frequent_pattern.top().frequency as FREQUENCY, @@pattern_lookup.get(@@frequent_pattern.top().pattern_key) as PATTERN_LIST;
+        PRINT @@frequent_pattern.top().frequency as support,
+              to_vertex_list(@@pattern_lookup.get(@@frequent_pattern.top().pattern_key)) as pattern;
+                      
         print_count = print_count + 1;
       END;
 
