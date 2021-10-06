@@ -1,5 +1,7 @@
 
-## v3.2.0 K Core Change Logs - September 03, 2021
+
+
+## lib3.0_210903 K Core Change Logs
 
 ### `tg_kcore`
 

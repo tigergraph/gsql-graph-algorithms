@@ -1,13 +1,13 @@
 
 # Degree
 
-#### [Degree Changelog](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Centrality/degree/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Degree Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/degree/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Degree Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#N/A)
+## [TigerGraph Degree Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
 
 ## Available Degree Algorithms 
 
-* [`tg_degree_cent`](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Centrality/degree/tg_degree_cent.gsql)
+* [`tg_degree_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/degree/tg_degree_cent.gsql)
 
 ## Installation 
 

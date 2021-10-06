@@ -1,5 +1,7 @@
 
-## v3.2.0 Maximal Independent Set Change Logs - September 03, 2021
+
+
+## lib3.0_210903 Maximal Independent Set Change Logs
 
 ### `tg_maximal_indep_set`
 

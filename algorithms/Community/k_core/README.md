@@ -1,13 +1,13 @@
 
 # K Core
 
-#### [K Core Changelog](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Community/k_core/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [K Core Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/k_core/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph K Core Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#k-core-decomposition)
+## [TigerGraph K Core Documentation](https://docs.tigergraph.com/graph-algorithm-library/community/k-core-decomposition)
 
 ## Available K Core Algorithms 
 
-* [`tg_kcore`](https://github.com/karimsaraipour/gsql-graph-algorithms/blob/master/algorithms/Community/k_core/tg_kcore.gsql)
+* [`tg_kcore`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/k_core/tg_kcore.gsql)
 
 ## Installation 
 

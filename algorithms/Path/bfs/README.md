@@ -1,13 +1,13 @@
 
 # Bfs
 
-#### [Bfs Changelog](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Path/bfs/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
+#### [Bfs Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/bfs/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Bfs Documentation](https://docs.tigergraph.com/tigergraph-platform-overview/graph-algorithm-library#N/A)
+## [TigerGraph Bfs Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
 
 ## Available Bfs Algorithms 
 
-* [`tg_bfs`](https://github.com/tigergraph/gsql-graph-algorithms/tree/Yiming/gsql-graph-algorithms/algorithms/Path/bfs/tg_bfs.gsql)
+* [`tg_bfs`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/bfs/tg_bfs.gsql)
 
 ## Installation 
 
