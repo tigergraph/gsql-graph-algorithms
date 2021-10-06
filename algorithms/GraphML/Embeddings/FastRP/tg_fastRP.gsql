@@ -22,6 +22,7 @@ CREATE QUERY tg_fastRP(INT num_edges, INT num_nodes, INT k, INT sampling_constan
 		store_attr: option to write embeddings to a vertex attribute (NOTE: SCHEMA MUST SUPPORT THIS)
 		file_path: path to write embeddings to file
     */
+    
 	MapAccum<INT,INT> @@degree_diagonal;
 	MapAccum<INT, ListAccum<DOUBLE>> @@result;
 	ListAccum<ListAccum<INT>> @@edge_list;
@@ -36,12 +37,12 @@ CREATE QUERY tg_fastRP(INT num_edges, INT num_nodes, INT k, INT sampling_constan
 	@@result = fastRP(@@degree_diagonal, @@edge_list, num_edges, num_nodes, k, sampling_constant, reduced_dimension, normalization_strength, input_weights);
 	
 	IF print_accum THEN
-		PRINT @@result;
+	    PRINT @@result;
 	END;
 	IF result_attr != "" THEN  # Store embedding as vertex attribute
-		storeEmbeddings = SELECT s FROM Start:s POST-ACCUM s.fastrp_embedding = @@result.get(s.getAttr(index_attr, "INT"));
+	    storeEmbeddings = SELECT s FROM Start:s POST-ACCUM s.fastrp_embedding = @@result.get(s.getAttr(index_attr, "INT"));
 	END;
 	IF file_path != "" THEN
-		f.println(@@result);
+	    f.println(@@result);
 	END;
-	}
+}
