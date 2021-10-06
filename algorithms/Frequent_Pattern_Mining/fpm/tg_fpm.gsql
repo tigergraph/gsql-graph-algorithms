@@ -16,8 +16,8 @@ CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING co
 
   support: minimum frequency to be considered
   min_length: minimum length to be considered 
-  nums_sequence_lim: maximum number of fpm sequences 
-  lim: an integer to limit the length of the query result
+  lim: an integer to limit the length of generated sequences.
+  output_limit: an integer to limit the length of the query result
   spit_to_file: output data to file
   file_path: file to write csv output to
 
