@@ -1,5 +1,5 @@
-CREATE QUERY tg_fpm_pre(STRING unify_vertex_type, STRING item_vertex_type, STRING ts_attr_name,
-                         STRING ts_attr_type, STRING connect_edge){ 
+CREATE QUERY tg_fpm_pre(STRING unify_vertex_type, STRING connect_edge, STRING item_vertex_type, 
+                        STRING ts_attr_name, STRING ts_attr_type){ 
   /*
   Precondition:
   unify_vertex_type has a List<INT> item_list as an attribute
@@ -7,9 +7,10 @@ CREATE QUERY tg_fpm_pre(STRING unify_vertex_type, STRING item_vertex_type, STRIN
   Parameters:
   unify_vertex_type: aggregate vertex
   item_vertex_type: item vertex
-  ts_attr_name: name of ftime stamp attribute 
-  ts_attr_type: type of time stamp attribute
   connect_edge: edge that connects unify vertex and item vertex
+  ts_attr_name: name of time stamp attribute 
+  ts_attr_type: type of time stamp attribute
+
   
   Output: item_list attribute is populated.
   */
@@ -33,11 +34,11 @@ CREATE QUERY tg_fpm_pre(STRING unify_vertex_type, STRING item_vertex_type, STRIN
               WHEN "UINT" THEN
                 s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "UINT"))
               WHEN "INT" THEN
-                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "UINT"))
+                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "INT"))
               WHEN "FLOAT" THEN
-                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "UINT"))
+                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "FLOAT"))
               WHEN "DOUBLE" THEN
-                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "UINT"))
+                s.@ordered_trans += trans_tup(getvid(t), e.getAttr(ts_attr_name, "DOUBLE"))
             END
           POST-ACCUM
             FOREACH tup in s.@ordered_trans DO
