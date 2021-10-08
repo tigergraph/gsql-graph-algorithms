@@ -34,7 +34,7 @@ namespace UDIMPL {
   }
 
   template <typename T>
-  inline double tg_similarity_accum(ListAccum<T>& A, ListAccum<T>& B, const string& similarity_type) {
+  inline double tg_similarity_accum(ListAccum<T> A, ListAccum<T> B, const string& similarity_type) {
     double similarity = 0;
     if (similarity_type.compare("COSINE") == 0) {
       similarity = tg_cosine_similarity_accum(A, B);
@@ -43,7 +43,7 @@ namespace UDIMPL {
       similarity = tg_jaccard_similarity_accum(A, B);
     }
     else if (similarity_type.compare("EUCLIDEAN") == 0) {
-      similarity = tg_euclidean_similarity_accum(A, B);
+      similarity = tg_euclidean_distance_accum(A, B);
     }
     else if (similarity_type.compare("OVERLAP") == 0) {
       similarity = tg_overlap_similarity_accum(A, B);
