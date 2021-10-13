@@ -1,3 +1,3 @@
-CREATE QUERY tg_node2vec(string filepath = "/home/tigergraph/path.csv", string output_file = "/home/tigergraph/embedding.csv", int dimension) FOR GRAPH nodeEmbedding {
+CREATE QUERY tg_node2vec(string filepath = "/home/tigergraph/path.csv", string output_file = "/home/tigergraph/embedding.csv", int dimension) FOR {
    tg_node2vec_sub(dimension, filepath, output_file);
 }
