@@ -30,7 +30,8 @@ CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING co
   MapAccum<INT, MaxAccum<key_pair>> @lookup_table;
   SetAccum<key_pair> @work_order;
   OrAccum<BOOL> @is_eligible = TRUE;
-  
+  SumAccum<INT> @superset_counter = 0;
+                      
   MaxAccum<INT> @@max_sq_length = 0;
   ListAccum<INT> @@HASH_CONST;
   MapAccum<INT, ListAccum<INT>> @@pattern_lookup, @@new_pattern_lookup;
@@ -107,17 +108,17 @@ CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING co
             FOREACH wo in s.@work_order DO
               FOREACH suffix_page in @@suffix.get(wo.suffix_key) DO
                  suffix_vid = getvid(suffix_page),
-                 t.@is_eligible = FALSE,
                       
                  IF is_subset(@@pattern_lookup.get(wo.pattern_key), suffix_vid, t.item_list) THEN
                    suffix_page.@counter += (get_hash_concat(wo.pattern_key, suffix_vid) -> 1),
                    suffix_page.@lookup_table += (get_hash_concat(wo.pattern_key, suffix_vid) 
                                                -> key_pair(wo.pattern_key, suffix_vid)),
-                   t.@is_eligible += TRUE
+                   t.@superset_counter += 1
                  END
               END
            END
-         POST_ACCUM s.@work_order.clear();
+         POST_ACCUM s.@work_order.clear(),
+                    t.@is_eligible = t.@superset_counter != t.@superset_counter';
                       
     @@suffix.clear();
   END;
