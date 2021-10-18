@@ -4,6 +4,7 @@ CREATE QUERY tg_jaccard_nbor_ap_batch (
   STRING feat_v_type,
   STRING e_type,
   STRING re_type,
+  STRING similarity_edge,
   INT num_of_batches = 10,
   BOOL print_accum = true,
   INT print_limit = 50,
@@ -18,6 +19,7 @@ CREATE QUERY tg_jaccard_nbor_ap_batch (
       feat_v_type  : feature vertex type
       e_type  : edge type from source vertex to feature vertex type
       re_type  : edge type from feature vertex to source vertex
+      similarity_edge : edge type for storing vertex-vertex similarity scores
       num_of_batches  : how many batches to split the computation into (trade off parallelism for memory optimization)
       print_accum : print JSON output
       print_limit : number of source vertices to print
@@ -71,6 +73,9 @@ CREATE QUERY tg_jaccard_nbor_ap_batch (
               CASE WHEN tup.val > 0 THEN
                   IF file_path != "" THEN
                     f.println(s, tup.ver, tup.val)
+                  END,
+                  IF similarity_edge != "" THEN
+                    INSERT INTO EDGE similarity_edge VALUES (t, tup.ver, tup.val)
                   END
               END
             END;
