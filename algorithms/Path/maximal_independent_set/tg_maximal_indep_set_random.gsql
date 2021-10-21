@@ -1,0 +1,59 @@
+CREATE QUERY tg_maximal_indep_set_random(STRING v_type, STRING e_type, INT max_iter = 100, BOOL print_accum = TRUE, STRING file_path = ""){
+    /*
+    Maximal Independent Set query only supports one edge type and works only for undirected graphs at the moment (8/12/20).
+    */
+
+    AndAccum @active;
+    OrAccum @selected;
+    MinAccum<INT> @r_min, @r;
+    FILE f(file_path);
+    INT iter = 0;
+
+    Start = {v_type.*};
+    Start = SELECT s FROM Start:s
+                ACCUM
+                  IF s.outdegree(e_type) == 0 THEN
+                     s.@selected += TRUE,
+                     s.@active += FALSE
+                  END
+                 HAVING s.@active;
+
+    WHILE Start.size()>0 LIMIT max_iter DO
+        Start = SELECT s FROM Start:s
+                POST-ACCUM
+                  s.@r_min = GSQL_INT_MAX,
+                  s.@r = rand_int(GSQL_INT_MIN, GSQL_INT_MAX);
+
+        TMP = SELECT s FROM Start:s-(e_type:e)->v_type:t
+              WHERE t.@active
+                ACCUM
+                   s.@r_min += t.@r;
+
+        TMP = SELECT s FROM Start:s
+                        POST-ACCUM
+                             IF s.@r < s.@r_min THEN
+                                    s.@selected += TRUE,
+                                    s.@active += FALSE
+                             END
+                        HAVING s.@selected;
+
+        TMP = SELECT s FROM TMP:s-(e_type:e)->v_type:t
+              ACCUM
+                   t.@active += FALSE;
+
+        Start = SELECT s FROM Start:s WHERE s.@active;
+    END;
+
+    IF file_path != "" THEN
+      f.println("Vertex");
+    END;
+
+    Start = {v_type.*};
+    Start = SELECT s FROM Start:s
+            WHERE s.@selected
+            ACCUM IF file_path != "" THEN f.println(s) END;
+
+    IF print_accum THEN
+      PRINT Start;
+    END;
+}
