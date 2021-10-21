@@ -1,4 +1,4 @@
-CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_accum = TRUE, STRING attr = "", STRING file_path = "", BOOL show_membership = FALSE, BOOL show_shells=FALSE){ 
+CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "", BOOL print_all_k = FALSE, BOOL show_shells=FALSE){ 
 /* An implementation of Algorithm 2 in
  * Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
  * Tripathy et al., IEEE Big Data 2018.
@@ -36,7 +36,7 @@ CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -
         END;
         
           //show all vertices which satisfied the condition at k.
-        IF show_membership THEN 
+        IF print_all_k THEN 
            PRINT k, Q as members;
         END;
   
@@ -47,12 +47,12 @@ CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -
     f.println("Vertex", "Core");
   END;
   
-  IF file_path != "" OR attr != "" THEN
+  IF file_path != "" OR result_attr != "" THEN
     Seed = {v_type.*};
     Seed = SELECT s FROM Seed:s
                     POST-ACCUM
                               IF file_path != "" THEN f.println(s, s.@core) END,
-                              IF attr != "" THEN s.setAttr(attr, s.@core) END;
+                              IF result_attr != "" THEN s.setAttr(result_attr, s.@core) END;
   END;
   
   IF print_accum THEN
