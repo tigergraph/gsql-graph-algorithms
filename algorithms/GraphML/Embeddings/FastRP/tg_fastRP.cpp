@@ -6,110 +6,34 @@
 #include <random>
 #include <sstream>
 #include <string>
-#include <vector>
+#include <math.h>
+#include <functional>
 
-inline MapAccum<int, ListAccum<double>> fastRP(MapAccum<int, int> degree_diagonal, ListAccum<ListAccum<int>> edge_list, int m, int n, int k, int s, int d, double beta, string input_weights) {
-  // parameters
-  std::ofstream foutput("/home/tigergraph/parameters.txt");
-  foutput << "|E|:" << m << std::endl;
-  foutput << "|V|:" << n << std::endl;
-  foutput << "K:" << k << std::endl;
-  foutput << "Random Projection S:" << s << std::endl;
-  foutput << "Embedding Dimension:" << d << std::endl;
-  foutput << "Normalization Strength:" << beta << std::endl;
-  foutput << "Weights:" << std::endl;
-
-  // get weights
-  // weights should be formatted as a single string seperated by a comma
-  std::stringstream s_stream(input_weights);
-  std::vector<double> weights;
+inline ListAccum<float> extract_list(string weights){
+  ListAccum<float> wghts;
   string current_weight;
+  std::stringstream s_stream(weights);
   while (s_stream.good()) {
     std::getline(s_stream, current_weight, ',');
-    foutput << "\t" << current_weight << std::endl;
-    weights.push_back(std::stod(current_weight));
+    wghts.data_.push_back(std::stof(current_weight));
   }
-  foutput.close();
+  return wghts;
+}
 
-  // random number generation
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<double> distribution(0.0, 1.0);
+inline float fastrp_rand_func(int64_t v_id, int64_t emb_idx, int64_t seed, int64_t s){	  
+  std::hash<std::string> hasher;
+  auto hash = hasher(std::to_string(v_id) + "," + std::to_string(emb_idx) + "," + std::to_string(seed));
 
-  // number of non zeros for matrix R
-  size_t nnz_R = (size_t)(n * d * 1.0 / s);
+  std::mt19937 gen(hash);
+  std::uniform_real_distribution<float> distribution(0.0, 1.0);
+  float p1 = 0.5 / s, p2 = p1, p3 = 1 - 1.0 / s;
+  float v1 = sqrt(s), v2 = -v1, v3 = 0.0;
 
-  // R matrix fill version 2
-  std::vector<Eigen::Triplet<double>> triplets_R;
-  triplets_R.reserve(nnz_R);
-  double p1 = 0.5 / s, p2 = p1, p3 = 1 - 1.0 / s;
-  double v1 = sqrt(s), v2 = -v1, v3 = 0.0;
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < d; j++) {
-      double random_value = distribution(gen);
-      double triplet_value;
-      if (random_value <= p1)
-        triplet_value = v1;
-      else if (random_value <= p1 + p2)
-        triplet_value = v2;
-      else
-        triplet_value = v3;
-
-      triplets_R.push_back(Eigen::Triplet<double>(i, j, triplet_value));
-    }
-  }
-  Eigen::SparseMatrix<double> R(n, d);
-  R.setFromTriplets(std::begin(triplets_R), std::end(triplets_R));
-
-  // create D,L,S and similar matrices
-  std::vector<Eigen::Triplet<double>> triplets_L;
-  triplets_L.reserve(n);
-
-  std::vector<Eigen::Triplet<double>> triplets_Dinv;
-  triplets_Dinv.reserve(n);
-
-  std::vector<Eigen::Triplet<double>> triplets_S;
-  triplets_S.reserve(m);
-
-  for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); it++) {
-    int value = it->second, i = it->first;
-    triplets_L.push_back(Eigen::Triplet<double>(i, i, pow((.5 / m) * value, beta)));
-    triplets_Dinv.push_back(Eigen::Triplet<double>(i, i, 1.0 / value));
-  }
-
-  for (int e = 0; e < m; e++) {
-    int source = edge_list.get(e).get(0);
-    int target = edge_list.get(e).get(1);
-    triplets_S.push_back(Eigen::Triplet<double>(source, target, 1));
-  }
-  Eigen::SparseMatrix<double> L(n, n);
-  L.setFromTriplets(std::begin(triplets_L), std::end(triplets_L));
-
-  Eigen::SparseMatrix<double> Dinv(n, n);
-  Dinv.setFromTriplets(std::begin(triplets_Dinv), std::end(triplets_Dinv));
-
-  Eigen::SparseMatrix<double> S(n, n);
-  S.setFromTriplets(std::begin(triplets_S), std::end(triplets_S));
-
-  Eigen::SparseMatrix<double> A = Dinv * S;
-
-  // store embeddings
-  Eigen::SparseMatrix<double> N_1 = L * R;
-
-  // apply weights and compute N
-  Eigen::SparseMatrix<double> N(n, d);
-  for (int i = 0; i < k; i++){
-    N_1 = (A*N_1);
-    N += weights[i] * N_1;
-  }
-  // return n x d MapAccum
-  MapAccum<int, ListAccum<double>> res;
-  for (auto it = std::begin(degree_diagonal); it != std::end(degree_diagonal); it++) {
-    int i = it->first;
-    for (int j = 0; j < d; j++) {
-      MapAccum<int, ListAccum<double>> temp(i, ListAccum<double>(N.coeff(i, j)));
-      res += temp;
-    }
-  }
-  return res;
+  float random_value = distribution(gen);
+  if (random_value <= p1)
+    return v1;
+  else if (random_value <= p1 + p2)
+    return v2;
+  else
+    return v3;
 }
