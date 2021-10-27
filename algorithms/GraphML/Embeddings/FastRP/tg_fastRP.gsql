@@ -88,6 +88,6 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
 		res = SELECT a FROM verts:a POST-ACCUM f.println(a, a.@final_embedding_arr);
 	END;
 	IF result_attr != "" THEN
-		storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.node2vec_embedding = s.@final_embedding_list;
+		storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.fastrp_embedding = s.@final_embedding_list;
   END;
 }
