@@ -1,16 +1,15 @@
-CREATE QUERY tg_pageRank_pers_batch(STRING v_type, STRING e_type,
-  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,INT batch_num,BOOL Print_Accum) {
+CREATE QUERY tg_pagerank_pers_batch(STRING v_type, STRING e_type,
+  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,INT batch_num,BOOL print_accum,STRING file_path) {
 
   TYPEDEF TUPLE<VERTEX ver, FLOAT score> Vertex_Score;
-  HeapAccum<Vertex_Score>(top_k,score DESC) @topScores;
+  HeapAccum<Vertex_Score>(top_k,score DESC) @top_scores;
   MapAccum<Vertex,ListAccum<Vertex_Score>> @@res;
-  MaxAccum<FLOAT> @@maxDiff = 9999; # max score change in an iteration
+  MaxAccum<FLOAT> @@max_diff = 9999; # max score change in an iteration
   MapAccum<VERTEX,FLOAT> @received_score; # sum of scores each vertex receives FROM neighbors
   MapAccum<VERTEX,FLOAT> @score ;   # Initial score for every vertex is 0
-  SetAccum<EDGE> @@edgeSet;                   # list of all edges, if display is needed
   OrAccum @is_source;
   SetAccum<INT> @@end;
-
+  FILE f(file_path);
   All = {v_type};#  All with a set of input vertices
         
   FOREACH batch_count in RANGE[0,batch_num-1] DO
@@ -20,7 +19,7 @@ CREATE QUERY tg_pageRank_pers_batch(STRING v_type, STRING e_type,
                                  s.@is_source = true;
                                  Total = Start;
   
-            WHILE @@maxDiff > max_change LIMIT max_iter DO
+            WHILE @@max_diff > max_change LIMIT max_iter DO
                   V_tmp = SELECT t FROM Start:s -(e_type:e)-> :t    # Only update score for activated vertices
                                    ACCUM 
                                         FOREACH (key,value) IN s.@score DO
@@ -59,9 +58,11 @@ CREATE QUERY tg_pageRank_pers_batch(STRING v_type, STRING e_type,
   All = SELECT s FROM All:s 
                  POST-ACCUM 
                            FOREACH i in @@res.get(s) DO
-                                  s.@topScores+=i 
-                           END;
-  IF Print_Accum THEN
-     PRINT All [All.@topScores]; 
+                                  s.@top_scores+=i 
+                           END,
+                           IF file_path != "" THEN f.println(s, s.@top_scores) END;
+ 
+  IF print_accum THEN
+     PRINT All [All.@top_scores]; 
   END;
 }
