@@ -1,0 +1,68 @@
+CREATE QUERY tg_pagerank_pers_batch(STRING v_type, STRING e_type,
+  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,INT batch_num,BOOL print_accum,STRING file_path) {
+
+  TYPEDEF TUPLE<VERTEX ver, FLOAT score> Vertex_Score;
+  HeapAccum<Vertex_Score>(top_k,score DESC) @top_scores;
+  MapAccum<Vertex,ListAccum<Vertex_Score>> @@res;
+  MaxAccum<FLOAT> @@max_diff = 9999; # max score change in an iteration
+  MapAccum<VERTEX,FLOAT> @received_score; # sum of scores each vertex receives FROM neighbors
+  MapAccum<VERTEX,FLOAT> @score ;   # Initial score for every vertex is 0
+  OrAccum @is_source;
+  SetAccum<INT> @@end;
+  FILE f(file_path);
+  All = {v_type};#  All with a set of input vertices
+        
+  FOREACH batch_count in RANGE[0,batch_num-1] DO
+          Start = SELECT s FROM All:s 
+                           WHERE getvid(s)%batch_num==batch_count
+                           ACCUM s.@score +=(s->1),   # Only set score of source vertices to 1
+                                 s.@is_source = true;
+                                 Total = Start;
+  
+            WHILE @@max_diff > max_change LIMIT max_iter DO
+                  V_tmp = SELECT t FROM Start:s -(e_type:e)-> :t    # Only update score for activated vertices
+                                   ACCUM 
+                                        FOREACH (key,value) IN s.@score DO
+                                                IF getvid(key) in @@end THEN continue END,
+                                        FLOAT rec_score = value/s.outdegree(e_type),#/(s.outdegree(e_type);
+                                        t.@received_score += (key->rec_score) END;
+                  T = Start UNION V_tmp;
+                  Start = SELECT s FROM T:s
+                                   POST-ACCUM
+                                             IF s.@is_source == TRUE THEN 
+                                                FLOAT oldscore = s.@score.get(s),
+                                                s.@score+=(s->-oldscore),
+                                                s.@score+=(s->((1.0-damping) + damping *s.@received_score.get(s)))
+                                             END,
+                                             FOREACH (key,value) IN s.@received_score DO
+                                                     IF key!=s THEN
+                                                        FLOAT oldscore = s.@score.get(key),
+                                                        s.@score+=(key->-oldscore),
+                                                        s.@score+=(key->damping*value),
+                                                        IF damping*value-oldscore<0.001 THEN 
+                                                           @@end+=getvid(key) 
+                                                        END 
+                                             END
+                              END,
+                              s.@received_score.clear();
+                  Total=Total UNION T;
+       
+            END;
+            
+            Total = SELECT s FROM Total:s 
+                             POST-ACCUM FOREACH (key,value) IN s.@score DO 
+                                        @@res+=(key->Vertex_Score(s,value)) END,
+                                        s.@score.clear(),s.@received_score.clear();
+        @@end.clear();
+  END;
+  All = SELECT s FROM All:s 
+                 POST-ACCUM 
+                           FOREACH i in @@res.get(s) DO
+                                  s.@top_scores+=i 
+                           END,
+                           IF file_path != "" THEN f.println(s, s.@top_scores) END;
+ 
+  IF print_accum THEN
+     PRINT All [All.@top_scores]; 
+  END;
+}
