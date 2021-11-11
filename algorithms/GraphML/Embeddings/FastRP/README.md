@@ -6,16 +6,9 @@
 \
 **  `<TGversion>` should be replaced with your current Tigergraph version number
 
-### Getting Eigen
-`Eigen` is a software utilized in this algorithm under the MPL2 License. We need to clone the software and move it to the Tigergraph thirdparty directory
-```bash
-$ cd
-$ git clone https://gitlab.com/libeigen/eigen.git
-```
-
 
 ### Getting UDF
-`fastRP()` is a user-defined function utilized in `tg_fastRP_query.gsql` \
+`extract_list()` and `fastrp_rand_func()` are user-defined functions utilized in `tg_fastRP.gsql` \
 The code defined in `tg_fastRP.cpp` should be pasted inside the `UDIMPL` namespace inside of `ExprFunctions.hpp`. Be sure to also paste the proper `include` statements at the top of the `ExprFunctions.hpp`
 ```bash
 # open file and paste code
@@ -23,23 +16,10 @@ The code defined in `tg_fastRP.cpp` should be pasted inside the `UDIMPL` namespa
 $ vim ~/tigergraph/app/<TGversion>/dev/gdk/gsql/src/QueryUdf/ExprFunctions.hpp
 ```
 
-### Including Eigen
-It is important to include directives utilized by the UDF inside the `ExprUtil.hpp` file
-```bash
-$ vim ~/tigergraph/app/<TGversion>/dev/gdk/gsql/src/QueryUdf/ExprUtil.hpp
-```
-Once inside the text editor, paste the following line of `C++` code into under the other include statements 
-```c++
-#include "/home/tigergraph/eigen/Eigen/SparseCore"
-
-using Eigen::Triplet;
-using Eigen::SparseMatrix;
-```
-
 ### Multiple machines(cluster) or Single Machine?
 If the data is on a single machine, proceed to the next section.
 \
-If the data is spread across multiple machines, include the `DISTRIBUTED` GSQL keyword in the header of the `tg_fastRP_query` query 
+If the data is spread across multiple machines, include the `DISTRIBUTED` GSQL keyword in the header of the `tg_fastRP` query 
 ```bash
 # Change first header to the second header
 
@@ -56,13 +36,6 @@ $ PUT ExprFunctions from "/home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gs
 ```
 
 ### Running Queries
-The following instructions can be done with GraphStudio or GSQL terminal
-1. Install the `tg_fastRP_preprocessing_query` query
-2. Run `tg_fastRP_preprocessing_query`
-3. Install the `tg_fastRP_query` or `tg_fastRP_map_query` query
-4. Run query `tg_fastRP_query` or `tg_fastRP_map_query` with desired parameters. Parameters following notation names defined in the original research paper : https://arxiv.org/pdf/1908.11512.pdf
-5. (optional) Inspect output of random_walk query
-
-```bash
-$ cat ~/parameters.txt
-```
+The following instructions can be done with GraphStudio or GSQL terminal:
+1. Install the `tg_fastRP` query - **Note:** There are hard-coded parameters in the query, primarily in the @embedding_arr and @final_embedding_arr accumulators. Please change the size of these arrays to the desired dimension. Furthermore, the query assumes there is an LIST<FLOAT> attribute on every vertex with the name `fastrp_embedding`. If this is not the case, please change the query accordingly.
+2. Run query `tg_fastRP`. Parameters following notation names defined in the original research paper : https://arxiv.org/pdf/1908.11512.pdf
