@@ -12,112 +12,143 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
   top_k: report only this many top scores          display_edges: output edges for visualization
   
    */ 
-  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore; #tuple to store betweenness centrality score
-  HeapAccum<VertexScore>(top_k, score DESC) @@topScores; #heap to store top K score
-  SumAccum<INT> @@currDist; #current distance
-  BitwiseOrAccum @visitNext; #use bitwise instead of setAccum
-  BitwiseOrAccum @seen;
-  BitwiseOrAccum @visit; 
-  SumAccum<INT> @@count=1;#used to set unique ID
-  SumAccum<INT> @id; #store the unique ID
-  SetAccum<INT> @@batchSet; #used to set unique ID
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score; #tuple to store betweenness centrality score
+  HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap; #heap to store top K score
+  SumAccum<INT> @@sum_curr_dist; #current distance
+  BitwiseOrAccum @bitwise_or_visit_next; #use bitwise instead of setAccum
+  BitwiseOrAccum @bitwise_or_seen;
+  BitwiseOrAccum @bitwise_or_visit; 
+  SumAccum<INT> @@sum_count = 1;#used to set unique ID
+  SumAccum<INT> @sum_id; #store the unique ID
+  SetAccum<INT> @@batch_set; #used to set unique ID
   MapAccum<INT,INT> @@map; #used to set unique ID 
-  SetAccum<EDGE> @@edgeSet;
-  SumAccum<FLOAT> @delta=0;
-  MapAccum<INT,BitwiseOrAccum> @times;
-  MapAccum<INT,SumAccum<INT>> @sigma;
+  SetAccum<EDGE> @@edge_set;
+  SumAccum<FLOAT> @sum_delta = 0;
+  MapAccum<INT,BitwiseOrAccum> @times_map;
+  MapAccum<INT,SumAccum<INT>> @sigma_map;
   
   INT empty=0;
   FILE f (file_path);
-  INT numVert;
+  INT num_vert;
   INT batch_number;
 
 # Compute betweenness	
   all = {v_type};
-  numVert = all.size();
-  batch_number = numVert/60;
-  IF batch_number==0 THEN batch_number=1; END;
+  num_vert = all.size();
+  batch_number = num_vert/60;
+    
+  IF batch_number == 0 
+      THEN batch_number = 1;
+  END;
     
   #Calculate the sum of distance to other vertex for each vertex
-  FOREACH i IN RANGE[0, batch_number-1] do
-          Current = SELECT s FROM all:s
-                    WHERE getvid(s)%batch_number == i
-                    POST-ACCUM @@map+=(getvid(s)->0),@@batchSet+=getvid(s);
+  FOREACH i IN RANGE[0, batch_number-1] DO
+      Current = SELECT s 
+                FROM all:s
+                WHERE getvid(s)%batch_number == i
+                POST-ACCUM @@map+=(getvid(s)->0),
+                           @@batch_set+=getvid(s);
   
-          FOREACH ver in @@batchSet DO @@map+=(ver->@@count); @@count+=1;END; #set a unique ID for each vertex, ID from 1-63
-          Start = SELECT s FROM Current:s POST-ACCUM s.@id=@@map.get(getvid(s));
-          Start = Select s FROM Current:s
-                  POST-ACCUM s.@seen=1<<s.@id,
-                             s.@visit=s.@seen,
-                             s.@sigma+=(0->1),
-                             s.@times+=(0->1<<s.@visit); # set initial seen and visit
-          @@batchSet.clear();
-          @@map.clear();
-          @@count=0;
-      
-          WHILE (Start.size() > 0) LIMIT max_hops DO
-        
-                  @@currDist+=1;
-                  Start = SELECT t FROM Start:s -(re_type:e)-v_type:t
-                          WHERE s.@visit&-t.@seen-1>0 and s!=t #use -t.@seen-1 to get the trverse of t.@seen
-                          ACCUM                               #updatevisitNext
-                                INT c = s.@visit&-t.@seen-1,
-                                IF c>0 THEN
-                                    t.@visitNext+=c,
-                                    t.@seen+=c
-                                END,
-                                t.@sigma+=(@@currDist->s.@sigma.get(@@currDist-1)) #set sigma based on depth
-                          POST-ACCUM
-                                t.@visit=t.@visitNext,
-                                t.@times+=(@@currDist->t.@visit),
-                                t.@visitNext=0;
-          END;
-          @@currDist+=-1;
+      FOREACH ver in @@batch_set DO 
+          @@map += (ver->@@sum_count); @@sum_count += 1;
+      END; #set a unique ID for each vertex, ID from 1-63
     
-          Start = Select s from all:s WHERE s.@sigma.get(@@currDist)!=0;
-          WHILE (Start.size()>0) LIMIT max_hops DO
-                    @@currDist+=-1;
-                    Start = SELECT t FROM Start:s -(re_type:e)-> v_type:t
-			    WHERE t.@times.get(@@currDist)&s.@times.get(@@currDist+1)!=0  
-	                    ACCUM 
-                                 FLOAT currValue=t.@sigma.get(@@currDist)/(s.@sigma.get(@@currDist+1)*(1+s.@delta)),
-                                 INT r=t.@times.get(@@currDist)&s.@times.get(@@currDist+1),
-                                 INT plus=0,
-                                 WHILE r>0 DO 
-                                        r=r&(r-1),plus=plus+1 #count how many 1 in the number, same as setAccum,size()
-                                 END,
-                                 FLOAT value = currValue*plus/2.0,
-                                 t.@delta+=value;
-                  
-		    Start = Select s from all:s WHERE s.@sigma.get(@@currDist)!=0;	
-        END;
-        @@currDist=0;
-        Start = SELECT s FROM all:s 
-                POST-ACCUM s.@seen=0,s.@visit=0,s.@sigma.clear(),s.@times.clear();
+      Start = SELECT s 
+              FROM Current:s 
+              POST-ACCUM s.@sum_id=@@map.get(getvid(s));
+    
+      Start = Select s 
+              FROM Current:s
+              POST-ACCUM s.@bitwise_or_seen = 1<<s.@sum_id,
+                         s.@bitwise_or_visit = s.@bitwise_or_seen,
+                         s.@sigma_map += (0->1),
+                         s.@times_map += (0->1<<s.@bitwise_or_visit); # set initial seen and visit
+      @@batch_set.clear();
+      @@map.clear();
+      @@sum_count=0;
+      
+      WHILE (Start.size() > 0) 
+          LIMIT max_hops DO
+              @@sum_curr_dist+=1;
+    
+      Start = SELECT t 
+              FROM Start:s -(re_type:e)-v_type:t
+              WHERE s.@bitwise_or_visit&-t.@bitwise_or_seen-1>0 AND s!=t #use -t.@seen-1 to get the trverse of t.@seen
+              ACCUM                               #updatevisitNext
+                  INT c = s.@bitwise_or_visit&-t.@bitwise_or_seen-1,
+                  IF c>0 
+                      THEN t.@bitwise_or_visit_next+=c,
+                           t.@bitwise_or_seen+=c
+                  END,
+                  t.@sigma_map+=(@@sum_curr_dist->s.@sigma_map.get(@@sum_curr_dist-1)) #set sigma based on depth
+              POST-ACCUM t.@bitwise_or_visit=t.@bitwise_or_visit_next,
+                         t.@times_map+=(@@sum_curr_dist->t.@bitwise_or_visit),
+                         t.@bitwise_or_visit_next=0;
+      END;
+      @@sum_curr_dist+=-1;
+    
+      Start = SELECT s 
+              FROM all:s 
+              WHERE s.@sigma_map.get(@@sum_curr_dist)!=0;
+    
+      WHILE (Start.size()>0) LIMIT max_hops DO
+          @@sum_curr_dist+=-1;
+          Start = SELECT t 
+                  FROM Start:s -(re_type:e)-> v_type:t
+	          WHERE t.@times_map.get(@@sum_curr_dist)&s.@times_map.get(@@sum_curr_dist+1)!=0  
+	          ACCUM 
+                      FLOAT currValue=t.@sigma_map.get(@@sum_curr_dist)/(s.@sigma_map.get(@@sum_curr_dist+1)*(1+s.@sum_delta)),
+                      INT r=t.@times_map.get(@@sum_curr_dist)&s.@times_map.get(@@sum_curr_dist+1),
+                      INT plus=0,
+                      WHILE r>0 DO 
+                          r=r&(r-1),plus=plus+1 #count how many 1 in the number, same as setAccum,size()
+                      END,
+                      FLOAT value = currValue*plus/2.0,
+                      t.@sum_delta+=value;
+          Start = SELECT s 
+                  FROM all:s 
+                  WHERE s.@sigma_map.get(@@sum_curr_dist)!=0;	
+      END;
+      
+      @@sum_curr_dist=0;
+      Start = SELECT s 
+              FROM all:s 
+              POST-ACCUM s.@bitwise_or_seen=0,
+                         s.@bitwise_or_visit=0,
+                         s.@sigma_map.clear(),
+                         s.@times_map.clear();
   END;
   
   #Output
-	IF file_path != "" THEN
-			f.println("Vertex_ID", "Betweenness");
-	END;
+  IF file_path != "" THEN
+      f.println("Vertex_ID", "Betweenness");
+  END;
 	
-  
-  Start = SELECT s FROM all:s
-			POST-ACCUM 
-					IF result_attr != "" THEN s.setAttr(result_attr, s.@delta) END,
-					IF print_accum THEN @@topScores += VertexScore(s, s.@delta) END,
-					IF file_path != "" THEN f.println(s, s.@delta) END;
-  
-
-	IF print_accum THEN
-		PRINT @@topScores AS top_scores;
-		IF display_edges THEN
-			PRINT Start[Start.@delta];
-			Start = SELECT s
-			FROM Start:s -(e_type:e)->:t
-				ACCUM @@edgeSet += e;
-			PRINT @@edgeSet;
-		END;
-	END;
+  Start = SELECT s 
+          FROM all:s
+          POST-ACCUM 
+	      IF result_attr != "" THEN 
+                  s.setAttr(result_attr, s.@sum_delta) 
+              END,
+    
+	      IF print_accum THEN 
+                  @@top_scores_heap += Vertex_Score(s, s.@sum_delta) 
+              END,
+    
+	      IF file_path != "" THEN 
+                  f.println(s, s.@sum_delta) 
+              END;
+	      
+   IF print_accum THEN
+       PRINT @@top_scores_heap AS top_scores;
+       IF display_edges THEN
+           PRINT Start[Start.@sum_delta];
+	   Start = SELECT s
+	           FROM Start:s -(e_type:e)->:t
+	           ACCUM 
+                      @@edge_set += e;
+	           PRINT @@edge_set;
+        END;
+    END;
 
 }
