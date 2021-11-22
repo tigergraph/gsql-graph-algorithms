@@ -1,6 +1,7 @@
 CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
  FLOAT max_change = 0.001, INT max_iter = 25, FLOAT damping = 0.85, INT top_k = 100,
  BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "") {
+ 
 /*
  Compute the article rank score for each vertex in the GRAPH
  In each iteration, compute a score for each vertex:
@@ -17,6 +18,7 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
 
  This query supports only taking in a single edge for the time being (8/13/2020).
 */
+
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
   HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
   MaxAccum<FLOAT> @@max_diff = 9999;    # max score change in an iteration
