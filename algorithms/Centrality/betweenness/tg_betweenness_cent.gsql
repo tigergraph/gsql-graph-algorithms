@@ -1,6 +1,7 @@
 CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re_type,INT max_hops = 10,
   INT top_k = 100, BOOL print_accum = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE){ 
+  
   /* Compute Betweenness Centrality for each VERTEX. 
   Use multi-sourse BFS.
   Link of the paper: http://www.vldb.org/pvldb/vol8/p449-then.pdf
@@ -10,8 +11,8 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
   re_type: reverse edge type in directed graph, in undirected graph set re_type=e_type
   max_hops: look only this far from each vertex    file_path: file to write CSV output to
   top_k: report only this many top scores          display_edges: output edges for visualization
-  
    */ 
+   
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score; #tuple to store betweenness centrality score
   HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap; #heap to store top K score
   SumAccum<INT> @@sum_curr_dist; #current distance
