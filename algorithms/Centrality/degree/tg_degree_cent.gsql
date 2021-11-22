@@ -11,36 +11,45 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> 
   result_attr: attribute to write result to        file_path: file to write CSV output to
   for undirected graph, you only need to set e_type and indegree
    */
-  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> VertexScore;
-  HeapAccum<VertexScore>(top_k, score DESC) @@topScores;
-  SumAccum<INT> @degree_score;
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
+  HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
+  SumAccum<INT> @sum_degree_score;
   FILE f (file_path);
 
   all = {v_type};
-  sll = SELECT s FROM all:s
+  sll = SELECT s 
+        FROM all:s
         ACCUM IF in_degree THEN
                  FOREACH edge_type in re_type DO
-                         s.@degree_score+=s.outdegree(edge_type)
+                     s.@sum_degree_score+=s.outdegree(edge_type)
                  END
               END,
               IF out_degree THEN
-                 FOREACH edge_type in e_type DO
-                         s.@degree_score+=s.outdegree(edge_type)
-                 END
+                  FOREACH edge_type in e_type DO
+                      s.@sum_degree_score+=s.outdegree(edge_type)
+                  END
               END;
   #Output
   IF file_path != "" THEN
-     f.println("Vertex_ID", "Degree");
+      f.println("Vertex_ID", "Degree");
   END;
 
-  Start = SELECT s FROM all:s
-			POST-ACCUM
-			          IF result_attr != "" THEN s.setAttr(result_attr, s.@degree_score) END,
-				  IF print_accum THEN @@topScores += VertexScore(s, s.@degree_score) END,
-				  IF file_path != "" THEN f.println(s, s.@degree_score) END;
-
-	IF print_accum THEN
-		PRINT @@topScores AS top_scores;
-	END;
-
+  Start = SELECT s 
+          FROM all:s
+	  POST-ACCUM
+	      IF result_attr != "" THEN 
+                  s.setAttr(result_attr, s.@sum_degree_score) 
+              END,
+    
+	      IF print_accum THEN 
+                  @@top_scores_heap += Vertex_Score(s, s.@sum_degree_score) 
+              END,
+    
+	      IF file_path != "" THEN 
+                  f.println(s, s.@sum_degree_score) 
+              END;
+	      
+   IF print_accum THEN
+       PRINT @@top_scores_heap AS top_scores;
+   END;
 }
