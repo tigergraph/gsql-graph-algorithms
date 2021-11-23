@@ -5,58 +5,64 @@ CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -
  
  This query is only supported for a single edge type at the moment (8/13/20)
  */
-  SumAccum<INT> @deg;        // The number of edges v has to active vertices.
-  SumAccum<INT> @core;       // The core level of vertex v
+  SumAccum<INT> @sum_deg;        // The number of edges v has to active vertices.
+  SumAccum<INT> @sum_core;       // The core level of vertex v
   FILE f(file_path);
   INT k;             			    
   k = k_min;				      
 	
   active = {v_type.*};
-  active = SELECT v FROM active:v // Initialize @deg 
-	            POST-ACCUM v.@deg += v.outdegree(e_type);
+  active = SELECT v 
+           FROM active:v // Initialize @deg 
+	   POST-ACCUM v.@sum_deg += v.outdegree(e_type);
   
   Q = active;
   WHILE active.size() > 0 AND (k_max == -1 OR k < k_max) DO
-        deleted = SELECT v FROM active:v
-                           WHERE v.@deg <= k
-                           ACCUM v.@core += k;
+      deleted = SELECT v 
+                FROM active:v
+                WHERE v.@sum_deg <= k
+                ACCUM v.@sum_core += k;
   
-        active = active MINUS deleted;
-  
-        IF deleted.size() > 0 THEN                // "Remove adjacent edges"         
-           U = SELECT u FROM deleted:u -(e_type:e)-> :v
-	                ACCUM  v.@deg += -1;  // Actually, reduce degree of vertices
-        ELSE IF show_shells THEN 
-                // Show vertices which did not satisfy kcore condition at a value of k 
-                shells = Q MINUS active;
-                PRINT k, shells; 
-        END;
-        IF active.size() > 0 THEN
-           Q = active;
-        END;
+      active = active MINUS deleted;
+      IF deleted.size() > 0 THEN                // "Remove adjacent edges"         
+          U = SELECT u 
+              FROM deleted:u -(e_type:e)-> :v
+	      ACCUM  v.@sum_deg += -1;  // Actually, reduce degree of vertices
+      ELSE IF show_shells THEN 
+          // Show vertices which did not satisfy kcore condition at a value of k 
+          shells = Q MINUS active;
+          PRINT k, shells; 
+      END;
+      
+      IF active.size() > 0 THEN
+          Q = active;
+      END;
         
-          //show all vertices which satisfied the condition at k.
-        IF print_all_k THEN 
-           PRINT k, Q as members;
-        END;
-  
-        k = k + 1;
+      //show all vertices which satisfied the condition at k.
+      IF print_all_k THEN 
+          PRINT k, Q as members;
+      END;
+      k = k + 1;
 	
   END;
   IF file_path != "" THEN
-    f.println("Vertex", "Core");
+      f.println("Vertex", "Core");
   END;
   
   IF file_path != "" OR result_attr != "" THEN
-    Seed = {v_type.*};
-    Seed = SELECT s FROM Seed:s
-                    POST-ACCUM
-                              IF file_path != "" THEN f.println(s, s.@core) END,
-                              IF result_attr != "" THEN s.setAttr(result_attr, s.@core) END;
+      Seed = {v_type.*};
+      Seed = SELECT s 
+             FROM Seed:s
+             POST-ACCUM
+                 IF file_path != "" THEN 
+		     f.println(s, s.@sum_core) 
+		 END,
+                 IF result_attr != "" THEN 
+		     s.setAttr(result_attr, s.@sum_core) 
+		 END;
   END;
   
   IF print_accum THEN
-    PRINT k, Q.size() as core_size, Q as max_core;
-  END;
-	
+      PRINT k, Q.size() as core_size, Q as max_core;
+  END;	
 }
