@@ -12,85 +12,85 @@ Parameters:
  wt_type: weight data type (INT,FLOAT,DOUBLE)    
 */  
   TYPEDEF TUPLE<VERTEX from_v, VERTEX to_v, EDGE e, FLOAT weight, INT vid> EDGE_WEIGHT;
-  HeapAccum<EDGE_WEIGHT>(1, weight ASC, vid ASC) @@chosen_edge; // keep the minimal tuple
-  SetAccum<EDGE_WEIGHT> @@mst;
-  SetAccum<EDGE> @@result; 
-  OrAccum @chosen;
+  HeapAccum<EDGE_WEIGHT>(1, weight ASC, vid ASC) @@chosen_edge_heap; // keep the minimal tuple
+  SetAccum<EDGE_WEIGHT> @@mst_set;
+  SetAccum<EDGE> @@result_set; 
+  OrAccum @or_chosen;
   INT iter_limit;
   FILE f (file_path);
   
-# Check wt_type parameter
+  # Check wt_type parameter
   IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
-    PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
-    RETURN;
+      PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+      RETURN;
   END;
 
 
-# Pick the start vertex to initialize
-	All_v = {v_type};
-    
-  MSTNodes = SELECT s FROM All_v:s LIMIT 1;
+  # Pick the start vertex to initialize
+  All_v = {v_type}; 
+  MSTNodes = SELECT s 
+             FROM All_v:s LIMIT 1;
   IF opt_source IS NOT NULL THEN
-    MSTNodes = {opt_source};
+      MSTNodes = {opt_source};
   END;
-	Current = SELECT s FROM MSTNodes:s
-			  POST-ACCUM s.@chosen = true;
+
+  Current = SELECT s 
+            FROM MSTNodes:s
+	    POST-ACCUM s.@or_chosen = true;
   PRINT Current[Current.id] AS Source;
 
     
-# Find the MST 
+  # Find the MST 
   iter_limit = All_v.size();      # set max #iterations
   IF max_iter > 0 THEN
-    iter_limit = max_iter;
+      iter_limit = max_iter;
   END;
-   
-	WHILE (Current.size() > 0) LIMIT iter_limit DO
-		Current = SELECT t
-			FROM MSTNodes:s -(e_type:e)-> v_type:t
-			WHERE t.@chosen == false    // vertex not in MSTNodes
-			ACCUM
-				CASE wt_type
-				WHEN "INT" THEN
-					@@chosen_edge += EDGE_WEIGHT(s, t, e, e.getAttr(wt_attr,"INT"), getvid(t))
-				WHEN "FLOAT" THEN
-					@@chosen_edge += EDGE_WEIGHT(s, t, e, e.getAttr(wt_attr,"FLOAT"), getvid(t))
-				WHEN "DOUBLE" THEN
-					@@chosen_edge += EDGE_WEIGHT(s, t, e, e.getAttr(wt_attr,"DOUBLE"), getvid(t))
-				END	
-			POST-ACCUM
-				IF t == @@chosen_edge.top().to_v THEN    
-					t.@chosen = TRUE      // mark the chosen vertex to add into MSTNodes
-				END
-			HAVING t.@chosen == true;
+  WHILE (Current.size() > 0) LIMIT iter_limit DO
+      Current = SELECT t
+	        FROM MSTNodes:s -(e_type:e)-> v_type:t
+	        WHERE t.@or_chosen == false    // vertex not in MSTNodes
+	        ACCUM
+	            CASE wt_type
+		        WHEN "INT" THEN
+		            @@chosen_edge_heap += EDGE_WEIGHT(s, t, e, e.getAttr(wt_attr,"INT"), getvid(t))
+		        WHEN "FLOAT" THEN
+		            @@chosen_edge_heap += EDGE_WEIGHT(s, t, e, e.getAttr(wt_attr,"FLOAT"), getvid(t))
+		        WHEN "DOUBLE" THEN
+			    @@chosen_edge_heap += EDGE_WEIGHT(s, t, e, e.getAttr(wt_attr,"DOUBLE"), getvid(t))
+		        END	
+	        POST-ACCUM
+	            IF t == @@chosen_edge_heap.top().to_v THEN    
+		        t.@or_chosen = TRUE      // mark the chosen vertex to add into MSTNodes
+		    END
+	        HAVING t.@or_chosen == true;
 
-		IF @@chosen_edge.size() > 0 THEN
-			IF result_attr != "" THEN
-			  S = SELECT s
-				   FROM Current:s -(e_type:e) -> v_type:t
-				   WHERE t == @@chosen_edge.top().from_v
-				   ACCUM e.setAttr(result_attr, TRUE);
+      IF @@chosen_edge_heap.size() > 0 THEN
+          IF result_attr != "" THEN
+	      S = SELECT s
+	   	  FROM Current:s -(e_type:e) -> v_type:t
+		  WHERE t == @@chosen_edge_heap.top().from_v
+		  ACCUM e.setAttr(result_attr, TRUE);
+	  END;
+	  IF file_path != "" THEN
+	      @@mst_set += @@chosen_edge_heap.top();
+	  END;
+	  IF print_accum THEN
+	      @@result_set += @@chosen_edge_heap.top().e;
+	  END;
+      END;    
+      @@chosen_edge_heap.clear();
+      MSTNodes = MSTNodes UNION Current;      // update MSTNodes
+  END;
 
-			END;
-			IF file_path != "" THEN
-			   @@mst += @@chosen_edge.top();
-			END;
-			IF print_accum THEN
-			  @@result += @@chosen_edge.top().e;
-			END;
-		END;    
-		@@chosen_edge.clear();
-		MSTNodes = MSTNodes UNION Current;      // update MSTNodes
-	END;
+  # Output
+  IF print_accum THEN
+      PRINT @@result_set as mst;
+  END;
 
-# Output
-	IF print_accum THEN
-		PRINT @@result as mst;
-	END;
-
-	IF file_path != "" THEN
-		f.println("From", "To", "Weight");
-		FOREACH e in @@mst DO
-			f.println(e.from_v, e.to_v, e.weight);
-		END;
-	END;
+  IF file_path != "" THEN
+      f.println("From", "To", "Weight");
+      FOREACH e in @@mst_set DO
+          f.println(e.from_v, e.to_v, e.weight);
+      END;
+  END;
 }
