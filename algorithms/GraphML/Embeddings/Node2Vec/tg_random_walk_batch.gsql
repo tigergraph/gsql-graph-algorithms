@@ -1,29 +1,33 @@
-CREATE QUERY tg_random_walk_batch(int batches, int step, int path_size, string filepath = "/home/tigergraph/path.csv", set<string> edge_types, int sample_num) {
+CREATE QUERY tg_random_walk_batch(INT batches, INT step, INT path_size, STRING filepath = "/home/tigergraph/path.csv", SET<STRING> edge_types, INT sample_num) {
   FILE f(filepath);
-  ListAccum<ListAccum<vertex>> @recv_seque;
-  ListAccum<ListAccum<vertex>> @send_seque;
+  ListAccum<ListAccum<VERTEX>> @recv_seque_list;
+  ListAccum<ListAccum<VERTEX>> @send_seque_list;
   start (ANY) = {ANY};
   
-  FOREACH i in range [0, batches - 1] DO
-    tmp = SELECT s FROM start:s WHERE getvid(s) % batches == i;
-    start = select s from tmp:s
-      POST-ACCUM s.@send_seque.clear(),
-                 s.@send_seque += [s];
-    while true limit step do
-      tmp = select t from tmp:s-(edge_types:e)->:t
-            SAMPLE sample_num EDGE when s.outdegree() >= 1
-              accum t.@recv_seque += s.@send_seque
+  FOREACH i IN RANGE [0, batches - 1] DO
+      tmp = SELECT s 
+            FROM start:s 
+            WHERE getvid(s) % batches == i;
+      start = SELECT s 
+              FROM tmp:s
+              POST-ACCUM s.@send_seque_list.clear(),
+                         s.@send_seque_list += [s];
+      WHILE true LIMIT step DO
+          tmp = SELECT t 
+                FROM tmp:s-(edge_types:e)->:t
+                SAMPLE sample_num EDGE WHEN s.outdegree() >= 1
+                ACCUM t.@recv_seque_list += s.@send_seque_list
                 POST-ACCUM
-                  t.@send_seque.clear(),
-                  foreach path in t.@recv_seque do
-                    case when path.size() == path_size - 1 THEN
-                      f.println(path + [t])
-                    else
-                      t.@send_seque += path + [t]
-                    end
-                  end,
-                  t.@send_seque += [t],
-                  t.@recv_seque.clear();
-                end;
+                      t.@send_seque_list.clear(),
+                      FOREACH PATH IN t.@recv_seque_list DO
+                          CASE WHEN PATH.size() == path_size - 1 THEN
+                              f.println(PATH + [t])
+                          ELSE
+                              t.@send_seque_list += PATH + [t]
+                          END
+                      END,
+                      t.@send_seque_list += [t],
+                      t.@recv_seque_list.clear();
+      END;
   END;
 }
