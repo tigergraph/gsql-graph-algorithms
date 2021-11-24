@@ -1,3 +1,4 @@
+
 CREATE QUERY tg_bfs(SET<STRING> v_type, SET<STRING> e_type,INT max_hops=10, VERTEX v_start,
 BOOL print_accum = True, STRING result_attr = "",STRING file_path = "", BOOL display_edges = TRUE){ 
 /*Breadth-First Search Algorithm from a single source node
@@ -8,44 +9,52 @@ max_hops: look only this far from each vertex    result_attr: INT attr to store 
 file_path: file to write CSV output to           display_edges: output edges for visualization
 */ 
 
-    SumAccum<INT> @@curstep;  # current step
-    SumAccum<INT> @step;  # step from source
-    OrAccum @visited;
-    SetAccum<EDGE> @@edgeset;
+    SumAccum<INT> @@sum_cur_step;  # current step
+    SumAccum<INT> @sum_step;  # step from source
+    OrAccum @or_visited;
+    SetAccum<EDGE> @@edge_set;
     FILE f (file_path);
-
     Start = {v_start};
 
     # initialize the step
-    @@curstep = 0;
+    @@sum_cur_step = 0;
 
     # start from the source node
-    Start = SELECT s FROM Start:s
-            POST-ACCUM s.@visited += TRUE;
+    Start = SELECT s 
+            FROM Start:s
+            POST-ACCUM s.@or_visited += TRUE;
 
     # breadth-first search from source
     WHILE Start.size() > 0 LIMIT max_hops DO
-        @@curstep += 1;
-        Start = SELECT t FROM Start:s-(e_type:e)-> :t
-                WHERE t.@visited == FALSE
+        @@sum_cur_step += 1;
+        Start = SELECT t 
+                FROM Start:s-(e_type:e)-> :t
+                WHERE t.@or_visited == FALSE
                 ACCUM 
-                    IF display_edges THEN @@edgeset += e END
+                    IF display_edges THEN 
+                        @@edge_set += e 
+                    END
                 POST-ACCUM 
-                    t.@visited += TRUE,
-                    t.@step = @@curstep;
+                    t.@or_visited += TRUE,
+                    t.@sum_step = @@sum_cur_step;
     END;
     
     Start = {v_type};
-    Start = SELECT s FROM Start:s
-            WHERE s.@visited == TRUE
+    Start = SELECT s 
+            FROM Start:s
+            WHERE s.@or_visited == TRUE
             POST-ACCUM 
-                IF result_attr != "" THEN s.setAttr(result_attr, s.@step) END,
-                IF file_path != "" THEN f.println(s, s.@step) END; 
+                IF result_attr != "" THEN 
+                    s.setAttr(result_attr, s.@sum_step) 
+                END,
+                IF file_path != "" THEN 
+                    f.println(s, s.@sum_step) 
+                END; 
     # output
     IF print_accum THEN
-        PRINT Start[Start.@step];
+        PRINT Start[Start.@sum_step];
         IF display_edges THEN
-            PRINT @@edgeset;
+            PRINT @@edge_set;
         END;
     END;
 }
