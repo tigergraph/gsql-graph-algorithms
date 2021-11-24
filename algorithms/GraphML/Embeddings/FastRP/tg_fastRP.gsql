@@ -1,48 +1,52 @@
-CREATE QUERY tg_fastRP(INT num_edges, INT num_nodes, INT k, INT sampling_constant, INT reduced_dimension, 
-					   DOUBLE normalization_strength, STRING input_weights, STRING index_attr, 
-					   BOOL print_accum = TRUE, BOOL store_attr =  FALSE, STRING file_path = "") { 
-	/*
-    This query produces an embedding for each vertex.
-    Assumes that tg_fastRP_preprocessing has been run first.
+CREATE QUERY tg_fastRP(INT num_edges, INT num_nodes, INT k, INT sampling_constant, INT reduced_dimension, DOUBLE normalization_strength, 
+  STRING input_weights, STRING index_attr, BOOL print_accum = TRUE, BOOL store_attr =  FALSE, STRING file_path = "") { 
+/*
+This query produces an embedding for each vertex.
+Assumes that tg_fastRP_preprocessing has been run first.
+    
+NOTE: This query needs to be modified based upon your schema to set the embedding 
+attribute accordingly if you wish to store the embeddings in your graph. Each vertex should have
+an attribute with type LIST<DOUBLE>. If you do not wish to store the embeddings in graph, the applicable lines.
 
-    NOTE: This query needs to be modified based upon your schema to set the embedding 
-	attribute accordingly if you wish to store the embeddings in your graph. Each vertex should have
-	an attribute with type LIST<DOUBLE>. If you do not wish to store the embeddings in graph, the applicable lines.
-
-    Parameters :
-        num_edges: Number of edges in your graph
-		num_nodes: Number of vertices in your graph
-		k: "depth" of embedding. k=2 means that the resulting embedding would take vertices within 2-hops into account
-		sampling_constant: controls the sparsity of the resulting embedding
-		reduced_dimension: dimension of the embedding
-		normalization_strength: hyperparameter that is typically between -1 and 0
-		input_weights: comma seperated string of weights for each hop in the graph, (eg "1,2,4") when k=3
-		index_attr: attribute where the fastrp_preprocessing query results are stored
-		print_accum: print resulting embeddings to Json
-		store_attr: option to write embeddings to a vertex attribute (NOTE: SCHEMA MUST SUPPORT THIS)
-		file_path: path to write embeddings to file
+Parameters :
+num_edges: Number of edges in your graph
+num_nodes: Number of vertices in your graph
+k: "depth" of embedding. k=2 means that the resulting embedding would take vertices within 2-hops into account
+sampling_constant: controls the sparsity of the resulting embedding
+reduced_dimension: dimension of the embedding
+normalization_strength: hyperparameter that is typically between -1 and 0
+input_weights: comma seperated string of weights for each hop in the graph, (eg "1,2,4") when k=3
+index_attr: attribute where the fastrp_preprocessing query results are stored
+print_accum: print resulting embeddings to Json
+store_attr: option to write embeddings to a vertex attribute (NOTE: SCHEMA MUST SUPPORT THIS)
+file_path: path to write embeddings to file
     */
     
-	MapAccum<INT,INT> @@degree_diagonal;
-	MapAccum<INT, ListAccum<DOUBLE>> @@result;
-	ListAccum<ListAccum<INT>> @@edge_list;
-	FILE f (file_path);
-	Start = {ANY};
+MapAccum<INT,INT> @@degree_diagonal_map;
+MapAccum<INT, ListAccum<DOUBLE>> @@result_map;
+ListAccum<ListAccum<INT>> @@edge_list;
+FILE f (file_path);
+Start = {ANY};
 
-	info = SELECT s
-		   FROM Start:s-(:e)-:t
-		   ACCUM @@edge_list += [s.getAttr(index_attr, "INT"),t.getAttr(index_attr, "INT")]
-		   POST-ACCUM @@degree_diagonal += (s.getAttr(index_attr, "INT") -> s.outdegree());
+info = SELECT s
+       FROM Start:s-(:e)-:t
+       ACCUM 
+	   @@edge_list += [s.getAttr(index_attr, "INT"),t.getAttr(index_attr, "INT")]
+       POST-ACCUM
+	   @@degree_diagonal_map += (s.getAttr(index_attr, "INT") -> s.outdegree());
 
-	@@result = fastRP(@@degree_diagonal, @@edge_list, num_edges, num_nodes, k, sampling_constant, reduced_dimension, normalization_strength, input_weights);
+@@result = fastRP(@@degree_diagonal_map, @@edge_list, num_edges, num_nodes, k, sampling_constant, reduced_dimension, normalization_strength, input_weights);
 	
-	IF print_accum THEN
-	   PRINT @@result;
-	END;
-	IF result_attr != "" THEN  # Store embedding as vertex attribute
-	   storeEmbeddings = SELECT s FROM Start:s POST-ACCUM s.fastrp_embedding = @@result.get(s.getAttr(index_attr, "INT"));
-	END;
-	IF file_path != "" THEN
-	   f.println(@@result);
-	END;
+IF print_accum THEN
+    PRINT @@result_map;
+END;
+IF result_attr != "" THEN  # Store embedding as vertex attribute
+    storeEmbeddings = SELECT s 
+                     FROM Start:s 
+		     POST-ACCUM s.fastrp_embedding = @@result_map.get(s.getAttr(index_attr, "INT"));
+END;
+
+IF file_path != "" THEN
+    f.println(@@result_map);
+END;
 }
