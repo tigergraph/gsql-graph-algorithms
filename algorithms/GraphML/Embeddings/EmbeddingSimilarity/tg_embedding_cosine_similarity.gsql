@@ -1,4 +1,4 @@
-CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, INT embeddingDim, INT k) { 
+CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, INT embedding_dim, INT k) { 
     /*
     This query calculates the embedding cosine similarity between one vertex and a set of others.
     Higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.
@@ -11,26 +11,26 @@ CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, I
         embeddingDim: dimension of the vertex embedding
         k: number of similar vertices to return, with most similar first
     */
-    ListAccum<DOUBLE> @@embedding1;
-    MapAccum<INT, ListAccum<DOUBLE>> @@embeddings;
-    MapAccum<INT, DOUBLE> @@similarity;
-    SumAccum<DOUBLE> @similarityScore;
+    ListAccum<DOUBLE> @@embedding1_list;
+    MapAccum<INT, ListAccum<DOUBLE>> @@embeddings_map;
+    MapAccum<INT, DOUBLE> @@similarity_map;
+    SumAccum<DOUBLE> @sum_similarity_score;
 
     v1_set = {v1};
     start = {vert_types};
 
     info = SELECT s
            FROM v1_set:s
-           POST-ACCUM @@embedding1 += s.embedding;
+           POST-ACCUM @@embedding1_list += s.embedding;
     res = SELECT s
           FROM start:s WHERE s != v1
-          ACCUM @@embeddings += (s.vert_index->s.embedding);
+          ACCUM @@embeddings_map += (s.vert_index->s.embedding);
 
-    @@similarity = cosine_similarity(@@embedding1, @@embeddings, embeddingDim);
+    @@similarity_map = cosine_similarity(@@embedding1_list, @@embeddings_map, embedding_dim);
     kMostSimilar = SELECT s 
                    FROM start:s 
-                   POST-ACCUM s.@similarityScore += @@similarity.get(s.vert_index) 
-                   ORDER BY s.@similarityScore 
+                   POST-ACCUM s.@sum_similarity_score += @@similarity_map.get(s.vert_index) 
+                   ORDER BY s.@sum_similarity_score 
                    DESC LIMIT k;
     PRINT kMostSimilar;
 }
