@@ -1,4 +1,4 @@
-CREATE QUERY tg_same_community(VERTEX a, VERTEX b, STRING communityAttribute, STRING communityAttrType, BOOL print_res = TRUE) { 
+CREATE QUERY tg_same_community(VERTEX a, VERTEX b, STRING community_attribute, STRING community_attr_type, BOOL print_res = TRUE) { 
     /*
     This query returns 1 if the two vertices are in the same community, and 0 otherwise.
     Assumes that a community dedection algorithm has already
@@ -16,17 +16,19 @@ CREATE QUERY tg_same_community(VERTEX a, VERTEX b, STRING communityAttribute, ST
     avs = {a};
     bvs = {b};
 
-    IF communityAttrType NOT IN ("UINT", "uint", "INT", "int", "STRING", "string") THEN
+    IF community_attr_type NOT IN ("UINT", "uint", "INT", "int", "STRING", "string") THEN
         PRINT "communityAttrType not valid option" as errMsg;
         RETURN;
     END;
     
     res = SELECT av
           FROM avs:av 
-          POST-ACCUM aCommunity = av.getAttr(communityAttribute, communityAttrType);
+          POST-ACCUM aCommunity = av.getAttr(community_attribute, community_attr_type);
+          
     res = SELECT bv
           FROM bvs:bv
-          POST-ACCUM bCommunity = bv.getAttr(communityAttribute, communityAttrType);
+          POST-ACCUM bCommunity = bv.getAttr(community_attribute, community_attr_type);
+          
     # Check if in same community
     IF aCommunity == bCommunity THEN 
         IF print_res THEN
