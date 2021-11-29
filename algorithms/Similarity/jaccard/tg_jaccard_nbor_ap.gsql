@@ -3,23 +3,23 @@ CREATE QUERY tg_jaccard_nbor_ap(STRING v_type, STRING e_type, STRING re_type, IN
 
   This query supports only taking in a single edge for the time being (8/13/2020).
 */
-        MapAccum<VERTEX, FLOAT> @result;
-        FILE f (file_path);
+    MapAccum<VERTEX, FLOAT> @result_map;
+    FILE f (file_path);
   
-        start = {v_type};
-        IF file_path != "" THEN
-          f.println("Vertex1", "Vertex2", "Similarity");
-        END;
-        start = SELECT s
-                FROM start:s
-                POST-ACCUM 
-                IF print_accum THEN
-                  s.@result = tg_jaccard_nbor_ap_sub(s, e_type, re_type, top_k, TRUE, file_path,f, similarity_edge)
-                ELSE
-                  tg_jaccard_nbor_ap_sub(s, e_type, re_type, top_k, TRUE, file_path,f, similarity_edge)
-                END;
+    start = {v_type};
+    IF file_path != "" THEN
+        f.println("Vertex1", "Vertex2", "Similarity");
+    END;
+    start = SELECT s
+            FROM start:s
+            POST-ACCUM 
+            IF print_accum THEN
+                s.@result_map = tg_jaccard_nbor_ap_sub(s, e_type, re_type, top_k, TRUE, file_path,f, similarity_edge)
+            ELSE
+                tg_jaccard_nbor_ap_sub(s, e_type, re_type, top_k, TRUE, file_path,f, similarity_edge)
+            END;
   
-        IF print_accum THEN
-          PRINT start[start.@result];
-        END;
+    IF print_accum THEN
+        PRINT start[start.@result_map];
+    END;
 }
