@@ -16,7 +16,7 @@ CREATE QUERY tg_cosine_batch(STRING vertex_type, STRING edge_type, STRING edge_a
   TYPEDEF TUPLE<VERTEX ver, FLOAT val> res_tup; # storing results in the heap
   MapAccum<VERTEX, FLOAT> @numerator_map, @@norm_map; # weight value from edge, normalized value
   HeapAccum<res_tup>(top_k, val desc) @heap; # stores topK similarity results
-  file f (file_path);
+  FILE f (file_path);
 
 # get numerator value and normalized value from edge attribute
   start = {vertex_type.*};
