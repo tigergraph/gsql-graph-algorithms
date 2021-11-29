@@ -19,6 +19,7 @@ CREATE QUERY tg_common_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL pr
   
         nb = SELECT n 
              FROM bvs -(e_type)-> :n; 
+             
     ELSE  # Use any edge types
         # Get neighbors of source vertices
         na = SELECT n 
