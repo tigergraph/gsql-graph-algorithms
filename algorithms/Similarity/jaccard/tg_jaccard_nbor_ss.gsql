@@ -11,41 +11,45 @@ Parameters:
 
   This query current supports only a single edge type (not a set of types) - 8/13/20
 */
-	SumAccum<INT> @intersection_size, @@set_size_A, @set_size_B;
-	SumAccum<FLOAT> @similarity;
-	FILE f (file_path);
 
-	Start (ANY) = {source};
-	Start = SELECT s
-	    FROM Start:s
-			ACCUM @@set_size_A += s.outdegree(e_type);
+  SumAccum<INT> @sum_intersection_size, @@sum_set_size_A, @sum_set_size_B;
+  SumAccum<FLOAT> @sum_similarity;
+  FILE f (file_path);
 
-	Subjects = SELECT t
-			   FROM Start:s-(e_type:e)-:t;
+  Start (ANY) = {source};
+  Start = SELECT s
+	  FROM Start:s
+	  ACCUM @@sum_set_size_A += s.outdegree(e_type);
 
-	Others = SELECT t
-			 FROM Subjects:s -(rev_e_type:e)- :t
-			 WHERE t != source
-			 ACCUM t.@intersection_size += 1,
-				   t.@set_size_B = t.outdegree(e_type)
-			 POST-ACCUM t.@similarity = t.@intersection_size*1.0/(@@set_size_A + t.@set_size_B - t.@intersection_size)
-			 ORDER BY t.@similarity DESC
-			 LIMIT top_k;
+  Subjects = SELECT t
+	     FROM Start:s-(e_type:e)-:t;
 
-	IF file_path != "" THEN
-		f.println("Vertex1", "Vertex2", "Similarity");
-	END;
+  Others = SELECT t
+	   FROM Subjects:s -(rev_e_type:e)- :t
+	   WHERE t != source
+	   ACCUM 
+	       t.@sum_intersection_size += 1,
+	       t.@sum_set_size_B = t.outdegree(e_type)
+	   POST-ACCUM 
+	       t.@sum_similarity = t.@sum_intersection_size*1.0/(@@sum_set_size_A + t.@sum_set_size_B - t.@sum_intersection_size)
+	   ORDER BY t.@sum_similarity DESC
+	   LIMIT top_k;
 
+  IF file_path != "" THEN
+      f.println("Vertex1", "Vertex2", "Similarity");
+  END;
+  
+  Others = SELECT s
+	   FROM Others:s
+	   POST-ACCUM 
+	       IF similarity_edge_type != "" THEN
+	           INSERT INTO EDGE similarity_edge_type VALUES (source, s, s.@sum_similarity)
+	       END,
+	       IF file_path != "" THEN 
+	           f.println(source, s, s.@sum_similarity) 
+	       END; 
 
-	Others = SELECT s
-			 FROM Others:s
-			 POST-ACCUM 
-				IF similarity_edge_type != "" THEN
-					INSERT INTO EDGE similarity_edge_type VALUES (source, s, s.@similarity)
-				END,
-				IF file_path != "" THEN f.println(source, s, s.@similarity) END; 
-
-	IF print_accum THEN
-		PRINT Others[Others.@similarity];
-	END;
+  IF print_accum THEN
+      PRINT Others[Others.@sum_similarity];
+  END;
 }
