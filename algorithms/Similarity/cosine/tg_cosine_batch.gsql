@@ -13,8 +13,8 @@ CREATE QUERY tg_cosine_batch(STRING vertex_type, STRING edge_type, STRING edge_a
       similarity_edge : edge type for storing vertex-vertex similarity scores
       num_of_batches  : how many batches to split the query into (trade off parallelism for memory optimization)
   */
-  TYPEDEF TUPLE<vertex ver, float val> res_tup; # storing results in the heap
-  MapAccum<vertex, float> @numerator_map, @@norm_map; # weight value from edge, normalized value
+  TYPEDEF TUPLE<VERTEX ver, FLOAT val> res_tup; # storing results in the heap
+  MapAccum<VERTEX, FLOAT> @numerator_map, @@norm_map; # weight value from edge, normalized value
   HeapAccum<res_tup>(top_k, val desc) @heap; # stores topK similarity results
   file f (file_path);
 
