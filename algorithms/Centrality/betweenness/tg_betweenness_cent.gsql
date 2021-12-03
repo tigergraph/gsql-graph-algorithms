@@ -50,7 +50,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
                   POST-ACCUM s.@seen=1<<s.@id,
                              s.@visit=s.@seen,
                              s.@sigma+=(0->1),
-                             s.@times+=(0->1<<s.@visit); # set initial seen and visit
+                             s.@times+=(0->1); # set initial seen and visit
           @@batchSet.clear();
           @@map.clear();
           @@count=0;
