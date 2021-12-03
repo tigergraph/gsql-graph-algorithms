@@ -53,7 +53,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
           WHILE (Start.size() > 0) LIMIT max_hops DO
                 @@currDist+=1;
                 Start = SELECT t FROM Start:s -(re_type:e)-v_type:t
-                        WHERE s.@visit&-t.@seen-1>0 and s!=t #use -t.@seen-1 to get the trverse of t.@seen
+                        WHERE s.@visit&-t.@seen-1>0 and s!=t #use -t.@seen-1 to get the negation of t.@seen
                         ACCUM
                               INT c = s.@visit&-t.@seen-1,
                               IF c>0 THEN
