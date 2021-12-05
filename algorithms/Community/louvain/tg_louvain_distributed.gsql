@@ -8,9 +8,10 @@ CREATE DISTRIBUTED QUERY tg_louvain_distributed(SET<STRING> v_type, SET<STRING> 
 	v_type: vertex types to traverse
 	e_type: edge types to traverse
 	wt_attr: attribute name for edge weights
-	         wt_attr type is hardcoded to INT
-			 FLOAT or DOUBLE can be supported by changing all e.getAttr(wt_attr, "INT")
-             to e.getAttr(wt_attr, "FLOAT") or e.getAttr(wt_attr, "DOUBLE")
+             use empty string is graph is unweighted
+	         wt_attr type is hardcoded to FLOAT
+			 INT or DOUBLE can be supported by changing all `e.getAttr(wt_attr, "FLOAT")`
+             to `e.getAttr(wt_attr, "INT")` or `e.getAttr(wt_attr, "DOUBLE")`
 	max_iter: maximum iteration of louvain optimization
     result_attr: attribute name to assign community id results to; use empty string to skip
     file_path: file path to write CSV output to; use empty string to skip
@@ -36,10 +37,19 @@ CREATE DISTRIBUTED QUERY tg_louvain_distributed(SET<STRING> v_type, SET<STRING> 
     Start = {v_type};
     Start = SELECT s FROM Start:s -(e_type:e)- :t
         ACCUM
-            @@m += e.getAttr(wt_attr, "INT")*0.5,
-            s.@weight += e.getAttr(wt_attr, "INT")*1.0,
-            s.@ccWeight += e.getAttr(wt_attr, "INT")*1.0,
+            IF wt_attr != "" THEN
+                @@m += e.getAttr(wt_attr, "FLOAT")*0.5,
+                s.@weight += e.getAttr(wt_attr, "FLOAT")*1.0,
+                s.@ccWeight += e.getAttr(wt_attr, "FLOAT")*1.0
+            ELSE
+                @@m += 0.5,
+                s.@weight += 1.0,
+                s.@ccWeight += 1.0
+            END,
             s.@outdegree += 1
+        // mark @cc only for vertices with more than 1 neighbors
+        // and only the marked vertices will participate in the actual louvain algorithm
+        // the unmorked vertices will be resolved by the vertex following heuristic
         POST-ACCUM
             IF s.@outdegree > 1 THEN s.@cc += s END;
     IF print_info THEN
@@ -50,7 +60,11 @@ CREATE DISTRIBUTED QUERY tg_louvain_distributed(SET<STRING> v_type, SET<STRING> 
     Start = SELECT t FROM Start:s -(e_type:e)- :t
         WHERE s.@outdegree > 1 AND t.@outdegree > 1
         ACCUM
-            t.@best_move += move(e.getAttr(wt_attr, "INT")*1.0 + @@m*t.@weight * (t.@weight - s.@weight), -s.@ccWeight, s.@cc.get(0))
+            IF wt_attr != "" THEN
+                t.@best_move += move(e.getAttr(wt_attr, "FLOAT")*1.0 + @@m*t.@weight * (t.@weight - s.@weight), -s.@ccWeight, s.@cc.get(0))
+            ELSE
+                t.@best_move += move(1.0 + @@m*t.@weight * (t.@weight - s.@weight), -s.@ccWeight, s.@cc.get(0))
+            END
         POST-ACCUM
             IF getDeltaQ(t.@best_move) > 0 THEN
                 IF -getWeight(t.@best_move) < t.@ccWeight THEN
@@ -90,7 +104,12 @@ CREATE DISTRIBUTED QUERY tg_louvain_distributed(SET<STRING> v_type, SET<STRING> 
 
         Start = SELECT s FROM Start:s -(e_type:e)- :t
             WHERE t.@outdegree > 1
-            ACCUM s.@A += (t.@cc.get(0) -> e.getAttr(wt_attr, "INT")*1.0);
+            ACCUM 
+                IF wt_attr != "" THEN
+                    s.@A += (t.@cc.get(0) -> e.getAttr(wt_attr, "FLOAT")*1.0)
+                ELSE
+                    s.@A += (t.@cc.get(0) -> 1.0)
+                END;
 
         Start = SELECT s FROM Start:s
             ACCUM
@@ -132,7 +151,9 @@ CREATE DISTRIBUTED QUERY tg_louvain_distributed(SET<STRING> v_type, SET<STRING> 
         END;
     END;
 
-    // process node with outdegree = 1
+    // process node with outdegree=1
+    // follow the vertex to its neighbor's community
+    // if the neighbor also have outdegree=1, mark the two vertices as one community
     Start = {v_type};
     Start = SELECT s FROM Start:s -(e_type:e)- :t
         WHERE s.@outdegree == 1 AND t.@outdegree != 1
