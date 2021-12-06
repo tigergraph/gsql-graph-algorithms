@@ -70,24 +70,23 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
       @@map.clear();
       @@sum_count=0;
       
-      WHILE (Start.size() > 0) 
-          LIMIT max_hops DO
-              @@sum_curr_dist+=1;
+      WHILE (Start.size() > 0) LIMIT max_hops DO
+          @@sum_curr_dist+=1;
     
-      Start = SELECT t 
-              FROM Start:s -(re_type:e)-v_type:t
-              WHERE s.@bitwise_or_visit&-t.@bitwise_or_seen-1>0 AND s!=t #use -t.@seen-1 to get the trverse of t.@seen
-              ACCUM                               #updatevisitNext
-                    INT c = s.@bitwise_or_visit&-t.@bitwise_or_seen-1,
-                    IF c>0 
-                       THEN t.@bitwise_or_visit_next+=c,
-                            t.@bitwise_or_seen+=c
-                    END,
-                    t.@sigma_map+=(@@sum_curr_dist->s.@sigma_map.get(@@sum_curr_dist-1)) #set sigma based on depth
-              POST-ACCUM 
-	            t.@bitwise_or_visit=t.@bitwise_or_visit_next,
-                    t.@times_map+=(@@sum_curr_dist->t.@bitwise_or_visit),
-                    t.@bitwise_or_visit_next=0;
+          Start = SELECT t 
+                  FROM Start:s -(re_type:e)-v_type:t
+                  WHERE s.@bitwise_or_visit&-t.@bitwise_or_seen-1>0 AND s!=t #use -t.@seen-1 to get the trverse of t.@seen
+                  ACCUM                               #updatevisitNext
+                      INT c = s.@bitwise_or_visit&-t.@bitwise_or_seen-1,
+                      IF c>0 THEN 
+		          t.@bitwise_or_visit_next+=c,
+                          t.@bitwise_or_seen+=c
+                      END,
+                      t.@sigma_map+=(@@sum_curr_dist->s.@sigma_map.get(@@sum_curr_dist-1)) #set sigma based on depth
+                  POST-ACCUM 
+	              t.@bitwise_or_visit=t.@bitwise_or_visit_next,
+                      t.@times_map+=(@@sum_curr_dist->t.@bitwise_or_visit),
+                      t.@bitwise_or_visit_next=0;
       END;
       @@sum_curr_dist+=-1;
     
