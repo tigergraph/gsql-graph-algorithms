@@ -4,109 +4,123 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
   # This query detects strongly connected components based on the following paper:
   # https://www.osti.gov/servlets/purl/1115145
   ##
-  SumAccum<UINT> @indegree;
-  SumAccum<UINT> @outdegree;
-  SumAccum<INT> @degree_product;
-  MinAccum<INT> @cc_id;
-  OrAccum @visited;
-  OrAccum @FW_visited;
-  MinAccum<INT> @vid;
-  MapAccum<INT, SumAccum<UINT>> @@CC_count;
+  SumAccum<UINT> @sum_indegree;
+  SumAccum<UINT> @sum_outdegree;
+  SumAccum<INT> @sum_degree_product;
+  MinAccum<INT> @min_cc_id;
+  OrAccum @or_visited;
+  OrAccum @or_FW_visited;
+  MinAccum<INT> @min_vid;
+  MapAccum<INT, SumAccum<UINT>> @@CC_count_map;
   
   Vertices = {v_type};
   All_Vertices = Vertices;
 
-  TrimSet = SELECT s FROM Vertices:s
+  TrimSet = SELECT s 
+            FROM Vertices:s
             WHERE  s.outdegree(e_type) == 0 OR s.outdegree(re_type) == 0
-            ACCUM  s.@visited = TRUE,
-                   s.@cc_id = getvid(s);
+            ACCUM  s.@or_visited = TRUE,
+                   s.@min_cc_id = getvid(s);
   
   # 3. calculate the product of in degree and out degree
   # and filter the vertices which have the product no less than the threshold
-  PotentialPivots = SELECT s FROM Vertices:s
-                    POST-ACCUM s.@indegree = s.outdegree(re_type),
-                               s.@outdegree = s.outdegree(e_type),
-                               s.@degree_product = s.@indegree * s.@outdegree
-                    HAVING s.@degree_product >= threshold;
+  PotentialPivots = SELECT s 
+                    FROM Vertices:s
+                    POST-ACCUM s.@sum_indegree = s.outdegree(re_type),
+                               s.@sum_outdegree = s.outdegree(e_type),
+                               s.@sum_degree_product = s.@sum_indegree * s.@sum_outdegree
+                    HAVING s.@sum_degree_product >= threshold;
 
   # 4. while PotentialPoviots set is not empty, select a pivot and find its SCC
   WHILE PotentialPivots.size() > 0 DO
-    # select an initial pivot vertex as the vertex in the graph 
-    # that has the largest product of its in degree and out degree
-        Pivot = SELECT s FROM PotentialPivots:s
-                ORDER BY s.@degree_product DESC
-                LIMIT  1;
+      # select an initial pivot vertex as the vertex in the graph 
+      # that has the largest product of its in degree and out degree
+      Pivot = SELECT s 
+              FROM PotentialPivots:s
+              ORDER BY s.@sum_degree_product DESC
+              LIMIT  1;
  
-    # with the chosen pivot we do one iteration of FW-BW algorithm to find its SCC
-    # foward
-        Vertices = SELECT s FROM Pivot:s
-                   POST-ACCUM s.@visited = TRUE,
-                              s.@cc_id = getvid(s);
+      # with the chosen pivot we do one iteration of FW-BW algorithm to find its SCC
+      # foward
+      Vertices = SELECT s 
+                 FROM Pivot:s
+                 POST-ACCUM s.@or_visited = TRUE,
+                            s.@min_cc_id = getvid(s);
     
-        Descendants = {};
-        WHILE Vertices.size() > 0 DO
-              Vertices = SELECT t FROM Vertices:s -(e_type:e)- :t
-                         WHERE  t.@FW_visited == FALSE AND t.@visited == FALSE
-                         POST-ACCUM t.@FW_visited += TRUE;
+      Descendants = {};
+      WHILE Vertices.size() > 0 DO
+          Vertices = SELECT t 
+                     FROM Vertices:s -(e_type:e)- :t
+                     WHERE  t.@or_FW_visited == FALSE AND t.@or_visited == FALSE
+                     POST-ACCUM t.@or_FW_visited += TRUE;
       Descendants = Descendants UNION Vertices;
       
   END;
-    # backward
+  # backward
   Vertices = Pivot;
   WHILE Vertices.size() > 0 DO
-        Vertices = SELECT t FROM Vertices:s -(re_type:e)- :t
-                   WHERE  t.@FW_visited == TRUE AND t.@visited == FALSE
-                   ACCUM  t.@cc_id = s.@cc_id
-                   POST-ACCUM t.@visited += TRUE;
+      Vertices = SELECT t 
+                 FROM Vertices:s -(re_type:e)- :t
+                 WHERE  t.@or_FW_visited == TRUE AND t.@or_visited == FALSE
+                 ACCUM  t.@min_cc_id = s.@min_cc_id
+                 POST-ACCUM t.@or_visited += TRUE;
       
   END;
-    # reset @FW_visited for all descendants
-  Descendants = SELECT s FROM Descendants:s
-                WHERE  s.@FW_visited == TRUE
-                ACCUM  s.@FW_visited = FALSE;
-    # remove the visited vertices from the PotentialPivots set
-  PotentialPivots = SELECT s FROM PotentialPivots:s
-                    WHERE  s.@visited == FALSE;
+  # reset @FW_visited for all descendants
+  Descendants = SELECT s 
+                FROM Descendants:s
+                WHERE  s.@or_FW_visited == TRUE
+                ACCUM  s.@or_FW_visited = FALSE;
+  # remove the visited vertices from the PotentialPivots set
+  PotentialPivots = SELECT s 
+                    FROM PotentialPivots:s
+                    WHERE  s.@or_visited == FALSE;
   END;
 
   # 5. take the remaining vertices and pass them all off to coloring
-  All_Vertices = SELECT s FROM All_Vertices:s
-                 WHERE  s.@visited == FALSE
-                 ACCUM  s.@vid = getvid(s);
+  All_Vertices = SELECT s 
+                 FROM All_Vertices:s
+                 WHERE  s.@or_visited == FALSE
+                 ACCUM  s.@min_vid = getvid(s);
   Vertices = All_Vertices;
   WHILE All_Vertices.size() > 0 DO
-    # initialize colors
-        Vertices = SELECT s FROM All_Vertices:s
-                   ACCUM  s.@cc_id = s.@vid;
-    # the colors are propagated outwardly from each vertex in the graph,
-    # this process continues until no more vertices change their color
-        WHILE Vertices.size() > 0 DO
-              Vertices = SELECT t FROM Vertices:s -(e_type:e)- :t
-                         WHERE  t.@visited == FALSE AND s.@cc_id < t.@cc_id
-                         ACCUM  t.@cc_id += s.@cc_id;
+      # initialize colors
+      Vertices = SELECT s 
+                 FROM All_Vertices:s
+                 ACCUM  s.@min_cc_id = s.@min_vid;
+                 
+      # the colors are propagated outwardly from each vertex in the graph,
+      # this process continues until no more vertices change their color
+      WHILE Vertices.size() > 0 DO
+          Vertices = SELECT t 
+                     FROM Vertices:s -(e_type:e)- :t
+                     WHERE  t.@or_visited == FALSE AND s.@min_cc_id < t.@min_cc_id
+                     ACCUM  t.@min_cc_id += s.@min_cc_id;
       
-        END;
-    # get multiple pivots, or more commonly termed, roots
-    Vertices = SELECT s FROM All_Vertices:s
-               WHERE  s.@cc_id == s.@vid
-               ACCUM  s.@visited = TRUE;
-    All_Vertices = All_Vertices MINUS Vertices;
-    # the SCC is then all vertices that can be reached backward from 
-    # vertices that are also colored with the same color as pivots,
-    # and remove the SCC from the set All_Vertices
-    WHILE Vertices.size() > 0 DO
-          Vertices = SELECT t FROM Vertices:s -(re_type:e)- :t
-                     WHERE  t.@visited == FALSE AND t.@cc_id == s.@cc_id
-                    ACCUM  t.@visited = TRUE;
+      END;
+      # get multiple pivots, or more commonly termed, roots
+      Vertices = SELECT s 
+                 FROM All_Vertices:s
+                 WHERE  s.@min_cc_id == s.@min_vid
+                 ACCUM  s.@or_visited = TRUE;
+      All_Vertices = All_Vertices MINUS Vertices;
+      # the SCC is then all vertices that can be reached backward from 
+      # vertices that are also colored with the same color as pivots,
+      # and remove the SCC from the set All_Vertices
+      WHILE Vertices.size() > 0 DO
+          Vertices = SELECT t 
+                     FROM Vertices:s -(re_type:e)- :t
+                     WHERE  t.@or_visited == FALSE AND t.@min_cc_id == s.@min_cc_id
+                     ACCUM  t.@or_visited = TRUE;
           All_Vertices = All_Vertices MINUS Vertices;
-    END;
+      END;
   END;
 
   IF to_show_cc_count THEN
-     Vertices = {v_type};
-     Vertices = SELECT s FROM Vertices:s
-                POST-ACCUM @@CC_count += (s.@cc_id -> 1);
-    PRINT @@CC_count;
+      Vertices = {v_type};
+      Vertices = SELECT s 
+                 FROM Vertices:s
+                 POST-ACCUM @@CC_count_map += (s.@min_cc_id -> 1);
+      PRINT @@CC_count_map;
   END;
-
 }

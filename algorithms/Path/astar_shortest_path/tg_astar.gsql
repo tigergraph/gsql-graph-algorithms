@@ -1,5 +1,6 @@
 CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type, STRING wt_type, STRING latitude, STRING longitude,
 STRING wt_attr, BOOL display = False){
+
 /* The A* (pronounced "A-Star") Shortest Path algorithm computes the shortest path between two nodes. 
 A* is an informed search algorithm as it uses a heuristic function to guide the graph traversal.
 The heuristic function must be admissible, which means it is always less or equal to the distance to the target.
@@ -13,105 +14,113 @@ wt_type: weight data type (INT,FLOAT,DOUBLE)
 display: output edges for visualization
 */
 
-TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
-HeapAccum<pathTuple>(1, dist ASC) @@findminv;  # retain 1 shortest path
-HeapAccum<pathTuple>(1, dist ASC) @minDist;
-OrAccum @visited, @@valid_path_exists;
-ListAccum<VERTEX> @@tmp;  # the optimal node
-SumAccum<FLOAT> @@totalDist;  # the shortest distance 
-SetAccum<EDGE> @@display_edge;
-SetAccum<VERTEX> @@display_node;
+TYPEDEF TUPLE<FLOAT dist, VERTEX v> path_Tuple;    # <shotest distance, parent node>
+HeapAccum<path_Tuple>(1, dist ASC) @@find_min_v_heap;  # retain 1 shortest path
+HeapAccum<path_Tuple>(1, dist ASC) @min_dist_heap;
+OrAccum @or_visited, @@or_valid_path_exists;
+ListAccum<VERTEX> @@tmp_list;  # the optimal node
+SumAccum<FLOAT> @@sum_total_dist;  # the shortest distance 
+SetAccum<EDGE> @@display_edge_set;
+SetAccum<VERTEX> @@display_node_set;
 INT hop;
 FLOAT x1,y1;
 	    
-    # Check wt_type parameter
-	IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
-		PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
-		RETURN;
-	END;
+# Check wt_type parameter
+IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+    PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+    RETURN;
+END;
   
-	# record target latitude and longitude
-    Tgt = {target_vertex};
-
-	Tgt = SELECT s FROM Tgt:s 
-	        POST-ACCUM x1 = s.getAttr(latitude,"FLOAT"),
-		           y1 = s.getAttr(longitude,"FLOAT");
+# record target latitude and longitude
+Tgt = {target_vertex};
+Tgt = SELECT s 
+      FROM Tgt:s 
+      POST-ACCUM x1 = s.getAttr(latitude,"FLOAT"),
+	         y1 = s.getAttr(longitude,"FLOAT");
     
-	Start = {source_vertex};   # the optimal node
-	Opt = {source_vertex};    # all of the optimal nodes
+Start = {source_vertex};   # the optimal node
+Opt = {source_vertex};    # all of the optimal nodes
 
-	Start = SELECT s FROM Start:s
-            ACCUM s.@visited = True,
-                  s.@minDist = pathTuple(0,s);
+Start = SELECT s 
+        FROM Start:s
+        ACCUM s.@or_visited = True,
+              s.@min_dist_heap = path_Tuple(0,s);
 		
-	# run aster to find shortest distance greedily
-	WHILE Opt.size() > 0 DO
-			
-		# find the node with shortest distance 
-		Opt = SELECT t FROM Opt:s-(e_type:e)-> :t
-			WHERE t.@visited == False
-			ACCUM 
-                # we use Haversine formula as the heuristic function here
-                CASE wt_type WHEN "INT" THEN
-                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "INT") +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
-                WHEN "FLOAT" THEN
-                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "FLOAT") +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
-                WHEN "DOUBLE" THEN
-                    t.@minDist += pathTuple(s.@minDist.top().dist + e.getAttr(wt_attr, "DOUBLE") +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
-                END;
+# run aster to find shortest distance greedily
+WHILE Opt.size() > 0 DO		
+    # find the node with shortest distance 
+    Opt = SELECT t 
+          FROM Opt:s-(e_type:e)-> :t
+          WHERE t.@or_visited == False
+	  ACCUM 
+              # we use Haversine formula as the heuristic function here
+              CASE wt_type WHEN "INT" THEN
+                  t.@min_dist_heap += pathTuple(s.@min_dist_heap.top().dist + e.getAttr(wt_attr, "INT") 
+		  +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
+              WHEN "FLOAT" THEN
+                  t.@min_dist_heap += pathTuple(s.@min_dist_heap.top().dist + e.getAttr(wt_attr, "FLOAT") 
+		  +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
+              WHEN "DOUBLE" THEN
+                  t.@min_dist_heap += pathTuple(s.@min_dist_heap.top().dist + e.getAttr(wt_attr, "DOUBLE") 
+		  +  GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
+              END;
   
-		Opt = SELECT t FROM Start:s-(e_type:e)-> :t
-            WHERE t.@visited == False
-	    POST-ACCUM @@findminv += pathTuple(t.@minDist.top().dist,t);   
+    Opt = SELECT t 
+          FROM Start:s-(e_type:e)-> :t
+          WHERE t.@or_visited == False
+          POST-ACCUM @@find_min_v_heap += pathTuple(t.@min_dist_heap.top().dist,t);   
 		
-        @@tmp.clear();
-		IF @@findminv.size() > 0 THEN
-        	@@tmp += @@findminv.pop().v;
-      	END;
-	
-	Opt = {@@tmp};
+    @@tmp_list.clear();
+    IF @@find_min_v_heap.size() > 0 THEN
+        @@tmp_list += @@find_min_v_heap.pop().v;
+    END;
 
-	Start = Opt UNION Start;
-	Opt = SELECT t FROM Opt:t
-		POST-ACCUM t.@visited += True;
-        # Determine if it is the target point and terminate the loop if it is
-        IF @@tmp.get(0) == target_vertex THEN 
-            BREAK;
-        END;
+    Opt = {@@tmp_list};
+    Start = Opt UNION Start;
+    Opt = SELECT t 
+          FROM Opt:t
+	  POST-ACCUM 
+	      t.@or_visited += True;
+              # Determine if it is the target point and terminate the loop if it is
+              IF @@tmp_list.get(0) == target_vertex THEN 
+                  BREAK;
+              END;
    
-    END;
-    # The test is whether there is a path between two points
-    Start = {target_vertex};
-  
-    Start = SELECT s FROM Start:s 
-            POST-ACCUM @@valid_path_exists += s.@minDist.size() > 0,
-                       @@display_node += s;
+END;
+# The test is whether there is a path between two points
+Start = {target_vertex};
+Start = SELECT s 
+        FROM Start:s 
+        POST-ACCUM @@or_valid_path_exists += s.@min_dist_heap.size() > 0,
+                   @@display_node_set += s;
     
-    IF @@valid_path_exists THEN
-      # find path
-        WHILE Start.size() > 0 DO
-            Start = SELECT t FROM Start:s-(e_type:e)-> :t
-                    WHERE t == s.@minDist.top().v 
-                    ACCUM @@display_edge += e,
-                        CASE wt_type WHEN "INT" THEN
-			    @@totalDist += e.getAttr(wt_attr, "INT")
-                        WHEN "FLOAT" THEN
-                            @@totalDist += e.getAttr(wt_attr, "FLOAT")
-                        WHEN "DOUBLE" THEN
-                            @@totalDist += e.getAttr(wt_attr, "DOUBLE")
-                        END,
-                        @@display_node += t;
+IF @@or_valid_path_exists THEN
+    # find path
+    WHILE Start.size() > 0 DO
+        Start = 
+	SELECT t 
+	FROM Start:s-(e_type:e)-> :t
+        WHERE t == s.@min_dist_heap.top().v 
+        ACCUM 
+	    @@display_edge_set += e,
+            CASE wt_type WHEN "INT" THEN
+                @@sum_total_dist += e.getAttr(wt_attr, "INT")
+            WHEN "FLOAT" THEN
+                @@sum_total_dist += e.getAttr(wt_attr, "FLOAT")
+            WHEN "DOUBLE" THEN
+                @@sum_total_dist += e.getAttr(wt_attr, "DOUBLE")
+            END,
+            @@display_node_set += t;
             hop = hop + 1;
-        END; 
-        hop = hop - 1;
-        PRINT @@totalDist;
-        PRINT hop;
-        IF display THEN 
-            tmp = {@@display_node};
-            PRINT @@display_edge,tmp;
-        END;
-        
-    ELSE 
-        PRINT "No viable path found.";
-    END;
+    END; 
+    hop = hop - 1;
+    PRINT @@sum_total_dist;
+    PRINT hop;
+    IF display THEN 
+        tmp = {@@display_node_set};
+        PRINT @@display_edge_set,tmp;
+    END;    
+ELSE 
+    PRINT "No viable path found.";
+END;
 }

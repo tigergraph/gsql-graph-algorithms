@@ -3,44 +3,51 @@ CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT max_iter = 1
     Maximal Independent Set query only supports one edge type and works only for undirected graphs at the moment (8/12/20).
     */
   
-    AndAccum @active;
-    OrAccum @selected;
-    MinAccum<INT> @vid_min;
+    AndAccum @and_active;
+    OrAccum @or_selected;
+    MinAccum<INT> @min_vid;
     FILE f(file_path);
     INT iter = 0;
   
     Start = {v_type.*};
-    Start = SELECT s FROM Start:s
-                ACCUM
-                  IF s.outdegree(e_type) == 0 THEN
-                     s.@selected += TRUE,
-                     s.@active += FALSE
-                  END
-                 HAVING s.@active;
+    Start = SELECT s 
+            FROM Start:s
+            ACCUM
+                IF s.outdegree(e_type) == 0 THEN
+                    s.@or_selected += TRUE,
+                    s.@and_active += FALSE
+                END
+            HAVING s.@and_active;
     
     WHILE Start.size()>0 AND iter<max_iter DO
-        Start = SELECT s FROM Start:s
+        Start = SELECT s 
+                FROM Start:s
                 POST-ACCUM
-                  s.@vid_min = 9223372036854775807;
+                    s.@min_vid = 9223372036854775807;
     
-        TMP = SELECT s FROM Start:s-(e_type:e)->v_type:t
-              WHERE t.@active
-                ACCUM
-                   s.@vid_min += getvid(t);
-    
-        TMP = SELECT s FROM Start:s
-                        POST-ACCUM
-                             IF getvid(s) < s.@vid_min THEN
-                                    s.@selected += TRUE,
-                                    s.@active += FALSE
-                             END
-                        HAVING s.@selected;
-    
-        TMP = SELECT s FROM TMP:s-(e_type:e)->v_type:t
+        TMP = SELECT s 
+              FROM Start:s-(e_type:e)->v_type:t
+              WHERE t.@and_active
               ACCUM
-                   t.@active += FALSE;
+                  s.@min_vid += getvid(t);
     
-        Start = SELECT s FROM Start:s WHERE s.@active;
+        TMP = SELECT s 
+              FROM Start:s
+              POST-ACCUM
+                  IF getvid(s) < s.@min_vid THEN
+                      s.@or_selected += TRUE,
+                      s.@and_active += FALSE
+                  END
+              HAVING s.@or_selected;
+    
+        TMP = SELECT s 
+              FROM TMP:s-(e_type:e)->v_type:t
+              ACCUM
+                  t.@and_active += FALSE;
+    
+        Start = SELECT s 
+                FROM Start:s 
+                WHERE s.@and_active;
         iter = iter+1;   
     END;
   
@@ -49,10 +56,14 @@ CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT max_iter = 1
     END;
   
     Start = {v_type.*};
-    Start = SELECT s FROM Start:s 
-            WHERE s.@selected
-            ACCUM IF file_path != "" THEN f.println(s) END;
-  
+    Start = SELECT s 
+            FROM Start:s 
+            WHERE s.@or_selected
+            ACCUM 
+                IF file_path != "" THEN 
+                    f.println(s) 
+                END;
+                
     IF print_accum THEN
       PRINT Start;
     END;
