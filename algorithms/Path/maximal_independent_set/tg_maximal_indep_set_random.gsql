@@ -25,7 +25,7 @@ CREATE QUERY tg_maximal_indep_set_random(STRING v_type, STRING e_type, INT max_i
                 FROM Start:s
                 POST-ACCUM
                     s.@min_r_min = GSQL_INT_MAX,
-                    s.@r = rand_int(GSQL_INT_MIN, GSQL_INT_MAX);
+                    s.@min_r = rand_int(GSQL_INT_MIN, GSQL_INT_MAX);
 
         TMP = SELECT s 
               FROM Start:s-(e_type:e)->v_type:t
