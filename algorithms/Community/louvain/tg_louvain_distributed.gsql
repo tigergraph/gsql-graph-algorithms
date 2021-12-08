@@ -162,6 +162,16 @@ CREATE DISTRIBUTED QUERY tg_louvain_distributed(SET<STRING> v_type, SET<STRING> 
         PRINT Start.size() AS VertexFollowedToVertex;
     END;
 
+	// process node with outdegree=0
+	// assign them to communities containing only itself
+	Start = {v_type};
+    Start = SELECT s FROM Start:s
+        WHERE s.@outdegree == 0
+        ACCUM s.@cc += s;
+    IF print_info THEN
+        PRINT Start.size() AS VertexAssignedToItself;
+    END;
+
     // save result
     Start = {v_type};
     Start = SELECT s FROM Start:s
