@@ -1,8 +1,9 @@
-CREATE DISTRIBUTED QUERY tg_louvain_distributed(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr = "weight",
+CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr = "weight",
     INT max_iter = 10, STRING result_attr = "cid", STRING file_path = "", BOOL print_info = FALSE) {
 
     /*
-	Distributed version louvain community detection algorithm
+    louvain community detection algorithm
+    add keyword DISTRIBUTED for cluster environment
 
 	Parameters:
 	v_type: vertex types to traverse
@@ -187,10 +188,5 @@ CREATE DISTRIBUTED QUERY tg_louvain_distributed(SET<STRING> v_type, SET<STRING> 
                 @@communityMap += (getvid(s.@cc.get(0)) -> 1);
         PRINT @@communityMap.size() AS FinalCommunityCount;
     END;
-<<<<<<< HEAD
-END;
-}
-=======
 
 }
->>>>>>> Remove unweighted config and ExprFunctions syntax
