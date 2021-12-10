@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2016, TigerGraph Inc.
+ * Copyright (c) 2021, TigerGraph Inc.
  * All rights reserved.
  * Project: TigerGraph Query Language
  *
