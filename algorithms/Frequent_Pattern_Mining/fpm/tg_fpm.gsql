@@ -1,6 +1,11 @@
 CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING connect_edge, DOUBLE support, 
                     UINT min_length, UINT max_count = 10000, INT print_limit = -1, STRING file_path = "") { 
   /*
+  Paper Reference:
+  Shintani, Takahiko & Kitsuregawa, Masaru. (1999). Mining Algorithms for Sequential Patterns in Parallel: Hash Based Approach.
+  Lecture Notes in Computer Science. 1394. 10.1007/3-540-64383-4_24.
+  https://www.researchgate.net/publication/2642957_Mining_Algorithms_for_Sequential_Patterns_in_Parallel_Hash_Based_Approach
+
   Schema examples: user - (buys) - product
                    user - (visits) - page
                    user - (rates) - product
