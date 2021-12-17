@@ -28,5 +28,5 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '11.0.10'
-      - name: Run codestylechecker
-        run: GLEPATH=$(pwd); source tools/scripts/bash_functions && codestylechecker
+     # - name: Run codestylechecker
+     #   run: GLEPATH=$(pwd); source tools/scripts/bash_functions && codestylechecker
