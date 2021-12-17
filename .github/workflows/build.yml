@@ -1,0 +1,35 @@
+# Run Gradle build task.
+# See https://docs.gradle.org/current/userguide/java_plugin.html#lifecycle_tasks for more info.
+
+name: Build
+
+on:
+  push:
+    branches:
+      # accept all branches
+      - '**'
+    tags:
+      # ignore all tags (wip, mit, ...)
+      - '!**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # fetch all history to find the base tg_x.y.z_dev branch
+          fetch-depth: 0
+          token: ${{ secrets.QA_TOKEN }}
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-${{ hashFiles('**/build.gradle', 'gradle.properties') }}
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '11.0.10'
+      - run: ./gradlew build -Psubmodule=true
+        env:
+          QA_TOKEN: ${{ secrets.QA_TOKEN }}

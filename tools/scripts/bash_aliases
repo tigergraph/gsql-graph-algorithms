@@ -1,0 +1,78 @@
+#!/bin/bash
+
+## gle dev related path
+alias cdproduct='cd ${PRODUCT}'
+alias cdgtest='cd ${GLEPATH}/regress'
+alias cdschema='cd ${GLEPATH}/gsql-server/src/main/java/com/tigergraph/schema'
+alias cdtest='cd ${GLEPATH}/gsql-server/src/test/java/com/tigergraph/schema'
+alias cdengine='cd ${GLEPATH}/gsql-server/src/main/java/com/tigergraph/engine'
+alias cdgle='cd ${GLEPATH}'
+alias cdloader='cd ${PRODUCT}/src/engine/core/gse/gse2/loader'
+alias cdgpe='cd ${PRODUCT}/src/engine/core/gpe'
+alias cdtopology='cd ${PRODUCT}/src/engine/core/topology/topology4'
+
+## TigerGraph related path
+if [ ! -z $TG_APP_ROOT ]; then
+  alias cdapp="cd $TG_APP_ROOT"
+  alias cddev="cd $TG_APP_ROOT/dev/gdk/gsql"
+fi
+if [ ! -z $TG_DATA_ROOT ]; then
+  alias cddata="cd $TG_DATA_ROOT"
+fi
+if [ ! -z $TG_LOG_ROOT ]; then
+  alias cdlog="cd $TG_LOG_ROOT"
+fi
+if [ ! -z $TG_TMP_ROOT ]; then
+  alias cdtmp="cd $TG_TMP_ROOT"
+fi
+
+alias ll='ls -ArthlF'
+
+# if user is not root, pass all commands via sudo #
+if [ $UID -ne 0 ]; then
+  alias reboot='sudo reboot'
+  alias update='sudo apt-get upgrade'
+fi
+
+## get rid of command not found ##
+alias cd..='cd ..'
+alias cd-='cd -'
+
+## a quick way to get out of current directory ##
+alias ..='cd ..'
+alias ...='cd ../../'
+alias ....='cd ../../../'
+alias .....='cd ../../../../'
+alias .4='cd ../../../../'
+alias .5='cd ../../../../..'
+
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T"'
+alias nowtime=now
+alias nowdate='date +"%d-%m-%Y"'
+
+alias ports='netstat -tulanp'
+
+# distro specific  - Debian / Ubuntu and friends #
+# install with apt-get
+alias apt-get="sudo apt-get"
+
+## pass options to free ##
+alias meminfo='free -m -l -t'
+
+## get top process eating memory
+alias psmem='ps auxf | sort -nr -k 4'
+alias psmem10='ps auxf | sort -nr -k 4 | head -10'
+
+## get top process eating cpu ##
+alias pscpu='ps auxf | sort -nr -k 3'
+alias pscpu10='ps auxf | sort -nr -k 3 | head -10'
+
+## Get server cpu info ##
+alias cpuinfo='lscpu'
+
+## older system use /proc/cpuinfo ##
+##alias cpuinfo='less /proc/cpuinfo' ##
+
+## get GPU ram on desktop / laptop##
+alias gpumeminfo='grep -i --color memory /var/log/Xorg.0.log'

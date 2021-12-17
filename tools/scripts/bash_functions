@@ -1,0 +1,376 @@
+#!/bin/bash
+
+#######################################################
+# GTEST function                                      #
+#   run gtest  (all arguments are auto-complete)      #
+#   1st argument: gtest drivers (auto-complete)       #
+#   2st argument: regress number (option)             #
+#######################################################
+function gtest () {
+  if [[ ( $@ == "--help") ||  $@ == "-h" ]]
+  then
+    echo "Usage: "$0" Drivers [subdirectory...] [RegressNum]"
+    return 0
+  fi
+
+  if [ ! -d ${PWD}/drivers ]; then
+    cd ${GLEPATH}/regress
+  fi
+
+  if [ $# -lt 1 ];then
+    echo "Usage: "$0" Drivers [subdirectory...] [RegressNum]"
+    return 1
+  fi
+
+  $(find . -name gtest*) $@
+}
+
+##############################
+# Complete function          #
+##############################
+function _complete_gtest {
+  local GTEST_DIR=
+  if [ -d ${PWD}/drivers ]; then
+    GTEST_DIR=${PWD}
+  else
+    GTEST_DIR=${GLEPATH}/regress
+  fi
+
+  COMPREPLY=()
+
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  # 1 or more arguments
+  if [ $COMP_CWORD -lt 2 ]; then
+    # drivers
+    local FILES=$(ls ${GTEST_DIR}/drivers/${cur}*.sh 2>/dev/null)
+    for FILE in $FILES; do
+      COMPREPLY=("${COMPREPLY[@]}" "$(basename $FILE)")
+    done
+  else
+    # regress number
+    local pre=${COMP_WORDS[1]}
+    local DRIVER=${pre%.*}
+    local SUBDIR=""
+
+    for DIR in ${COMP_WORDS[@]:2}; do
+      local re='^[0-9]+$'
+      if [[ $DIR =~ $re ]] ; then
+        # is a number
+        break
+      fi
+      SUBDIR=$SUBDIR"/"$DIR
+    done
+
+    local DIR=${GTEST_DIR}/test_case/${DRIVER}/${SUBDIR}
+    if [ -d ${DIR} ]; then
+      local REGRESSES=$(ls -d ${GTEST_DIR}/test_case/${DRIVER}/${SUBDIR}/${cur}* 2>/dev/null)
+      EMPTY="yes"
+      for REGRESS in $REGRESSES; do
+        EMPTY="no"
+      done
+
+      if [[ $EMPTY == "yes" ]]; then
+        REGRESSES=$(ls -d ${GTEST_DIR}/test_case/${DRIVER}/${SUBDIR}/regress${cur}* 2>/dev/null)
+      fi
+
+      for REGRESS in $REGRESSES; do
+        local FILE=$(basename $REGRESS)
+        if [[ ${FILE:0:7} == "regress" ]]; then
+          local NUM=$(sed 's:regress::' <<< $FILE)
+          COMPREPLY=("${COMPREPLY[@]}" "$NUM")
+        else
+          COMPREPLY=("${COMPREPLY[@]}" "$FILE")
+        fi
+      done
+    else
+      local REGRESSES=$(ls -d ${GTEST_DIR}/test_case/${DRIVER}/${SUBDIR}* 2>/dev/null)
+
+      for REGRESS in $REGRESSES; do
+        local FILE=$(basename $REGRESS)
+        COMPREPLY=("${COMPREPLY[@]}" "$FILE")
+      done
+    fi
+
+  fi
+}
+complete -F _complete_gtest gtest
+
+#######################################################
+# JTEST function                                      #
+#   trigger a jenkins test                            #
+#   1st argument: gle branch name (auto-complete)     #
+#######################################################
+function jtest () {
+  if [[ ( $@ == "--help") ||  $@ == "-h" ]]
+  then
+    echo "Usage: "$0" [BranchName]"
+    return 0
+  fi
+
+  if [[ x$1 != x ]]
+  then
+    BRANCH=$1
+  else
+    cd ${PRODUCT}/src/gle
+    BRANCH=$(git rev-parse --abbrev-ref HEAD)
+    cd - > /dev/null
+  fi
+  curl -u ${JUSER}:${JPASSWD} -X POST 'http://192.168.11.19:8080/job/GLE_test_template/buildWithParameters?BRANCH_TO_TEST='$BRANCH
+  echo "jenkins test submitted for branch "$BRANCH
+}
+complete -W "$(ls ${PRODUCT}/src/gle/.git/logs/refs/remotes/origin/ 2>/dev/null)" jtest
+
+function getAppRoot() {
+  cfg=~/.tg.cfg
+  which jq > /dev/null
+  if [ $? -eq 0 ] && [ -f $tg_cfg ]; then
+    app_root=$(jq --raw-output '.System .AppRoot' $cfg)
+    echo $app_root
+  else
+    echo "Please install jq"
+    exit 1
+  fi
+}
+
+#######################################################
+# DECRYPT function                                    #
+#   decrypt generated query c++ code                  #
+#   1st argument: installed query name (auto-complete)#
+#######################################################
+function decrypt () {
+  if [[ ( $@ == "--help") ||  $@ == "-h" ]]
+  then
+    echo "Usage: "$0" [GraphName] [QueryName]"
+    return 0
+  fi
+
+  if [ ! -z $2 ]
+  then
+    QNAME=$2
+    GNAME="-g $1"
+  else
+    QNAME=$1
+  fi
+  codegen_path="$(getAppRoot)/dev/gdk/gsql/.tmp/codeGen"
+  if [[ x$QNAME != x ]]
+  then
+    FILES=$(ls ${codegen_path}/*$QNAME.cpp 2>/dev/null)
+  else
+    FILES=$(ls ${codegen_path}/*.cpp 2>/dev/null)
+  fi
+
+  for FILE in $FILES; do
+    echo -e "zzzft" | GSQL_MULTI=1 gsql $GNAME 'decrypt query -i "'${PRODUCT}'/src/gle/tools/privkey.der" "'${FILE}'"'
+    echo ${FILE}
+    echo -n "Open in vim [y/N]? "
+    read answer
+    if [ "$answer" != "${answer#[Yy]}" ] ;then
+      vim ${FILE}
+    fi
+  done
+}
+
+##############################
+# Complete function          #
+##############################
+function _complete_decrypt {
+  COMPREPLY=()
+  # at most 1 argument
+  if [ $COMP_CWORD -eq 2 ]; then
+    return
+  fi
+
+  local cur=${COMP_WORDS[COMP_CWORD]}
+  local QUERIES=$(ls $(getAppRoot)/dev/gdk/gsql/.tmp/codeGen/${cur}*.cpp 2>/dev/null)
+
+  for QUERY in $QUERIES; do
+    local filename=$(basename $QUERY)
+    local filename=${filename%.*}
+    COMPREPLY=("${COMPREPLY[@]}" "$filename")
+  done
+}
+complete -F _complete_decrypt decrypt
+
+#######################################################
+# GDU function                                        #
+#   show top N size directory/file                    #
+#   1st argument: the folder (optional)               #
+#   2st argument: the top N  (optional)               #
+#######################################################
+function gdu () {
+  DIR='.'
+  TOPN=10
+  if [ $# -gt 0 ]; then
+    DIR=$1
+  fi
+  if [ $# -gt 1 ]; then
+    TOPN=$2
+  fi
+
+  du -ah ${DIR} | sort -r -h | head -n ${TOPN}
+}
+
+##############################
+# Code Style Check Function  #
+##############################
+function codestylechecker () {
+  cd "$GLEPATH" >/dev/null || return 1
+
+  # build codestylechecker
+  ./gradlew ":devtools:codestylechecker:build" -q
+
+  # collect files to check
+  files=()
+  if [ "$1" = "--staged" ]; then
+    # check only java files
+    while IFS= read -r -d '' f; do
+      files+=("$f")
+    done < <(git --no-pager diff --staged --name-only --diff-filter=ACMR -z -- '*.java')
+    if [ ${#files[@]} -eq 0 ]; then
+      # safely skip codestylechecker if no java file is staged
+      return 0
+    fi
+  else
+    while IFS= read -r -d '' f; do
+      files+=("$f")
+    done < <(git ls-files -z '*.java')
+  fi
+
+  # check style
+  java -jar "devtools/codestylechecker/build/libs/codestylechecker.jar" "$GLEPATH" "${files[@]}"
+  exit_code=$?
+
+  cd - >/dev/null || return 1
+  return $exit_code
+}
+
+##############################
+# Code Owner Check Function  #
+##############################
+function codeownerchecker () {
+  cd "$GLEPATH" >/dev/null || return 1
+
+  # build codeownerchecker
+  ./gradlew ":devtools:codeownerchecker:build" -q
+
+  # collect files to check
+  files=()
+  flag=""
+  if [ "$1" == "--staged" ]; then
+    while IFS= read -r -d '' f; do
+      files+=("$f")
+    done < <(git --no-pager diff --staged --name-only --diff-filter=ACMR -z)
+    if [ ${#files[@]} -eq 0 ]; then
+      # safely skip codeownerchecker if no file is staged
+      return 0
+    fi
+    # we only show unowned files with --staged flag. "--error" is a flag in codeownerchecker.java
+    flag="--error"
+  else
+    while IFS= read -r -d '' f; do
+      files+=("$f")
+    done < <(git ls-files -z)
+    if [ -n "$1" ]; then
+      flag="--search=$1"
+    fi
+  fi
+
+  # check code owners
+  java -jar "devtools/codeownerchecker/build/libs/codeownerchecker.jar" "$GLEPATH" "$flag" "${files[@]}"
+  exit_code=$?
+
+  popd || return 1
+
+  return $exit_code
+}
+
+#########################
+# Gradle Clean Function #
+#########################
+function clean () {
+  if [ "$GLEPATH" != "" ]; then
+    (cd $GLEPATH && ./gradlew  clean)
+  else
+    echo "Can't find \$GLEPATH. Please run tools/gle_dev_env_setup.sh first!"
+  fi
+}
+
+#####################################################
+# RUN ALL SPECIFIED REGRESSION TEST FUNCTION        #
+#                                                   #
+# Script to run all the regression tests of the     #
+# specified testing suite: end2end, or shell.       #
+#                                                   #
+# Arguments: end2end, shell                         #
+# usage: runalltests testName                       #
+#    i.e runalltests end2end                        #
+#                                                   #
+# end2end test can have a regression number         #
+# specified too for setup and test run.             #
+# i.e. runalltests end2end 5322                     #
+# Current gtest implementation requires user        #
+# to manually run setup script.                     #
+#####################################################
+function runalltests () {
+  if [ -z "$1" ]; then
+    echo "Specify which regression to run: end2end, or shell."
+  else
+    cd ${GLEPATH}/regress
+    if [ $1 = "shell" ]; then
+      regress=(`ls ./test_case/shell -I "*.txt"`)
+      for entry in "${regress[@]#"regress"}"
+      do
+        echo "Running shell regress$entry"
+        $(find . -name gtest*) shell.sh $entry
+      done
+    elif [ $1 = "end2end" ]; then
+      if [[ $# -eq 2 ]]; then
+        if [[ -d "./test_case/end2end/gquery/regress$2" ]]; then
+          echo "Running setup..."
+          bash ./resources/end2end/gquery/regress$2/setup.sh
+          $(find . -name gtest*) end2end.sh gquery $2
+        else
+          echo "Specified regression does not exist"
+        fi
+      else
+        regress=(`ls ./test_case/end2end/gquery -I "*.txt"`)
+        for entry in "${regress[@]#"regress"}"
+        do
+          echo "Running end2end regress$entry"
+          bash ./resources/end2end/gquery/regress$entry/setup.sh
+          $(find . -name gtest*) end2end.sh gquery $entry
+        done
+      fi
+    else
+      echo "Incorrect regression specified. Only allow: end2end, or shell"
+    fi
+    cd -
+  fi
+}
+
+# gadmin start all and reset gsql commonly used at the beginning of each script
+fresh_start () {
+  IS_RESET_SUCCESS=
+  gadmin start all &>/dev/null
+  if [ -f ~/.tg.cfg ]; then
+    GSQL_JAR="$(gadmin config get System.AppRoot)/dev/gdk/gsql/lib/.tg_dbs_gsqld.jar"
+    CFG_FILE="$(ls ~/.tg.cfg)"
+    gadmin stop gsql kafkaconn kafkastrm-ll -y
+    builtin echo -n "Resetting... "
+    $GSQL_JAR -c $CFG_FILE -r 1 --reset &>/dev/null
+    IS_RESET_SUCCESS=$?
+    if [ $IS_RESET_SUCCESS -eq 0 ]; then
+      builtin echo "Done!"
+    else
+      builtin echo "Failed!"
+    fi
+    gadmin start gsql kafkaconn kafkastrm-ll
+  else
+    gsql --reset &>/dev/null
+    IS_RESET_SUCCESS=$?
+  fi
+  # exit if reset failed
+  if [ $IS_RESET_SUCCESS -ne 0 ]; then
+    exit $IS_RESET_SUCCESS
+  fi
+}
