@@ -30,6 +30,6 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: '11.0.10'
-      - run: ./gradlew build -Psubmodule=true
-        env:
-          QA_TOKEN: ${{ secrets.QA_TOKEN }}
+     # - run: ./gradlew build -Psubmodule=true
+     #   env:
+     #     QA_TOKEN: ${{ secrets.QA_TOKEN }}
