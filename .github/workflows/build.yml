@@ -16,11 +16,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
+     # - uses: actions/checkout@v2
+     #   with:
           # fetch all history to find the base tg_x.y.z_dev branch
-          fetch-depth: 0
-          token: ${{ secrets.QA_TOKEN }}
+     #     fetch-depth: 0
+     #     token: ${{ secrets.QA_TOKEN }}
       - uses: actions/cache@v2
         with:
           path: |
