@@ -4,13 +4,15 @@
 reviewers:
   # The default reviewers if not assigned specifically 
   defaults:
+    - abdullaTigerGraph
     - group1 # group
 
   # Reviewer groups each of which has a list of GitHub usernames
   groups:
     group1:
-      - YimingPan-Code
+     # - YimingPan-Code
       - abdullaTigerGraph
+     # - abdullaaskar
 
 files:
   # All review request will be sent to the following groups/people.
