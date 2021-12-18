@@ -14,10 +14,10 @@ fi
 source tools/scripts/bash_functions
 
 # check code style
-codestylechecker --staged
-if [ $? -ne 0 ]; then
-  exit 1
-fi
+#codestylechecker --staged
+#if [ $? -ne 0 ]; then
+#  exit 1
+#fi
 
 # If you want to allow non-ASCII filenames set this variable to true.
 allownonascii=$(git config --bool hooks.allownonascii)
