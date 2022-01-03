@@ -1,0 +1,32 @@
+#!/bin/bash
+txtbld=$(tput bold)              # Bold
+bldred=${txtbld}$(tput setaf 1)  # red
+bldgre=${txtbld}$(tput setaf 2)  # green
+bldblu=${txtbld}$(tput setaf 3)  # blue
+txtrst=$(tput sgr0)              # Reset
+
+if ! grep  --quiet '.*[a-zA-Z0-9]-[0-9][0-9]*' $1; then
+  if grep --quiet [\ ]*Merge $1; then
+      exit 0
+  else
+    echo "${bldred}Error: commit message doesn't have a valid JIRA ticket${txtrst}"
+    echo "================"
+    cat $1
+    echo "================"
+    echo "${bldred}To skip this error check, use ${bldblu}commit --no-verify${txtrst}"
+    exit 1
+  fi
+fi
+
+if  [[ $(git config --get user.email) != *"tigergraph.com"* ]]; then
+    echo "${bldred}Error : user or email is not a valid tigergraph account${txtrst}"
+    echo "${bldbld} USER : $(git config --get user.name)${txtrst}"
+    echo "${bldbld} EMAIL: $(git config --get user.email)${txtrst}"
+    echo "${bldred}Fix this for all the repos by:${$txtrst}"
+    echo "${bldblu}        git config --global user.name  {your name}${txtrst}"
+    echo "${bldblu}        git config --global user.email {your email}${txtrst}"
+    echo "${bldred}or for this repo. only:${txtrst}"
+    echo "${bldblu}        git config user.name  {your name}${txtrst}"
+    echo "${bldblu}        git config user.email {your email}${txtrst}"
+    exit 1
+fi
