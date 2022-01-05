@@ -10,54 +10,59 @@ From the source vertex, finds the unweighted shortest path (number of hops, INT 
  output_limit: max #vertices to output        display_edges: output edges for visualization
 */
 
-	FILE f(file_path);
-	MinAccum<INT> @dis;
-	OrAccum @visited;
-	ListAccum<VERTEX> @path;
-	SetAccum<EDGE> @@edgeSet;
+  FILE f(file_path);
+  MinAccum<INT> @min_dis;
+  OrAccum @or_visited;
+  ListAccum<VERTEX> @path_list;
+  SetAccum<EDGE> @@edge_set;
 
-	##### Initialization  #####
-	Source = {source};
-	Source = SELECT s 
-			 FROM Source:s
-			 ACCUM s.@visited += true, 
-				   s.@dis = 0,
-				   s.@path = s; 
-	ResultSet = {source};
+  ##### Initialization  #####
+  Source = {source};
+  Source = SELECT s 
+           FROM Source:s
+	   ACCUM s.@or_visited += true, 
+	         s.@min_dis = 0,
+		 s.@path_list = s; 
+  ResultSet = {source};
 
-	##### Calculate distances and paths #####
-	WHILE(Source.size()>0) DO
-		Source = SELECT t
-				 FROM Source:s -(e_type:e)-> v_type:t
-				 WHERE t.@visited == false
-				 ACCUM t.@dis += s.@dis + 1,
-					   t.@path = s.@path + [t],
-					   t.@visited += true
-				ORDER BY getvid(t);
-		ResultSet = ResultSet UNION Source;
-	END;
+  ##### Calculate distances and paths #####
+  WHILE(Source.size()>0) DO
+      Source = SELECT t
+	       FROM Source:s -(e_type:e)-> v_type:t
+	       WHERE t.@or_visited == false
+	       ACCUM t.@min_dis += s.@min_dis + 1,
+	             t.@path_list = s.@path_list + [t],
+	             t.@or_visited += true
+      ORDER BY getvid(t);
+      ResultSet = ResultSet UNION Source;
+  END;
 
-	IF file_path != "" THEN
-		f.println("Vertex_ID","Distance","Shortest_Path");
-	END;
+  IF file_path != "" THEN
+      f.println("Vertex_ID","Distance","Shortest_Path");
+  END;
 
-	ResultSet = SELECT s FROM ResultSet:s 
-				POST-ACCUM 
-					IF result_attr != "" THEN s.setAttr(result_attr, s.@dis) END,
-					IF file_path != "" THEN f.println(s, s.@dis, s.@path) END
-	;
-
-
-	IF print_accum THEN
-    IF output_limit >= 0 THEN
-        ResultSet = SELECT s FROM ResultSet:s LIMIT output_limit;
-    END;
-		PRINT ResultSet[ResultSet.@dis, ResultSet.@path];
-		IF display_edges THEN
-
-			ResultSet = SELECT s FROM ResultSet:s -(e_type:e)-> v_type:t
-			ACCUM @@edgeSet += e;
-			PRINT @@edgeSet;
-		END;
-	END;
+  ResultSet = SELECT s 
+              FROM ResultSet:s 
+              POST-ACCUM 
+                  IF result_attr != "" 
+		      THEN s.setAttr(result_attr, s.@min_dis) 
+		  END,
+                  IF file_path != "" THEN 
+		      f.println(s, s.@min_dis, s.@path_list)
+		  END;
+  
+  IF print_accum THEN
+      IF output_limit >= 0 THEN
+          ResultSet = SELECT s 
+	              FROM ResultSet:s 
+		      LIMIT output_limit;
+      END;
+      PRINT ResultSet[ResultSet.@min_dis, ResultSet.@path_list];
+      IF display_edges THEN
+          ResultSet = SELECT s 
+	              FROM ResultSet:s -(e_type:e)-> v_type:t
+                      ACCUM @@edge_set += e;
+          PRINT @@edge_set;
+      END;
+  END;
 }

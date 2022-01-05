@@ -1,14 +1,15 @@
-CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT max_iter = 100, BOOL print_accum = TRUE, STRING file_path = ""){ 
+
+CREATE QUERY tg_maximal_indep_set_random(STRING v_type, STRING e_type, INT max_iter = 100, BOOL print_accum = TRUE, STRING file_path = ""){
     /*
     Maximal Independent Set query only supports one edge type and works only for undirected graphs at the moment (8/12/20).
     */
-  
+
     AndAccum @and_active;
     OrAccum @or_selected;
-    MinAccum<INT> @min_vid;
+    MinAccum<INT> @min_r_min, @min_r;
     FILE f(file_path);
     INT iter = 0;
-  
+
     Start = {v_type.*};
     Start = SELECT s 
             FROM Start:s
@@ -18,53 +19,53 @@ CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT max_iter = 1
                     s.@and_active += FALSE
                 END
             HAVING s.@and_active;
-    
-    WHILE Start.size()>0 AND iter<max_iter DO
+
+    WHILE Start.size()>0 LIMIT max_iter DO
         Start = SELECT s 
                 FROM Start:s
                 POST-ACCUM
-                    s.@min_vid = 9223372036854775807;
-    
+                    s.@min_r_min = GSQL_INT_MAX,
+                    s.@min_r = rand_int(GSQL_INT_MIN, GSQL_INT_MAX);
+
         TMP = SELECT s 
               FROM Start:s-(e_type:e)->v_type:t
               WHERE t.@and_active
               ACCUM
-                  s.@min_vid += getvid(t);
-    
+                  s.@min_r_min += t.@min_r;
+
         TMP = SELECT s 
               FROM Start:s
               POST-ACCUM
-                  IF getvid(s) < s.@min_vid THEN
+                  IF s.@min_r < s.@min_r_min THEN
                       s.@or_selected += TRUE,
                       s.@and_active += FALSE
                   END
               HAVING s.@or_selected;
-    
+
         TMP = SELECT s 
               FROM TMP:s-(e_type:e)->v_type:t
               ACCUM
                   t.@and_active += FALSE;
-    
+
         Start = SELECT s 
                 FROM Start:s 
                 WHERE s.@and_active;
-        iter = iter+1;   
     END;
-  
+
     IF file_path != "" THEN
-      f.println("Vertex");
+        f.println("Vertex");
     END;
-  
+
     Start = {v_type.*};
     Start = SELECT s 
-            FROM Start:s 
+            FROM Start:s
             WHERE s.@or_selected
             ACCUM 
                 IF file_path != "" THEN 
                     f.println(s) 
                 END;
-                
+
     IF print_accum THEN
-      PRINT Start;
+        PRINT Start;
     END;
 }

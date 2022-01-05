@@ -3,32 +3,42 @@ CREATE QUERY tg_jaccard_nbor_ap_sub(VERTEX source, STRING e_type, STRING re_type
 Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
 */
     
-        MapAccum<VERTEX, FLOAT> @@topK_result;
-        SumAccum<INT> @intersection_size, @@set_size_A, @set_size_B;
-        SumAccum<FLOAT> @similarity;
+    MapAccum<VERTEX, FLOAT> @@top_k_result_map;
+    SumAccum<INT> @sum_intersection_size, @@sum_set_size_A, @sum_set_size_B;
+    SumAccum<FLOAT> @sum_similarity;
 
-        Start (ANY) = {source};
-        Start = SELECT s
-                FROM Start:s
-                ACCUM @@set_size_A += s.outdegree(e_type);
+    Start (ANY) = {source};
+    Start = SELECT s
+            FROM Start:s
+            ACCUM @@sum_set_size_A += s.outdegree(e_type);
 
-        Subjects = SELECT t
-                   FROM Start:s-(e_type:e)-:t;
+    Subjects = SELECT t
+               FROM Start:s-(e_type:e)-:t;
 
-        Others = SELECT t
-                 FROM Subjects:s -(re_type:e)- :t
-                 WHERE t != source 
-                 ACCUM t.@intersection_size += 1, 
-                       t.@set_size_B = t.outdegree(e_type)
-                 POST-ACCUM t.@similarity = t.@intersection_size*1.0/(@@set_size_A + t.@set_size_B - t.@intersection_size)
-                 ORDER BY t.@similarity DESC
-                 LIMIT top_k;
+    Others = SELECT t
+             FROM Subjects:s -(re_type:e)- :t
+             WHERE t != source 
+             ACCUM 
+                 t.@sum_intersection_size += 1, 
+                 t.@sum_set_size_B = t.outdegree(e_type)
+             POST-ACCUM 
+                 t.@sum_similarity = t.@sum_intersection_size*1.0/(@@sum_set_size_A + t.@sum_set_size_B - t.@sum_intersection_size)
+             ORDER BY t.@sum_similarity DESC
+             LIMIT top_k;
         
-        Others =  SELECT s
-                  FROM Others: s
-                  POST-ACCUM 
-                      IF similarity_edge != "" THEN INSERT INTO EDGE similarity_edge VALUES(source, s, s.@similarity) END,
-                      IF file_path != "" THEN f.println(source, s, s.@similarity) END,
-                      IF return_accum THEN @@topK_result += (s -> s.@similarity) END;
-      return @@topK_result;
+    Others =  SELECT s
+              FROM Others: s
+              POST-ACCUM 
+                  IF similarity_edge != "" THEN 
+                      INSERT INTO EDGE similarity_edge VALUES(source, s, s.@sum_similarity) 
+                  END,
+                  
+                  IF file_path != "" THEN 
+                      f.println(source, s, s.@sum_similarity) 
+                  END,
+                  
+                  IF return_accum THEN 
+                      @@top_k_result_map += (s -> s.@sum_similarity) 
+                  END;
+    return @@top_k_result_map;
 }

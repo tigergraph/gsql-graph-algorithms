@@ -1,28 +1,30 @@
-CREATE QUERY tg_random_walk(int step = 8, int path_size = 4, string filepath = "/home/tigergraph/path.csv", set<string> edge_types, int sample_num) FOR GRAPH nodeEmbedding {
+CREATE QUERY tg_random_walk(INT step = 8, INT path_size = 4, STRING filepath = "/home/tigergraph/path.csv", SET<STRING> edge_types, INT sample_num) {
 
  FILE f(filepath);
- ListAccum<ListAccum<vertex>> @recv_seque;
- ListAccum<ListAccum<vertex>> @send_seque;
+ ListAccum<ListAccum<VERTEX>> @recv_seque_list;
+ ListAccum<ListAccum<VERTEX>> @send_seque_list;
 
  start (ANY) = {ANY};
- start = select s from start:s
-        POST-ACCUM s.@send_seque += [s];
+ start = SELECT s 
+         FROM start:s
+         POST-ACCUM s.@send_seque_list += [s];
 
- while true limit step do
-   tmp = select t from start:s-(edge_types:e)->:t
-         SAMPLE sample_num EDGE  when s.outdegree() >= 1
-         accum t.@recv_seque += s.@send_seque
-         POST-ACCUM
-           t.@send_seque.clear(),
-           foreach path in t.@recv_seque do
-             case when path.size() == path_size - 1 THEN
-               f.println(path + [t])
-             else
-               t.@send_seque += path + [t]
-             end
-           end,
-           t.@send_seque += [t],
-           t.@recv_seque.clear();
- end;
+ WHILE true LIMIT step DO
+     tmp = SELECT t 
+           FROM start:s-(edge_types:e)->:t
+           SAMPLE sample_num EDGE  WHEN s.outdegree() >= 1
+           ACCUM t.@recv_seque_list += s.@send_seque_list
+           POST-ACCUM
+               t.@send_seque_list.clear(),
+               FOREACH PATH IN t.@recv_seque_list DO
+                   CASE WHEN PATH.size() == path_size - 1 THEN
+                       f.println(PATH + [t])
+                   ELSE
+                       t.@send_seque_list += PATH + [t]
+                   END
+               END,
+               t.@send_seque_list += [t],
+               t.@recv_seque_list.clear();
+ END;
 
 }

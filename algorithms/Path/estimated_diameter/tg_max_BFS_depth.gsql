@@ -1,13 +1,13 @@
 CREATE QUERY tg_max_BFS_depth(VERTEX source, SET<STRING> e_type) RETURNS (INT){ 
-	OrAccum @visited;
-	INT depth=-1;
-  start = {source};
-	WHILE start.size() > 0 DO
-	  depth = depth + 1;
-	  start = SELECT t
-	          FROM start:s -(e_type:e) ->:t 
-	          WHERE NOT t.@visited
-	          ACCUM t.@visited = TRUE;
-	END;
-	RETURN depth;
+OrAccum @or_visited;
+INT depth=-1;
+start = {source};
+WHILE start.size() > 0 DO
+    depth = depth + 1;
+    start = SELECT t
+	    FROM start:s -(e_type:e) ->:t 
+	    WHERE NOT t.@or_visited
+	    ACCUM t.@or_visited = TRUE;
+END;
+RETURN depth;
 }

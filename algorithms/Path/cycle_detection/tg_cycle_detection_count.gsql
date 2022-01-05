@@ -12,8 +12,8 @@ Self cycles treated completely separately to save memory and increase speed
     
   */
   
-ListAccum<ListAccum<UINT>> @currList, @newList; //, @@out_cycles;
-SumAccum<INT> @@cycles=0;
+ListAccum<ListAccum<UINT>> @curr_list, @new_list; //, @@out_cycles;
+SumAccum<INT> @@sum_cycles=0;
 INT loop_depth ;
 loop_depth = depth-1; // as we are performing the first step outside the loop
 
@@ -21,52 +21,53 @@ loop_depth = depth-1; // as we are performing the first step outside the loop
 // assuming cull where cycle not started at lowest id, so any one cycle only counted once
   
 FOREACH batch_number IN RANGE[0,batches-1] DO  
+    Active = {v_type};
+    Active = SELECT vv 
+             FROM Active:vv
+             POST-ACCUM vv.@curr_list.clear()
+             HAVING getvid(vv)%batches==batch_number;
     
-        Active = {v_type};
-        Active = SELECT vv FROM Active:vv
-                 POST-ACCUM vv.@currList.clear()
-                 HAVING getvid(vv)%batches==batch_number;
-    
-        IF depth > 0 THEN
-            Active = SELECT t FROM Active:s -(e_type)-> v_type:t
-                     WHERE getvid(s) < getvid(t)   // so cannot be self-join, and asserts s must be lowest
-                     ACCUM 
-                          t.@currList += [getvid(s)] // lists of precedents
-                     HAVING t.@currList.size() > 0;  # IF receive no sequences, deactivate it;
-        END;
-    
-        WHILE Active.size() > 0 LIMIT loop_depth DO 
-    
-              Active = SELECT t FROM Active:s -(e_type:e)-> v_type:t
-                       WHERE s != t
-                       ACCUM 
-                            INT t_id = 0,
-                            t_id = getvid(t),
-                            FOREACH sequence IN s.@currList DO
-                                    IF t_id < sequence.get(0) THEN // early exit, sequence started from wrong place so cull
-                                            CONTINUE
-                                    ELSE IF t_id == sequence.get(0) THEN  # cycle detected
-                                            @@cycles += 1
-                                    ELSE IF sequence.contains(t_id) == FALSE THEN   # discard the sequences contain t
-                                            t.@newList += sequence + [getvid(s)]   # store sequences in @newList to avoid confliction  with @currList
-                                    END
-                            END
-                      POST-ACCUM
-                                s.@currList.clear(),
-                                t.@currList = t.@newList,
-                                t.@newList.clear()
-                      HAVING t.@currList.size() > 0;  # IF receive no sequences, deactivate it;
-        END;
+    IF depth > 0 THEN
+        Active = SELECT t 
+                 FROM Active:s -(e_type)-> v_type:t
+                 WHERE getvid(s) < getvid(t)   // so cannot be self-join, and asserts s must be lowest
+                 ACCUM 
+                     t.@curr_list += [getvid(s)] // lists of precedents
+                 HAVING t.@curr_list.size() > 0;  # IF receive no sequences, deactivate it;
+    END;
+    WHILE Active.size() > 0 LIMIT loop_depth DO 
+        Active = SELECT t 
+                 FROM Active:s -(e_type:e)-> v_type:t
+                 WHERE s != t
+                 ACCUM 
+                     INT t_id = 0,
+                     t_id = getvid(t),
+                     FOREACH sequence IN s.@curr_list DO
+                         IF t_id < sequence.get(0) THEN // early exit, sequence started from wrong place so cull
+                             CONTINUE 
+                         ELSE IF t_id == sequence.get(0) THEN  # cycle detected
+                             @@sum_cycles += 1
+                         ELSE IF sequence.contains(t_id) == FALSE THEN   # discard the sequences contain t
+                             t.@new_list += sequence + [getvid(s)]   # store sequences in @newList to avoid confliction  with @currList
+                         END
+                     END
+                 POST-ACCUM
+                     s.@curr_list.clear(),
+                     t.@curr_list = t.@new_list,
+                     t.@new_list.clear()
+                 HAVING t.@curr_list.size() > 0;  # IF receive no sequences, deactivate it;
+    END;
   
 END;
   
 // Self loops here
-  all = {v_type};
-  selfy = select vv from all:vv-(e_type)-v_type:tt
-    WHERE vv==tt; 
-  @@cycles+=selfy.size();
+all = {v_type};
+selfy = SELECT vv 
+        FROM all:vv-(e_type)-v_type:tt
+        WHERE vv==tt; 
+@@sum_cycles+=selfy.size();
 
 IF print_accum THEN
-    PRINT @@cycles as cycles;
+    PRINT @@sum_cycles AS cycles;
 END;  
 }

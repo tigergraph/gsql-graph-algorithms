@@ -14,12 +14,19 @@ CREATE QUERY tg_common_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL pr
 
     IF "ALL" NOT IN e_type THEN  # Specific edge types defined
         # Get neighbors of source vertices
-        na = SELECT n FROM avs -(e_type)-> :n; 
-        nb = SELECT n FROM bvs -(e_type)-> :n; 
+        na = SELECT n 
+             FROM avs -(e_type)-> :n; 
+  
+        nb = SELECT n 
+             FROM bvs -(e_type)-> :n; 
+             
     ELSE  # Use any edge types
         # Get neighbors of source vertices
-        na = SELECT n FROM avs -()-> :n; 
-        nb = SELECT n FROM bvs -()-> :n; 
+        na = SELECT n 
+             FROM avs -()-> :n; 
+             
+        nb = SELECT n 
+             FROM bvs -()-> :n; 
     END;
     # Get neighbors in common
     u = na INTERSECT nb; 

@@ -1,0 +1,100 @@
+CREATE QUERY tg_jaccard_nbor_ap_batch ( INT top_k = 10, SET<STRING> v_type, SET<STRING> feat_v_type, SET<STRING> e_type, SET<STRING> re_type, 
+STRING similarity_edge, INT src_batch_num = 50, INT nbor_batch_num = 10, BOOL print_accum = true, INT print_limit = 50, STRING file_path = "") {
+  /*
+    Calculates the Jaccard Neighborhood Similarity between all vertices using a common feature vertex type.
+      Jaccard Similarity = intersection_size / (setSize_all + setSize_self - intersection_size)
+
+    Parameters :
+      top_k   : # of top scores to report for each vertex
+      v_type  : vertex type to compare
+      feat_v_type  : feature vertex type
+      e_type  : edge type from source vertex to feature vertex type
+      re_type  : edge type from feature vertex to source vertex
+      similarity_edge : edge type for storing vertex-vertex similarity scores
+      src_batch_num  : how many batches to split the source vertices into
+      nbor_batch_num : how many batches to split the 2-hop neighbor vertices into
+      print_accum : print JSON output
+      print_limit : number of source vertices to print, -1 to print all
+      file_path : file to write CSV output to
+  */
+
+  TYPEDEF TUPLE<VERTEX ver, FLOAT val> Res_Tup; // storing results in the Heap
+  MapAccum<VERTEX, INT> @@set_size_map, @intersection_size_map; // set sizes of all vertices
+  SetAccum<STRING> @@all_e_types_set;
+  SumAccum<FLOAT> @sum_outdegree;
+  HeapAccum<Res_Tup>(top_k, val DESC) @sim_heap; // stores topK similarity results
+  FILE f (file_path);
+  INT print_count;
+
+  all_vertices = {v_type};
+  all_vertices = SELECT s 
+                 FROM all_vertices:s -(e_type:e)- v_type:t
+                 ACCUM 
+                     s.@sum_outdegree += 1;
+
+  FOREACH i IN RANGE[0, src_batch_num-1] DO
+      // store number of features for each source vertex
+      src_batch = SELECT s 
+                  FROM all_vertices:s
+                  WHERE getvid(s) % src_batch_num == i
+                  ACCUM
+                      @@set_size_map += (s -> s.@sum_outdegree);
+
+      // store number of source vertices that share common features
+      common_features = SELECT t 
+                        FROM src_batch:s-(e_type:e)-feat_v_type:t
+                        ACCUM t.@intersection_size_map += (s -> 1);
+
+      FOREACH j IN RANGE[0, nbor_batch_num-1] DO
+          others = SELECT t 
+                   FROM common_features:s-(re_type:e)-v_type:t
+                   WHERE getvid(t) % nbor_batch_num == j
+                   ACCUM
+                       t.@intersection_size_map += s.@intersection_size_map;
+          others = SELECT s 
+                   FROM others:s
+                   ACCUM
+                       // perform similarity computation and store results
+                       FLOAT div = 0,
+                       FOREACH (k,v) IN s.@intersection_size_map DO
+                           IF k == s THEN
+                               CONTINUE
+                           END,
+                           div = @@set_size_map.get(k) + s.@sum_outdegree - v,
+                           IF div > 0 THEN
+                               k.@sim_heap += Res_Tup(s, v/div)
+                           END
+                       END
+                   POST-ACCUM
+                       s.@intersection_size_map.clear();
+      END;
+
+      IF print_accum == TRUE THEN
+          IF print_limit == -1 THEN
+              PRINT src_batch[src_batch.@sim_heap];
+          ELSE
+              IF print_count < print_limit THEN
+                  print_batch = SELECT s 
+                                FROM src_batch:s 
+                                LIMIT print_limit - print_count;
+                  print_count = print_count + src_batch.size();
+                  PRINT print_batch[print_batch.@sim_heap];
+              END;
+          END;
+      END;
+
+      src_batch = SELECT s 
+                  FROM src_batch:s
+                  POST-ACCUM
+                      FOREACH tup IN s.@sim_heap DO
+                          IF file_path != "" THEN
+                              f.println(s, tup.ver, tup.val)
+                          END,
+                          IF similarity_edge != "" THEN
+                              INSERT INTO EDGE similarity_edge VALUES (s, tup.ver, tup.val)
+                          END
+                      END,
+                      s.@sim_heap.clear();
+                      @@set_size_map.clear();
+  END;
+}

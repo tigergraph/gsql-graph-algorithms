@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2015-2016, TigerGraph Inc.
+ * Copyright (c) 2015-2021, TigerGraph Inc.
  * All rights reserved.
  * Project: TigerGraph Query Language
  * udf.hpp: a library of user defined functions used in queries.
@@ -35,6 +35,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string>
+#include <math.h>
+#include <random>
 #include <gle/engine/cpplib/headers.hpp>
 
 /**     XXX Warning!! Put self-defined struct in ExprUtil.hpp **
@@ -50,12 +52,12 @@ namespace UDIMPL {
 
   /****** BIULT-IN FUNCTIONS **************/
   /****** XXX DON'T REMOVE ****************/
-  inline int64_t str_to_int (string str) {
-    return atoll(str.c_str());
+  inline int str_to_int (string str) {
+    return atoi(str.c_str());
   }
 
-  inline int64_t float_to_int (float val) {
-    return (int64_t) val;
+  inline int float_to_int (float val) {
+    return (int) val;
   }
 
   inline string to_string (double val) {
@@ -64,22 +66,16 @@ namespace UDIMPL {
     return string(result);
   }
 
-  template <typename tuple>
-  inline uint64_t getDeltaQ (tuple tup) {
-    return tup.deltaQ;
-  }
+  inline int64_t rand_int (int minVal, int maxVal) {
+    std::random_device rd;
+    std::mt19937 e1(rd());
+    std::uniform_int_distribution<int> dist(minVal, maxVal);
+    return (int64_t) dist(e1);
 
-  template<typename tup> 
-  inline float getWeight(tup t) {
-    return t.weight;
   }
-
-  template<typename tup>
-  inline VERTEX getCc(tup t) {
-    return t.cc;
-  }
-  
 }
+
+
 /****************************************/
 
 #endif /* EXPRFUNCTIONS_HPP_ */

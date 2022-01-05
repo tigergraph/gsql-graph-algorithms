@@ -1,0 +1,62 @@
+CREATE QUERY tg_map_equation(
+  STRING v_type,STRING e_type,STRING community_attr,STRING weight_attr = "") {
+
+  MinAccum<FLOAT> @@min_L;
+  SumAccum<FLOAT>
+    @@sum_edge_count,
+    @@sum_q,
+    @@sum_q_log,
+    @@sum_p_log,
+    @@sum_qp_log,
+    @@sum_p,
+    @q,
+    @sum_outdegree;
+
+  MapAccum<STRING, SumAccum<FLOAT>>
+    @@q_map,
+    @@p_map;
+
+  MapAccum<STRING, MaxAccum<VERTEX>>
+    @@community_center_map;
+
+  Start = {v_type.*};
+
+  Start = SELECT s 
+          FROM Start:s -(e_type:e)- v_type:t
+          ACCUM
+              s.@sum_outdegree += 1;
+
+  Start = SELECT s 
+          FROM Start:s -(e_type:e)- v_type:t
+          ACCUM
+              @@sum_edge_count += 1,
+              IF s.getAttr(community_attr, "STRING") != t.getAttr(community_attr, "STRING") THEN
+                  IF weight_attr != "" THEN
+                      s.@q += e.getAttr(weight_attr, "FLOAT")
+                  ELSE
+                      s.@q += 1
+                  END
+              END
+          POST-ACCUM
+              FLOAT p = s.@sum_outdegree / @@sum_edge_count,
+              STRING c = s.getAttr(community_attr, "STRING"),
+              @@p_map += (c -> p),
+              @@q_map += (c -> s.@q),
+              @@sum_p_log += p * log_2(p),
+              @@community_center_map += (c -> s);
+
+  CommunityCenters = SELECT s 
+                     FROM Start:s
+                     WHERE @@community_center_map.get(s.getAttr(community_attr, "STRING")) == s
+                     ACCUM
+                         STRING c = s.getAttr(community_attr, "STRING"),
+                         @@sum_q += @@q_map.get(c),
+                         @@sum_q_log += @@q_map.get(c) * log_2(@@q_map.get(c)),
+                         @@sum_qp_log += (@@q_map.get(c) + @@p_map.get(c)) * log_2(@@q_map.get(c) + @@p_map.get(c));
+
+  PRINT @@sum_q, @@sum_q_log, @@sum_p_log, @@sum_qp_log;
+
+  @@min_L = (@@sum_q * log_2(@@sum_q)) - (2 * @@sum_q_log) - @@sum_p_log + @@sum_qp_log;
+
+  PRINT @@min_L;
+}
