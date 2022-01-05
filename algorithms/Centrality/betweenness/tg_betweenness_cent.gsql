@@ -65,7 +65,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
 	            s.@bitwise_or_seen = 1<<s.@sum_id,
                     s.@bitwise_or_visit = s.@bitwise_or_seen,
                     s.@sigma_map += (0->1),
-                    s.@times_map += (0->1<<s.@bitwise_or_visit); # set initial seen and visit
+                    s.@times_map += (0->s.@bitwise_or_visit); # set initial seen and visit
       @@batch_set.clear();
       @@map.clear();
       @@sum_count=0;
