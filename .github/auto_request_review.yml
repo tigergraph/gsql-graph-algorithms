@@ -10,7 +10,7 @@ reviewers:
   # Reviewer groups each of which has a list of GitHub usernames
   groups:
     group1:
-     # - YimingPan-Code
+      - YimingPan-Code
       - abdullaTigerGraph
      # - abdullaaskar
 
