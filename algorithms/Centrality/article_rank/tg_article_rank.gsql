@@ -3,7 +3,7 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
  BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "") {
  
 /*
-//testing second time
+//testing third time ...
  Compute the article rank score for each vertex in the GRAPH
  In each iteration, compute a score for each vertex:
      score = (1-damping) + damping*average outdegree*sum(received scores FROM its neighbors/average outdegree+Outdegree).
