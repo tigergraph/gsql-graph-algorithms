@@ -9,7 +9,27 @@ if ! grep  --quiet '.*[a-zA-Z0-9]-[0-9][0-9]*' $1; then
   if grep --quiet [\ ]*Merge $1; then
       exit 0
   else
+    echo "${bldred}Commit Guidelines${txtrst}"
+    echo "${bldred}A typical git commit message will look like <type>(<scope>): <subject> ${txtrst}"
+    echo "${bldred}'type' should be one of the following:${txtrst}"
+    echo "${bldred}    build : Build related changes${txtrst}"
+    echo "${bldred}    chore : A code change that external user won't see${txtrst}"
+    echo "${bldred}    feat  : A new feature${txtrst}"
+    echo "${bldred}    fix   : A bug fix${txtrst}"
+    echo "${bldred}    docs  : Documentation related changes${txtrst}"
+    echo "${bldred}    refactor : A code that neither fix bug nor adds a feature${txtrst}"
+    echo "${bldred}    perf  : A code that improves performance${txtrst}"
+    echo "${bldred}    style : A code that is related to styling${txtrst}"
+    echo "${bldred}    test  : Adding new test or making changes to existing test${txtrst}"
+    echo "${bldred}'scope' is optional${txtrst}"
+    echo "${bldred}    It should be noun and points to the section of the codebase such as init, config, etc${txtrst}"
+    echo "${bldred}'subject'${txtrst}"
+    echo "${bldred}    use imperative, present tense(eg: use 'add' instead of 'added' or 'adds')${txtrst}"
+    echo "${bldred}    don't use dot(.) at the end${txtrst}"
+    echo "${bldred}    don't capitalize first letter${txtrst}"
+    echo "================"
     echo "${bldred}Error: commit message doesn't have a valid JIRA ticket${txtrst}"
+    echo "${bldgre}Example: git commit -m "[JIRA TICKET]"${txtrst}"
     echo "================"
     cat $1
     echo "================"
