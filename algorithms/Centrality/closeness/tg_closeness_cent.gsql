@@ -4,7 +4,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
   
 
   Link of the paper: http://www.vldb.org/pvldb/vol8/p449-then.pdf
-  Parameters: ...
+  Parameters:
   v_type: vertex types to traverse                 print_accum: print JSON output
   e_type: edge types to traverse                   result_attr: INT attr to store results to
   re_type: reverse edge type in directed graph, in undirected graph set re_type=e_type
