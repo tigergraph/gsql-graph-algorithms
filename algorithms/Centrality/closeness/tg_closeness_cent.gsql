@@ -2,11 +2,9 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
   INT top_k = 100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE){ 
   
-  /* Compute Closeness Centrality for each VERTEX. 
- testing
- Use multi-sourse BFS.
+
   Link of the paper: http://www.vldb.org/pvldb/vol8/p449-then.pdf
-  Parameters:
+  Parameters: ...
   v_type: vertex types to traverse                 print_accum: print JSON output
   e_type: edge types to traverse                   result_attr: INT attr to store results to
   re_type: reverse edge type in directed graph, in undirected graph set re_type=e_type
