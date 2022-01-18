@@ -608,6 +608,15 @@ namespace tg {
 
   /* ============ END NODE2VEC =============== */
 
+  /* ============== START A STAR =========== */
+
+  inline float rad(float d){
+    return d * 3.1415926535897932384626433832795 / 180.0;
+  }
+
+  /* ============== END A STAR =========== */
+
+
   /* ============ START APPROXIMATE NEAREST NEIGHBORS =============== */
 
   template <typename T>

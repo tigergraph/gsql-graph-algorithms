@@ -223,11 +223,11 @@ namespace tg_UDIMPL {
   /* ============== START EMBEDDING SIMILARITY ===================== */
 
   inline MapAccum<int, double> cosine_similarity(ListAccum<double> emb1, MapAccum<int, ListAccum<double>> other_vertices, int embeddingDim) {
-    std::vector v1(embeddingDim);
+    std::vector<double> v1(embeddingDim);
     for (int e = 0; e < embeddingDim; e++) {
         v1[e] = emb1.get(e);
     }
-    std::vector v2(embeddingDim);
+    std::vector<double> v2(embeddingDim);
 
     MapAccum<int, double> results;
     for(auto it = std::begin(other_vertices); it != std::end(other_vertices); it++) {
@@ -236,8 +236,8 @@ namespace tg_UDIMPL {
         }
         double dot = std::inner_product(std::begin(v1), std::end(v1), std::begin(v2), 0.0);
         double sim = (dot/(
-          sqrt(std::inner_product(std::begin(v1), std::end(v1), std::begin(v1), 0.0)) *
-          sqrt(std::inner_product(std::begin(v2), std::end(v2), std::begin(v2), 0.0)) );
+          sqrt(std::inner_product(std::begin(v1), std::end(v1), std::begin(v1), 0.0) ) *
+          sqrt(std::inner_product(std::begin(v2), std::end(v2), std::begin(v2), 0.0) ) ));
         MapAccum<int, double> temp(it->first, sim);
         results += temp;
     }
@@ -249,8 +249,8 @@ namespace tg_UDIMPL {
   /* ============== START PAIRWISE EMBEDDING SIMILARITY ===================== */
 
   inline double pairwise_cosine_similarity(ListAccum<double> emb1, ListAccum<double> emb2, int embeddingDim) {
-    std::vector v1(embeddingDim);
-    std::vector v2(embeddingDim);
+    std::vector<double> v1(embeddingDim);
+    std::vector<double> v2(embeddingDim);
     for (int e = 0; e < embeddingDim; e++) {
         v1[e] = emb1.get(e);
         v2[e] = emb2.get(e);
@@ -258,7 +258,7 @@ namespace tg_UDIMPL {
     double dot = std::inner_product(std::begin(v1), std::end(v1), std::begin(v2), 0.0);
     double res = (dot/(
       sqrt(std::inner_product(std::begin(v1), std::end(v1), std::begin(v1), 0.0)) *
-      sqrt(std::inner_product(std::begin(v2), std::end(v2), std::begin(v2), 0.0)) );
+      sqrt(std::inner_product(std::begin(v2), std::end(v2), std::begin(v2), 0.0)) ));
     return res;
   }
 
@@ -375,17 +375,13 @@ namespace tg_UDIMPL {
   }
   */
 
-  inline float rad(float d){
-    return d * 3.1415926535897932384626433832795 / 180.0;
-  }
-
   inline float GetDistance(float lat1, float lng1, float lat2, float lng2){
     float a;
     float b;
-    float radLat1 = rad(lat1);
-    float radLat2 = rad(lat2);
+    float radLat1 = tg::rad(lat1);
+    float radLat2 = tg::rad(lat2);
     a = radLat1 - radLat2;
-    b = rad(lng1) - rad(lng2);
+    b = tg::rad(lng1) - tg::rad(lng2);
     float s = 2 * asin(sqrt(pow(sin(a/2),2) + cos(radLat1)*cos(radLat2)*pow(sin(b/2),2)));
     s = s * 6378.137;
     s = s / 1000;
@@ -431,7 +427,7 @@ namespace tg_UDIMPL {
     return similarity;
   }
 
-  /* =========== END APPROXIMATE NEAREST NEIGHBORS ============= /*
+  /* =========== END APPROXIMATE NEAREST NEIGHBORS ============= */
 
 
 
