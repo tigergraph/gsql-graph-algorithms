@@ -3,7 +3,6 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
   STRING file_path = "", BOOL display_edges = FALSE){ 
   
   /* Compute Betweenness Centrality for each VERTEX. 
-  //testing...
   Use multi-sourse BFS.
   Link of the paper: http://www.vldb.org/pvldb/vol8/p449-then.pdf
   Parameters:
