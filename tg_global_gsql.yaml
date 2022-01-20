@@ -2,17 +2,17 @@
 # @           : this file
 # {x}         : the directory of file x
 # &x          : any file which matches pattern x
-# ...         : any depth of arbitrary directories
+# **         : any depth of arbitrary directories
 # *           : wildcard character
 # [x|y...|z]  : file/directory x, y, or z
 
   algorithm_navigation:
     category:
-      pattern: "{@}/algorithms/tg_category*.yml"
+      pattern: "{@}/algorithms/**/tg_category*.yml"
     sub_category:
-      pattern: "{&category}/.../tg_sub*.yml"
+      pattern: "{&category}/**/tg_sub*.yml"
     algorithm:
-      pattern: "[{&category}|{&sub_category}/.../tg_algo*.yml"
+      pattern: "{&category}/**/tg_algo*.yml"
   global_ExprFunctions:
     pattern: "{@}/UDF/tg_ExprFunctions.hpp"
   global_ExprUtils:
