@@ -35,7 +35,7 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
   FLOAT current = 0;
   file f (file_path);
 
-  Start = {v_type.*};
+  Start = {v_type};
   getRange = SELECT t 
              FROM Start:s-(e_type:e)-:t
              POST-ACCUM 
