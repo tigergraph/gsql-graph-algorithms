@@ -1,5 +1,5 @@
-CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING connect_edge, DOUBLE support, UINT min_length, 
-UINT max_count = 10000, INT print_limit = -1, STRING file_path = "") { 
+CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING connect_edge, DOUBLE support, UINT min_length,
+UINT max_count = 10000, INT print_limit = -1, STRING file_path = "") {
   /*
   Paper Reference:
   Shintani, Takahiko & Kitsuregawa, Masaru. (1999). Mining Algorithms for Sequential Patterns in Parallel: Hash Based Approach.
@@ -34,7 +34,7 @@ UINT max_count = 10000, INT print_limit = -1, STRING file_path = "") {
   SetAccum<key_pair> @work_order_set;
   OrAccum<BOOL> @or_is_eligible = TRUE;
   SumAccum<INT> @sum_superset_counter = 0;
-                      
+
   MaxAccum<INT> @@max_sq_length = 0;
   ListAccum<INT> @@HASH_CONST_list;
   MapAccum<INT, ListAccum<INT>> @@pattern_lookup_map, @@new_pattern_lookup_map;
@@ -46,68 +46,68 @@ UINT max_count = 10000, INT print_limit = -1, STRING file_path = "") {
   INT unify_size = 0;
   INT print_count = 0;
   INT curr_length = 0;
-                      
+
   ##### Initialize #####
   unify = {unify_vertex_type.*};
   unify_size = unify.size();
-                      
+
   unify = SELECT s
           FROM unify:s
-          ACCUM 
+          ACCUM
               @@max_sq_length += s.item_list.size();
-  
-  @@HASH_CONST_list = initiate_hash_const(@@max_sq_length);
+
+  @@HASH_CONST_list = tg_initiate_hash_const(@@max_sq_length);
   min_support = CEIL(unify_size*support);
 
   items = {item_vertex_type.*};
 
-  items = SELECT s 
+  items = SELECT s
           FROM items:s - (connect_edge) -> unify_vertex_type:t
           ACCUM
-              s.@counter_map += (get_hash(getvid(s)) -> 1)
+              s.@counter_map += (tg_get_hash(getvid(s)) -> 1)
           POST_ACCUM
-              s.@lookup_table_map += (get_hash(getvid(s)) -> key_pair(0, getvid(s)));
+              s.@lookup_table_map += (tg_get_hash(getvid(s)) -> key_pair(0, getvid(s)));
 
   ##### Generate sequence of length k + 1 from k #####
   WHILE TRUE DO
-      curr_length = curr_length + 1;              
-      items = SELECT s 
+      curr_length = curr_length + 1;
+      items = SELECT s
               FROM items:s
-              ACCUM 
+              ACCUM
                   FOREACH (key, cnt) in s.@counter_map DO
                       IF cnt >= min_support  THEN
-                          INT p_key = get_pattern_key(s.@lookup_table_map.get(key)),
-                          INT s_key = get_suffix_key(s.@lookup_table_map.get(key)),     
-                      
+                          INT p_key = tg_get_pattern_key(s.@lookup_table_map.get(key)),
+                          INT s_key = tg_get_suffix_key(s.@lookup_table_map.get(key)),
+
                           INT first_element = s_key,
-                          IF curr_length > 1 THEN 
-                              first_element = @@pattern_lookup_map.get(p_key).get(0) 
+                          IF curr_length > 1 THEN
+                              first_element = @@pattern_lookup_map.get(p_key).get(0)
                           END,
-                  
-                          IF curr_length < min_length THEN 
-                              @@new_pattern_lookup_map += (key -> concat(@@pattern_lookup_map.get(p_key), s_key))
-                          ELSE 
+
+                          IF curr_length < min_length THEN
+                              @@new_pattern_lookup_map += (key -> tg_concat(@@pattern_lookup_map.get(p_key), s_key))
+                          ELSE
                               @@frequent_pattern_heap += frequent_pattern_node(key, cnt*1.0/unify_size, curr_length),
-                              @@pattern_lookup_map += (key -> concat(@@pattern_lookup_map.get(p_key), s_key))
+                              @@pattern_lookup_map += (key -> tg_concat(@@pattern_lookup_map.get(p_key), s_key))
                           END,
-                          s.@work_order_set += key_pair(key, get_hash_without_first_element(key, first_element, curr_length, @@HASH_CONST_list)),
-                          @@suffix_map += (get_hash_without_last_element(key, getvid(s)) -> s)
+                          s.@work_order_set += key_pair(key, tg_get_hash_without_first_element(key, first_element, curr_length, @@HASH_CONST_list)),
+                          @@suffix_map += (tg_get_hash_without_last_element(key, getvid(s)) -> s)
                       END
                   END
               POST-ACCUM
                   s.@lookup_table_map.clear(),
                   s.@counter_map.clear()
               HAVING s.@work_order_set.size() != 0;
-    
-    IF items.size() == 0 or @@frequent_pattern_heap.size() == max_count THEN 
-        BREAK; 
+
+    IF items.size() == 0 or @@frequent_pattern_heap.size() == max_count THEN
+        BREAK;
     END;
-                      
+
     IF curr_length < min_length THEN
         @@pattern_lookup_map = @@new_pattern_lookup_map;
         @@new_pattern_lookup_map.clear();
     END;
-                      
+
     ss = SELECT t
          FROM items:s - (connect_edge) -> unify_vertex_type:t
          WHERE t.@or_is_eligible AND t.item_list.size() >= curr_length
@@ -116,23 +116,23 @@ UINT max_count = 10000, INT print_limit = -1, STRING file_path = "") {
              FOREACH wo in s.@work_order_set DO
                  FOREACH suffix_page in @@suffix_map.get(wo.suffix_key) DO
                      suffix_vid = getvid(suffix_page),
-                      
-                     IF is_subset(@@pattern_lookup_map.get(wo.pattern_key), suffix_vid, t.item_list) THEN
-                         suffix_page.@counter_map += (get_hash_concat(wo.pattern_key, suffix_vid) -> 1),
-                         suffix_page.@lookup_table_map += (get_hash_concat(wo.pattern_key, suffix_vid) 
+
+                     IF tg_is_subset(@@pattern_lookup_map.get(wo.pattern_key), suffix_vid, t.item_list) THEN
+                         suffix_page.@counter_map += (tg_get_hash_concat(wo.pattern_key, suffix_vid) -> 1),
+                         suffix_page.@lookup_table_map += (tg_get_hash_concat(wo.pattern_key, suffix_vid)
                          -> key_pair(wo.pattern_key, suffix_vid)),
                          t.@sum_superset_counter += 1
                      END
                  END
              END
-         POST_ACCUM 
+         POST_ACCUM
              s.@work_order_set.clear(),
              t.@or_is_eligible = t.@sum_superset_counter != t.@sum_superset_counter';
-                      
+
      @@suffix_map.clear();
   END;
 
-  ##### Output #####       
+  ##### Output #####
   IF file_path != "" THEN
       f.println("FREQUENCY", "PATTERN_LIST");
   END;
@@ -141,12 +141,12 @@ UINT max_count = 10000, INT print_limit = -1, STRING file_path = "") {
       WHILE NOT @@frequent_pattern_heap.size() == 0 DO
           IF (print_limit == -1 or print_limit > 0 and print_count < print_limit) THEN
               PRINT @@frequent_pattern_heap.top().frequency as support,
-              to_vertex_list(@@pattern_lookup_map.get(@@frequent_pattern_heap.top().pattern_key)) as pattern;     
+              tg_to_vertex_list(@@pattern_lookup_map.get(@@frequent_pattern_heap.top().pattern_key)) as pattern;
               print_count = print_count + 1;
           END;
 
           IF file_path != "" THEN
-              f.println(@@frequent_pattern_heap.top().frequency, @@pattern_lookup_map.get(@@frequent_pattern_heap.top().pattern_key));   
+              f.println(@@frequent_pattern_heap.top().frequency, @@pattern_lookup_map.get(@@frequent_pattern_heap.top().pattern_key));
           END;
           @@frequent_pattern_heap.pop();
       END;

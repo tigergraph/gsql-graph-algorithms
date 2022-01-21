@@ -1,4 +1,4 @@
-CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT embedding_dim) { 
+CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT embedding_dim) {
     /*
     This query calculates the embedding cosine similarity between one vertex and another.
     Higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.
@@ -21,10 +21,10 @@ CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT e
            FROM vs1:s
            POST-ACCUM @@emb1_list += s.embedding;
 
-    info = SELECT s 
-           FROM vs2:s 
+    info = SELECT s
+           FROM vs2:s
            POST-ACCUM @@emb2_list += s.embedding;
 
-    similarity = pairwise_cosine_similarity(@@emb1_list, @@emb2_list, embedding_dim);
+    similarity = tg_pairwise_cosine_similarity(@@emb1_list, @@emb2_list, embedding_dim);
     PRINT similarity;
 }

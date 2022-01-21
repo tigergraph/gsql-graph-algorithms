@@ -11,7 +11,7 @@ CREATE QUERY tg_maximal_indep_set_random(STRING v_type, STRING e_type, INT max_i
     INT iter = 0;
 
     Start = {v_type.*};
-    Start = SELECT s 
+    Start = SELECT s
             FROM Start:s
             ACCUM
                 IF s.outdegree(e_type) == 0 THEN
@@ -21,19 +21,19 @@ CREATE QUERY tg_maximal_indep_set_random(STRING v_type, STRING e_type, INT max_i
             HAVING s.@and_active;
 
     WHILE Start.size()>0 LIMIT max_iter DO
-        Start = SELECT s 
+        Start = SELECT s
                 FROM Start:s
                 POST-ACCUM
                     s.@min_r_min = GSQL_INT_MAX,
-                    s.@min_r = rand_int(GSQL_INT_MIN, GSQL_INT_MAX);
+                    s.@min_r = tg_rand_int(GSQL_INT_MIN, GSQL_INT_MAX);
 
-        TMP = SELECT s 
+        TMP = SELECT s
               FROM Start:s-(e_type:e)->v_type:t
               WHERE t.@and_active
               ACCUM
                   s.@min_r_min += t.@min_r;
 
-        TMP = SELECT s 
+        TMP = SELECT s
               FROM Start:s
               POST-ACCUM
                   IF s.@min_r < s.@min_r_min THEN
@@ -42,13 +42,13 @@ CREATE QUERY tg_maximal_indep_set_random(STRING v_type, STRING e_type, INT max_i
                   END
               HAVING s.@or_selected;
 
-        TMP = SELECT s 
+        TMP = SELECT s
               FROM TMP:s-(e_type:e)->v_type:t
               ACCUM
                   t.@and_active += FALSE;
 
-        Start = SELECT s 
-                FROM Start:s 
+        Start = SELECT s
+                FROM Start:s
                 WHERE s.@and_active;
     END;
 
@@ -57,12 +57,12 @@ CREATE QUERY tg_maximal_indep_set_random(STRING v_type, STRING e_type, INT max_i
     END;
 
     Start = {v_type.*};
-    Start = SELECT s 
+    Start = SELECT s
             FROM Start:s
             WHERE s.@or_selected
-            ACCUM 
-                IF file_path != "" THEN 
-                    f.println(s) 
+            ACCUM
+                IF file_path != "" THEN
+                    f.println(s)
                 END;
 
     IF print_accum THEN

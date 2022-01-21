@@ -59,18 +59,18 @@ namespace UDIMPL {
 
   /* ============== START SPEAKER LISTENER LABEL PROP ================== */
 
-  inline double getVal (ListAccum<double>& list, int64_t i) {
+  inline double tg_getVal (ListAccum<double>& list, int64_t i) {
     return list.get(i);
   }
 
-  inline void getVertexesFromEdge(SetAccum<EDGE>& edgeSet, SetAccum<VERTEX>& res) {
+  inline void tg_getVertexesFromEdge(SetAccum<EDGE>& edgeSet, SetAccum<VERTEX>& res) {
     for (auto it = edgeSet.data_.begin(); it != edgeSet.data_.end(); ++it) {
       res += it->srcVid;
       res += it->tgtVid;
     }
   }
 
-  inline int64_t rand_int (int minVal, int maxVal) {
+  inline int64_t tg_rand_int (int minVal, int maxVal) {
     std::random_device rd;
     std::mt19937 e1(rd());
     std::uniform_int_distribution<int> dist(minVal, maxVal);
@@ -82,23 +82,23 @@ namespace UDIMPL {
 
   /* ============== START FREQUENT PATTERN MINING ===================== */
 
-  inline int64_t get_hash(int64_t id){
+  inline int64_t tg_get_hash(int64_t id){
 	    int64_t hash_val = id % tg::MOD;
 	    return hash_val;
 	}
 
 	template<typename tup>
-	inline int64_t get_pattern_key(MaxAccum<tup> t){
+	inline int64_t tg_get_pattern_key(MaxAccum<tup> t){
 		tup in_data = t;
 		return in_data.pattern_key;
 	}
 
 	template<typename tup>
-	inline int64_t get_suffix_key(MaxAccum<tup> t){
+	inline int64_t tg_get_suffix_key(MaxAccum<tup> t){
 		tup in_data = t;
 		return in_data.suffix_key;
 	}
-	inline ListAccum<int64_t> initiate_hash_const(int length){
+	inline ListAccum<int64_t> tg_initiate_hash_const(int length){
 		ListAccum<int64_t> return_arr;
 		__int128_t promoter;
 
@@ -115,7 +115,7 @@ namespace UDIMPL {
 
 		return return_arr;
 	}
-	inline int64_t get_hash_without_first_element(int64_t hash_val, int64_t first, int size, const ListAccum<int64_t>& HASH_CONST){
+	inline int64_t tg_get_hash_without_first_element(int64_t hash_val, int64_t first, int size, const ListAccum<int64_t>& HASH_CONST){
 	    __int128_t promoter = hash_val;
 
 	    __int128_t first_hash = first;
@@ -134,7 +134,7 @@ namespace UDIMPL {
 	    return static_cast<int64_t>(promoter);
 	}
 
-	inline int64_t get_hash_without_last_element(int64_t hash_val, int64_t last){
+	inline int64_t tg_get_hash_without_last_element(int64_t hash_val, int64_t last){
 		__int128_t promoter = hash_val;
 		promoter -= last;
 		promoter %= tg::MOD;
@@ -144,7 +144,7 @@ namespace UDIMPL {
 	    return promoter;
 	}
 
-	inline int64_t get_hash_concat(int64_t hash_val, int64_t appender){
+	inline int64_t tg_get_hash_concat(int64_t hash_val, int64_t appender){
 	    __int128_t promoter = hash_val;
 
 	    promoter *= tg::BASE;
@@ -156,7 +156,7 @@ namespace UDIMPL {
 	    return static_cast<int64_t>(promoter);
 	}
 
-	inline bool is_subset(const ListAccum<int64_t>& subset, int64_t ending, ListAccum<int64_t> &superset){
+	inline bool tg_is_subset(const ListAccum<int64_t>& subset, int64_t ending, ListAccum<int64_t> &superset){
 
 	    int curr_pos = 0;
 	    int i = 0;
@@ -183,12 +183,12 @@ namespace UDIMPL {
 
 	}
 
-	inline ListAccum<int64_t> concat(ListAccum<int64_t> original_list, int64_t appending_element){
+	inline ListAccum<int64_t> tg_concat(ListAccum<int64_t> original_list, int64_t appending_element){
 	    original_list += appending_element;
 
 	    return original_list;
 	}
-	inline ListAccum<VERTEX> to_vertex_list(const ListAccum<int64_t>& l){
+	inline ListAccum<VERTEX> tg_to_vertex_list(const ListAccum<int64_t>& l){
 		ListAccum<VERTEX> v_list;
 		for (int i = 0; i < l.size(); ++i){
 			v_list += VERTEX(l.get(i));
@@ -196,7 +196,7 @@ namespace UDIMPL {
 		return v_list;
 	}
 	template<typename tup>
-	inline tup get_tup(MaxAccum<tup> val){
+	inline tup tg_get_tup(MaxAccum<tup> val){
 		tup new_tup = val;
 		return new_tup;
 	}
@@ -206,7 +206,7 @@ namespace UDIMPL {
 
   /* ============== START EMBEDDING SIMILARITY ===================== */
 
-  inline MapAccum<int, double> cosine_similarity(ListAccum<double> emb1, MapAccum<int, ListAccum<double>> other_vertices, int embeddingDim) {
+  inline MapAccum<int, double> tg_cosine_similarity(ListAccum<double> emb1, MapAccum<int, ListAccum<double>> other_vertices, int embeddingDim) {
     std::vector<double> v1(embeddingDim);
     for (int e = 0; e < embeddingDim; e++) {
         v1[e] = emb1.get(e);
@@ -232,7 +232,7 @@ namespace UDIMPL {
 
   /* ============== START PAIRWISE EMBEDDING SIMILARITY ===================== */
 
-  inline double pairwise_cosine_similarity(ListAccum<double> emb1, ListAccum<double> emb2, int embeddingDim) {
+  inline double tg_pairwise_cosine_similarity(ListAccum<double> emb1, ListAccum<double> emb2, int embeddingDim) {
     std::vector<double> v1(embeddingDim);
     std::vector<double> v2(embeddingDim);
     for (int e = 0; e < embeddingDim; e++) {
@@ -250,7 +250,7 @@ namespace UDIMPL {
 
   /* ============== START FAST RP ================= */
 
-  inline ListAccum<float> extract_list(string weights){
+  inline ListAccum<float> tg_extract_list(string weights){
     ListAccum<float> wghts;
     string current_weight;
     std::stringstream s_stream(weights);
@@ -261,7 +261,7 @@ namespace UDIMPL {
     return wghts;
   }
 
-  inline float fastrp_rand_func(int64_t v_id, int64_t emb_idx, int64_t seed, int64_t s){
+  inline float tg_fastrp_rand_func(int64_t v_id, int64_t emb_idx, int64_t seed, int64_t s){
     std::hash<std::string> hasher;
     auto hash = hasher(std::to_string(v_id) + "," + std::to_string(emb_idx) + "," + std::to_string(seed));
 
@@ -320,7 +320,7 @@ namespace UDIMPL {
 
 
   // random function, generate a random value between 0 and 1
-  inline float random(){
+  inline float tg_random(){
       std::random_device rd;
       std::mt19937 gen(rd());
       std::uniform_real_distribution<> dis(0, 1);
@@ -328,7 +328,7 @@ namespace UDIMPL {
   }
 
   // generate a int random value given a range
-  inline int random_range(int start, int end){
+  inline int tg_random_range(int start, int end){
       std::random_device rd;
       std::mt19937 gen(rd());
       std::uniform_real_distribution<> dis(start, end);
@@ -337,7 +337,7 @@ namespace UDIMPL {
   }
   // generate a random value based on probability distribution
   // For example: given {0.5,0.3,0.2}, this function will generate {0,1,2} based on its probability
-  inline int random_distribution(ListAccum<float> p){
+  inline int tg_random_distribution(ListAccum<float> p){
       std::vector<float> a;
       for (auto it : p.data_){
           a.push_back(it);
@@ -359,7 +359,7 @@ namespace UDIMPL {
   }
   */
 
-  inline float GetDistance(float lat1, float lng1, float lat2, float lng2){
+  inline float tg_GetDistance(float lat1, float lng1, float lat2, float lng2){
     float a;
     float b;
     float radLat1 = tg::rad(lat1);
@@ -413,11 +413,7 @@ namespace UDIMPL {
 
   /* =========== END APPROXIMATE NEAREST NEIGHBORS ============= */
 
-
-
-
 }
-
 
 /****************************************/
 

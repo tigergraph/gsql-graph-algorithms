@@ -1,12 +1,12 @@
-CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type, 
- 					   STRING weights, FLOAT beta, INT k, INT reduced_dim, 
-					   INT sampling_constant, INT random_seed, 
-					   BOOL print_accum=FALSE, STRING result_attr="", STRING file_path="") { 
+CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
+ 					   STRING weights, FLOAT beta, INT k, INT reduced_dim,
+					   INT sampling_constant, INT random_seed,
+					   BOOL print_accum=FALSE, STRING result_attr="", STRING file_path="") {
 	/*
     This query produces an embedding for each vertex.
     Assumes that tg_fastRP_preprocessing has been run first.
 
-    NOTE: This query needs to be modified based upon your schema to set the embedding 
+    NOTE: This query needs to be modified based upon your schema to set the embedding
 	attribute accordingly if you wish to store the embeddings in your graph. Each vertex should have
 	an attribute with type LIST<DOUBLE>. If you do not wish to store the embeddings in graph, the applicable lines.
 
@@ -31,20 +31,20 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
 	FILE f (file_path);
 	INT depth = 0;
 
-	@@weights = extract_list(weights);
+	@@weights = tg_extract_list(weights);
 
 	verts = {v_type};
 
 	verts =
-		SELECT s FROM verts:s -(:e)- :t 
-		ACCUM @@m += 1 
+		SELECT s FROM verts:s -(:e)- :t
+		ACCUM @@m += 1
 		POST-ACCUM s.@L = pow(s.outdegree() / @@m, beta);
 
 	verts =
 		SELECT s FROM verts:s -(e_type)- :t
 		ACCUM
 			FOREACH i IN RANGE[0, reduced_dim-1] DO
-			FLOAT tmp = fastrp_rand_func(getvid(s), i, random_seed, sampling_constant),
+			FLOAT tmp = tg_fastrp_rand_func(getvid(s), i, random_seed, sampling_constant),
 			t.@embedding_arr[i] += tmp * s.@L
 			END;
 
@@ -70,10 +70,10 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
 		depth = depth + 1;
 	END;
 
-	verts = 
-		SELECT s FROM verts:s 
+	verts =
+		SELECT s FROM verts:s
 		POST-ACCUM s.@embedding_arr.reallocate(0); // want to make sure this executes before updating the list accum
-	verts = 
+	verts =
 		SELECT s FROM verts:s
 		POST-ACCUM
 		FOREACH i IN RANGE[0, reduced_dim-1] DO
