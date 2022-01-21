@@ -7,7 +7,7 @@
  * - This library should only define functions that will be used in
  *   TigerGraph Query scripts. Other logics, such as structs and helper
  *   functions that will not be directly called in the GQuery scripts,
- *   must be put into "ExprUtil.hpp" under the same directory where
+ *   must be put into "tg_ExprUtil.hpp" under the same directory where
  *   this file is located.
  *
  * - Supported type of return value and parameters
@@ -24,7 +24,7 @@
  * - Please don't remove necessary codes in this file
  *
  * - A backup of this file can be retrieved at
- *     <tigergraph_root_path>/dev_<backup_time>/gdk/gsql/src/QueryUdf/ExprFunctions.hpp
+ *     <tigergraph_root_path>/dev_<backup_time>/gdk/gsql/src/QueryUdf/tg_ExprFunctions.hpp
  *   after upgrading the system.
  *
  ******************************************************************************/
@@ -46,11 +46,11 @@
 #include <random>
 #include <vector>
 
-/**     XXX Warning!! Put self-defined struct in ExprUtil.hpp **
+/**     XXX Warning!! Put self-defined struct in tg_ExprUtil.hpp **
  *  No user defined struct, helper functions (that will not be directly called
  *  in the GQuery scripts) etc. are allowed in this file. This file only
  *  contains user-defined expression function's signature and body.
- *  Please put user defined structs, helper functions etc. in ExprUtil.hpp
+ *  Please put user defined structs, helper functions etc. in tg_ExprUtil.hpp
  */
 #include "tg_ExprUtil.hpp"
 
@@ -417,4 +417,4 @@ namespace UDIMPL {
 
 /****************************************/
 
-#endif /* EXPRFUNCTIONS_HPP_ */
+#endif /* TG_EXPRFUNCTIONS_HPP_ */
