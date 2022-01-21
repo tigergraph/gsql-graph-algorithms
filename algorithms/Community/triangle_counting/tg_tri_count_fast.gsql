@@ -11,7 +11,7 @@ all = {v_type.*};
 tmp = SELECT t
       FROM all:s-((e_type))-> :t
       WHERE s.outdegree(e_type) > t.outdegree(e_type) OR (s.outdegree(e_type) == t.outdegree(e_type) AND getvid(s) > getvid(t))
-      ACCUM t.@neighbors_set += getvid(s);
+      ACCUM t.@neighbors_set += s;
 
 # Here we compute the intersection for 2 points on the triangle.
 tmp = SELECT t
