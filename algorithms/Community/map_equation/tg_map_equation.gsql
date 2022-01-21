@@ -19,7 +19,7 @@ CREATE QUERY tg_map_equation(
   MapAccum<STRING, MaxAccum<VERTEX>>
     @@community_center_map;
 
-  Start = {v_type.*};
+  Start = {v_type};
 
   Start = SELECT s 
           FROM Start:s -(e_type:e)- v_type:t
