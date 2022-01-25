@@ -4,20 +4,28 @@
 reviewers:
   # The default reviewers if not assigned specifically 
   defaults:
-    - abdullaTigerGraph
-    - group1 # group
-
+    - secondary
+    - tertiary
   # Reviewer groups each of which has a list of GitHub usernames
   groups:
     group1:
       - YimingPan-Code
-      - abdullaTigerGraph
-     # - abdullaaskar
+      - Boyu1997
+    group2:
+      - wyatt-joyner-tg
+      - tommytgraph
+    secondary:
+      - YimingPan-Code
+      - wyatt-joyner-tg
+    tertiary:
+      - xchang2014
+      - victor-gsl
 
 files:
   # All review request will be sent to the following groups/people.
   '**':
-    - group1
+    - secondary
+    - tertiary
 
 options:
   # ignore draft PRs
