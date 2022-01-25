@@ -1,0 +1,32 @@
+# Run the following check(s):
+# * checkstyle: Run codestylechecker.
+
+name: Check
+
+on:
+  push:
+    branches:
+      # accept all branches
+      - '**'
+    tags:
+      # ignore all tags (wip, mit, ...)
+      - '!**'
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+     # - uses: actions/checkout@v2
+     #   with:
+     #     token: ${{ secrets.QA_TOKEN }}
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-${{ hashFiles('**/build.gradle', 'gradle.properties') }}
+     # - uses: actions/setup-java@v1
+     #   with:
+     #     java-version: '11.0.10'
+     # - name: Run codestylechecker
+     #   run: GLEPATH=$(pwd); source tools/scripts/bash_functions && codestylechecker
