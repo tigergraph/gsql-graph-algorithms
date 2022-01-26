@@ -16,18 +16,30 @@ CREATE QUERY tg_same_community(VERTEX a, VERTEX b, STRING community_attribute, S
     avs = {a};
     bvs = {b};
 
-    IF community_attr_type NOT IN ("UINT", "uint", "INT", "int", "STRING", "string") THEN
+    IF community_attr_type NOT IN ("UINT","INT", "FLOAT", "DOUBLE", "STRING") THEN
         PRINT "communityAttrType not valid option" as errMsg;
         RETURN;
     END;
     
     res = SELECT av
           FROM avs:av 
-          POST-ACCUM aCommunity = av.getAttr(community_attribute, community_attr_type);
+          POST-ACCUM CASE  community_attr_type 
+                     WHEN "UINT" THEN aCommunity = av.getAttr(community_attribute, "UINT")
+                     WHEN "INT" THEN aCommunity = av.getAttr(community_attribute, "INT")
+                     WHEN "FLOAT" THEN aCommunity = av.getAttr(community_attribute, "FLOAT")
+                     WHEN "DOUBLE" THEN aCommunity = av.getAttr(community_attribute, "DOUBLE")
+                     WHEN "STRING" THEN aCommunity = str_to_int(av.getAttr(community_attribute, "STRING"))
+                     END;
           
     res = SELECT bv
           FROM bvs:bv
-          POST-ACCUM bCommunity = bv.getAttr(community_attribute, community_attr_type);
+          POST-ACCUM CASE  community_attr_type 
+                     WHEN "UINT" THEN bCommunity = bv.getAttr(community_attribute, "UINT")
+                     WHEN "INT" THEN bCommunity = bv.getAttr(community_attribute, "INT")
+                     WHEN "FLOAT" THEN bCommunity = bv.getAttr(community_attribute, "FLOAT")
+                     WHEN "DOUBLE" THEN bCommunity = bv.getAttr(community_attribute, "DOUBLE")
+                     WHEN "STRING" THEN bCommunity = str_to_int(bv.getAttr(community_attribute, "STRING"))
+                     END;
           
     # Check if in same community
     IF aCommunity == bCommunity THEN 
