@@ -1,16 +1,15 @@
 CREATE QUERY tg_kmeans(int k = 2, int max_k = 5, float max_change = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING file_path="") {
   /*
     Runs k-means clustering algorithm for a range of K values
-    
+
     Parameters :
       k      : starting value of K range
       maxK   : ending value of K range
       maxChange   : maximum centroid vector change condition
-      v_type : vertex type to start from 
+      v_type : vertex type to start from
       e_type : edge type to traverse
       random : boolean to start from either random or non-random centroid positions
       print_accum : print JSON output
-      result_attr : store as attribute in graph
       file_path   : file to write CSV output to
   */
   MapAccum<int, ListAccum<float>> @@k_map;
