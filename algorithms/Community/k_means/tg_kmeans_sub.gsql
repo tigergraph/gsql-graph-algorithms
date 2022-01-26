@@ -12,21 +12,21 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
       maxChange : maximum centroid vector change condition
       v_type    : vertex type to start from
       e_type    : edge type to traverse
-      random    : boolean to start from either random or non-random centroid positions
+      random    : boolean to start from either random or non-random centroid positions 
       print_accum : print JSON output
       file_path   : file to write CSV output to
   */
   TypeDef Tuple<int center, float value> distance_tuple; # tuple to store results in the Heap
   HeapAccum<distance_tuple> (1,value asc) @distance_heap; # stores the closest centroid and distance from it
   ArrayAccum<AvgAccum> @@centroids_array[100][100];           # current centroids/vectors
-  ArrayAccum<AvgAccum> @@new_centroids_array[100][100];        # updated centroids/vectors
-  SumAccum<int> @sum_closest_center;                         # value of closest center for each vertex
+  ArrayAccum<AvgAccum> @@new_centroids_array[100][100];        # updated centroids/vectors 
+  SumAccum<int> @sum_closest_center;                         # value of closest center for each vertex 
   MaxAccum<float> @@max_change, @@max_attr_value;             # total change per iteration, high end of attribute range
   GroupByAccum<int num_of_clusters, MinAccum<float> min_dist, MaxAccum<float> max_dist, AvgAccum avg_dist> @@group_by_k_variation; # min,max,avg distances for each centroid
-  MapAccum<int, int> @@cluster_counts_map;                   # number of vertices closest to each centroid
+  MapAccum<int, int> @@cluster_counts_map;                   # number of vertices closest to each centroid 
   AvgAccum @@avg_cluster_count;                           # avg number of closest vertices to each centroid
   ListAccum<Float> @@res_list;                               # return list of results per each K clusters
-  MapAccum<int, int> @@cluster_sizes_map;                    # end result cluster sizes
+  MapAccum<int, int> @@cluster_sizes_map;                    # end result cluster sizes 
   MinAccum<float> @@min_attr_value;                       # low end of attribute range
   FLOAT array_distance, attr_range;                       # distance between vectors/centroid and vertex, range of values for given attribute
 
@@ -35,15 +35,15 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
   FLOAT current = 0;
   file f (file_path);
 
-  Start = {v_type.*};
-  getRange = SELECT t
+  Start = {v_type};
+  getRange = SELECT t 
              FROM Start:s-(e_type:e)-:t
-             POST-ACCUM
-                 FOREACH item IN t.embeddings DO
+             POST-ACCUM 
+                 FOREACH item IN t.embeddings DO 
                      @@min_attr_value += item,
                      @@max_attr_value += item
                  END;
-
+  
   attr_range = @@max_attr_value - @@min_attr_value;
 
   # for populating starting array
@@ -55,7 +55,7 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
   @@centroids_array.reallocate(k,100);
   @@new_centroids_array.reallocate(k,100);
 
-  allProds = SELECT t
+  allProds = SELECT t 
              FROM Start:s-(e_type:e)-:t;
 
   # init array values based on distribution of data points
@@ -72,7 +72,7 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
   IF random == TRUE THEN
       FOREACH i IN range[0,k-1] DO
           FOREACH j IN range[0,99] DO
-              @@centroids_array[i][j] = tg_rand_int(-2,5)-0.123*0.4;
+              @@centroids_array[i][j] = rand_int(-2,5)-0.123*0.4;
           END;
       END;
   END;
@@ -84,25 +84,25 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
       @@cluster_counts_map.clear();
 
       // get closest centers for each product
-      allProds = SELECT s
+      allProds = SELECT s 
                  FROM allProds:s
-                 ACCUM
+                 ACCUM 
                      FOREACH i IN range [0,k-1] DO
                          double distance = 0,
                          FOREACH j IN range [0,99] DO
-                             distance = distance + pow(@@centroids_array[i][j] - s.embeddings.get(j),2)
+                             distance = distance + pow(@@centroids_array[i][j] - s.embeddings.get(j),2) 
                          END,
                          s.@distance_heap += distance_tuple(i,sqrt(distance))
                      END
-               POST-ACCUM
+               POST-ACCUM 
                      s.@sum_closest_center = s.@distance_heap.top().center,
                      @@cluster_counts_map += (s.@distance_heap.top().center -> 1),
                      s.@distance_heap.clear();
 
       // recalculate centers
-      recalculate = SELECT t
+      recalculate = SELECT t 
                     FROM Start:s-(e_type:e)-:t
-                    POST-ACCUM
+                    POST-ACCUM 
                         FOREACH j IN range [0,99] DO
                             @@new_centroids_array[t.@sum_closest_center][j] += t.embeddings.get(j)
                         END;
@@ -126,7 +126,7 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
 
   # output
   IF print_accum OR file_path != "" THEN
-      allProds = SELECT s
+      allProds = SELECT s 
                  FROM allProds:s
                  ACCUM @@cluster_sizes_map += (s.@sum_closest_center -> 1);
 

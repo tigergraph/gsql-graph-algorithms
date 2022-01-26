@@ -61,7 +61,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
   ##### Push one flow at a time until there is residudal graph is disconnected #####
   WHILE TRUE DO
       //initilize 
-      init = {node.*};
+      init = {v_type};
       init = SELECT s
              FROM init:s
              POST-ACCUM s.@or_is_visited = FALSE,

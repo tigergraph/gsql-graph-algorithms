@@ -40,7 +40,7 @@ CREATE QUERY tg_wcc_small_world(STRING v_type, STRING e_type, UINT threshold = 1
       # with the chosen pivot we use BFS algorithm to find all elements in its connected component
       WHILE Vertices.size() > 0 DO
           Vertices = SELECT t 
-                     FROM Vertices:s-(e_type:e)-:t
+                     FROM Vertices:s-(e_type:e)-v_type:t
                      WHERE  t.@or_visited == FALSE
                      ACCUM  t.@min_cc_id = s.@min_cc_id
                      POST-ACCUM t.@or_visited += TRUE;
@@ -60,7 +60,7 @@ CREATE QUERY tg_wcc_small_world(STRING v_type, STRING e_type, UINT threshold = 1
              
   WHILE Vertices.size() > 0 DO
       Vertices = SELECT t 
-                 FROM Vertices:s-(e_type:e)-:t
+                 FROM Vertices:s-(e_type:e)-v_type:t
                  WHERE  s.@min_cc_id < t.@min_cc_id
                  ACCUM  t.@min_cc_id += s.@min_cc_id;
   END;

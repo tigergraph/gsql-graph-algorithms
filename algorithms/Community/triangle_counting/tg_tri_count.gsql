@@ -14,8 +14,9 @@ all = SELECT s
 tmp = SELECT t
       FROM all:s -((e_type):e) -:t
       WHERE getvid(s) > getvid(t)
-      ACCUM INT c = COUNT((s.neighbors(e_type) MINUS s.@self_set) INTERSECT (t.neighbors(e_type) MINUS t.@self_set)),
-            @@sum_cnt += c;
+      ACCUM INT c1 = COUNT(s.neighbors(e_type) MINUS s.@self_set),
+            INT c2 = COUNT((s.neighbors(e_type) MINUS s.@self_set) MINUS (t.neighbors(e_type) MINUS t.@self_set)),
+            @@sum_cnt += c1-c2;
                             
 # Each triangle is counted 3 times for each edge, so final result is divided by 3
 PRINT @@sum_cnt/3 AS num_triangles;
