@@ -50,7 +50,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
       Descendants = {};
       WHILE Vertices.size() > 0 DO
           Vertices = SELECT t 
-                     FROM Vertices:s -(e_type:e)- :t
+                     FROM Vertices:s -(e_type:e)- v_type:t
                      WHERE  t.@or_FW_visited == FALSE AND t.@or_visited == FALSE
                      POST-ACCUM t.@or_FW_visited += TRUE;
       Descendants = Descendants UNION Vertices;
@@ -60,7 +60,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
   Vertices = Pivot;
   WHILE Vertices.size() > 0 DO
       Vertices = SELECT t 
-                 FROM Vertices:s -(re_type:e)- :t
+                 FROM Vertices:s -(re_type:e)- v_type:t
                  WHERE  t.@or_FW_visited == TRUE AND t.@or_visited == FALSE
                  ACCUM  t.@min_cc_id = s.@min_cc_id
                  POST-ACCUM t.@or_visited += TRUE;
@@ -93,7 +93,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
       # this process continues until no more vertices change their color
       WHILE Vertices.size() > 0 DO
           Vertices = SELECT t 
-                     FROM Vertices:s -(e_type:e)- :t
+                     FROM Vertices:s -(e_type:e)- v_type:t
                      WHERE  t.@or_visited == FALSE AND s.@min_cc_id < t.@min_cc_id
                      ACCUM  t.@min_cc_id += s.@min_cc_id;
       
@@ -109,7 +109,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
       # and remove the SCC from the set All_Vertices
       WHILE Vertices.size() > 0 DO
           Vertices = SELECT t 
-                     FROM Vertices:s -(re_type:e)- :t
+                     FROM Vertices:s -(re_type:e)- v_type:t
                      WHERE  t.@or_visited == FALSE AND t.@min_cc_id == s.@min_cc_id
                      ACCUM  t.@or_visited = TRUE;
           All_Vertices = All_Vertices MINUS Vertices;
