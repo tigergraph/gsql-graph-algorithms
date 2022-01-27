@@ -7,12 +7,9 @@
 # [x|y...|z]  : file/directory x, y, or z
 
   algorithm:
-    name: K Nearest Neighbors (Cross Validation)
-    filename: "tg_knn_cosine_cv.gsql"
+    name: Maxflow
+    filename: "tg_maxflow.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
     description: The library is currently under construction! Descriptions will be added soon.
+    schema_constraints: This algorithm requires an INT, FLOAT, or DOUBLE capacity attribute on the target edge types.
     version: lib3.0
-    dependencies:
-      queries:
-        - file: "{@}/tg_knn_cosine_cv_sub.gsql"
-          sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767

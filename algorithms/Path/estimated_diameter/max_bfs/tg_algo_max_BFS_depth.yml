@@ -7,12 +7,8 @@
 # [x|y...|z]  : file/directory x, y, or z
 
   algorithm:
-    name: K Nearest Neighbors (Cross Validation)
-    filename: "tg_knn_cosine_cv.gsql"
+    name: Breadth-First Search Depth
+    filename: "tg_max_BFS_depth.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
     description: The library is currently under construction! Descriptions will be added soon.
     version: lib3.0
-    dependencies:
-      queries:
-        - file: "{@}/tg_knn_cosine_cv_sub.gsql"
-          sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767

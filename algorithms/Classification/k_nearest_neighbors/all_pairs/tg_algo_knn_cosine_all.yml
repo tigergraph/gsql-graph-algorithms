@@ -14,5 +14,5 @@
     version: lib3.0
     dependencies:
       queries:
-        - "{@}/tg_knn_cosine_all_sub.gsql"
+        - file: "{@}/tg_knn_cosine_all_sub.gsql"
           sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
