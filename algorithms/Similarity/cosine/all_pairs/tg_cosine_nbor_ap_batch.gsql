@@ -19,14 +19,14 @@ CREATE QUERY tg_cosine_batch(STRING vertex_type, STRING edge_type, STRING edge_a
   FILE f (file_path);
 
 # get numerator value and normalized value from edge attribute
-  start = {vertex_type.*};
+  start = {vertex_type};
   subjects = SELECT t
              FROM start:s -(edge_type:e)-> :t
              WHERE e.getAttr(edge_attribute, "FLOAT") > 0
              ACCUM t.@numerator_map += (s -> e.getAttr(edge_attribute, "FLOAT")),
                    @@norm_map += (s -> pow(e.getAttr(edge_attribute, "FLOAT"), 2));
 
-# compute the cosine simliarity, broken up into 2 parts 
+# compute the cosine simliarity, broken up into 2 parts
   FOREACH i IN RANGE[0, num_of_batches-1] DO
       neighbours = SELECT t
                    FROM subjects:s -(edge_type:e)-> :t
@@ -57,7 +57,7 @@ CREATE QUERY tg_cosine_batch(STRING vertex_type, STRING edge_type, STRING edge_a
   END;
 
 # output to file/JSON or insert edge
-  start = SELECT t 
+  start = SELECT t
           FROM start:t
           POST-ACCUM
               FOREACH tup IN t.@heap DO
