@@ -1,0 +1,23 @@
+---
+# @           : this file
+# {x}         : the directory of file x
+# &x          : any file which matches pattern x
+# **         : any depth of arbitrary directories
+# *           : wildcard character
+# [x|y...|z]  : file/directory x, y, or z
+
+  algorithm:
+    name: Frequent Pattern Mining
+    filename: "tg_fpm.gsql"
+    sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    description: The library is currently under construction! Descriptions will be added soon.
+    schema_constraints: The preprocessing stage of this algorithm requires a UINT, INT, FLOAT, or DOUBLE attribute type on the target edge type, representing a timestamp.
+    dependencies:
+      queries:
+        - file: "{@}/tg_fpm_pre.gsql"
+          sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+      ExprFunctions:
+        sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+      ExprUtil:
+        sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    version: lib3.0
