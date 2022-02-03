@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# This is pre-push hook for Graph Search Algorithm repository.
+
+source tools/scripts/bash_functions
+
+set -e
+
+## get Graph Search Algorithm local commit number and remote branch name
+COMMIT=""
+REMOTE=""
+LOCAL=""
+
+IFS=' '
+while read local_ref local_sha remote_ref remote_sha
+do
+  # graph search algorithm local branch name
+  if [[ $local_ref != "(delete)" ]]
+  then
+    LOCAL=${local_ref:11}
+  fi
+  # graph search algorithm local commit number
+  COMMIT=$local_sha
+  # graph search algorithm remote branch name
+  REMOTE=${remote_ref:11}
+done
+
+## pre-check
+
+# do nothing if COMMIT is empty, i.e., up-to-date
+if [ -z $COMMIT ]
+then
+  exit 0
+fi
+
+# if user doesn't push current to remote
+if [ ! -z $LOCAL ]
+then
+  if [[ $LOCAL != $(git rev-parse --abbrev-ref HEAD) ]]
+  then
+    echo -e "\e[1;31mERROR! Must push current branch to remote\e[0m"
+    exit 1
+  fi
+fi
+
+exit 0

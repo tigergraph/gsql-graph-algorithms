@@ -1,0 +1,38 @@
+# this is config file for Auto Request Review
+# See https://github.com/marketplace/actions/auto-request-review for more info.
+
+reviewers:
+  # The default reviewers if not assigned specifically 
+  defaults:
+    - secondary
+    - tertiary
+  # Reviewer groups each of which has a list of GitHub usernames
+  groups:
+    group1:
+      - YimingPan-Code
+      - Boyu1997
+    group2:
+      - wyatt-joyner-tg
+      - tommytgraph
+      - harshadindigal
+    secondary:
+      - YimingPan-Code
+      - wyatt-joyner-tg
+    tertiary:
+      - xchang2014
+      - victor-gsl
+
+files:
+  # All review request will be sent to the following groups/people.
+  '**':
+    - secondary
+    - tertiary
+
+options:
+  # ignore draft PRs
+  ignore_draft: true
+  # ignore PRs with title contains specific keywords
+  ignored_keywords:
+    - DO NOT REVIEW
+  # request reviews to all other members in the same group
+  enable_group_assignment: true
