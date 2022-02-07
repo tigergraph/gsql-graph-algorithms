@@ -29,7 +29,7 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
   FILE f (file_path);
   INT num_vert;
   INT batch_number;
-# Compute closeness	
+# Compute harmonic	
   all = {v_type};
   
   num_vert = all.size();
@@ -91,11 +91,11 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
   
   Start = SELECT s 
           FROM all:s
-	  # Calculate Closeness Centrality for each vertex
+	  # Calculate harmonic Centrality for each vertex
           WHERE s.@sum_res>0
           POST-ACCUM 
               IF wf THEN 
-                  s.@sum_score = s.@sum_res*1.0/(s.@sum_size*1.0-1.0) 
+                  s.@sum_score = s.@sum_res*1.0/s.@sum_size*1.0
               ELSE
                   s.@sum_score = s.@sum_res*1.0 
               END,
@@ -115,7 +115,7 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
 
    #Output
 	 IF file_path != "" THEN
-	     f.println("Vertex_ID", "Closeness");
+	     f.println("Vertex_ID", "Harmonic");
 	 END;
 
 	 IF print_accum THEN
