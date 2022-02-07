@@ -15,7 +15,7 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
   HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap; #heap to store top K score
   SumAccum<INT> @@sum_curr_dist; #current distance
   BitwiseOrAccum @bitwise_or_visit_next; #use bitwise instead of setAccum
-  SumAccum<> @sum_res; #Result, sum of distance
+  SumAccum<FLOAT> @sum_res; #Result, sum of distance
   SumAccum<INT> @sum_size; #get graph size
   SumAccum<FLOAT> @sum_score;
   BitwiseOrAccum @bitwise_or_seen;
