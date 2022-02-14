@@ -1,4 +1,4 @@
-CREATE QUERY tg_cosine_batch(STRING vertex_type, STRING edge_type, STRING edge_attribute, INT top_k, BOOL print_accum = true, STRING file_path, STRING similarity_edge, INT num_of_batches = 1) {
+CREATE QUERY tg_cosine_nbor_ap_batch(STRING vertex_type, STRING edge_type, STRING edge_attribute, INT top_k, BOOL print_accum = true, STRING file_path, STRING similarity_edge, INT num_of_batches = 1) {
   /*
     This query calculates the Cosine Similarity of a given vertex and every other vertex.
       Cosine Similarity = A \dot B/ ||A|| \dot ||B||/
