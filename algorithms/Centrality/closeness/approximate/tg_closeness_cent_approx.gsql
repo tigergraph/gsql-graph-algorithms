@@ -53,215 +53,215 @@ CREATE QUERY tg_closeness_cent_approx (
     INT num_vert,partition,i;
     datetime t1,t2;
     FLOAT eps = 0.00001;
-	
+  
     Start = {v_type};
     LOG(debug > 0,"query start",Start.size());
-		
+    
     # Total number of nodes
     num_vert = Start.size();
-	
+  
     # Initialize: Label each vertex with its own internal ID
     comp = SELECT x 
            FROM Start:x
-	   POST-ACCUM x.@min_cc_id = getvid(x);
+     POST-ACCUM x.@min_cc_id = getvid(x);
 
     # Propagate smaller internal IDs until no more ID changes can be DOne
     WHILE (comp.size()>0) DO
         comp = SELECT t 
                FROM comp:s-(e_type)->v_type:t
-	       ACCUM t.@min_cc_id += s.@min_cc_id 	// If s has a smaller id than t, copy the id to t
-	       HAVING t.@min_cc_id != t.@min_cc_id'; 
+         ACCUM t.@min_cc_id += s.@min_cc_id   // If s has a smaller id than t, copy the id to t
+         HAVING t.@min_cc_id != t.@min_cc_id'; 
     END;
   
     LOG(debug > 0,"find connected components");
-	  
+    
     # get components size
     Start = SELECT s 
             FROM Start:s
-	    POST-ACCUM @@cc_size_map += (s.@min_cc_id->1);
+      POST-ACCUM @@cc_size_map += (s.@min_cc_id->1);
     LOG(debug > 0,"size of connected components",@@cc_size_map.size());
-	
-    FOREACH (cc_id,cc_num) IN @@cc_size_map DO				
+  
+    FOREACH (cc_id,cc_num) IN @@cc_size_map DO        
         IF cc_num > max_size THEN
-	# for large components, get estimate closeness centrality for each vertex
-	# partition size
+  # for large components, get estimate closeness centrality for each vertex
+  # partition size
             Conn = SELECT s 
                    FROM Start:s
-		   WHERE s.@min_cc_id == cc_id;   
+       WHERE s.@min_cc_id == cc_id;   
  
-		   IF cc_num % k == 0 THEN
-		       partition = cc_num/k;
-		   ELSE
-		       partition = cc_num/k + 1;
-		   END;
-	 print partition;
+       IF cc_num % k == 0 THEN
+           partition = cc_num/k;
+       ELSE
+           partition = cc_num/k + 1;
+       END;
+   print partition;
          PRINT cc_num;
          
-	 # sampling
-	 snode = SELECT s 
+   # sampling
+   snode = SELECT s 
                 FROM Conn:s
-	        ACCUM s.@sum_vid += getvid(s)
-		HAVING s.@sum_vid % partition== sample_index
-		LIMIT k;
-	 i = sample_index;
+          ACCUM s.@sum_vid += getvid(s)
+    HAVING s.@sum_vid % partition== sample_index
+    LIMIT k;
+   i = sample_index;
         
-	 WHILE snode.size() < k DO
-	     i = (i + 1) % partition;
-	     snode = SELECT s 
+   WHILE snode.size() < k DO
+       i = (i + 1) % partition;
+       snode = SELECT s 
              FROM Conn:s
-	     HAVING s.@sum_vid % partition == i
-	     LIMIT k;
-	 END;
-	      
-	 snode = SELECT s 
+       HAVING s.@sum_vid % partition == i
+       LIMIT k;
+   END;
+        
+   snode = SELECT s 
                  FROM snode:s
-		 ACCUM s.@or_sampled += True,
-		       @@sample_set += s;
-	 LOG(debug > 0, "sampling finished", snode.size());
-	 PRINT snode.size();		
-		    
-	 # Set all sample node as the starting point
+     ACCUM s.@or_sampled += True,
+           @@sample_set += s;
+   LOG(debug > 0, "sampling finished", snode.size());
+   PRINT snode.size();    
+        
+   # Set all sample node as the starting point
          @@sum_curDist = 0;
-	      src = SELECT s 
+        src = SELECT s 
               FROM snode:s
-	      ACCUM s.@max_pivot += s,
-		    s.@sum_deltav += @@sum_curDist,
+        ACCUM s.@max_pivot += s,
+        s.@sum_deltav += @@sum_curDist,
                     s.@or_visited0 += True;
-	 LOG(debug > 0, "initialize pivot query", src.size());
-		
-	 # BFS: get the pivot of all nodes and its distance from the pivot
-	 WHILE src.size() > 0 DO
-	     @@sum_curDist += 1;
-	     src = SELECT t 
+   LOG(debug > 0, "initialize pivot query", src.size());
+    
+   # BFS: get the pivot of all nodes and its distance from the pivot
+   WHILE src.size() > 0 DO
+       @@sum_curDist += 1;
+       src = SELECT t 
                   FROM src:s-(e_type)->v_type:t
-		  WHERE t.@or_visited0 == False
-		  ACCUM t.@max_pivot += s.@max_pivot
+      WHERE t.@or_visited0 == False
+      ACCUM t.@max_pivot += s.@max_pivot
                   POST-ACCUM t.@or_visited0 += True,
-			     t.@sum_deltav = @@sum_curDist;
-	 END;
-	 LOG(debug > 0, "pivot query finished", @@sum_curDist);
-		
-	 # get closeness for community which is larger than maxsize
-	 FOREACH sample_node IN @@sample_set DO
-	 # set one sample node as starting node
+           t.@sum_deltav = @@sum_curDist;
+   END;
+   LOG(debug > 0, "pivot query finished", @@sum_curDist);
+    
+   # get closeness for community which is larger than maxsize
+   FOREACH sample_node IN @@sample_set DO
+   # set one sample node as starting node
             LOG(debug > 1,"one sample_node begin");
-	    vnode = {sample_node};
-	    vnode = SELECT s 
+      vnode = {sample_node};
+      vnode = SELECT s 
                     FROM vnode:s
-		    ACCUM s.@or_visited += True;
-			
-	    # the pivot of which is the sample node			
-	    pivot = SELECT s 
+        ACCUM s.@or_visited += True;
+      
+      # the pivot of which is the sample node      
+      pivot = SELECT s 
                     FROM Conn:s
-		    WHERE s.@or_sampled == False AND s.@max_pivot == sample_node;
-			
-	    # initialize the shortest distance
-	    @@sum_dist = 0;
-	    # initialize the sum of the shortest distance from the sample node
-	    @@sum_total_dist = 0;
-	    # initialize the map of shortest distance from other sample node
-	    @@cdist_map.clear();
-			
-	    WHILE vnode.size() > 0 do
-	        @@sum_dist += 1;
-	
-	        # initialize the size of non-sample node in the visiting node
-	        @@sum_nonsample = 0;
-	    
-		# decide whether the sample node is within or outside the threshold radius from the pivot of the visiting node
-		vnode = SELECT t 
+        WHERE s.@or_sampled == False AND s.@max_pivot == sample_node;
+      
+      # initialize the shortest distance
+      @@sum_dist = 0;
+      # initialize the sum of the shortest distance from the sample node
+      @@sum_total_dist = 0;
+      # initialize the map of shortest distance from other sample node
+      @@cdist_map.clear();
+      
+      WHILE vnode.size() > 0 do
+          @@sum_dist += 1;
+  
+          # initialize the size of non-sample node in the visiting node
+          @@sum_nonsample = 0;
+      
+    # decide whether the sample node is within or outside the threshold radius from the pivot of the visiting node
+    vnode = SELECT t 
                         FROM vnode:s-(e_type)->v_type:t
-			WHERE t.@or_visited == False
-			POST-ACCUM t.@or_visited += True,
-				   IF t.@or_sampled == True THEN
-				       @@cdist_map += (t->@@sum_dist)  # record the distance between the sample node
-				   ELSE
-				       # the size of non-sample nodes
-				       @@sum_nonsample += 1,
-				       # the visiting node in L(u)
-				       CASE WHEN t.@sum_deltav > epsilon * @@sum_dist / (1 - epsilon) - eps THEN
-				           t.@avg_lavg += @@sum_dist
-				       # the visiting node in HC(u)
-				       WHEN t.@sum_deltav < epsilon * @@sum_dist /(1 + epsilon) THEN
-				           t.@sum_hcsum += @@sum_dist
-				       # if cannot decided, record the distance
-				    ELSE
-				       t.@sum_sdist = @@sum_dist
-				    END
-		        END;
-	         # sum distance of the sample node
-		 @@sum_total_dist += vnode.size() * @@sum_dist;
-				
-		 # decide whether the visiting node is within or outside the threshold radius from the pivot of which is the sample node
-		 pivot = SELECT s 
+      WHERE t.@or_visited == False
+      POST-ACCUM t.@or_visited += True,
+           IF t.@or_sampled == True THEN
+               @@cdist_map += (t->@@sum_dist)  # record the distance between the sample node
+           ELSE
+               # the size of non-sample nodes
+               @@sum_nonsample += 1,
+               # the visiting node in L(u)
+               CASE WHEN t.@sum_deltav > epsilon * @@sum_dist / (1 - epsilon) - eps THEN
+                   t.@avg_lavg += @@sum_dist
+               # the visiting node in HC(u)
+               WHEN t.@sum_deltav < epsilon * @@sum_dist /(1 + epsilon) THEN
+                   t.@sum_hcsum += @@sum_dist
+               # if cannot decided, record the distance
+            ELSE
+               t.@sum_sdist = @@sum_dist
+            END
+            END;
+           # sum distance of the sample node
+     @@sum_total_dist += vnode.size() * @@sum_dist;
+        
+     # decide whether the visiting node is within or outside the threshold radius from the pivot of which is the sample node
+     pivot = SELECT s 
                          FROM pivot:s
-			 POST-ACCUM
-			     IF s.@sum_deltav > epsilon * @@sum_dist - eps THEN
-			         s.@sum_lnum += vnode.size()   # the node num within the threshold radius
-			     ELSE
-				 s.@sum_hsum += @@sum_nonsample * @@sum_dist   # the sum distance of non-sample node outside the threshold radius
-			     END;
-		         END;
-			
-		  sampleNode = {sample_node};
-			
-		  # the sum distance of the sample node
-		  sampleNode = SELECT s 
+       POST-ACCUM
+           IF s.@sum_deltav > epsilon * @@sum_dist - eps THEN
+               s.@sum_lnum += vnode.size()   # the node num within the threshold radius
+           ELSE
+         s.@sum_hsum += @@sum_nonsample * @@sum_dist   # the sum distance of non-sample node outside the threshold radius
+           END;
+             END;
+      
+      sampleNode = {sample_node};
+      
+      # the sum distance of the sample node
+      sampleNode = SELECT s 
                                FROM sampleNode:s
-		               ACCUM s.@sum_total_dist += @@sum_total_dist;			
-			
-		  # calculate the node which has not been decided before
-		  post = SELECT s 
+                   ACCUM s.@sum_total_dist += @@sum_total_dist;      
+      
+      # calculate the node which has not been decided before
+      post_set = SELECT s 
                          FROM Conn:s
-			 WHERE s.@sum_sdist > 0
-			 POST-ACCUM
-			     IF @@cdist_map.get(s.@max_pivot) * epsilon < s.@sum_deltav + eps THEN
-			         s.@avg_lavg += s.@sum_sdist    # within the threshold radius
-			     ELSE
-				 s.@sum_hcsum += s.@sum_sdist
-			     END;
-							
-		   # clear the BFS visited accumulator and the distance recorded
-		   Conn = SELECT s 
+       WHERE s.@sum_sdist > 0
+       POST-ACCUM
+           IF @@cdist_map.get(s.@max_pivot) * epsilon < s.@sum_deltav + eps THEN
+               s.@avg_lavg += s.@sum_sdist    # within the threshold radius
+           ELSE
+         s.@sum_hcsum += s.@sum_sdist
+           END;
+              
+       # clear the BFS visited accumulator and the distance recorded
+       Conn = SELECT s 
                           FROM Conn:s
-			  POST-ACCUM s.@or_visited = False, s.@sum_sdist = 0;
+        POST-ACCUM s.@or_visited = False, s.@sum_sdist = 0;
                    LOG(debug > 1,"one sample_node end");
   
   
-	      END;
+        END;
         
-	      LOG(debug > 0, "BFS from sample node finished");
-	      #END;
+        LOG(debug > 0, "BFS from sample node finished");
+        #END;
               #IF cc_num>maxsize THEN 
               Conn = SELECT s 
                    FROM Conn:s
-		   ACCUM
-		       IF s.@or_sampled == False THEN
-		           s.@sum_total_dist = s.@avg_lavg * s.@sum_lnum + s.@sum_hcsum + s.@sum_hsum
-		       END
-		   POST-ACCUM 
+       ACCUM
+           IF s.@or_sampled == False THEN
+               s.@sum_total_dist = s.@avg_lavg * s.@sum_lnum + s.@sum_hcsum + s.@sum_hsum
+           END
+       POST-ACCUM 
                        IF s.@sum_total_dist>0 Then
-		           IF wf == True THEN
-			       s.@sum_closeness = ((cc_num-1) * 1.0 / (num_vert-1)) * ((cc_num-1) * 1.0 /s.@sum_total_dist)
-			   ELSE
-			       s.@sum_closeness = ((cc_num - 1) * 1.0) / (s.@sum_total_dist * 1.0)
-			   END
+               IF wf == True THEN
+             s.@sum_closeness = ((cc_num-1) * 1.0 / (num_vert-1)) * ((cc_num-1) * 1.0 /s.@sum_total_dist)
+         ELSE
+             s.@sum_closeness = ((cc_num - 1) * 1.0) / (s.@sum_total_dist * 1.0)
+         END
                        END,
-		       
-		       IF print_accum THEN 
+           
+           IF print_accum THEN 
                            @@top_scores_heap += Vertex_Score(s, s.@sum_closeness) 
                        END,
   
-		       IF file_path != "" THEN 
+           IF file_path != "" THEN 
                            f.println(s, s.@sum_closeness) 
                        END;
         
-	       # calculate closeness estimation for all nodes
-	       LOG(debug > 0, "closeness_est end", Start.size());
-				
+         # calculate closeness estimation for all nodes
+         LOG(debug > 0, "closeness_est end", Start.size());
+        
                #clear the sample set
-	       @@sample_set.clear();
-	       END;
+         @@sample_set.clear();
+         END;
     END;
     LOG(debug > 0,"closeness finished");
   
@@ -314,26 +314,26 @@ CREATE QUERY tg_closeness_cent_approx (
                      END;
         @@sum_curr_dist=0;
         Start = SELECT s 
-	        FROM all:s 
+          FROM all:s 
                 POST-ACCUM s.@bitwise_or_seen=0,
-		           s.@bitwise_or_visit=0;
+               s.@bitwise_or_visit=0;
       END;
       Start = SELECT s 
               FROM all:s
               # Calculate Closeness Centrality for each vertex
               WHERE s.@sum_res>0
-	      POST-ACCUM 
+        POST-ACCUM 
                   IF wf THEN 
-		      s.@sum_closeness = (s.@sum_size/(num_vert-1))*(s.@sum_size/s.@sum_res) 
-		  ELSE 
-		      s.@sum_closeness = s.@sum_size/s.@sum_res 
-		  END;		
+          s.@sum_closeness = (s.@sum_size/(num_vert-1))*(s.@sum_size/s.@sum_res) 
+      ELSE 
+          s.@sum_closeness = s.@sum_size/s.@sum_res 
+      END;    
        #output
        Start = SELECT s 
                FROM Start:s
-	       POST-ACCUM
+         POST-ACCUM
                    IF file_path != "" THEN
-		       f.println(s,s.@sum_closeness)
+           f.println(s,s.@sum_closeness)
                    END;
   
        IF print_accum THEN
