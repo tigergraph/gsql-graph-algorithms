@@ -44,7 +44,7 @@ namespace tg {
   typedef std::string string; //XXX DON'T REMOVE
 
   /* ======= START FREQUENT PATTERN MINING ======= */
-  const uint64_t BASE = 1 ULL << 63;
+  const uint64_t BASE = 1ULL << 63;
   const int64_t MOD = 9223372036854775783;
   /* ======= END FREQUENT PATTERN MINING ======== */
 
