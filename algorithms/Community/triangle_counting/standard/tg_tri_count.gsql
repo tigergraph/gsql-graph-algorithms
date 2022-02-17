@@ -3,7 +3,7 @@ CREATE QUERY tg_tri_count(STRING v_type, STRING e_type) {
 SumAccum<INT> @@sum_cnt;
 SetAccum<VERTEX> @self_set;
 
-all = {v_type.*};
+all = {v_type};
 all = SELECT s
       FROM all:s 
       ACCUM s.@self_set += s;
