@@ -7,7 +7,7 @@
 
 ## Available Local Clustering Coefficient Algorithms 
 
-* [`tg_lcc`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/local_clustering_coefficient/tg_lcc.gsql)
+* [`tg_lcc`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/local_clustering_coefficient/tg_lcc.gsql)
 
 ## Installation 
 
