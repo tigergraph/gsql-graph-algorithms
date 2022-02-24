@@ -7,9 +7,9 @@
 
 ## Available Weakly Connected Components Algorithms 
 
-* [`tg_wcc`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/connected_components/weakly_connected_components/tg_wcc.gsql)
+* [`tg_wcc`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/connected_components/weakly_connected_components/tg_wcc.gsql)
 
-* [`tg_wcc_small_world`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/connected_components/weakly_connected_components/tg_wcc_small_world.gsql)
+* [`tg_wcc_small_world`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/connected_components/weakly_connected_components/tg_algo_wcc_small_world.gsql)
 
 ## Installation 
 
