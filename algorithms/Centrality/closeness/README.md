@@ -3,7 +3,7 @@
 
 #### [Closeness Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Closeness Documentation](https://docs.tigergraph.com/graph-algorithm-library/centrality/closeness-centrality)
+## [TigerGraph Closeness Documentation](https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/closeness-centrality)
 
 ## Available Closeness Algorithms 
 
