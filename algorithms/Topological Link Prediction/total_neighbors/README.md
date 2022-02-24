@@ -7,7 +7,7 @@
 
 ## Available Total Neighbors Algorithms 
 
-* [`tg_total_neighbors`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/total_neighbors/tg_total_neighbors.gsql)
+* [`tg_total_neighbors`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Topological%20Link%20Prediction/total_neighbors/tg_total_neighbors.gsql)
 
 ## Installation 
 
