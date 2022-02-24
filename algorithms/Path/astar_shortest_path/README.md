@@ -7,7 +7,7 @@
 
 ## Available Astar Shortest Path Algorithms 
 
-* [`tg_astar`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/astar_shortest_path/tg_astar.gsql)
+* [`tg_astar`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/astar_shortest_path/tg_astar.gsql)
 
 ## Installation 
 
