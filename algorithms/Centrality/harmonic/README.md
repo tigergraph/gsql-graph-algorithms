@@ -7,7 +7,7 @@
 
 ## Available Harmonic Algorithms 
 
-* [`tg_harmonic_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/harmonic/tg_harmonic_cent.gsql)
+* [`tg_harmonic_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/harmonic/tg_harmonic_cent.gsql)
 
 ## Installation 
 
