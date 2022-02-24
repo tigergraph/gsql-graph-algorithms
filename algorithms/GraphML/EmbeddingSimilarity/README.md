@@ -7,9 +7,9 @@
 
 ## Available Embeddingsimilarity Algorithms 
 
-* [`tg_embedding_pairwise_cosine_sim`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/GraphML/Embeddings/EmbeddingSimilarity/tg_embedding_pairwise_cosine_sim.gsql)
+* [`tg_embedding_pairwise_cosine_sim`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/EmbeddingSimilarity/tg_embedding_pairwise_cosine_sim.gsql)
 
-* [`tg_embedding_cosine_similarity`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/GraphML/Embeddings/EmbeddingSimilarity/tg_embedding_cosine_similarity.gsql)
+* [`tg_embedding_cosine_similarity`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/EmbeddingSimilarity/tg_embedding_cosine_sim.gsql)
 
 ## Installation 
 
