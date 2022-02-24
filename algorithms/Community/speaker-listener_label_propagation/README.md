@@ -7,7 +7,7 @@
 
 ## Available Speaker-Listener Label Propagation Algorithms 
 
-* [`tg_slpa`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/speaker-listener_label_propagation/tg_slpa.gsql)
+* [`tg_slpa`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/speaker-listener_label_propagation/tg_slpa.gsql)
 
 ## Installation 
 
