@@ -3,7 +3,7 @@
 
 #### [Maximal Independent Set Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/maximal_independent_set/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Maximal Independent Set Documentation](https://docs.tigergraph.com/graph-algorithm-library/path/maximal-independent-set)
+## [TigerGraph Maximal Independent Set Documentation](https://docs.tigergraph.com/graph-ml/current/classification-algorithms/maximal-independent-set)
 
 ## Available Maximal Independent Set Algorithms 
 
