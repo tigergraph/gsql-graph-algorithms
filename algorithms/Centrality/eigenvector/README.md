@@ -7,7 +7,7 @@
 
 ## Available Eigenvector Algorithms 
 
-* [`tg_eigenvector_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/eigenvector/tg_eigenvector_cent.gsql)
+* [`tg_eigenvector_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/eigenvector/tg_eigenvector_cent.gsql)
 
 ## Installation 
 
