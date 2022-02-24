@@ -7,7 +7,7 @@
 
 ## Available Bfs Algorithms 
 
-* [`tg_bfs`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/bfs/tg_bfs.gsql)
+* [`tg_bfs`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/bfs/tg_bfs.gsql)
 
 ## Installation 
 
