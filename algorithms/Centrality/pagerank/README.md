@@ -3,7 +3,7 @@
 
 #### [Pagerank Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/pagerank/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Pagerank Documentation](https://docs.tigergraph.com/graph-algorithm-library/centrality/pagerank)
+## [TigerGraph Pagerank Documentation](https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/pagerank)
 
 ## Available Pagerank Algorithms 
 
