@@ -7,7 +7,7 @@
 
 ## Available Louvain Algorithms 
 
-* [`tg_louvain`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/louvain/tg_louvain.gsql)
+* [`tg_louvain`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/louvain/tg_louvain.gsql)
 
 ## Installation 
 
