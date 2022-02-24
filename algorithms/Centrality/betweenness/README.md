@@ -7,7 +7,7 @@
 
 ## Available Betweenness Algorithms 
 
-* [`tg_betweenness_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/betweenness/tg_betweenness_cent.gsql)
+* [`tg_betweenness_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/betweenness/tg_betweenness_cent.gsql)
 
 ## Installation 
 
