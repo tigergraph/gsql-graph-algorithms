@@ -7,7 +7,7 @@
 
 ## Available Common Neighbors Algorithms 
 
-* [`tg_common_neighbors`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/common_neighbors/tg_common_neighbors.gsql)
+* [`tg_common_neighbors`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Topological%20Link%20Prediction/common_neighbors/tg_common_neighbors.gsql)
 
 ## Installation 
 
