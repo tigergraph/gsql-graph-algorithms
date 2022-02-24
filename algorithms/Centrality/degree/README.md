@@ -7,7 +7,7 @@
 
 ## Available Degree Algorithms 
 
-* [`tg_degree_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/degree/tg_degree_cent.gsql)
+* [`tg_degree_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/degree/tg_degree_cent.gsql)
 
 ## Installation 
 
