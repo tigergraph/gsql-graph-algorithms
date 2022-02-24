@@ -7,7 +7,9 @@
 
 ## Available Maximal Independent Set Algorithms 
 
-* [`tg_maximal_indep_set`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/maximal_independent_set/tg_maximal_indep_set.gsql)
+* [`tg_maximal_indep_set`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Classification/maximal_independent_set/tg_maximal_indep_set.gsql)
+
+* [`tg_maximal_indep_set_random`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Classification/maximal_independent_set/tg_maximal_indep_set_random.gsql)
 
 ## Installation 
 
