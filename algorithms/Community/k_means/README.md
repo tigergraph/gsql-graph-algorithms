@@ -7,9 +7,9 @@
 
 ## Available K Means Algorithms 
 
-* [`tg_kmeans_sub`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/k_means/tg_kmeans_sub.gsql)
+* [`tg_kmeans_sub`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/k_means/tg_kmeans_sub.gsql)
 
-* [`tg_kmeans`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/k_means/tg_kmeans.gsql)
+* [`tg_kmeans`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/k_means/tg_kmeans.gsql)
 
 ## Installation 
 
