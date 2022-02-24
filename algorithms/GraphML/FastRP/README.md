@@ -1,6 +1,6 @@
 # FastRP
 
-## Available Embeddingsimilarity Algorithms 
+## Available FastRP Algorithms 
 
 * [`tg_fastRP`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/FastRP/tg_fastRP.gsql)
 
