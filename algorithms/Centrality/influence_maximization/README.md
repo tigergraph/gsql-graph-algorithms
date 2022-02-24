@@ -3,7 +3,7 @@
 
 #### [Influence Maximization Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/influence_maximization/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Influence Maximization Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
+## [TigerGraph Influence Maximization Documentation](https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/influence-maximization)
 
 ## Available Influence Maximization Algorithms 
 
