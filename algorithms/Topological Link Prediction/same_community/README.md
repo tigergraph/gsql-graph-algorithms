@@ -7,7 +7,7 @@
 
 ## Available Same Community Algorithms 
 
-* [`tg_same_community`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/same_community/tg_same_community.gsql)
+* [`tg_same_community`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Topological%20Link%20Prediction/same_community/tg_same_community.gsql)
 
 ## Installation 
 
