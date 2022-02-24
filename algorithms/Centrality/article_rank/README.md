@@ -5,7 +5,7 @@
 
 ## [TigerGraph Article Rank Documentation](https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/article-rank)
 
-## Available Article Rank Algorithms 
+## Available Article Rank Algorithms  
 
 * [`tg_article_rank`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/article_rank/tg_article_rank.gsql)
 
