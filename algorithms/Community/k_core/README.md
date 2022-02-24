@@ -7,7 +7,7 @@
 
 ## Available K Core Algorithms 
 
-* [`tg_kcore`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/k_core/tg_kcore.gsql)
+* [`tg_kcore`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/k_core/tg_kcore.gsql)
 
 ## Installation 
 
