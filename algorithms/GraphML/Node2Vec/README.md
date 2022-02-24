@@ -1,4 +1,18 @@
 # Node2Vec
+## Available Node2Vec Algorithms 
+
+* [`tg_node2vec`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/Node2Vec/tg_node2vec.gsql)
+
+* [`tg_random_walk`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/Node2Vec/tg_random_walk.gsql)
+
+* [`tg_random_walk_batch`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/Node2Vec/tg_random_walk_batch.gsql)
+
+* [`tg_weighted_random_walk`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/Node2Vec/tg_weighted_random_walk.gsql)
+
+* [`tg_weighted_random_walk_batch`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/Node2Vec/tg_weighted_random_walk_batch.gsql)
+
+* [`tg_weighted_random_walk_sub`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/Node2Vec/tg_weighted_random_walk_sub.gsql)
+
 ## Instructions
 
 ### Preliminary Notes
