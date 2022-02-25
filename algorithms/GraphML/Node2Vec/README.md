@@ -1,4 +1,6 @@
 # Node2Vec
+## [TigerGraph Node2Vec Documentation](https://docs.tigergraph.com/graph-ml/current/node-embeddings/node2vec)
+
 ## Available Node2Vec Algorithms 
 
 * [`tg_node2vec`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/GraphML/Node2Vec/tg_node2vec.gsql)
