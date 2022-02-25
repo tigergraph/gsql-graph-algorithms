@@ -13,3 +13,4 @@
     description: The library is currently under construction! Descriptions will be added soon.
     schema_constraints: This algorithm can optionally write the ID (INT) of the strongly connected component that each vertex belongs to, if the vertex has an INT attribute.
     version: lib3.0
+    include: true

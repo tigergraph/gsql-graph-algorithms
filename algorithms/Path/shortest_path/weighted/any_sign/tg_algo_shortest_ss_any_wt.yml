@@ -13,3 +13,4 @@
     description: The library is currently under construction! Descriptions will be added soon.
     schema_constraints: This algorithm requires an INT, FLOAT, or DOUBLE weight attribute on the target edge types. This algorithm can also optionally write the result (INT, FLOAT, or DOUBLE) to an attribute of the respective type on each visited vertex.
     version: lib3.0
+    include: true
