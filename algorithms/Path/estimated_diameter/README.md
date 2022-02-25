@@ -3,7 +3,7 @@
 
 #### [Estimated Diameter Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/estimated_diameter/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Estimated Diameter Documentation](https://docs.tigergraph.com/graph-algorithm-library/path/estimated-diameter)
+## [TigerGraph Estimated Diameter Documentation](https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/estimated-diameter)
 
 ## Available Estimated Diameter Algorithms 
 
