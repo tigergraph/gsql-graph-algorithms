@@ -13,4 +13,3 @@
     description: ArticleRank is an algorithm that has been derived from the PageRank algorithm to measure the influence of journal articles. PageRank assumes that relationships originating from low-degree nodes have a higher influence than relationships from high-degree nodes. Article Rank modifies the formula in such a way that it retains the basic PageRank methodology but lowers the influence of low-degree nodes.
     schema_constraints: If you want to write the results of this algorithm (FLOAT) back to the vertices, you must have a FLOAT attribute on the target vertex type.
     version: lib3.0
-    include: true

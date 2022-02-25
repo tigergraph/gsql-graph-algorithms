@@ -13,4 +13,3 @@
     description: The library is currently under construction! Descriptions will be added soon.
     schema_constraints: This algorithm requires an INT, FLOAT, or DOUBLE weight attribute on the target edge types. This algorithm can also optionally write the result (BOOL) to a BOOL attribute on the respective vertices included in the MSF.
     version: lib3.0
-    include: true

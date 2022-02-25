@@ -13,4 +13,3 @@
     description: The library is currently under construction! Descriptions will be added soon.
     schema_constraints: This algorithm also requires a FLOAT attribute on the target edge types representing weight or influence.
     version: lib3.0
-    include: false

@@ -13,4 +13,3 @@
     description: The library is currently under construction! Descriptions will be added soon.
     schema_constraints: This algorithm requires an attribute of type UINT, INT, or STRING on the target vertex types, which represents each vertex's respective community ID.
     version: lib3.0
-    include: true

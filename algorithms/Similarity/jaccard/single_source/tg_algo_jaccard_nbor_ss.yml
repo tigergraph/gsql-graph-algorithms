@@ -13,4 +13,3 @@
     description: The library is currently under construction! Descriptions will be added soon.
     schema_constraints: This algorithm can optionally insert edges between the relevant vertex types, if such an edge type exists with a FLOAT attribute representing the similarity score.
     version: lib3.0
-    include: true

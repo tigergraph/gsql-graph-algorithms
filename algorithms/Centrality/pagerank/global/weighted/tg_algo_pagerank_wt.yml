@@ -13,4 +13,3 @@
     description: The library is currently under construction! Descriptions will be added soon.
     schema_constraints: If you want to write the results of this algorithm (FLOAT) back to the vertices, you must have a FLOAT attribute on the target vertex type. This algorithm also requires a FLOAT attribute on the target edge types representing weight or influence.
     version: lib3.0
-    include: true
