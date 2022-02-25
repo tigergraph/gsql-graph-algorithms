@@ -3,7 +3,7 @@
 
 #### [Triangle Counting Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/triangle_counting/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Triangle Counting Documentation](https://docs.tigergraph.com/graph-algorithm-library/community/triangle-counting)
+## [TigerGraph Triangle Counting Documentation](https://docs.tigergraph.com/graph-ml/current/community-algorithms/triangle-counting)
 
 ## Available Triangle Counting Algorithms 
 
