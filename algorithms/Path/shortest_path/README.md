@@ -3,7 +3,7 @@
 
 #### [Shortest Path Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/shortest_path/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Shortest Path Documentation](https://docs.tigergraph.com/graph-algorithm-library/path/single-source-shortest-path-weighted)
+## [TigerGraph Shortest Path Documentation](https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/all-pairs-shortest-path)
 
 ## Available Shortest Path Algorithms 
 
