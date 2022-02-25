@@ -3,7 +3,7 @@
 
 #### [Total Neighbors Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/total_neighbors/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Total Neighbors Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
+## [TigerGraph Total Neighbors Documentation](https://docs.tigergraph.com/graph-ml/current/link-prediction/total-neighbors)
 
 ## Available Total Neighbors Algorithms 
 
