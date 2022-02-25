@@ -3,7 +3,7 @@
 
 #### [Cycle Detection Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/cycle_detection/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Cycle Detection Documentation](https://docs.tigergraph.com/graph-algorithm-library/path/cycle-detection)
+## [TigerGraph Cycle Detection Documentation](https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/cycle-detection)
 
 ## Available Cycle Detection Algorithms 
 
