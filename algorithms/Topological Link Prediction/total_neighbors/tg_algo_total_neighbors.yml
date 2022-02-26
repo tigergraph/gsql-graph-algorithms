@@ -10,6 +10,6 @@
     name: Total Neighbors
     filename: "tg_total_neighbors.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: The algorithm calculates the total number of neighbors of two vertices.
     version: lib3.0
     include: true
