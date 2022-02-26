@@ -10,6 +10,6 @@
     name: Adamic Adar
     filename: "tg_adamic_adar.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: The Adamic/Adar index is a measure introduced in 2003 by Lada Adamic and Eytan Adar to predict links in a social network, according to the number of shared links between two nodes. It is defined as the sum of the inverse logarithmic degree centrality of the neighbors shared by the two nodes.
     version: lib3.0
-    include: true
+    include: false
