@@ -13,3 +13,4 @@
     description: TigerGraph’s closeness centrality algorithm uses multi-source breadth-first search (MS-BFS) to traverse the graph and calculate the sum of a vertex’s distance to every other vertex in the graph, which vastly improves the performance of the algorithm.
     schema_constraints: If you want to write the results of this algorithm (FLOAT) back to the vertices, you must have a FLOAT attribute on the target vertex type.
     version: lib3.0
+    include: true

@@ -10,6 +10,7 @@
     name: Single Source Shortest Path (Unweighted)
     filename: "tg_shortest_ss_no_wt.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: If a graph has unweighted edges, then finding the shortest path from one vertex to another is the same as finding the path with the fewest hops. Think of Six Degrees of Separation and Friend of a Friend. Unweighted Shortest Path answers the question "How are you two related?" The two entities do not have to be persons. Shortest Path is useful in a host of applications, from estimating influences or knowledge transfer, to criminal investigation.
     schema_constraints: This algorithm can optionally write the result (INT) to an attribute of the respective type on each visited vertex.
     version: lib3.0
+    include: true

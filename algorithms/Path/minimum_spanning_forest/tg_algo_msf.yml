@@ -10,6 +10,7 @@
     name: Minimum Spanning Forest
     filename: "tg_msf.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: Given an undirected graph with one or more connected components, a minimum spanning forest is a set of minimum spanning trees, one for each component. The library implements the algorithm in section 6.2 of Qin et al. 2014: http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf.
     schema_constraints: This algorithm requires an INT, FLOAT, or DOUBLE weight attribute on the target edge types. This algorithm can also optionally write the result (BOOL) to a BOOL attribute on the respective vertices included in the MSF.
     version: lib3.0
+    include: true

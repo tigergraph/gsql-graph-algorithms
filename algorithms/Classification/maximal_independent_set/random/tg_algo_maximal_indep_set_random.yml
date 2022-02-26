@@ -10,8 +10,6 @@
     name: Maximal Independent Set (Randomized)
     filename: "tg_maximal_indep_set_random.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: An independent set of vertices does not contain any pair of vertices that are neighbors, i.e., ones which have an edge between them. A maximal independent set (MIS) is the largest independent set that contains those vertices; you cannot improve upon it unless you start over with a different independent set. However, the search for the largest possible independent set is an NP-hard problem: there is no known algorithm that can find that answer in polynomial time. So we settle for the maximal independent set. The randomized version can produce different results every time you run it.
     version: lib3.0
-    dependencies:
-      ExprFunctions:
-        sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    include: false

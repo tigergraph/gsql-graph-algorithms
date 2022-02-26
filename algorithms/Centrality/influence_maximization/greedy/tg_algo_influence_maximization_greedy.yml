@@ -10,6 +10,7 @@
     name: Greedy Influence Maximization
     filename: "tg_influence_maximization_greedy.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: Influence maximization is the problem of finding a small subset of vertices in a social network that could maximize the spread of influence. There are two versions of the Influence Maximization algorithm. Both versions find k vertices that maximize the expected spread of influence in the network.
     schema_constraints: This algorithm also requires a FLOAT attribute on the target edge types representing weight or influence.
     version: lib3.0
+    include: false
