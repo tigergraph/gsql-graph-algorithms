@@ -10,6 +10,6 @@
     name: Triangle Count
     filename: "tg_tri_count.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: Triangle count (or density) is a measure of community and connectedness. In particular, it addresses the question of transitive relationships: If A -> B and B -> C, then what is the likelihood of A -> C?
     version: lib3.0
     include: false
