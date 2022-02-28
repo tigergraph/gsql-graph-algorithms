@@ -28,7 +28,7 @@ STRING similarity_edge, INT src_batch_num = 50, INT nbor_batch_num = 10, BOOL pr
 
   all_vertices = {v_type};
   all_vertices = SELECT s 
-                 FROM all_vertices:s -(e_type:e)- v_type:t
+                 FROM all_vertices:s -(e_type:e)- feat_v_type:t
                  ACCUM 
                      s.@sum_outdegree += 1;
 
