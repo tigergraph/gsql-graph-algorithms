@@ -44,7 +44,7 @@ Parameters:
       LIMIT max_iter DO
       @@max_diff = 0;
       V_tmp = SELECT t      # Only update score for activated vertices
-              FROM Start:s -(e_type:e)-> :t
+              FROM Start:s -(e_type:e)- :t
               ACCUM t.@sum_received_score += s.@sum_score/(s.outdegree(e_type));
       T = Start UNION V_tmp;
       Start = SELECT s
