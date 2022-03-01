@@ -1,6 +1,6 @@
 CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re_type,INT max_hops = 10,
   INT top_k = 100, BOOL print_accum = True, STRING result_attr = "",
-  STRING file_path = "", BOOL display_edges = FALSE){ 
+  STRING file_path = "", BOOL display_edges = FALSE)SYNTAX v2{ 
   
   /* Compute Betweenness Centrality for each VERTEX. 
   Use multi-sourse BFS.
@@ -97,7 +97,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
       WHILE (Start.size()>0) LIMIT max_hops DO
           @@sum_curr_dist+=-1;
           Start = SELECT t 
-                  FROM Start:s -(re_type:e)-> v_type:t
+                  FROM Start:s -(re_type:e)- v_type:t
 	          WHERE t.@times_map.get(@@sum_curr_dist)&s.@times_map.get(@@sum_curr_dist+1)!=0  
 	          ACCUM 
                       FLOAT currValue=t.@sigma_map.get(@@sum_curr_dist)/(s.@sigma_map.get(@@sum_curr_dist+1)*(1+s.@sum_delta)),
@@ -148,7 +148,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
        IF display_edges THEN
            PRINT Start[Start.@sum_delta];
 	   Start = SELECT s
-	           FROM Start:s -(e_type:e)->:t
+	           FROM Start:s -(e_type:e)-:t
 	           ACCUM 
                          @@edge_set += e;
 	           PRINT @@edge_set;
