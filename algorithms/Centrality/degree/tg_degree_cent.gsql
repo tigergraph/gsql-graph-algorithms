@@ -1,6 +1,6 @@
 
 CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, BOOL in_degree = TRUE, BOOL out_degree = TRUE,
-  INT top_k=100, BOOL print_accum = TRUE, STRING result_attr = "",STRING file_path = "") {
+  INT top_k=100, BOOL print_accum = TRUE, STRING result_attr = "",STRING file_path = "") SYNTAX v2{
   /* Compute degree Centrality for each VERTEX.
   Parameters:
   v_type: vertex types to traverse
