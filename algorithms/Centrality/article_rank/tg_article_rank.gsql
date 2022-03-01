@@ -1,6 +1,6 @@
 CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
  FLOAT max_change = 0.001, INT max_iter = 25, FLOAT damping = 0.85, INT top_k = 100,
- BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "") {
+ BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = ""){
  
 /*
  Compute the article rank score for each vertex in the GRAPH
@@ -29,23 +29,23 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
   SumAccum<INT> @sum_out_degree;
   FILE f (file_path);
 
-# PageRank iterations	
+# PageRank iterations  
   Start = {v_type};                     # Start with all vertices of specified type(s)
   Start = SELECT s 
           FROM Start:s 
           ACCUM 
-	      s.@sum_out_degree += s.outdegree(e_type),
+        s.@sum_out_degree += s.outdegree(e_type),
               @@avg_out += s.outdegree(e_type);
    
   WHILE @@max_diff > max_change 
       LIMIT max_iter DO @@max_diff = 0;
    
       V = SELECT s 
-          FROM Start:s -(e_type:e)-> v_type:t
+          FROM Start:s -(e_type:e)- v_type:t
           ACCUM t.@sum_recvd_score += s.@sum_score/(@@avg_out+s.@sum_out_degree) 
-	  POST-ACCUM 
-	       s.@sum_score = (1.0-damping) + damping * s.@sum_recvd_score*@@avg_out,
-	       s.@sum_recvd_score = 0,
+    POST-ACCUM 
+         s.@sum_score = (1.0-damping) + damping * s.@sum_recvd_score*@@avg_out,
+         s.@sum_recvd_score = 0,
                @@max_diff += abs(s.@sum_score - s.@sum_score');
    
   END; # END WHILE loop
@@ -62,11 +62,11 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
               s.setAttr(result_attr, s.@sum_score) 
           END,
    
-	  IF file_path != "" THEN 
+    IF file_path != "" THEN 
               f.println(s, s.@sum_score) 
           END,
    
-	  IF print_accum THEN 
+    IF print_accum THEN 
               @@top_scores_heap += Vertex_Score(s, s.@sum_score) 
           END;
 
