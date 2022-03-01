@@ -1,6 +1,6 @@
 CREATE QUERY tg_closeness_cent_approx (
     SET<STRING> v_type, SET<STRING> e_type, STRING re_type, INT top_k=100, INT k = 100,  INT max_hops = 10,  DOUBLE epsilon = 0.1,  BOOL print_accum = true, 
-    STRING file_path = "",  INT debug = 0,  INT sample_index = 0,  INT max_size = 1000,   BOOL wf = True )SYNTAX v2 {
+    STRING file_path = "",  INT debug = 0,  INT sample_index = 0,  INT max_size = 1000,   BOOL wf = True ){
       
     /* Compute Closeness Centrality for each VERTEX. 
     Use multi-sourse BFS.
