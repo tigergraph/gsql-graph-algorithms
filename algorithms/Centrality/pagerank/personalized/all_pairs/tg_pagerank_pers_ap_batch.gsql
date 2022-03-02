@@ -1,15 +1,15 @@
-CREATE QUERY tg_pagerank_pers_batch(STRING v_type, STRING e_type,
+CREATE QUERY tg_pagerank_pers_ap_batch(STRING v_type, STRING e_type,
   FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,INT batch_num,BOOL print_accum,STRING file_path){
   /*
  Compute the pageRank score for each vertex in the GRAPH
  v_type: vertex types to traverse          print_accum: print JSON output
  e_type: edge types to traverse           
  max_iter; max #iterations                 file_path: file to write CSV output to
- top_k: #top scores to output              
+ top_k: #top scores to output
  max_change: max allowed change between iterations to achieve convergence
  damping: importance of traversal vs. random teleport
 */
-    
+
   TYPEDEF TUPLE<VERTEX ver, FLOAT score> Vertex_Score;
   HeapAccum<Vertex_Score>(top_k,score DESC) @top_scores_heap;
   MapAccum<Vertex,ListAccum<Vertex_Score>> @@res_map;
@@ -20,30 +20,30 @@ CREATE QUERY tg_pagerank_pers_batch(STRING v_type, STRING e_type,
   SetAccum<INT> @@end_set;
   FILE f(file_path);
   All = {v_type};#  All with a set of input vertices
-        
+
   FOREACH batch_count in RANGE[0,batch_num-1] DO
-      Start = SELECT s 
-              FROM All:s 
+      Start = SELECT s
+              FROM All:s
               WHERE getvid(s)%batch_num==batch_count
               ACCUM s.@score_map +=(s->1),   # Only set score of source vertices to 1
                     s.@or_is_source = true;
                     Total = Start;
-  
+
       WHILE @@max_diff > max_change LIMIT max_iter DO
-          V_tmp = SELECT t 
+          V_tmp = SELECT t
                   FROM Start:s -(e_type:e)- :t    # Only update score for activated vertices
-                  ACCUM 
+                  ACCUM
                       FOREACH (key,value) IN s.@score_map DO
-                          IF getvid(key) in @@end_set THEN 
-                              continue 
+                          IF getvid(key) in @@end_set THEN
+                              continue
                           END,
                           FLOAT rec_score = value/s.outdegree(e_type),#/(s.outdegree(e_type);
                           t.@received_score_map += (key->rec_score) END;
           T = Start UNION V_tmp;
-          Start = SELECT s 
+          Start = SELECT s
                   FROM T:s
                   POST-ACCUM
-                      IF s.@or_is_source == TRUE THEN 
+                      IF s.@or_is_source == TRUE THEN
                           FLOAT oldscore = s.@score_map.get(s),
                           s.@score_map+=(s->-oldscore),
                           s.@score_map+=(s->((1.0-damping) + damping *s.@received_score_map.get(s)))
@@ -53,35 +53,35 @@ CREATE QUERY tg_pagerank_pers_batch(STRING v_type, STRING e_type,
                               FLOAT oldscore = s.@score_map.get(key),
                               s.@score_map+=(key->-oldscore),
                               s.@score_map+=(key->damping*value),
-                              IF damping*value-oldscore<0.001 THEN 
-                                  @@end_set+=getvid(key) 
-                              END 
+                              IF damping*value-oldscore<0.001 THEN
+                                  @@end_set+=getvid(key)
+                              END
                           END
                       END,
                       s.@received_score_map.clear();
          Total=Total UNION T;
-       
+
       END;
-            
-      Total = SELECT s 
-              FROM Total:s 
-              POST-ACCUM 
-                  FOREACH (key,value) IN s.@score_map DO 
-                      @@res_map+=(key->Vertex_Score(s,value)) 
+
+      Total = SELECT s
+              FROM Total:s
+              POST-ACCUM
+                  FOREACH (key,value) IN s.@score_map DO
+                      @@res_map+=(key->Vertex_Score(s,value))
                   END,
                   s.@score_map.clear(),s.@received_score_map.clear();
       @@end_set.clear();
   END;
-  All = SELECT s 
-        FROM All:s 
-        POST-ACCUM 
+  All = SELECT s
+        FROM All:s
+        POST-ACCUM
             FOREACH i in @@res_map.get(s) DO
-                s.@top_scores_heap+=i 
+                s.@top_scores_heap+=i
             END,
-            IF file_path != "" THEN 
-                f.println(s, s.@top_scores_heap) 
+            IF file_path != "" THEN
+                f.println(s, s.@top_scores_heap)
             END;
   IF print_accum THEN
-      PRINT All [All.@top_scores_heap]; 
+      PRINT All [All.@top_scores_heap];
   END;
 }
