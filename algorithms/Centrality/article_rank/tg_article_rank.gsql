@@ -43,10 +43,10 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
       V = SELECT s 
           FROM Start:s -(e_type:e)- v_type:t
           ACCUM t.@sum_recvd_score += s.@sum_score/(@@avg_out+s.@sum_out_degree) 
-    POST-ACCUM 
-         s.@sum_score = (1.0-damping) + damping * s.@sum_recvd_score*@@avg_out,
-         s.@sum_recvd_score = 0,
-               @@max_diff += abs(s.@sum_score - s.@sum_score');
+          POST-ACCUM 
+                    s.@sum_score = (1.0-damping) + damping * s.@sum_recvd_score*@@avg_out,
+                    s.@sum_recvd_score = 0,
+                    @@max_diff += abs(s.@sum_score - s.@sum_score');
    
   END; # END WHILE loop
 
