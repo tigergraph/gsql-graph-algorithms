@@ -11,17 +11,17 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
 
   start = {source};
   subjects = SELECT t
-             FROM start:s -(e_type:e)-> :t
+             FROM start:s -(e_type:e)- :t
              ACCUM t.@sum_numerator = e.getAttr(weight, "FLOAT"),
                    @@sum_norm1 += pow(e.getAttr(weight, "FLOAT"), 2);
 
   neighbours = SELECT t
-               FROM subjects:s -(re_type:e)->:t
+               FROM subjects:s -(re_type:e)-:t
                WHERE t != source
                ACCUM t.@sum_numerator += s.@sum_numerator * e.getAttr(weight, "FLOAT");
 
   neighbours = SELECT s
-               FROM neighbours:s -(e_type:e)-> :t
+               FROM neighbours:s -(e_type:e)- :t
                ACCUM s.@sum_norm2 += pow(e.getAttr(weight, "FLOAT"), 2)
                POST-ACCUM s.@sum_similarity = s.@sum_numerator/sqrt(@@sum_norm1 * s.@sum_norm2)
                ORDER BY s.@sum_similarity DESC
