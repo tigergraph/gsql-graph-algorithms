@@ -1,5 +1,5 @@
 CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_accum = True, STRING result_attr = "",
-  STRING file_path = "", BOOL display_edges = FALSE){ 
+  STRING file_path = "", BOOL display_edges = FALSE) { 
    /*
    The Local Clustering Coefficient algorithm computes the local clustering coefficient 
    for each node in the graph. 
@@ -70,7 +70,7 @@ CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_accum
       IF display_edges THEN
           PRINT Start[Start.@sum_lcc];
 	  Start = SELECT s
-		  FROM Start:s -(e_type:e)->:t
+		  FROM Start:s -(e_type:e)-:t
 		  ACCUM @@edge_set += e;
 		  PRINT @@edge_set;
       END;
