@@ -15,17 +15,17 @@ CREATE QUERY tg_total_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL pri
 
     IF "ALL" NOT IN e_type THEN  # Specific edge types defined as parameters
         na = SELECT n 
-             FROM avs -(e_type)-> :n;  # Get vertex A's neighbors
+             FROM avs -(e_type)- :n;  # Get vertex A's neighbors
   
         nb = SELECT n 
-             FROM bvs -(e_type)-> :n;  # Get vertex B's neighbors
+             FROM bvs -(e_type)- :n;  # Get vertex B's neighbors
   
     ELSE  # Use all edge types
         na = SELECT n 
-             FROM avs -()-> :n;  # Get vertex A's neighbors
+             FROM avs -()- :n;  # Get vertex A's neighbors
   
         nb = SELECT n 
-             FROM bvs -()-> :n;  # Get vertex B's neighbors
+             FROM bvs -()- :n;  # Get vertex B's neighbors
     END;
     u = na UNION nb;  # Get all neighbors
     IF print_res THEN
