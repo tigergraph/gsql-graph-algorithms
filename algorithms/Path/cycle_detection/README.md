@@ -9,7 +9,7 @@
 
 * [`tg_cycle_detection_count`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/cycle_detection/tg_cycle_detection_count.gsql)
 
-* [`tg_cycle_detection`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/cycle_detection/tg_cycle_detection.gsql)
+* [`tg_cycle_detection`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/cycle_detection/tg_cycle_detection.gsql)
 
 ## Installation 
 
