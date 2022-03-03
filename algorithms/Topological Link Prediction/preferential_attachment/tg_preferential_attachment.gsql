@@ -17,17 +17,17 @@ CREATE QUERY tg_preferential_attachment(VERTEX a, VERTEX b, SET<STRING> e_type, 
     # See if user specified edge types to traverse
     IF "ALL" NOT IN e_type THEN
         na = SELECT n 
-             FROM avs -(e_type)-> :n;  # Get neighbors of vertex A
+             FROM avs -(e_type)- :n;  # Get neighbors of vertex A
           
         nb = SELECT n 
-             FROM bvs -(e_type)-> :n;  // Get neighbors of vertex B
+             FROM bvs -(e_type)- :n;  // Get neighbors of vertex B
              
     ELSE  // traverse all edge types
         na = SELECT n 
-             FROM avs -()-> :n;  // Get neighbors of vertex A
+             FROM avs -()- :n;  // Get neighbors of vertex A
              
         nb = SELECT n 
-             FROM bvs -()-> :n;  // Get neighbors of vertex B
+             FROM bvs -()- :n;  // Get neighbors of vertex B
     END;
 
     IF print_res THEN

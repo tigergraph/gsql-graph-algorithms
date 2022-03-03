@@ -28,7 +28,7 @@ From the source vertex, finds the unweighted shortest path (number of hops, INT 
   ##### Calculate distances and paths #####
   WHILE(Source.size()>0) DO
       Source = SELECT t
-	       FROM Source:s -(e_type:e)-> v_type:t
+	       FROM Source:s -(e_type:e)- v_type:t
 	       WHERE t.@or_visited == false
 	       ACCUM t.@min_dis += s.@min_dis + 1,
 	             t.@path_list = s.@path_list + [t],
@@ -60,7 +60,7 @@ From the source vertex, finds the unweighted shortest path (number of hops, INT 
       PRINT ResultSet[ResultSet.@min_dis, ResultSet.@path_list];
       IF display_edges THEN
           ResultSet = SELECT s 
-	              FROM ResultSet:s -(e_type:e)-> v_type:t
+	              FROM ResultSet:s -(e_type:e)- v_type:t
                       ACCUM @@edge_set += e;
           PRINT @@edge_set;
       END;

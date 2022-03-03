@@ -1,7 +1,7 @@
 CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRING> e_type, 
    SET<STRING> reverse_e_type, STRING cap_attr, STRING cap_type, FLOAT min_flow_threshhold = 0.001, 
    BOOL print_accum = TRUE, BOOL display_edges = TRUE, BOOL spit_to_file = FALSE, 
-   STRING file_path = "/home/tigergraph/tg_query_output.csv"){ 
+   STRING file_path = "/home/tigergraph/tg_query_output.csv") { 
   
   /*
    Maxflow algorithm. Finds the maximum amount of flow that source can pushes to sink
@@ -37,7 +37,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
   ##### Initialize #####
   init = {v_type};       
   init = SELECT s
-         FROM init:s - (e_type:e) -> v_type:t
+         FROM init:s - (e_type:e) - v_type:t
          ACCUM 
              FLOAT fl = 0,
              CASE cap_type 
@@ -77,7 +77,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
       //BFS to find feasible path from source -> sink
       WHILE NOT @@or_is_found AND start.size() > 0 DO
           forwd = SELECT t
-                  FROM start:s - (e_type:e) -> v_type:t
+                  FROM start:s - (e_type:e) - v_type:t
                   WHERE NOT t.@or_is_visited
                   ACCUM 
                       FLOAT fl = 0,
@@ -99,7 +99,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
                   HAVING t.@or_is_visited;
   
           bacwd = SELECT t
-                  FROM start:s - (reverse_e_type) -> v_type:t
+                  FROM start:s - (reverse_e_type) - v_type:t
                   WHERE NOT t.@or_is_visited
                   ACCUM 
                       IF @@group_by_flow_accum.get(t, s).flow >= @@max_cap_threshold THEN

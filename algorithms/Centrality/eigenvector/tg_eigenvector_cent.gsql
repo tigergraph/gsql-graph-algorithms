@@ -1,6 +1,6 @@
 CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT maxIter = 100, FLOAT convLimit = 0.000001,
     INT top_k = 100, BOOL print_accum = True, STRING result_attr = "",STRING file_path = ""
-    ) { 
+    ){ 
     /* Compute eigenvector Centrality for each VERTEX. 
     Parameters:
     v_type: vertex types to traverse                 
@@ -25,7 +25,7 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT max
         @@sum_squares_eigen_values = 0;
         @@sum_cur_norm_values = 0;
         V = SELECT s 
-            FROM Start:s - (e_type:e) -> v_type:t
+            FROM Start:s - (e_type:e) - v_type:t
             ACCUM t.@sum_received_value += s.@sum_eigen_value
             POST-ACCUM s.@sum_eigen_value = s.@sum_received_value,
                        @@sum_squares_eigen_values += s.@sum_eigen_value * s.@sum_eigen_value,

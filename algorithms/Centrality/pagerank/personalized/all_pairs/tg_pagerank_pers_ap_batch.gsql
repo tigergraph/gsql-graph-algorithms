@@ -1,5 +1,5 @@
 CREATE QUERY tg_pagerank_pers_ap_batch(STRING v_type, STRING e_type,
-  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,INT batch_num,BOOL print_accum,STRING file_path) {
+  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,INT batch_num,BOOL print_accum,STRING file_path){
   /*
  Compute the pageRank score for each vertex in the GRAPH
  v_type: vertex types to traverse          print_accum: print JSON output
@@ -31,7 +31,7 @@ CREATE QUERY tg_pagerank_pers_ap_batch(STRING v_type, STRING e_type,
 
       WHILE @@max_diff > max_change LIMIT max_iter DO
           V_tmp = SELECT t
-                  FROM Start:s -(e_type:e)-> :t    # Only update score for activated vertices
+                  FROM Start:s -(e_type:e)- :t    # Only update score for activated vertices
                   ACCUM
                       FOREACH (key,value) IN s.@score_map DO
                           IF getvid(key) in @@end_set THEN
