@@ -7,7 +7,7 @@
 
 ## Available Resource Allocation Algorithms 
 
-* [`tg_resource_allocation`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Topological%20Link%20Prediction/resource_allocation/tg_resource_allocation.gsql)
+* [`tg_resource_allocation`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological%20Link%20Prediction/resource_allocation/tg_resource_allocation.gsql)
 
 ## Installation 
 
