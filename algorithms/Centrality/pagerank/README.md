@@ -7,11 +7,11 @@
 
 ## Available Pagerank Algorithms 
 
-* [`tg_pagerank_wt`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/pagerank/tg_pagerank_wt.gsql)
+* [`tg_pagerank_wt`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/pagerank/tg_pagerank_wt.gsql)
 
-* [`tg_pagerank`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/pagerank/tg_pagerank.gsql)
+* [`tg_pagerank`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/pagerank/tg_pagerank.gsql)
 
-* [`tg_pagerank_pers`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/pagerank/tg_pagerank_pers_batch.gsql)
+* [`tg_pagerank_pers`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/pagerank/tg_pagerank_pers_batch.gsql)
 
 ## Installation 
 
