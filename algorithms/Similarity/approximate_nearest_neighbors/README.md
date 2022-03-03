@@ -7,7 +7,7 @@
 
 ## Available Approximate Nearest Neighbors Algorithms 
 
-* [`tg_ann`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Similarity/approximate_nearest_neighbors/tg_ann.gsql)
+* [`tg_ann`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Similarity/approximate_nearest_neighbors/tg_ann.gsql)
 
 ## Installation 
 
