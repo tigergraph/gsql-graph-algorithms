@@ -7,9 +7,9 @@
 
 ## Available Strongly Connected Components Algorithms 
 
-* [`tg_scc`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/connected_components/strongly_connected_components/tg_scc.gsql)
+* [`tg_scc`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/connected_components/strongly_connected_components/tg_scc.gsql)
 
-* [`tg_scc_small_world`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/connected_components/strongly_connected_components/tg_scc_small_world.gsql)
+* [`tg_scc_small_world`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/connected_components/strongly_connected_components/tg_scc_small_world.gsql)
 
 ## Installation 
 
