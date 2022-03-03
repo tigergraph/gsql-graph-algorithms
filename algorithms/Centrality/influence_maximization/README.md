@@ -7,9 +7,9 @@
 
 ## Available Influence Maximization Algorithms 
 
-* [`tg_influence_maximization_greedy`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/influence_maximization/tg_influence_maximization_greedy.gsql)
+* [`tg_influence_maximization_greedy`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/influence_maximization/tg_influence_maximization_greedy.gsql)
 
-* [`tg_influence_maximization_CELF`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/influence_maximization/tg_influence_maximization_CELF.gsql)
+* [`tg_influence_maximization_CELF`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/influence_maximization/tg_influence_maximization_CELF.gsql)
 
 ## Installation 
 
