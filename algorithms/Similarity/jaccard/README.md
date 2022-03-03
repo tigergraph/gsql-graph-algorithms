@@ -7,9 +7,9 @@
 
 ## Available Jaccard Algorithms 
 
-* [`tg_jaccard_nbor_ap_batch`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Similarity/jaccard/tg_jaccard_nbor_ap_batch.gsql)
+* [`tg_jaccard_nbor_ap_batch`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Similarity/jaccard/tg_jaccard_nbor_ap_batch.gsql)
 
-* [`tg_jaccard_nbor_ss`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Similarity/jaccard/tg_jaccard_nbor_ss.gsql)
+* [`tg_jaccard_nbor_ss`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Similarity/jaccard/tg_jaccard_nbor_ss.gsql)
 
 ## Installation 
 
