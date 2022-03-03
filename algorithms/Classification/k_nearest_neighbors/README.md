@@ -7,15 +7,15 @@
 
 ## Available K Nearest Neighbors Algorithms 
 
-* [`tg_knn_cosine_cv`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_cv.gsql)
+* [`tg_knn_cosine_cv`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_cv.gsql)
 
-* [`tg_knn_cosine_all_sub`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_all_sub.gsql)
+* [`tg_knn_cosine_all_sub`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_all_sub.gsql)
 
-* [`tg_knn_cosine_ss`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_ss.gsql)
+* [`tg_knn_cosine_ss`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_ss.gsql)
 
-* [`tg_knn_cosine_cv_sub`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_cv_sub.gsql)
+* [`tg_knn_cosine_cv_sub`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_cv_sub.gsql)
 
-* [`tg_knn_cosine_all`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_all.gsql)
+* [`tg_knn_cosine_all`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Classification/k_nearest_neighbors/tg_knn_cosine_all.gsql)
 
 ## Installation 
 
