@@ -7,7 +7,7 @@
 
 ## Available Label Propagation Algorithms 
 
-* [`tg_label_prop`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/label_propagation/tg_label_prop.gsql)
+* [`tg_label_prop`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/label_propagation/tg_label_prop.gsql)
 
 ## Installation 
 
