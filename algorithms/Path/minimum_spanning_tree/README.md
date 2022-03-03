@@ -7,7 +7,7 @@
 
 ## Available Minimum Spanning Tree Algorithms 
 
-* [`tg_mst`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/minimum_spanning_tree/tg_mst.gsql)
+* [`tg_mst`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/minimum_spanning_tree/tg_mst.gsql)
 
 ## Installation 
 
