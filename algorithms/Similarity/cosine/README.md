@@ -7,9 +7,9 @@
 
 ## Available Cosine Algorithms 
 
-* [`tg_cosine_nbor_ss`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Similarity/cosine/tg_cosine_nbor_ss.gsql)
+* [`tg_cosine_nbor_ss`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Similarity/cosine/tg_cosine_nbor_ss.gsql)
 
-* [`tg_cosine_nbor_ap_batch`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Similarity/cosine/tg_cosine_nbor_ap_batch.gsql)
+* [`tg_cosine_nbor_ap_batch`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Similarity/cosine/tg_cosine_nbor_ap_batch.gsql)
 
 ## Installation 
 
