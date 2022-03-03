@@ -7,9 +7,9 @@
 
 ## Available Estimated Diameter Algorithms 
 
-* [`tg_max_BFS_depth`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/estimated_diameter/tg_max_BFS_depth.gsql)
+* [`tg_max_BFS_depth`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/estimated_diameter/tg_max_BFS_depth.gsql)
 
-* [`tg_estimate_diameter`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/estimated_diameter/tg_estimate_diameter.gsql)
+* [`tg_estimate_diameter`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/estimated_diameter/tg_estimate_diameter.gsql)
 
 ## Installation 
 
