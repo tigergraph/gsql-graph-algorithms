@@ -7,7 +7,7 @@
 
 ## Available Minimum Spanning Forest Algorithms 
 
-* [`tg_msf`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/minimum_spanning_forest/tg_msf.gsql)
+* [`tg_msf`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/minimum_spanning_forest/tg_msf.gsql)
 
 ## Installation 
 
