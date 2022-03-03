@@ -7,7 +7,7 @@
 
 ## Available Preferential Attachment Algorithms 
 
-* [`tg_preferential_attachment`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Topological%20Link%20Prediction/preferential_attachment/tg_preferential_attachment.gsql)
+* [`tg_preferential_attachment`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological%20Link%20Prediction/preferential_attachment/tg_preferential_attachment.gsql)
 
 ## Installation 
 
