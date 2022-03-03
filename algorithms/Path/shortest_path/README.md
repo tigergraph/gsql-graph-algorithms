@@ -7,13 +7,13 @@
 
 ## Available Shortest Path Algorithms 
 
-* [`tg_shortest_ss_any_wt`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/shortest_path/tg_shortest_ss_any_wt.gsql)
+* [`tg_shortest_ss_any_wt`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/shortest_path/tg_shortest_ss_any_wt.gsql)
 
-* [`tg_shortest_ss_no_wt`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/shortest_path/tg_shortest_ss_no_wt.gsql)
+* [`tg_shortest_ss_no_wt`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/shortest_path/tg_shortest_ss_no_wt.gsql)
 
-* [`tg_shortest_ss_pos_wt`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/shortest_path/tg_shortest_ss_pos_wt.gsql)
+* [`tg_shortest_ss_pos_wt`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/shortest_path/tg_shortest_ss_pos_wt.gsql)
 
-* [`tg_shortest_ss_pos_wt_tb`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Path/shortest_path/tg_shortest_ss_pos_wt_tb.gsql)
+* [`tg_shortest_ss_pos_wt_tb`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Path/shortest_path/tg_shortest_ss_pos_wt_tb.gsql)
 
 ## Installation 
 
