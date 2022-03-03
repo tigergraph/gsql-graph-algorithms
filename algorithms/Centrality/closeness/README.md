@@ -7,7 +7,7 @@
 
 ## Available Closeness Algorithms 
 
-* [`tg_closeness_cent_approx`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/closeness/tg_closeness_cent_approx.gsql)
+* [`tg_closeness_cent_approx`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/tg_closeness_cent_approx.gsql)
 
 * [`tg_closeness_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/tg_closeness_cent.gsql)
 
