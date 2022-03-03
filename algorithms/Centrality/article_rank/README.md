@@ -7,7 +7,7 @@
 
 ## Available Article Rank Algorithms  
 
-* [`tg_article_rank`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Centrality/article_rank/tg_article_rank.gsql)
+* [`tg_article_rank`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/article_rank/tg_article_rank.gsql)
 
 ## Installation 
 
