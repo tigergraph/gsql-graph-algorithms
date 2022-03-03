@@ -7,7 +7,7 @@
 
 ## Available Greedy Graph Coloring Algorithms 
 
-* [`tg_greedy_graph_coloring`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Classification/greedy_graph_coloring/tg_greedy_graph_coloring.gsql)
+* [`tg_greedy_graph_coloring`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Classification/greedy_graph_coloring/tg_greedy_graph_coloring.gsql)
 
 ## Installation 
 
