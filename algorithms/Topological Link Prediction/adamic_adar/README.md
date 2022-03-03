@@ -7,7 +7,7 @@
 
 ## Available Adamic Adar Algorithms 
 
-* [`tg_adamic_adar`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Topological%20Link%20Prediction/adamic_adar/tg_adamic_adar.gsql)
+* [`tg_adamic_adar`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological%20Link%20Prediction/adamic_adar/tg_adamic_adar.gsql)
 
 ## Installation 
 
