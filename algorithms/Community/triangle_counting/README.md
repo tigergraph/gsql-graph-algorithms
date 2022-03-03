@@ -7,9 +7,9 @@
 
 ## Available Triangle Counting Algorithms 
 
-* [`tg_tri_count_fast`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/triangle_counting/tg_tri_count_fast.gsql)
+* [`tg_tri_count_fast`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/triangle_counting/tg_tri_count_fast.gsql)
 
-* [`tg_tri_count`](https://github.com/tigergraph/gsql-graph-algorithms/blob/github_link_fix/algorithms/Community/triangle_counting/tg_tri_count.gsql)
+* [`tg_tri_count`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/triangle_counting/tg_tri_count.gsql)
 
 ## Installation 
 
