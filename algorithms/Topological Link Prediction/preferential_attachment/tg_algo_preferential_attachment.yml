@@ -10,5 +10,6 @@
     name: Preferential Attachment
     filename: "tg_preferential_attachment.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: Preferential Attachment is a measure to compute the closeness of vertices, based on the number of their neighbors. The algorithm returns the product two vertices' number of neighbors.
     version: lib3.0
+    include: true

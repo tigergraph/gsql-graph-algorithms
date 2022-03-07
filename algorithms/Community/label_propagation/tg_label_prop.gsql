@@ -1,4 +1,5 @@
-CREATE QUERY tg_label_prop (SET<STRING> v_type, SET<STRING> e_type, INT max_iter, INT output_limit, BOOL print_accum = TRUE, STRING file_path = "", STRING attr = ""){
+CREATE QUERY tg_label_prop (SET<STRING> v_type, SET<STRING> e_type, INT max_iter, INT output_limit, 
+  BOOL print_accum = TRUE, STRING file_path = "", STRING attr = "") {
 # Partition the vertices into communities, according to the Label Propagation method.
 # Indicate community membership by assigning each vertex a community ID.
 
@@ -18,7 +19,7 @@ Start = SELECT s
 WHILE @@or_changed == true LIMIT max_iter DO
     @@or_changed = false;
     Start = SELECT s 
-            FROM Start:s -(e_type:e)-> :t
+            FROM Start:s -(e_type:e)- :t
             ACCUM t.@map += (s.@sum_label -> 1)  # count the occurrences of neighbor's labels
             POST-ACCUM
                 INT max_v = 0,
