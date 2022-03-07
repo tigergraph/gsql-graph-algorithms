@@ -9,7 +9,7 @@
 #include <math.h>
 #include <functional>
 
-inline ListAccum<float> extract_list(string weights){
+inline ListAccum<float> tg_extract_list(string weights){
   ListAccum<float> wghts;
   string current_weight;
   std::stringstream s_stream(weights);
@@ -20,7 +20,7 @@ inline ListAccum<float> extract_list(string weights){
   return wghts;
 }
 
-inline float fastrp_rand_func(int64_t v_id, int64_t emb_idx, int64_t seed, int64_t s){	  
+inline float tg_fastrp_rand_func(int64_t v_id, int64_t emb_idx, int64_t seed, int64_t s){	  
   std::hash<std::string> hasher;
   auto hash = hasher(std::to_string(v_id) + "," + std::to_string(emb_idx) + "," + std::to_string(seed));
 
