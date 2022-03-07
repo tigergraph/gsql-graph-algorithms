@@ -45,6 +45,7 @@
 #include <map>
 #include <random>
 #include <vector>
+#include <math.h>
 
 /**     XXX Warning!! Put self-defined struct in tg_ExprUtil.hpp **
  *  No user defined struct, helper functions (that will not be directly called
@@ -56,6 +57,15 @@
 
 namespace UDIMPL {
   typedef std::string string; //XXX DON'T REMOVE
+
+  /* ============== START MAP EQUATION ======================== */
+
+  inline double tg_log_2(double num) {
+    return log2(num);
+  }
+
+  /* ============== END MAP EQUATION ======================== */
+
 
   /* ============== START SPEAKER LISTENER LABEL PROP ================== */
 
