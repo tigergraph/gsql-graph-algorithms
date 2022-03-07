@@ -1,4 +1,5 @@
-CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, STRING label, INT top_k, BOOL print_accum = TRUE, STRING file_path = "", STRING attr = ""){
+CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, STRING label, INT top_k, 
+  BOOL print_accum = TRUE, STRING file_path = "", STRING attr = "") {
 /* This query is k-nearest neighbors based on Cosine Similarity on all vertices.
    The output is the predicted label for all the vertices depending on the majority label of their k-nearest neighbors.
 */

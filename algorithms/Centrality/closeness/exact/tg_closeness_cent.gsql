@@ -130,7 +130,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
        IF display_edges THEN
 	   PRINT Start[Start.@sum_score];
        Start = SELECT s
-	       FROM Start:s -(e_type:e)->:t
+	       FROM Start:s -(e_type:e)-:t
 	       ACCUM 
                      @@edge_set += e;
 	       PRINT @@edge_set;

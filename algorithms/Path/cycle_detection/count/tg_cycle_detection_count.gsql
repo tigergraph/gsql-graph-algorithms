@@ -1,4 +1,4 @@
-CREATE QUERY tg_cycle_detection_count(SET<STRING> v_type, SET<STRING> e_type, INT depth, INT batches, BOOL print_accum = TRUE)  {
+CREATE QUERY tg_cycle_detection_count(SET<STRING> v_type, SET<STRING> e_type, INT depth, INT batches, BOOL print_accum = TRUE) {
 
 /* Rocha–Thatte cycle detection algorithm + fixes
 This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
@@ -29,7 +29,7 @@ FOREACH batch_number IN RANGE[0,batches-1] DO
     
     IF depth > 0 THEN
         Active = SELECT t 
-                 FROM Active:s -(e_type)-> v_type:t
+                 FROM Active:s -(e_type)- v_type:t
                  WHERE getvid(s) < getvid(t)   // so cannot be self-join, and asserts s must be lowest
                  ACCUM 
                      t.@curr_list += [getvid(s)] // lists of precedents
@@ -37,7 +37,7 @@ FOREACH batch_number IN RANGE[0,batches-1] DO
     END;
     WHILE Active.size() > 0 LIMIT loop_depth DO 
         Active = SELECT t 
-                 FROM Active:s -(e_type:e)-> v_type:t
+                 FROM Active:s -(e_type:e)- v_type:t
                  WHERE s != t
                  ACCUM 
                      INT t_id = 0,
@@ -51,11 +51,11 @@ FOREACH batch_number IN RANGE[0,batches-1] DO
                              t.@new_list += sequence + [getvid(s)]   # store sequences in @newList to avoid confliction  with @currList
                          END
                      END
-                 POST-ACCUM
-                     s.@curr_list.clear(),
-                     t.@curr_list = t.@new_list,
-                     t.@new_list.clear()
-                 HAVING t.@curr_list.size() > 0;  # IF receive no sequences, deactivate it;
+                 POST-ACCUM s.@curr_list.clear();
+      Active = SELECT t FROM Active:t    
+              POST-ACCUM t.@curr_list = t.@new_list,
+                         t.@new_list.clear()
+              HAVING t.@curr_list.size() > 0;   # IF receive no sequences, deactivate it;
     END;
   
 END;

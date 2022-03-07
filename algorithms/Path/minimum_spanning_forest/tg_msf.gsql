@@ -1,5 +1,5 @@
 CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STRING wt_type,
-	BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = ""){
+	BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") {
 
   /*
   * This query identifies minimum spanning trees using the algorithm in section 6.2 of Qin et al. 2014:
@@ -32,7 +32,7 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STR
   ### FOREST INITIALIZATION ###
   # For each node v, let parent p(v) = neighbor of v connected via the least-weighted edge.
   all_v = SELECT v 
-          FROM all_v:v -(e_type:e)-> :u
+          FROM all_v:v -(e_type:e)- :u
           ACCUM
 	      CASE wt_type
 	          WHEN "INT" THEN
@@ -127,7 +127,7 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STR
 	          v.@min_parent = @@parents_map.get(v);
 	      
       star_nodes = SELECT v 
-                   FROM all_v:v -(e_type:e)-> :u
+                   FROM all_v:v -(e_type:e)- :u
 	           WHERE @@star_map.get(v) == true AND v.@min_parent != u.@min_parent
 	           ACCUM
 	               VERTEX parent = v.@min_parent,
@@ -148,7 +148,7 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STR
   END;
   IF result_attr != "" THEN
       all_v = SELECT v 
-              FROM all_v:v -(e_type:e)-> :u
+              FROM all_v:v -(e_type:e)- :u
               ACCUM
 	          IF e IN @@result_set THEN
 	              e.setAttr(result_attr, TRUE)

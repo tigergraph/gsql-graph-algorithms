@@ -37,7 +37,7 @@ CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   ##### Do maximum N-1 iterations: Consider whether each edge lowers the best-known distance.
   WHILE start.size() != 0 DO 
       start = SELECT t
-              FROM start:s -(e_type:e)-> v_type:t
+              FROM start:s -(e_type:e)- v_type:t
 	      ACCUM 
                   t.@or_is_candidate = FALSE,
                   CASE wt_type
@@ -81,7 +81,7 @@ CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
       PRINT component[component.@min_path as cost];
       IF display_edges THEN
           tmp = SELECT s
-		FROM component:s -(e_type:e)-> v_type:t
+		FROM component:s -(e_type:e)- v_type:t
 	        ACCUM @@edge_set += e;
           PRINT @@edge_set;
       END;

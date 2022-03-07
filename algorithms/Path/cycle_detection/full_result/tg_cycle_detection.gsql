@@ -1,4 +1,4 @@
-CREATE QUERY tg_cycle_detection (SET<STRING> v_type, SET<STRING> e_type, INT depth, BOOL print_accum = TRUE, STRING file_path = ""){
+CREATE QUERY tg_cycle_detection (SET<STRING> v_type, SET<STRING> e_type, INT depth, BOOL print_accum = TRUE, STRING file_path = "") {
 
 /* Rocha–Thatte cycle detection algorithm
 This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
@@ -19,7 +19,7 @@ Stop passing the sequence (v1,v2,v3, ...) when:
   
   WHILE Active.size() > 0 LIMIT depth DO 
       Active = SELECT t 
-               FROM Active:s -(e_type:e)-> :t
+               FROM Active:s -(e_type:e)- :t
                ACCUM 
                    FOREACH sequence IN s.@curr_list DO
                        BOOL t_is_min = TRUE, 
@@ -42,8 +42,9 @@ Stop passing the sequence (v1,v2,v3, ...) when:
                            t.@new_list += [sequence + [t]]   # store sequences in @newList to avoid confliction with @currList
                        END
                   END
-              POST-ACCUM s.@curr_list.clear(),
-                         t.@curr_list = t.@new_list,
+              POST-ACCUM s.@curr_list.clear();
+      Active = SELECT t FROM Active:t    
+              POST-ACCUM t.@curr_list = t.@new_list,
                          t.@new_list.clear()
               HAVING t.@curr_list.size() > 0;  # IF receive no sequences, deactivate it;
   END;
