@@ -3,14 +3,16 @@ CREATE QUERY tg_tri_count_fast(STRING v_type, STRING e_type) {
 # This algorithm is faster than tri_count but uses additional memory for temporary storage
 SumAccum<INT> @@sum_cnt;
 SetAccum<VERTEX> @neighbors_set;
-      
+SumAccum<INT> @sum_outdegree;
 all = {v_type};
 
 # We build up our neighbor lists manually because we'll only build them up on the 2 smaller vertices on a triangle. 
-
+tmp = SELECT t 
+      FROM all:s-(e_type)- v_type:t 
+      ACCUM s.@sum_outdegree+=1;
 tmp = SELECT t
-      FROM all:s-((e_type))- :t
-      WHERE s.outdegree(e_type) > t.outdegree(e_type) OR (s.outdegree(e_type) == t.outdegree(e_type) AND getvid(s) > getvid(t))
+      FROM all:s-(e_type)- v_type:t
+      WHERE s.@sum_outdegree > t.@sum_outdegree OR (s.@sum_outdegree == t.@sum_outdegree AND getvid(s) > getvid(t))
       ACCUM t.@neighbors_set += s;
 
 # Here we compute the intersection for 2 points on the triangle.
