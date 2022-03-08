@@ -364,7 +364,9 @@ namespace UDIMPL {
     return list.get(i);
   }
   */
-
+  inline float rad(float d){
+   return d * 3.1415926535897932384626433832795 / 180.0;
+ }
   inline float tg_GetDistance(float lat1, float lng1, float lat2, float lng2) {
     float a;
     float b;
