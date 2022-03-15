@@ -10,5 +10,6 @@
     name: Weakly Connected Components (Small World)
     filename: "tg_wcc_small_world.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: A component is the maximal set of vertices, plus their connecting edges, which are interconnected. If you have directed edges but ignore the direction (permitting traversal in either direction), then the algorithm finds Weakly Connected Components. In addition to the regular weakly connected component algorithm, we also provide a version that is optimized for small-world graphs. A small world graph means the graph has a hub community, where the vast majority of the vertices in the graph are weakly connected.
     version: lib3.0
+    include: false

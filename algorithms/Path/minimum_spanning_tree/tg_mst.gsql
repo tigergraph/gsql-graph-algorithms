@@ -1,5 +1,5 @@
 CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STRING wt_type,
-  INT max_iter = -1, BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") {
+  INT max_iter = -1, BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
 /* 
  Returns a set of edges which form a Minumum Spanning Tree for a connected component. The algorithm
  cans tart either with a user-provided seed vertex or a randomly chosen one.  If you want a set of
@@ -47,7 +47,7 @@ Parameters:
   END;
   WHILE (Current.size() > 0) LIMIT iter_limit DO
       Current = SELECT t
-	        FROM MSTNodes:s -(e_type:e)-> v_type:t
+	        FROM MSTNodes:s -(e_type:e)- v_type:t
 	        WHERE t.@or_chosen == false    // vertex not in MSTNodes
 	        ACCUM
 	            CASE wt_type
@@ -67,7 +67,7 @@ Parameters:
       IF @@chosen_edge_heap.size() > 0 THEN
           IF result_attr != "" THEN
 	      S = SELECT s
-	   	  FROM Current:s -(e_type:e) -> v_type:t
+	   	  FROM Current:s -(e_type:e) - v_type:t
 		  WHERE t == @@chosen_edge_heap.top().from_v
 		  ACCUM e.setAttr(result_attr, TRUE);
 	  END;

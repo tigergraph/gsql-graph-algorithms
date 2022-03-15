@@ -1,4 +1,4 @@
-CREATE QUERY tg_random_walk(INT step = 8, INT path_size = 4, STRING filepath = "/home/tigergraph/path.csv", SET<STRING> edge_types, INT sample_num) {
+CREATE QUERY tg_random_walk(INT step = 8, INT path_size = 4, STRING filepath = "/home/tigergraph/path.csv", SET<STRING> edge_types, INT sample_num)  SYNTAX V1 {
 
  FILE f(filepath);
  ListAccum<ListAccum<VERTEX>> @recv_seque_list;

@@ -1,5 +1,6 @@
 CREATE QUERY tg_jaccard_nbor_ap_batch ( INT top_k = 10, SET<STRING> v_type, SET<STRING> feat_v_type, SET<STRING> e_type, SET<STRING> re_type, 
-STRING similarity_edge, INT src_batch_num = 50, INT nbor_batch_num = 10, BOOL print_accum = true, INT print_limit = 50, STRING file_path = "") {
+STRING similarity_edge, INT src_batch_num = 50, INT nbor_batch_num = 10, BOOL print_accum = true, INT print_limit = 50, STRING file_path = "")  SYNTAX V1 {
+    
   /*
     Calculates the Jaccard Neighborhood Similarity between all vertices using a common feature vertex type.
       Jaccard Similarity = intersection_size / (setSize_all + setSize_self - intersection_size)
@@ -28,7 +29,7 @@ STRING similarity_edge, INT src_batch_num = 50, INT nbor_batch_num = 10, BOOL pr
 
   all_vertices = {v_type};
   all_vertices = SELECT s 
-                 FROM all_vertices:s -(e_type:e)- v_type:t
+                 FROM all_vertices:s -(e_type:e)- feat_v_type:t
                  ACCUM 
                      s.@sum_outdegree += 1;
 

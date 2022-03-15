@@ -1,71 +1,66 @@
+CREATE QUERY tg_maximal_indep_set_random(
+  SET<STRING> v_type,
+  SET<STRING> e_type,
+  BOOL print_accum = TRUE,
+  STRING file_path = "")  SYNTAX V1 {
 
-CREATE QUERY tg_maximal_indep_set_random(STRING v_type, STRING e_type, INT max_iter = 100, BOOL print_accum = TRUE, STRING file_path = ""){
-    /*
-    Maximal Independent Set query only supports one edge type and works only for undirected graphs at the moment (8/12/20).
-    */
+  TYPEDEF TUPLE<VERTEX v, DOUBLE score> VertexScore;
+  HeapAccum <VertexScore> (1, score ASC) @MISHeap;
+  OrAccum<BOOL> @disincluded, @included;
+  MinAccum<DOUBLE> @r;
 
-    AndAccum @and_active;
-    OrAccum @or_selected;
-    MinAccum<INT> @min_r_min, @min_r;
-    FILE f(file_path);
-    INT iter = 0;
+  INT _mod, _mult;
 
-    Start = {v_type.*};
-    Start = SELECT s
-            FROM Start:s
-            ACCUM
-                IF s.outdegree(e_type) == 0 THEN
-                    s.@or_selected += TRUE,
-                    s.@and_active += FALSE
-                END
-            HAVING s.@and_active;
+  FILE f (file_path);
 
-    WHILE Start.size()>0 LIMIT max_iter DO
-        Start = SELECT s
-                FROM Start:s
-                POST-ACCUM
-                    s.@min_r_min = GSQL_INT_MAX,
-                    s.@min_r = tg_rand_int(GSQL_INT_MIN, GSQL_INT_MAX);
+  _mod = 100000000;
+  _mult =  pow(2, 31)-1;
 
-        TMP = SELECT s
-              FROM Start:s-(e_type:e)->v_type:t
-              WHERE t.@and_active
-              ACCUM
-                  s.@min_r_min += t.@min_r;
+  Start = {v_type};
 
-        TMP = SELECT s
-              FROM Start:s
-              POST-ACCUM
-                  IF s.@min_r < s.@min_r_min THEN
-                      s.@or_selected += TRUE,
-                      s.@and_active += FALSE
-                  END
-              HAVING s.@or_selected;
+  Pool =
+    SELECT s FROM Start:s
+    ACCUM
+      s.@MISHeap += VertexScore(s, 1),
+      s.@r = ((getvid(s)+datetime_to_epoch(now()) * _mult + 1) % _mod) / (_mod*1.0);
 
-        TMP = SELECT s
-              FROM TMP:s-(e_type:e)->v_type:t
-              ACCUM
-                  t.@and_active += FALSE;
+  WHILE Pool.size() > 0 DO
+    Pool =
+      SELECT s FROM Pool:s
+      WHERE s.@disincluded == FALSE AND s.@included == FALSE;
+    PriorityCalculation =
+      SELECT s FROM Pool:s -(e_type:e)- v_type:t
+      ACCUM
+        IF t.@disincluded == FALSE AND t.@included == FALSE THEN
+          s.@MISHeap += VertexScore(t, t.@r)
+        END
+      POST-ACCUM
+        IF s.@MISHeap.top().v == s OR s.@r < s.@MISHeap.top().score THEN
+          s.@included = TRUE
+        END;
+    Culling =
+      SELECT s FROM Pool:s -(e_type:e)- v_type:t
+      WHERE s.@included == TRUE
+      ACCUM
+        t.@disincluded += TRUE;
+    Pool =
+      SELECT s FROM Pool:s
+      POST-ACCUM
+        s.@MISHeap.clear();
+    Pool =
+      SELECT s FROM Pool:s
+      POST-ACCUM
+        s.@MISHeap += VertexScore(s, s.@r);
+    PRINT Pool.size();
+  END;
 
-        Start = SELECT s
-                FROM Start:s
-                WHERE s.@and_active;
-    END;
+ 	Results = SELECT s FROM Start:s
+    WHERE s.@included == TRUE
+ 		POST-ACCUM
+ 			IF file_path != "" THEN f.println(s) END;
 
-    IF file_path != "" THEN
-        f.println("Vertex");
-    END;
-
-    Start = {v_type.*};
-    Start = SELECT s
-            FROM Start:s
-            WHERE s.@or_selected
-            ACCUM
-                IF file_path != "" THEN
-                    f.println(s)
-                END;
-
-    IF print_accum THEN
-        PRINT Start;
-    END;
+ 	IF print_accum THEN
+ 		PRINT Results;
+ 	END;
+  PRINT Results.size();
 }

@@ -1,5 +1,6 @@
 CREATE QUERY tg_wcc_small_world(STRING v_type, STRING e_type, UINT threshold = 100000,
-  BOOL to_show_cc_count=FALSE) {
+  BOOL to_show_cc_count=FALSE)  SYNTAX V1 {
+  
   ##
   # This query detects weakly connected components based on the following paper:
   # https://www.osti.gov/servlets/purl/1115145

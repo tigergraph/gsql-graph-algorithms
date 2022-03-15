@@ -45,6 +45,7 @@
 #include <map>
 #include <random>
 #include <vector>
+#include <math.h>
 
 /**     XXX Warning!! Put self-defined struct in tg_ExprUtil.hpp **
  *  No user defined struct, helper functions (that will not be directly called
@@ -56,6 +57,15 @@
 
 namespace UDIMPL {
   typedef std::string string; //XXX DON'T REMOVE
+
+  /* ============== START MAP EQUATION ======================== */
+
+  inline double tg_log_2(double num) {
+    return log2(num);
+  }
+
+  /* ============== END MAP EQUATION ======================== */
+
 
   /* ============== START SPEAKER LISTENER LABEL PROP ================== */
 
@@ -354,7 +364,9 @@ namespace UDIMPL {
     return list.get(i);
   }
   */
-
+  inline float rad(float d){
+   return d * 3.1415926535897932384626433832795 / 180.0;
+ }
   inline float tg_GetDistance(float lat1, float lng1, float lat2, float lng2) {
     float a;
     float b;

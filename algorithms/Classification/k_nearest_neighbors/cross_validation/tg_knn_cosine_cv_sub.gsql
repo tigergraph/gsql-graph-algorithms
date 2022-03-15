@@ -1,4 +1,4 @@
-CREATE QUERY tg_knn_cosine_cv_sub (VERTEX source, SET<STRING> e_type, SET<STRING> re_type, STRING v_label, STRING weight, INT max_k) RETURNS (ListAccum<STRING>) {
+CREATE QUERY tg_knn_cosine_cv_sub (VERTEX source, SET<STRING> e_type, SET<STRING> re_type, STRING v_label, STRING weight, INT max_k) RETURNS (ListAccum<STRING>)  SYNTAX V1 {
 
   /* This subquery returns a list of predicted label for a source vertex with respect to different k within a given range. 
 */ 

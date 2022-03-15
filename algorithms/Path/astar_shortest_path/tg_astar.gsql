@@ -1,5 +1,5 @@
 CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type, STRING wt_type, STRING latitude, STRING longitude,
-STRING wt_attr, BOOL display = False){
+STRING wt_attr, BOOL display = False) SYNTAX V1 {
 
 /* The A* (pronounced "A-Star") Shortest Path algorithm computes the shortest path between two nodes.
 A* is an informed search algorithm as it uses a heuristic function to guide the graph traversal.

@@ -1,5 +1,6 @@
 CREATE QUERY tg_jaccard_nbor_ss (VERTEX source, STRING e_type, STRING rev_e_type, 
- INT top_k = 100, BOOL print_accum = TRUE, STRING similarity_edge_type = "", STRING file_path = "") {
+ INT top_k = 100, BOOL print_accum = TRUE, STRING similarity_edge_type = "", STRING file_path = "")  SYNTAX V1 {
+ 
 /* 
 Calculates the Jaccard Similarity between a given vertex and every other vertex.
   Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)

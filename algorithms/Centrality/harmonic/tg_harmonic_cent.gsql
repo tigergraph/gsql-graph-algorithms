@@ -1,6 +1,7 @@
 CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type,INT max_hops = 10,
   INT top_k = 100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
-  STRING file_path = "", BOOL display_edges = FALSE){ 
+  STRING file_path = "", BOOL display_edges = FALSE) SYNTAX V1 { 
+   
   /* Compute Harmonic Centrality for each VERTEX. 
   Use multi-sourse BFS.
   Parameters:
@@ -123,7 +124,7 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
 	     IF display_edges THEN
 	         PRINT Start[Start.@sum_score];
 		 Start = SELECT s
-			 FROM Start:s -(e_type:e)->:t
+			 FROM Start:s -(e_type:e)-:t
 			 ACCUM @@edge_set += e;
 			 PRINT @@edge_set;
              END;

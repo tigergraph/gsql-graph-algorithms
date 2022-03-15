@@ -1,7 +1,8 @@
 CREATE QUERY tg_pagerank_wt (STRING v_type, STRING e_type, STRING wt_attr,
  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping=0.85, INT top_k = 100,
  BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "",
- BOOL display_edges = FALSE) {
+ BOOL display_edges = FALSE) SYNTAX V1 {
+
 /*
  Compute the pageRank score for each vertex in the GRAPH
  In each iteration, compute a score for each vertex:
@@ -31,7 +32,7 @@ FILE f (file_path);
 Start = {v_type};
  # Calculate the total weight for each vertex
 Start = SELECT s                
-        FROM Start:s -(e_type:e) -> v_type:t
+        FROM Start:s -(e_type:e) - v_type:t
         ACCUM s.@sum_total_wt += e.getAttr(wt_attr, "FLOAT"); 
             
 # PageRank iterations	
@@ -39,7 +40,7 @@ Start = SELECT s
 WHILE @@max_diff > max_change LIMIT max_iter DO
     @@max_diff = 0;
     V = SELECT s
-	FROM Start:s -(e_type:e)-> v_type:t
+	FROM Start:s -(e_type:e)- v_type:t
 	ACCUM t.@sum_recvd_score += s.@sum_score * e.getAttr(wt_attr, "FLOAT")/s.@sum_total_wt
 	POST-ACCUM s.@sum_score = (1.0-damping) + damping * s.@sum_recvd_score,
 		   s.@sum_recvd_score = 0,
@@ -70,7 +71,7 @@ IF print_accum THEN
     IF display_edges THEN
         PRINT Start[Start.@sum_score];
 	Start = SELECT s
-		FROM Start:s -(e_type:e)-> v_type:t
+		FROM Start:s -(e_type:e)- v_type:t
 		ACCUM @@edge_set += e;
 	PRINT @@edge_set;
     END;
