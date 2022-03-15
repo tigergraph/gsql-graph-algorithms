@@ -1,4 +1,5 @@
-CREATE QUERY tg_tri_count(STRING v_type, STRING e_type) {
+CREATE QUERY tg_tri_count(STRING v_type, STRING e_type)  SYNTAX V1 {
+
 # Compute the total number of triangles in the GRAPH. No input parameters are needed.
 SumAccum<INT> @@sum_cnt;
 SetAccum<VERTEX> @self_set;

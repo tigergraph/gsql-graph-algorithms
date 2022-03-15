@@ -1,4 +1,5 @@
-CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, INT embedding_dim, INT k, STRING embedding) {
+CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, INT embedding_dim, INT k, STRING embedding)  SYNTAX V1 {
+
     /*
     This query calculates the embedding cosine similarity between one vertex and a set of others.
     Higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.

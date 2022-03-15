@@ -1,4 +1,5 @@
-CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT embedding_dim,STRING embedding) {
+CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT embedding_dim,STRING embedding)  SYNTAX V1 {
+
     /*
     This query calculates the embedding cosine similarity between one vertex and another.
     Higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.

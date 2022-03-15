@@ -1,5 +1,5 @@
 CREATE QUERY tg_fpm_pre(STRING unify_vertex_type, STRING connect_edge, STRING item_vertex_type, 
-                        STRING ts_attr_name, STRING ts_attr_type){ 
+                        STRING ts_attr_name, STRING ts_attr_type) SYNTAX V1 { 
   /*
   Precondition:
   unify_vertex_type has a List<INT> item_list as an attribute

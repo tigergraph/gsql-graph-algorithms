@@ -1,4 +1,4 @@
-CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE) { 
+CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
     /*
     This query calculates the Adamic Adar value between two vertices.
     Higher the number, the closer two vertices are. A 0 value indicates two vertices are not close.

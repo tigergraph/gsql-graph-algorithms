@@ -1,6 +1,7 @@
 CREATE QUERY tg_scc (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> rev_e_type,
-  INT top_k_dist, INT output_limit, INT max_iter = 500, INT iter_wcc = 5, BOOL print_accum = TRUE, STRING result_attr= "", STRING file_path="") { 
+  INT top_k_dist, INT output_limit, INT max_iter = 500, INT iter_wcc = 5, BOOL print_accum = TRUE, STRING result_attr= "", STRING file_path="")  SYNTAX V1 { 
     //INT iter_end_trim = 3
+
 /* This query detects strongly connected components based on the following papers:
  * https://www.sandia.gov/~apinar/papers/irreg00.pdf
  * https://www.sciencedirect.com/science/article/pii/S0743731505000535

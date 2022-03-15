@@ -1,6 +1,7 @@
 CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT maxIter = 100, FLOAT convLimit = 0.000001,
     INT top_k = 100, BOOL print_accum = True, STRING result_attr = "",STRING file_path = ""
-    ){ 
+    ) SYNTAX V1 {
+    
     /* Compute eigenvector Centrality for each VERTEX. 
     Parameters:
     v_type: vertex types to traverse                 

@@ -1,7 +1,7 @@
 CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
  STRING wt_attr, STRING wt_type, FLOAT epsilon = 0.001,BOOL print_accum = TRUE, INT output_limit = -1, 
  BOOL display_edges = FALSE, STRING result_attr = "", BOOL spit_to_file = FALSE, 
- STRING file_path = "/home/tigergraph/tg_query_output.csv", UINT write_size = 10000) {
+ STRING file_path = "/home/tigergraph/tg_query_output.csv", UINT write_size = 10000)  SYNTAX V1 {
 
 /*
  Single-source shortest path algorithm (traceback version), with positive weight edges. 

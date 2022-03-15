@@ -1,5 +1,6 @@
 CREATE QUERY tg_bfs(SET<STRING> v_type, SET<STRING> e_type,INT max_hops=10, VERTEX v_start,
-BOOL print_accum = True, STRING result_attr = "",STRING file_path = "", BOOL display_edges = TRUE) { 
+BOOL print_accum = True, STRING result_attr = "",STRING file_path = "", BOOL display_edges = TRUE) SYNTAX V1 { 
+
 /*Breadth-First Search Algorithm from a single source node
 Parameters:
 v_type: vertex types to traverse                 v_start : source vertex for traverse

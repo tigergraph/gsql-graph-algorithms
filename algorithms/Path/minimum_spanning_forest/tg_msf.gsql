@@ -1,5 +1,5 @@
 CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STRING wt_type,
-	BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") {
+	BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
 
   /*
   * This query identifies minimum spanning trees using the algorithm in section 6.2 of Qin et al. 2014:

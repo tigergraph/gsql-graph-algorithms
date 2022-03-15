@@ -1,5 +1,6 @@
 CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING wt_attr,INT top_k,
-  BOOL print_accum = True, STRING file_path = "") {
+  BOOL print_accum = True, STRING file_path = "") SYNTAX V1 {
+
   /* get the vertex which has maximum influence.
   Parameters:
   v_type: vertex types to traverse

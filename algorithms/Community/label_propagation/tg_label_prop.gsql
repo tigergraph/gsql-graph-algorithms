@@ -1,5 +1,6 @@
 CREATE QUERY tg_label_prop (SET<STRING> v_type, SET<STRING> e_type, INT max_iter, INT output_limit, 
-  BOOL print_accum = TRUE, STRING file_path = "", STRING attr = "") {
+  BOOL print_accum = TRUE, STRING file_path = "", STRING attr = "")  SYNTAX V1 {
+
 # Partition the vertices into communities, according to the Label Propagation method.
 # Indicate community membership by assigning each vertex a community ID.
 

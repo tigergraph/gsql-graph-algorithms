@@ -1,4 +1,5 @@
-CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, STRING label, INT min_k, INT max_k) RETURNS (INT){
+CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, STRING label, INT min_k, INT max_k) RETURNS (INT) SYNTAX V1 {
+
 /* Leave-one-out cross validation for selecting optimal k. 
    The input is a range of k, output is the k with highest correct prediction rate.
    Note: When one vertex has no neighbor with known label, the prediction is considered false
