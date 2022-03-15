@@ -1,7 +1,7 @@
 CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRING> e_type, 
    SET<STRING> reverse_e_type, STRING cap_attr, STRING cap_type, FLOAT min_flow_threshhold = 0.001, 
    BOOL print_accum = TRUE, BOOL display_edges = TRUE, BOOL spit_to_file = FALSE, 
-   STRING file_path = "/home/tigergraph/tg_query_output.csv") { 
+   STRING file_path = "/home/tigergraph/tg_query_output.csv")  SYNTAX V1 { 
   
   /*
    Maxflow algorithm. Finds the maximum amount of flow that source can pushes to sink
@@ -61,7 +61,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
   ##### Push one flow at a time until there is residudal graph is disconnected #####
   WHILE TRUE DO
       //initilize 
-      init = {v_type};
+      
       init = SELECT s
              FROM init:s
              POST-ACCUM s.@or_is_visited = FALSE,

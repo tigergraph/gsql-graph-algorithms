@@ -1,5 +1,6 @@
 CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr = "weight", INT max_iter = 10, 
-  STRING result_attr = "cid", STRING file_path = "", BOOL print_info = FALSE) {
+  STRING result_attr = "cid", STRING file_path = "", BOOL print_info = FALSE)  SYNTAX V1 {
+
   /*
   louvain community detection algorithm
   add keyword DISTRIBUTED for cluster environment

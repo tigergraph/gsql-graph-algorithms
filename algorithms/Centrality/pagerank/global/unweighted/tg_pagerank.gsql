@@ -1,7 +1,8 @@
 CREATE QUERY tg_pagerank (STRING v_type, STRING e_type,
  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping=0.85, INT top_k = 100,
  BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "",
- BOOL display_edges = FALSE){
+ BOOL display_edges = FALSE) SYNTAX V1 {
+
 /*
  Compute the pageRank score for each vertex in the GRAPH
  In each iteration, compute a score for each vertex:

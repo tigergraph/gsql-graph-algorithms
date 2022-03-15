@@ -1,6 +1,7 @@
 CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
  STRING wt_attr, STRING wt_type, INT output_limit = -1, BOOL print_accum = TRUE,
- STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE) {
+ STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE)  SYNTAX V1 {
+
 /*
  Single-source shortest path algorithm, with weight edges, possibly negative.
  From the source vertex, finds the weighted shortest path (FLOAT value).

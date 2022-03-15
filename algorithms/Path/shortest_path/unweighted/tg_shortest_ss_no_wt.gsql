@@ -1,6 +1,7 @@
 CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, 
   INT output_limit = -1, BOOL print_accum =TRUE, STRING result_attr ="", STRING file_path ="",
-  BOOL display_edges =FALSE) {
+  BOOL display_edges =FALSE)  SYNTAX V1 {
+  
 /*
 Single-source shortest path algorithm, with unweighted edges.
 From the source vertex, finds the unweighted shortest path (number of hops, INT value)

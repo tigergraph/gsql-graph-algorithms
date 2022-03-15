@@ -1,14 +1,15 @@
 CREATE QUERY tg_pagerank_pers_ap_batch(STRING v_type, STRING e_type,
-  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,INT batch_num,BOOL print_accum,STRING file_path){
+  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,INT batch_num,BOOL print_accum,STRING file_path) SYNTAX V1 {
+
   /*
- Compute the pageRank score for each vertex in the GRAPH
- v_type: vertex types to traverse          print_accum: print JSON output
- e_type: edge types to traverse           
- max_iter; max #iterations                 file_path: file to write CSV output to
- top_k: #top scores to output
- max_change: max allowed change between iterations to achieve convergence
- damping: importance of traversal vs. random teleport
-*/
+  Compute the pageRank score for each vertex in the GRAPH
+  v_type: vertex types to traverse          print_accum: print JSON output
+  e_type: edge types to traverse           
+  max_iter; max #iterations                 file_path: file to write CSV output to
+  top_k: #top scores to output
+  max_change: max allowed change between iterations to achieve convergence
+  damping: importance of traversal vs. random teleport
+  */
 
   TYPEDEF TUPLE<VERTEX ver, FLOAT score> Vertex_Score;
   HeapAccum<Vertex_Score>(top_k,score DESC) @top_scores_heap;

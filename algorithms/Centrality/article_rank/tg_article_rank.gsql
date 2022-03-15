@@ -1,6 +1,6 @@
 CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
  FLOAT max_change = 0.001, INT max_iter = 25, FLOAT damping = 0.85, INT top_k = 100,
- BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = ""){
+ BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "") SYNTAX V1 {
  
 /*
  Compute the article rank score for each vertex in the GRAPH

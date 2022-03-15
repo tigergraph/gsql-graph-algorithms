@@ -1,5 +1,5 @@
 CREATE QUERY tg_map_equation(
-  STRING v_type,STRING e_type,STRING community_attr,STRING weight_attr = "") {
+  STRING v_type,STRING e_type,STRING community_attr,STRING weight_attr = "")  SYNTAX V1 {
 
   MinAccum<FLOAT> @@min_L;
   SumAccum<FLOAT>

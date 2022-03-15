@@ -12,4 +12,4 @@
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
     description: "Triangle count (or density) is a measure of community and connectedness. In particular, it addresses the question of transitive relationships: If A -> B and B -> C, then what is the likelihood of A -> C? tri_count_fast() is a smarter algorithm which does two passes over the edges. In the first pass we mark which of the two endpoint vertices has fewer neighbors. In the second pass, we count the overlap only between marked vertices. The result is that we eliminate 1/3 of the neighborhood matching, the slowest 1/3, but at the cost of some additional memory."
     version: lib3.0
-    include: false
+    include: true

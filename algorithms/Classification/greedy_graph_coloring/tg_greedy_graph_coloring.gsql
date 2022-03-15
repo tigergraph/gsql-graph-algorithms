@@ -1,5 +1,5 @@
 CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT max_colors = 999999,
-  BOOL print_color_count = TRUE, BOOL display = TRUE, STRING file_path = "") {
+  BOOL print_color_count = TRUE, BOOL display = TRUE, STRING file_path = "")  SYNTAX V1 {
   
   /* Greedy Graph Coloring algorithm
   This is a distributed algorithm for coloring graph on large-scale 

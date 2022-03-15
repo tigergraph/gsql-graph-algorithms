@@ -1,5 +1,6 @@
 CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING connect_edge, DOUBLE support, UINT min_length,
-UINT max_count = 10000, INT print_limit = -1, STRING file_path = "") {
+UINT max_count = 10000, INT print_limit = -1, STRING file_path = "")  SYNTAX V1 {
+
   /*
   Paper Reference:
   Shintani, Takahiko & Kitsuregawa, Masaru. (1999). Mining Algorithms for Sequential Patterns in Parallel: Hash Based Approach.

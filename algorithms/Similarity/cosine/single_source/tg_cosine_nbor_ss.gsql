@@ -1,9 +1,10 @@
 CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> re_type, STRING weight, INT top_k, INT output_limit,
-  BOOL print_accum = TRUE, STRING file_path = "", STRING similarity_edge = "") RETURNS (MapAccum<VERTEX, FLOAT>) {
+  BOOL print_accum = TRUE, STRING file_path = "", STRING similarity_edge = "") RETURNS (MapAccum<VERTEX, FLOAT>)  SYNTAX V1 {
 
-/* This query calculates the Cosine Similarity between a given vertex and every other vertex.
-Cosine similarity = A \dot B / ||A|| \dot ||B||
-*/
+  /* This query calculates the Cosine Similarity between a given vertex and every other vertex.
+  Cosine similarity = A \dot B / ||A|| \dot ||B||
+  */
+
   SumAccum<FLOAT> @sum_numerator, @@sum_norm1, @sum_norm2, @sum_similarity;
   MapAccum<VERTEX, FLOAT> @@top_k_result_map;
   FILE f (file_path);

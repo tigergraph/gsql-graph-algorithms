@@ -2,7 +2,7 @@ CREATE QUERY tg_maximal_indep_set_random(
   SET<STRING> v_type,
   SET<STRING> e_type,
   BOOL print_accum = TRUE,
-  STRING file_path = "") {
+  STRING file_path = "")  SYNTAX V1 {
 
   TYPEDEF TUPLE<VERTEX v, DOUBLE score> VertexScore;
   HeapAccum <VertexScore> (1, score ASC) @MISHeap;

@@ -1,4 +1,4 @@
-CREATE QUERY tg_cycle_detection (SET<STRING> v_type, SET<STRING> e_type, INT depth, BOOL print_accum = TRUE, STRING file_path = "") {
+CREATE QUERY tg_cycle_detection (SET<STRING> v_type, SET<STRING> e_type, INT depth, BOOL print_accum = TRUE, STRING file_path = "")  SYNTAX V1 {
 
 /* Rocha–Thatte cycle detection algorithm
 This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.

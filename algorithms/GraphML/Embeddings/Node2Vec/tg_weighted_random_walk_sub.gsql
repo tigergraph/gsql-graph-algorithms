@@ -1,4 +1,5 @@
-CREATE QUERY tg_weighted_random_walk_sub(VERTEX source, INT length, INT num_walks, FLOAT p, FLOAT q, FILE f) {
+CREATE QUERY tg_weighted_random_walk_sub(VERTEX source, INT length, INT num_walks, FLOAT p, FLOAT q, FILE f)  SYNTAX V1 {
+
   /* This query impletemented random walk in Node2vec paper. Link: https://cs.stanford.edu/~jure/pubs/node2vec-kdd16.pdf
   Input: source vertex, random walk length, walk times for each vertex, output file, set of valid edge types
   Output: random walk sequence
