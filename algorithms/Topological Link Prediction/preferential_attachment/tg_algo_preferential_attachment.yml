@@ -1,0 +1,15 @@
+---
+# @           : this file
+# {x}         : the directory of file x
+# &x          : any file which matches pattern x
+# **         : any depth of arbitrary directories
+# *           : wildcard character
+# [x|y...|z]  : file/directory x, y, or z
+
+  algorithm:
+    name: Preferential Attachment
+    filename: "tg_preferential_attachment.gsql"
+    sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    description: Preferential Attachment is a measure to compute the closeness of vertices, based on the number of their neighbors. The algorithm returns the product two vertices' number of neighbors.
+    version: lib3.0
+    include: true

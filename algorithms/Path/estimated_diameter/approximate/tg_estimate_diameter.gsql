@@ -1,0 +1,26 @@
+CREATE QUERY tg_estimate_diameter(SET<STRING> v_type, SET<STRING> e_type, INT seed_set_length, BOOL print_accum = TRUE, STRING file_path = "", BOOL display = FALSE) SYNTAX V1 {
+  
+  MaxAccum<INT> @@max_diameter;
+  FILE f (file_path);
+  start = {v_type};
+  start = SELECT s
+          FROM start:s
+          LIMIT seed_set_length;
+  
+  IF display THEN
+      PRINT start;
+  END;
+  
+  start = SELECT s
+          FROM start:s
+          ACCUM @@max_diameter += tg_max_BFS_depth(s, e_type);
+        
+  IF print_accum THEN
+      PRINT @@max_diameter as diameter;
+  END;
+  
+  IF file_path != "" THEN
+      f.println("Diameter");
+      f.println(@@max_diameter);
+  END;
+}

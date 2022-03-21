@@ -1,0 +1,2 @@
+---
+  description: The algorithms in this category currently deal with the problem of Graph Embedding. Embedding refers to the process of representing vertices, edges, or even entire graphs in a format (typically a numerical vector) that either condenses the 'information' of the object or exposes information about the object such that it can be used for a downstream task such as machine learning classifcation.

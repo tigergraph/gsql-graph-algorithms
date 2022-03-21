@@ -1,0 +1,76 @@
+CREATE QUERY tg_wcc_small_world(STRING v_type, STRING e_type, UINT threshold = 100000,
+  BOOL to_show_cc_count=FALSE)  SYNTAX V1 {
+  
+  ##
+  # This query detects weakly connected components based on the following paper:
+  # https://www.osti.gov/servlets/purl/1115145
+  ##
+  SumAccum<UINT> @sum_indegree;
+  SumAccum<UINT> @sum_outdegree;
+  SumAccum<INT> @sum_degree_product;
+  MinAccum<INT> @min_cc_id;
+  OrAccum @or_visited;
+  MapAccum<INT, SumAccum<UINT>> @@CC_count_map;
+  
+  # 1. initialization
+  Vertices = {v_type};
+  All_Vertices = Vertices;
+
+  # 2. calculate the product of in degree and out degree
+  # and filter the vertices which have the product no less than the threshold
+  PivotCandidates = SELECT s 
+                    FROM Vertices:s
+                    POST-ACCUM s.@sum_indegree = s.outdegree(e_type),
+                               s.@sum_outdegree = s.outdegree(e_type),
+                               s.@sum_degree_product = s.@sum_indegree * s.@sum_outdegree
+                    HAVING s.@sum_degree_product >= threshold;
+  
+
+  # 3. while PotentialPoviots set is not empty, select a pivot and find its CC
+  WHILE PivotCandidates.size() > 0 DO
+      # select an initial pivot vertex as the vertex in the graph 
+      # that has the largest product of its in degree and out degree
+      Vertices = SELECT s 
+                 FROM PivotCandidates:s
+                 ORDER BY s.@sum_degree_product DESC
+                 LIMIT  1;
+      Vertices = SELECT s 
+                 FROM Vertices:s
+                 POST-ACCUM s.@or_visited = TRUE,
+                            s.@min_cc_id = getvid(s);
+      # with the chosen pivot we use BFS algorithm to find all elements in its connected component
+      WHILE Vertices.size() > 0 DO
+          Vertices = SELECT t 
+                     FROM Vertices:s-(e_type:e)-v_type:t
+                     WHERE  t.@or_visited == FALSE
+                     ACCUM  t.@min_cc_id = s.@min_cc_id
+                     POST-ACCUM t.@or_visited += TRUE;
+      
+      END;
+      # remove the visited vertices from the PivotCandidates set
+      PivotCandidates = SELECT s 
+                        FROM PivotCandidates:s
+                        WHERE  s.@or_visited == FALSE;
+  END;
+
+  # 4. take the remaining vertices and pass them all off to coloring
+  Vertices = SELECT s 
+             FROM All_Vertices:s
+             WHERE  s.@or_visited == FALSE
+             ACCUM  s.@min_cc_id = getvid(s);
+             
+  WHILE Vertices.size() > 0 DO
+      Vertices = SELECT t 
+                 FROM Vertices:s-(e_type:e)-v_type:t
+                 WHERE  s.@min_cc_id < t.@min_cc_id
+                 ACCUM  t.@min_cc_id += s.@min_cc_id;
+  END;
+
+  IF to_show_cc_count THEN
+      Vertices = {v_type};
+      Vertices = SELECT s 
+                 FROM Vertices:s
+                 POST-ACCUM @@CC_count_map += (s.@min_cc_id -> 1);
+      PRINT @@CC_count_map;
+  END;
+ }

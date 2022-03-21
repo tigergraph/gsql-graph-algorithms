@@ -1,0 +1,64 @@
+CREATE QUERY tg_wcc (SET<STRING> v_type, SET<STRING> e_type, INT output_limit = 100,
+ BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
+
+/*
+ This query identifies the Connected Components (undirected edges). When finished, each
+ vertex is assigned an INT label = its component ID number.
+  v_type: vertex types to traverse          print_accum: print JSON output
+  e_type: edge types to traverse            result_attr: INT attr to store results to
+  file_path: file to write CSV output to    display_edges: output edges for visualization
+  output_limit: max #vertices to output (-1 = all)  
+*/
+
+MinAccum<INT> @min_cc_id = 0;       //each vertex's tentative component id
+MapAccum<INT, INT> @@comp_sizes_map;
+MapAccum<INT, ListAccum<INT>> @@comp_group_by_size_map;
+FILE f(file_path); 
+
+Start = {v_type};
+
+# Initialize: Label each vertex with its own internal ID
+S = SELECT x 
+    FROM Start:x
+    POST-ACCUM x.@min_cc_id = getvid(x);
+
+# Propagate smaller internal IDs until no more ID changes can be Done
+WHILE (S.size()>0) DO
+    S = SELECT t
+        FROM S:s -(e_type:e)- v_type:t
+	ACCUM t.@min_cc_id += s.@min_cc_id // If s has smaller id than t, copy the id to t
+	HAVING t.@min_cc_id != t.@min_cc_id';
+END;
+IF file_path != "" THEN
+    f.println("Vertex_ID","Component_ID");
+END;
+
+Start = {v_type};
+Start = SELECT s 
+        FROM Start:s
+	POST-ACCUM 
+	    IF result_attr != "" THEN 
+	        s.setAttr(result_attr, s.@min_cc_id) 
+	    END,
+	    
+	    IF print_accum THEN 
+	        @@comp_sizes_map += (s.@min_cc_id -> 1) 
+	    END,
+	    
+	    IF file_path != "" THEN 
+	        f.println(s, s.@min_cc_id) 
+	    END;
+IF print_accum THEN
+    IF output_limit >= 0 THEN
+        Start = SELECT s 
+                FROM Start:s 
+                LIMIT output_limit;
+    END;
+    FOREACH (compId,size) IN @@comp_sizes_map DO
+        @@comp_group_by_size_map += (size -> compId);
+    END;
+    PRINT @@comp_group_by_size_map;
+    PRINT @@comp_sizes_map as sizes;
+    PRINT Start[Start.@min_cc_id];
+END;
+}

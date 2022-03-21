@@ -1,0 +1,69 @@
+CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, 
+  INT output_limit = -1, BOOL print_accum =TRUE, STRING result_attr ="", STRING file_path ="",
+  BOOL display_edges =FALSE)  SYNTAX V1 {
+  
+/*
+Single-source shortest path algorithm, with unweighted edges.
+From the source vertex, finds the unweighted shortest path (number of hops, INT value)
+ source: start vertex                         print_accum: print JSON output
+ v_type: vertex types to traverse             result_attr: INT attr to store results to
+ e_type: edge types to traverse               file_path: file to write CSV output to
+ output_limit: max #vertices to output        display_edges: output edges for visualization
+*/
+
+  FILE f(file_path);
+  MinAccum<INT> @min_dis;
+  OrAccum @or_visited;
+  ListAccum<VERTEX> @path_list;
+  SetAccum<EDGE> @@edge_set;
+
+  ##### Initialization  #####
+  Source = {source};
+  Source = SELECT s 
+           FROM Source:s
+	   ACCUM s.@or_visited += true, 
+	         s.@min_dis = 0,
+		 s.@path_list = s; 
+  ResultSet = {source};
+
+  ##### Calculate distances and paths #####
+  WHILE(Source.size()>0) DO
+      Source = SELECT t
+	       FROM Source:s -(e_type:e)- v_type:t
+	       WHERE t.@or_visited == false
+	       ACCUM t.@min_dis += s.@min_dis + 1,
+	             t.@path_list = s.@path_list + [t],
+	             t.@or_visited += true
+      ORDER BY getvid(t);
+      ResultSet = ResultSet UNION Source;
+  END;
+
+  IF file_path != "" THEN
+      f.println("Vertex_ID","Distance","Shortest_Path");
+  END;
+
+  ResultSet = SELECT s 
+              FROM ResultSet:s 
+              POST-ACCUM 
+                  IF result_attr != "" 
+		      THEN s.setAttr(result_attr, s.@min_dis) 
+		  END,
+                  IF file_path != "" THEN 
+		      f.println(s, s.@min_dis, s.@path_list)
+		  END;
+  
+  IF print_accum THEN
+      IF output_limit >= 0 THEN
+          ResultSet = SELECT s 
+	              FROM ResultSet:s 
+		      LIMIT output_limit;
+      END;
+      PRINT ResultSet[ResultSet.@min_dis, ResultSet.@path_list];
+      IF display_edges THEN
+          ResultSet = SELECT s 
+	              FROM ResultSet:s -(e_type:e)- v_type:t
+                      ACCUM @@edge_set += e;
+          PRINT @@edge_set;
+      END;
+  END;
+}

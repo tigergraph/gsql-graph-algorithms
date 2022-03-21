@@ -1,0 +1,38 @@
+CREATE QUERY tg_common_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
+
+    /*
+    This query calculates the number of common neighbors between two vertices.
+    Higher the number, the closer two vertices are.
+
+    Parameters :
+        a : Input vertex one
+        b : Input vertex two
+        e_type: edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
+        print_res: Boolean of if you want to print result (True by default)
+    */
+    avs = {a};
+    bvs = {b};
+
+    IF "ALL" NOT IN e_type THEN  # Specific edge types defined
+        # Get neighbors of source vertices
+        na = SELECT n 
+             FROM avs -(e_type)- :n; 
+  
+        nb = SELECT n 
+             FROM bvs -(e_type)- :n; 
+             
+    ELSE  # Use any edge types
+        # Get neighbors of source vertices
+        na = SELECT n 
+             FROM avs -()- :n; 
+             
+        nb = SELECT n 
+             FROM bvs -()- :n; 
+    END;
+    # Get neighbors in common
+    u = na INTERSECT nb; 
+    
+    IF print_res THEN
+        PRINT u.size() as closeness; 
+    END;
+}

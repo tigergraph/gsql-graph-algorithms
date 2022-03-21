@@ -1,0 +1,153 @@
+CREATE QUERY tg_slpa (SET<STRING> v_type, SET<STRING> e_type, FLOAT threshold, INT max_iter, INT output_limit,
+BOOL print_accum = TRUE, STRING file_path = "") SYNTAX V1 {
+
+/* The algorithm is an extension of the Label Propagation Algorithm for overlapping community detection.
+Link of the paper: http://arxiv.org/pdf/1109.5720
+Indicate community membership by assigning each vertex multiple community IDs.
+Parameters:
+  v_type: vertex types to traverse          print_accum: print JSON output
+  e_type: edge types to traverse            attr: INT attr to store results to
+  threshold: threshold to drop a label      file_path: file to write CSV output to
+  max_iter: number of iterations            output_limit: max #vertices to output (-1 = all)
+*/
+
+    ListAccum<INT> @label_list;    # the memory of each vertex
+    SumAccum<INT> @sum_send;      # the label sended by speaker rule
+    MapAccum<INT, INT> @recv_map;     # <label, numlabels>
+    MapAccum<INT, FLOAT> @count_map;    # <label, probability>
+    MapAccum<INT, INT> @@comm_sizes_map;    # <communityId, communitysize>
+    SetAccum<INT> @community_set,@@nest_set,@@comm_set,@@index_set;   # communityId and nested communityId
+    ListAccum<INT> @@community_list;    # all communityId
+    SetAccum<INT> @@com1_set,@@com2_set,@@tmp1_set,@@tmp2_set;   # community set
+    FILE f (file_path);
+    Start = {v_type};
+
+    # Initialization: Assign unique labels to the memory of each vertex
+    Start = SELECT s FROM Start:s
+                     ACCUM s.@label_list += getvid(s);
+
+    # Evolution: Propagate labels to neighbors according to listener and speaker rules until the max iterations is reached
+    WHILE True LIMIT max_iter DO
+        # Speaker rule: select a random label from its memory with probability proportional to the occurrence frequency of this label in the memory
+        Start = SELECT s
+                FROM Start:s
+                ACCUM s.@sum_send = s.@label_list.get(tg_rand_int(0,s.@label_list.size()-1));
+
+        # listener rule: select the most popular label
+        Start = SELECT s
+                FROM Start:s -(e_type:e)-> :t
+                ACCUM t.@recv_map += (s.@sum_send -> 1)  # count the occurrences of received labels
+                POST-ACCUM
+                    INT maxV = 0,
+                    INT label = 0,
+                    # Iterate over the map to get the label that occurs most often
+                    FOREACH (k,v) IN t.@recv_map DO
+                        CASE WHEN v > maxV THEN
+                            maxV = v,
+                            label = k
+                        END
+                    END,
+                    t.@label_list += label,
+                    t.@recv_map.clear();
+    END;
+
+    # Post-processing: remove nodes label seen with probability less than threshold
+    Start = SELECT s
+            FROM Start:s
+            ACCUM
+                FOREACH k in s.@label_list DO
+                    s.@count_map += (k->1.0/s.@label_list.size())
+                END
+            POST-ACCUM
+                INT label = 0,
+                FLOAT maxV = 0,
+                FOREACH (k,v) in s.@count_map DO
+                    IF v > threshold THEN
+                        s.@community_set += k
+                    END,
+                    IF v > maxV THEN
+                        maxV = v,
+                        label = k
+                    END
+                END,
+                IF s.@community_set.size() == 0 THEN
+                    s.@community_set += label
+                END;
+
+    # Removing nested communities, return the maximal community
+    Start = SELECT s
+            FROM Start:s
+            POST-ACCUM
+                FOREACH k in s.@community_set DO
+                    @@comm_set += k        # get all labels
+                END;
+    FOREACH k in @@comm_set DO
+        @@community_list += k;
+    END;
+
+    FOREACH i in RANGE[0,@@community_list.size()-1] DO
+        IF @@nest_set.contains(@@community_list.get(i)) THEN
+            CONTINUE;
+        END;
+
+        @@com1_set.clear();
+        @@index_set.clear();
+
+        Comm0 = SELECT s
+                FROM Start:s
+                WHERE s.@community_set.contains(@@community_list.get(i))
+                POST-ACCUM
+                    @@com1_set += getvid(s),
+                    FOREACH j in RANGE[i+1,@@community_list.size()-1] DO
+                        if s.@community_set.contains(@@community_list.get(j)) THEN
+                            @@index_set += j
+                        END
+                    END;
+
+        FOREACH j in @@index_set DO
+            @@com2_set.clear();
+            @@tmp1_set.clear();
+            @@tmp2_set.clear();
+
+            Comm1 = SELECT s
+                    FROM Start:s
+                    WHERE s.@community_set.contains(@@community_list.get(j))
+                    POST-ACCUM @@com2_set += getvid(s);
+
+            @@tmp1_set = @@com2_set MINUS @@com1_set;
+            @@tmp2_set = @@com1_set MINUS @@com2_set;
+            IF @@tmp1_set.size() == 0 THEN   # community i is superset of community j
+                @@nest_set += @@community_list.get(j);
+            END;
+            IF @@tmp2_set.size() == 0 THEN  # community i is subset of community j
+                @@nest_set += @@community_list.get(i);
+                BREAK;
+            END;
+        END;
+    END;
+
+    Start = SELECT s
+            FROM Start:s
+            POST-ACCUM
+                FOREACH k in s.@community_set DO
+                    IF @@nest_set.contains(k) THEN   # remove nested community
+                        s.@community_set.remove(k)
+                    ELSE IF print_accum THEN
+                        @@comm_sizes_map += (k -> 1)
+                    END
+                END;
+
+    # output
+    Start =  SELECT s
+             FROM Start:s
+             POST-ACCUM
+                 IF file_path != "" THEN
+                     f.println(s, s.@community_set)
+                 END
+             LIMIT output_limit;
+
+    IF print_accum THEN
+        PRINT @@comm_sizes_map;
+        PRINT Start[Start.@community_set];
+    END;
+}

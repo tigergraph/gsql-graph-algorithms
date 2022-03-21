@@ -1,0 +1,18 @@
+---
+# @           : this file
+# {x}         : the directory of file x
+# &x          : any file which matches pattern x
+# **         : any depth of arbitrary directories
+# *           : wildcard character
+# [x|y...|z]  : file/directory x, y, or z
+
+  algorithm:
+    name: Speaker-Listener Label Propagation
+    filename: "tg_slpa.gsql"
+    sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    description: The Speaker-listener Label Propagation Algorithm (SLPA) is a variation of the Label Propagation algorithm that is able to detect overlapping communities. The main difference between LPA and SLPA is that each node can only hold a single label in LPA while it is allowed to possess multiple labels in SLPA.
+    dependencies:
+      ExprFunctions:
+        sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    version: lib3.0
+    include: false

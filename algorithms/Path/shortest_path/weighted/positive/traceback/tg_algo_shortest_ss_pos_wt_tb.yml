@@ -1,0 +1,15 @@
+---
+# @           : this file
+# {x}         : the directory of file x
+# &x          : any file which matches pattern x
+# **         : any depth of arbitrary directories
+# *           : wildcard character
+# [x|y...|z]  : file/directory x, y, or z
+
+  algorithm:
+    name: Single Source Shortest Path (Weighted, Positive-Only, Traceback)
+    filename: "tg_shortest_ss_pos_wt_tb.gsql"
+    sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    description: The library is currently under construction! Descriptions will be added soon.
+    schema_constraints: This algorithm requires an INT, FLOAT, or DOUBLE weight attribute on the target edge types. This algorithm can also optionally write the result (FLOAT) to an attribute of the respective type on each visited vertex.
+    version: lib3.0

@@ -1,0 +1,102 @@
+CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT max_colors = 999999,
+  BOOL print_color_count = TRUE, BOOL display = TRUE, STRING file_path = "")  SYNTAX V1 {
+  
+  /* Greedy Graph Coloring algorithm
+  This is a distributed algorithm for coloring graph on large-scale 
+  undirect graphs with one edge type.In every iteration, the vertices 
+  send its color to its out-neighbors, and the neighbors get assigned 
+  a different color. 
+  Conditions:
+    -  No two adjacent vertices in the graph should have same color
+    -  Until above condition is achieved , keep on finding conflicts 
+       and resolve them.
+    -  Stop the conflict detection when there are no resolution left.
+   Arguments:
+   -  v_type: Pass a set of all the vertex types which need to colored
+               from the graph.
+   -  e_type: Pass a set of all the edge types connecting above mentioned
+              edge types.
+   -  max_colors: Maximum number of colors allowed to color the entire graph. 
+                  Use a large number like 999999 unless there is strict limit 
+                  required.
+   -  print_color_count:  If set to true, the total colors used to color all vertex 
+                          types will be displayed.
+   -  display: If set to true, will display all the vertices and associated color.
+   -  file_path: If provided, will print results with all vertex Set and color to a file.
+  */
+  
+  TYPEDEF tuple<INT color> test_color;
+  AndAccum<BOOL> @@and_is_conflict = true;
+  HeapAccum<test_color>(max_colors,color ASC) @color_heap;
+  SumAccum<INT> @sum_color_vertex;
+  MaxAccum<INT> @@max_counter;
+  SetAccum<EDGE> @@edge_set;
+  SetAccum<Vertex> @@vertex_set;
+  FILE f(file_path);
+  
+  #initialization - coloring All vertices
+  coloring = {v_type};
+  coloring = SELECT s 
+             FROM coloring:s 
+             POST-ACCUM s.@sum_color_vertex+=1,
+                        @@max_counter+=s.@sum_color_vertex;
+  
+  #conflict detection and resolution
+  WHILE @@and_is_conflict DO
+      start= {v_type};
+  
+      #clear the color heap for all vertices
+      start = SELECT s 
+              FROM start:s
+              POST-ACCUM s.@color_heap.clear();
+  
+      #create a color heap for all vertices
+      start = SELECT t 
+              FROM start:s-(e_type:e)-v_type:t
+              ACCUM t.@color_heap+=test_color(s.@sum_color_vertex);
+  
+      #detect all conflicts
+      conflict = SELECT t 
+                 FROM start:s-(e_type:e)-v_type:t
+                 WHERE s.@sum_color_vertex == t.@sum_color_vertex AND getvid(s)>getvid(t);
+  
+      #resolve all detected conflicts 
+      resolved = SELECT t 
+                 FROM conflict:t
+                 POST-ACCUM 
+                     t.@sum_color_vertex = 1, 
+                     FOREACH item in t.@color_heap DO
+                        CASE WHEN (item.color == t.@sum_color_vertex) THEN
+                            t.@sum_color_vertex += 1,@@max_counter+=t.@sum_color_vertex
+                        END,
+                        CASE WHEN (item.color > t.@sum_color_vertex) THEN  
+                            BREAK 
+                        END
+                     END;
+  
+      #ending the conflict detection and resolution
+      IF resolved.size()<1 THEN 
+          @@and_is_conflict+=false; 
+      END;
+  
+  END;
+  
+  #collecting results
+  start = {v_type};
+  start = SELECT t 
+          FROM start:s-(e_type:e)-v_type:t
+          POST-ACCUM 
+              IF file_path != "" THEN
+                  f.println(t,t.@sum_color_vertex)
+              END;
+  
+  #printing and storing the results
+  IF print_color_count THEN
+      PRINT @@max_counter AS color_count;
+  END;
+    
+  IF display THEN
+      PRINT start [start.@sum_color_vertex];
+  END;
+
+}

@@ -1,0 +1,34 @@
+CREATE QUERY tg_random_walk_batch(INT batches, INT step, INT path_size, STRING filepath = "/home/tigergraph/path.csv", SET<STRING> edge_types, INT sample_num)  SYNTAX V1 {
+
+  FILE f(filepath);
+  ListAccum<ListAccum<VERTEX>> @recv_seque_list;
+  ListAccum<ListAccum<VERTEX>> @send_seque_list;
+  start (ANY) = {ANY};
+  
+  FOREACH i IN RANGE [0, batches - 1] DO
+      tmp = SELECT s 
+            FROM start:s 
+            WHERE getvid(s) % batches == i;
+      start = SELECT s 
+              FROM tmp:s
+              POST-ACCUM s.@send_seque_list.clear(),
+                         s.@send_seque_list += [s];
+      WHILE true LIMIT step DO
+          tmp = SELECT t 
+                FROM tmp:s-(edge_types:e)->:t
+                SAMPLE sample_num EDGE WHEN s.outdegree() >= 1
+                ACCUM t.@recv_seque_list += s.@send_seque_list
+                POST-ACCUM
+                      t.@send_seque_list.clear(),
+                      FOREACH PATH IN t.@recv_seque_list DO
+                          CASE WHEN PATH.size() == path_size - 1 THEN
+                              f.println(PATH + [t])
+                          ELSE
+                              t.@send_seque_list += PATH + [t]
+                          END
+                      END,
+                      t.@send_seque_list += [t],
+                      t.@recv_seque_list.clear();
+      END;
+  END;
+}

@@ -1,0 +1,153 @@
+CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING file_path="") returns (ListAccum<Float>)  SYNTAX V1 {
+
+  /*
+    This query will run k-means clustering computation for a given K number of clusters.
+    K-means clustering utilizes the the euclidean distance formula to compute distance between vectors (centroids).
+
+    There are a few changes that need to be made in order to tailor this query to your use case.
+      Line 21 & 22       : change the second index of each Array to a larger value if your vectors have more than 100 values.
+      Line 42 & 93 & 107 : change embeddings to the name of your vector attribute
+
+    Parameters :
+      k : # of centroids
+      maxChange : maximum centroid vector change condition
+      v_type    : vertex type to start from
+      e_type    : edge type to traverse
+      random    : boolean to start from either random or non-random centroid positions 
+      print_accum : print JSON output
+      file_path   : file to write CSV output to
+  */
+  TypeDef Tuple<int center, float value> distance_tuple; # tuple to store results in the Heap
+  HeapAccum<distance_tuple> (1,value asc) @distance_heap; # stores the closest centroid and distance from it
+  ArrayAccum<AvgAccum> @@centroids_array[100][100];           # current centroids/vectors
+  ArrayAccum<AvgAccum> @@new_centroids_array[100][100];        # updated centroids/vectors 
+  SumAccum<int> @sum_closest_center;                         # value of closest center for each vertex 
+  MaxAccum<float> @@max_change, @@max_attr_value;             # total change per iteration, high end of attribute range
+  GroupByAccum<int num_of_clusters, MinAccum<float> min_dist, MaxAccum<float> max_dist, AvgAccum avg_dist> @@group_by_k_variation; # min,max,avg distances for each centroid
+  MapAccum<int, int> @@cluster_counts_map;                   # number of vertices closest to each centroid 
+  AvgAccum @@avg_cluster_count;                           # avg number of closest vertices to each centroid
+  ListAccum<Float> @@res_list;                               # return list of results per each K clusters
+  MapAccum<int, int> @@cluster_sizes_map;                    # end result cluster sizes 
+  MinAccum<float> @@min_attr_value;                       # low end of attribute range
+  FLOAT array_distance, attr_range;                       # distance between vectors/centroid and vertex, range of values for given attribute
+
+  # for populating starting array
+  FLOAT range_div;
+  FLOAT current = 0;
+  file f (file_path);
+
+  Start = {v_type};
+  getRange = SELECT t 
+             FROM Start:s-(e_type:e)-:t
+             POST-ACCUM 
+                 FOREACH item IN t.embeddings DO 
+                     @@min_attr_value += item,
+                     @@max_attr_value += item
+                 END;
+  
+  attr_range = @@max_attr_value - @@min_attr_value;
+
+  # for populating starting array
+  current = @@min_attr_value;
+  rangeDiv = abs(attr_range / (k-1.0));
+
+  @@max_change = 99999;
+
+  @@centroids_array.reallocate(k,100);
+  @@new_centroids_array.reallocate(k,100);
+
+  allProds = SELECT t 
+             FROM Start:s-(e_type:e)-:t;
+
+  # init array values based on distribution of data points
+  IF random == false THEN
+      FOREACH i IN range[0,k-1] DO
+          FOREACH j IN range[0,99] DO
+              @@centroids_array[i][j] = current;
+          END;
+          current = current + range_div;
+      END;
+  END;
+
+  # init random array values
+  IF random == TRUE THEN
+      FOREACH i IN range[0,k-1] DO
+          FOREACH j IN range[0,99] DO
+              @@centroids_array[i][j] = rand_int(-2,5)-0.123*0.4;
+          END;
+      END;
+  END;
+
+  // while center points value change more than the threshold
+  WHILE @@max_change > max_change DO
+      @@max_change = 0;
+      array_distance = 0;
+      @@cluster_counts_map.clear();
+
+      // get closest centers for each product
+      allProds = SELECT s 
+                 FROM allProds:s
+                 ACCUM 
+                     FOREACH i IN range [0,k-1] DO
+                         double distance = 0,
+                         FOREACH j IN range [0,99] DO
+                             distance = distance + pow(@@centroids_array[i][j] - s.embeddings.get(j),2) 
+                         END,
+                         s.@distance_heap += distance_tuple(i,sqrt(distance))
+                     END
+               POST-ACCUM 
+                     s.@sum_closest_center = s.@distance_heap.top().center,
+                     @@cluster_counts_map += (s.@distance_heap.top().center -> 1),
+                     s.@distance_heap.clear();
+
+      // recalculate centers
+      recalculate = SELECT t 
+                    FROM Start:s-(e_type:e)-:t
+                    POST-ACCUM 
+                        FOREACH j IN range [0,99] DO
+                            @@new_centroids_array[t.@sum_closest_center][j] += t.embeddings.get(j)
+                        END;
+
+      FOREACH i IN RANGE [0,k-1] DO
+          FOREACH j IN RANGE [0,99] DO
+              array_distance = array_distance + pow(@@new_centroids_array[i][j] - @@centroids_array[i][j],2);
+          END;
+      END;
+
+      @@group_by_k_variation += (k -> sqrt(array_distance),
+      sqrt(array_distance),sqrt(array_distance));
+      @@max_change += sqrt(array_istance);
+      @@centroids_array = @@new_centroids_array;
+
+  END; // end while
+
+  FOREACH (key,value) IN @@cluster_counts_map DO
+      @@avg_cluster_count += value;
+  END;
+
+  # output
+  IF print_accum OR file_path != "" THEN
+      allProds = SELECT s 
+                 FROM allProds:s
+                 ACCUM @@cluster_sizes_map += (s.@sum_closest_center -> 1);
+
+      IF file_path != "" THEN
+          f.println(@@centroids_array, @@group_by_k_variation, @@cluster_sizes_map);
+      END;
+
+      IF print_accum THEN
+          PRINT @@group_by_k_variation as clusterInfo;
+          PRINT @@centroids_array as centroids;
+          PRINT @@cluster_sizes_map as groupsSizes;
+      END;
+  END; # end output if condition
+
+  # return
+  FOREACH item IN @@group_by_k_variation DO
+      @@res_list += item.max_dist;
+      @@res_list += item.avg_dist;
+      @@res_list += @@avg_cluster_count;
+  END;
+
+  RETURN @@res_list;
+}

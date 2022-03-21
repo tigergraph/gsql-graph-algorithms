@@ -1,0 +1,15 @@
+---
+# @           : this file
+# {x}         : the directory of file x
+# &x          : any file which matches pattern x
+# **         : any depth of arbitrary directories
+# *           : wildcard character
+# [x|y...|z]  : file/directory x, y, or z
+
+  algorithm:
+    name: Breadth-First Search
+    filename: "tg_bfs.gsql"
+    sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    description: Breadth-first Search (BFS) is an algorithm used to explore the vertices of a graph layer by layer. It starts at the given vertex and explores all vertices at the present depth prior to moving on to the vertices at the next depth level.
+    version: lib3.0
+    include: true

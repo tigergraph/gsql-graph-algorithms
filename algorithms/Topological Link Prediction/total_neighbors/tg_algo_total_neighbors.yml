@@ -1,0 +1,15 @@
+---
+# @           : this file
+# {x}         : the directory of file x
+# &x          : any file which matches pattern x
+# **         : any depth of arbitrary directories
+# *           : wildcard character
+# [x|y...|z]  : file/directory x, y, or z
+
+  algorithm:
+    name: Total Neighbors
+    filename: "tg_total_neighbors.gsql"
+    sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    description: The algorithm calculates the total number of neighbors of two vertices.
+    version: lib3.0
+    include: true

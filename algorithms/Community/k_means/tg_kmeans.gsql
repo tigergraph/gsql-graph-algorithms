@@ -1,0 +1,33 @@
+CREATE QUERY tg_kmeans(int k = 2, int max_k = 5, float max_change = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING file_path="")  SYNTAX V1 {
+
+  /*
+    Runs k-means clustering algorithm for a range of K values
+
+    Parameters :
+      k      : starting value of K range
+      maxK   : ending value of K range
+      maxChange   : maximum centroid vector change condition
+      v_type : vertex type to start from
+      e_type : edge type to traverse
+      random : boolean to start from either random or non-random centroid positions
+      print_accum : print JSON output
+      file_path   : file to write CSV output to
+  */
+  MapAccum<int, ListAccum<float>> @@k_map;
+  file f (file_path);
+
+# for each k cluster value, call subquery to run calculation for the k number of clusters
+  FOREACH k_value IN RANGE [k,max_k] DO
+      @@k_map += (k_value -> tg_kmeans_sub(k_value, max_change, v_type, e_type, random, print_accum, file_path));
+  END;
+
+# print JSON
+  IF print_accum THEN
+      PRINT @@k_map;
+  END;
+
+# print to file
+  IF file_path != "" THEN
+      f.println(@@k_map);
+  END;
+}

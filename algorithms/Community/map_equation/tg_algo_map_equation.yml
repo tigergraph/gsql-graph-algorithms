@@ -1,0 +1,19 @@
+---
+# @           : this file
+# {x}         : the directory of file x
+# &x          : any file which matches pattern x
+# **         : any depth of arbitrary directories
+# *           : wildcard character
+# [x|y...|z]  : file/directory x, y, or z
+
+  algorithm:
+    name: Map Equation
+    filename: "tg_map_equation.gsql"
+    sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    description: The library is currently under construction! Descriptions will be added soon.
+    schema_constraints: This algorithm uses a weight attribute (FLOAT) to calculate the map equation, so the target edge type needs a FLOAT attribute representing weight or influence. This algorithm also uses a STRING attribute representing community id, so the vertex type needs a STRING attribute. Note, however, that it is trivial to change the expected datatypes.
+    version: lib3.0
+    dependencies:
+      ExprFunctions:
+        sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    include: false

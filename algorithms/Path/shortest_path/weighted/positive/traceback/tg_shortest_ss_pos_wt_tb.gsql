@@ -1,0 +1,157 @@
+CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
+ STRING wt_attr, STRING wt_type, FLOAT epsilon = 0.001,BOOL print_accum = TRUE, INT output_limit = -1, 
+ BOOL display_edges = FALSE, STRING result_attr = "", BOOL spit_to_file = FALSE, 
+ STRING file_path = "/home/tigergraph/tg_query_output.csv", UINT write_size = 10000)  SYNTAX V1 {
+
+/*
+ Single-source shortest path algorithm (traceback version), with positive weight edges. 
+ From the source vertex, finds the weighted shortest path (FLOAT value).
+
+ source: start vertex to  every other vertex.     print_accum: print JSON output
+ v_type: vertex types to traverse                 output_limit: max #vertices to output
+ e_type: edge types to traverse                   display_edges: output edges for visualization
+ wt_attr: attribute for edge weights              result_attr: INT attr to store results to
+ wt_type: weight data type (INT,FLOAT,DOUBLE)     spit_to_file: spit data to file 
+ epsilon: min delta weight                        file_path: file to write CSV output to
+ write_size: number of paths to write concurrently
+*/
+
+  TYPEDEF TUPLE<FLOAT cost, INT length, VERTEX pred> min_tup;
+  HeapAccum<min_tup>(1, cost ASC, length ASC) @min_path_heap;
+  MinAccum<FLOAT> @min_prev_min_path = -1;
+  ListAccum<VERTEX> @path_list;
+  OrAccum @or_is_candidate = FALSE;
+  SetAccum<VERTEX> @@next_tmp_set;
+  ListAccum<VERTEX> @path_receiver_list, @path_sender_list;
+  FILE f(file_path);
+  UINT print_count = 0;
+   
+  # Check wt_type parameter
+  IF wt_type NOT IN ("UINT", "INT", "FLOAT", "DOUBLE") THEN
+      PRINT "wt_type must be UINT, INT, FLOAT, or DOUBLE" AS errMsg;
+      RETURN;
+  END;
+  
+  IF write_size == 0 THEN
+      PRINT "write_size must be positive" AS errMsg;
+      RETURN;
+  END;
+   
+  ##### Initialize #####
+  start = {source};
+  start = SELECT s 
+          FROM start:s
+          POST-ACCUM s.@min_path_heap = min_tup(0, 1, s);
+  
+
+  ##### Walk one step at a time until there is no more path.
+  WHILE start.size() != 0 DO 
+      start = SELECT t
+	      FROM start:s -(e_type:e)- v_type:t
+	      ACCUM 
+                  t.@or_is_candidate = FALSE,
+                  CASE wt_type
+                      WHEN "UINT" THEN
+	                  t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(wt_attr, "UINT"), 
+                          s.@min_path_heap.top().length + 1, s)
+                      WHEN "INT" THEN
+			  t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(wt_attr, "INT"), 
+                          s.@min_path_heap.top().length + 1, s)
+                      WHEN "FLOAT" THEN
+                          t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(wt_attr, "FLOAT"), 
+                          s.@min_path_heap.top().length + 1, s)
+                      WHEN "DOUBLE" THEN
+                          t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(wt_attr, "DOUBLE"), 
+                          s.@min_path_heap.top().length + 1, s)
+                  END
+              POST-ACCUM
+              IF abs(t.@min_prev_min_path - t.@min_path_heap.top().cost) > epsilon THEN
+                  t.@or_is_candidate = TRUE,
+                  t.@min_prev_min_path = t.@min_path_heap.top().cost
+              END
+      HAVING t.@or_is_candidate;
+  END;
+  
+  ##### Output #####
+  IF spit_to_file THEN
+      f.println("Vertex_ID","Distance","Shortest_Path");
+  END;
+  
+  start_set = {source};
+  component = {v_type};
+  component = component MINUS start_set; 
+  component = SELECT s 
+              FROM component:s
+              WHERE s.@min_prev_min_path != -1
+              POST-ACCUM 
+	          IF result_attr != "" THEN 
+		      s.setAttr(result_attr, s.@min_path_heap.top().cost) 
+		  END;
+
+  //store and write paths by batches to reduce memory consumption
+  WHILE component.size() != 0 DO
+      tmp = SELECT s 
+            FROM component:s 
+            LIMIT write_size;
+
+      tmp1 = SELECT s
+             FROM tmp:s
+             ACCUM s.@path_sender_list += s,
+                   s.@path_list += s;
+
+      component = component MINUS tmp;
+
+      //calculate path for all vertices in tmp   
+      WHILE tmp1.size() != 0 DO
+          tmp1 = SELECT s
+                 FROM tmp1:s 
+                 ACCUM
+                     VERTEX pred = s.@min_path_heap.top().pred,
+                     @@next_tmp_set += pred,
+		     
+                     FOREACH vert in s.@path_sender_list DO 
+                         IF pred != source THEN 
+			     pred.@path_receiver_list += vert 
+			 END,
+                         vert.@path_list += pred
+                     END
+                 POST-ACCUM
+                     s.@path_sender_list.clear();
+
+          tmp1 = @@next_tmp_set;
+          @@next_tmp_set.clear();
+
+          tmp1 = SELECT s 
+                 FROM tmp1:s
+                 WHERE s != source
+                 POST-ACCUM
+                     s.@path_sender_list = s.@path_receiver_list,
+                     s.@path_receiver_list.clear();
+      END;
+   
+      IF spit_to_file THEN
+          tmp = SELECT s
+                FROM tmp:s
+                POST-ACCUM
+                    f.println(s, s.@min_path_heap.top().cost, s.@path_list);
+      END;
+      IF print_accum THEN
+          IF output_limit >= 0 THEN
+              IF print_count < output_limit THEN
+                  tmp = SELECT s 
+	                FROM tmp:s 
+		        LIMIT output_limit - print_count; 
+                  print_count = print_count + tmp.size();
+                  PRINT tmp[tmp.@min_path_heap.top().cost as cost, tmp.@path_list as p];
+              END;
+          ELSE
+              PRINT tmp[tmp.@min_path_heap.top().cost as cost, tmp.@path_list as p];
+          END;
+      END;
+
+      tmp = SELECT s 
+            FROM tmp:s
+            POST-ACCUM
+                s.@path_list.clear();
+  END;  
+}

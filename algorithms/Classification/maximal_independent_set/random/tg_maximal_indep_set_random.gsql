@@ -1,0 +1,66 @@
+CREATE QUERY tg_maximal_indep_set_random(
+  SET<STRING> v_type,
+  SET<STRING> e_type,
+  BOOL print_accum = TRUE,
+  STRING file_path = "")  SYNTAX V1 {
+
+  TYPEDEF TUPLE<VERTEX v, DOUBLE score> VertexScore;
+  HeapAccum <VertexScore> (1, score ASC) @MISHeap;
+  OrAccum<BOOL> @disincluded, @included;
+  MinAccum<DOUBLE> @r;
+
+  INT _mod, _mult;
+
+  FILE f (file_path);
+
+  _mod = 100000000;
+  _mult =  pow(2, 31)-1;
+
+  Start = {v_type};
+
+  Pool =
+    SELECT s FROM Start:s
+    ACCUM
+      s.@MISHeap += VertexScore(s, 1),
+      s.@r = ((getvid(s)+datetime_to_epoch(now()) * _mult + 1) % _mod) / (_mod*1.0);
+
+  WHILE Pool.size() > 0 DO
+    Pool =
+      SELECT s FROM Pool:s
+      WHERE s.@disincluded == FALSE AND s.@included == FALSE;
+    PriorityCalculation =
+      SELECT s FROM Pool:s -(e_type:e)- v_type:t
+      ACCUM
+        IF t.@disincluded == FALSE AND t.@included == FALSE THEN
+          s.@MISHeap += VertexScore(t, t.@r)
+        END
+      POST-ACCUM
+        IF s.@MISHeap.top().v == s OR s.@r < s.@MISHeap.top().score THEN
+          s.@included = TRUE
+        END;
+    Culling =
+      SELECT s FROM Pool:s -(e_type:e)- v_type:t
+      WHERE s.@included == TRUE
+      ACCUM
+        t.@disincluded += TRUE;
+    Pool =
+      SELECT s FROM Pool:s
+      POST-ACCUM
+        s.@MISHeap.clear();
+    Pool =
+      SELECT s FROM Pool:s
+      POST-ACCUM
+        s.@MISHeap += VertexScore(s, s.@r);
+    PRINT Pool.size();
+  END;
+
+ 	Results = SELECT s FROM Start:s
+    WHERE s.@included == TRUE
+ 		POST-ACCUM
+ 			IF file_path != "" THEN f.println(s) END;
+
+ 	IF print_accum THEN
+ 		PRINT Results;
+ 	END;
+  PRINT Results.size();
+}

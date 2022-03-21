@@ -1,0 +1,15 @@
+---
+# @           : this file
+# {x}         : the directory of file x
+# &x          : any file which matches pattern x
+# **         : any depth of arbitrary directories
+# *           : wildcard character
+# [x|y...|z]  : file/directory x, y, or z
+
+  algorithm:
+    name: Strongly Connected Components (Small World)
+    filename: "tg_scc_small_world.gsql"
+    sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+    description: A strongly connected component (SCC) is a subgraph such that there is a path from any vertex to every other vertex. In addition to the regular strongly connected component algorithm, we also provide a version that is optimized for small-world graphs. A small world graph in this context means the graph has a hub community, where a vast majority of the vertices of the graph are weakly connected.
+    version: lib3.0
+    include: false
