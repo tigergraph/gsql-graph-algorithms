@@ -1,5 +1,6 @@
 CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING weight,INT top_k,
-  BOOL print_accum = True, STRING file_path = "") {  
+  BOOL print_accum = True, STRING file_path = "")  SYNTAX V1 {
+
   /* get the vertex which has maximum influence. 
   Parameters:
   v_type: vertex types to traverse                 
@@ -56,7 +57,7 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
                    s.@influence_value=0;
       IF skip THEN 
           skip=FALSE;
-          one = SELECT v 
+          current = SELECT v 
                 FROM all:s-(e_type:e)-v_type:v 
                 WHERE s==k
                 ACCUM v.@or_influenced+=TRUE,s.@or_in_seed+=TRUE;

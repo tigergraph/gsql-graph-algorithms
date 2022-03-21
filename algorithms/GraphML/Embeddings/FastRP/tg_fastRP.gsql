@@ -1,7 +1,8 @@
 CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
  					   STRING weights, FLOAT beta, INT k, INT reduced_dim,
 					   INT sampling_constant, INT random_seed,
-					   BOOL print_accum=FALSE, STRING result_attr="", STRING file_path="") {
+					   BOOL print_accum=FALSE, STRING result_attr="", STRING file_path="")  SYNTAX V1 {
+
 	/*
     This query produces an embedding for each vertex.
     Assumes that tg_fastRP_preprocessing has been run first.

@@ -1,4 +1,6 @@
-CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "", BOOL print_all_k = FALSE, BOOL show_shells=FALSE){ 
+CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_accum = TRUE, 
+  STRING result_attr = "", STRING file_path = "", BOOL print_all_k = FALSE, BOOL show_shells=FALSE)  SYNTAX V1 { 
+  
 /* An implementation of Algorithm 2 in
  * Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
  * Tripathy et al., IEEE Big Data 2018.
@@ -11,7 +13,7 @@ CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -
   INT k;             			    
   k = k_min;				      
 	
-  active = {v_type.*};
+  active = {v_type};
   active = SELECT v 
            FROM active:v // Initialize @deg 
 	   POST-ACCUM v.@sum_deg += v.outdegree(e_type);
@@ -26,7 +28,7 @@ CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -
       active = active MINUS deleted;
       IF deleted.size() > 0 THEN                // "Remove adjacent edges"         
           U = SELECT u 
-              FROM deleted:u -(e_type:e)-> :v
+              FROM deleted:u -(e_type:e)- :v
 	      ACCUM  v.@sum_deg += -1;  // Actually, reduce degree of vertices
       ELSE IF show_shells THEN 
           // Show vertices which did not satisfy kcore condition at a value of k 
@@ -50,7 +52,7 @@ CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -
   END;
   
   IF file_path != "" OR result_attr != "" THEN
-      Seed = {v_type.*};
+      Seed = {v_type};
       Seed = SELECT s 
              FROM Seed:s
              POST-ACCUM

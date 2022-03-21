@@ -1,24 +1,25 @@
 CREATE QUERY tg_pagerank_pers(SET<VERTEX> source, STRING e_type,
   FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,
-  BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") {
-/*
- Compute the pageRank score for each vertex in the GRAPH, given a set of source vertices
- In each iteration, compute a score for activated vertices if they are source vertices:
-   score = (1-damping) + damping*sum(received scores FROM its neighbors).
- If they are not source vertices, then score = damping*sum(received scores FROM its neighbors).
- The personalized pageRank algorithm stops when either of the following is true:
+  BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") SYNTAX V1 {
+
+  /*
+  Compute the pageRank score for each vertex in the GRAPH, given a set of source vertices
+  In each iteration, compute a score for activated vertices if they are source vertices:
+  score = (1-damping) + damping*sum(received scores FROM its neighbors).
+  If they are not source vertices, then score = damping*sum(received scores FROM its neighbors).
+  The personalized pageRank algorithm stops when either of the following is true:
   a) it reaches max_iter iterations;
   b) the max score change for any vertex compared to the last iteration <= maxChange.
 
-Parameters:
- v_type: vertex types to traverse          print_accum: print JSON output
- e_type: edge types to traverse            result_attr: INT attr to store results to
- max_iter; max #iterations                 file_path: file to write CSV output to
- top_k: #top scores to output              display_edges: output edges for visualization
- max_change: max allowed change between iterations to achieve convergence
- damping: importance of traversal vs. random teleport
+  Parameters:
+  v_type: vertex types to traverse          print_accum: print JSON output
+  e_type: edge types to traverse            result_attr: INT attr to store results to
+  max_iter; max #iterations                 file_path: file to write CSV output to
+  top_k: #top scores to output              display_edges: output edges for visualization
+  max_change: max allowed change between iterations to achieve convergence
+  damping: importance of traversal vs. random teleport
 
- This query supports only taking in a single edge for the time being (8/13/2020).
+  This query supports only taking in a single edge for the time being (8/13/2020).
 */
 
   TYPEDEF TUPLE<VERTEX vertex_id, FLOAT score> Vertex_Score;
@@ -44,7 +45,7 @@ Parameters:
       LIMIT max_iter DO
       @@max_diff = 0;
       V_tmp = SELECT t      # Only update score for activated vertices
-              FROM Start:s -(e_type:e)-> :t
+              FROM Start:s -(e_type:e)- :t
               ACCUM t.@sum_received_score += s.@sum_score/(s.outdegree(e_type));
       T = Start UNION V_tmp;
       Start = SELECT s
@@ -63,7 +64,7 @@ Parameters:
 
   Total = SELECT s
           From Total:s
-	  POST-ACCUM
+    POST-ACCUM
               IF result_attr != "" THEN
                   s.setAttr(result_attr, s.@sum_score)
               END,
@@ -72,7 +73,7 @@ Parameters:
                   f.println(s, s.@sum_score)
               END,
 
-	      IF print_accum THEN
+        IF print_accum THEN
                   @@top_cores_heap += Vertex_Score(s, s.@sum_score)
               END;
 

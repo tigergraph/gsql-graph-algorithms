@@ -1,5 +1,5 @@
 CREATE QUERY tg_slpa (SET<STRING> v_type, SET<STRING> e_type, FLOAT threshold, INT max_iter, INT output_limit,
-BOOL print_accum = TRUE, STRING file_path = ""){
+BOOL print_accum = TRUE, STRING file_path = "") SYNTAX V1 {
 
 /* The algorithm is an extension of the Label Propagation Algorithm for overlapping community detection.
 Link of the paper: http://arxiv.org/pdf/1109.5720

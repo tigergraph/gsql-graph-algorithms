@@ -1,4 +1,5 @@
-CREATE QUERY tg_common_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE) { 
+CREATE QUERY tg_common_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
+
     /*
     This query calculates the number of common neighbors between two vertices.
     Higher the number, the closer two vertices are.
@@ -15,18 +16,18 @@ CREATE QUERY tg_common_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL pr
     IF "ALL" NOT IN e_type THEN  # Specific edge types defined
         # Get neighbors of source vertices
         na = SELECT n 
-             FROM avs -(e_type)-> :n; 
+             FROM avs -(e_type)- :n; 
   
         nb = SELECT n 
-             FROM bvs -(e_type)-> :n; 
+             FROM bvs -(e_type)- :n; 
              
     ELSE  # Use any edge types
         # Get neighbors of source vertices
         na = SELECT n 
-             FROM avs -()-> :n; 
+             FROM avs -()- :n; 
              
         nb = SELECT n 
-             FROM bvs -()-> :n; 
+             FROM bvs -()- :n; 
     END;
     # Get neighbors in common
     u = na INTERSECT nb; 

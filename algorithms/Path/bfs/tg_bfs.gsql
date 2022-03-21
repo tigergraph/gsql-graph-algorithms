@@ -1,6 +1,6 @@
-
 CREATE QUERY tg_bfs(SET<STRING> v_type, SET<STRING> e_type,INT max_hops=10, VERTEX v_start,
-BOOL print_accum = True, STRING result_attr = "",STRING file_path = "", BOOL display_edges = TRUE){ 
+BOOL print_accum = True, STRING result_attr = "",STRING file_path = "", BOOL display_edges = TRUE) SYNTAX V1 { 
+
 /*Breadth-First Search Algorithm from a single source node
 Parameters:
 v_type: vertex types to traverse                 v_start : source vertex for traverse
@@ -28,7 +28,7 @@ file_path: file to write CSV output to           display_edges: output edges for
     WHILE Start.size() > 0 LIMIT max_hops DO
         @@sum_cur_step += 1;
         Start = SELECT t 
-                FROM Start:s-(e_type:e)-> :t
+                FROM Start:s-(e_type:e)- :t
                 WHERE t.@or_visited == FALSE
                 ACCUM 
                     IF display_edges THEN 

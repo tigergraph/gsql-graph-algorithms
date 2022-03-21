@@ -1,4 +1,4 @@
-CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE) { 
+CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
     /*
     This query calculates the Adamic Adar value between two vertices.
     Higher the number, the closer two vertices are. A 0 value indicates two vertices are not close.
@@ -19,10 +19,10 @@ CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_r
     # See if user specified edge types to traverse
     IF "ALL" NOT IN e_type THEN
         na = SELECT n 
-             FROM avs -(e_type)-> :n;  # Get vertex A's neighbors
+             FROM avs -(e_type)- :n;  # Get vertex A's neighbors
              
         nb = SELECT n 
-             FROM bvs -(e_type)-> :n;  # Get vertex B's neighbors
+             FROM bvs -(e_type)- :n;  # Get vertex B's neighbors
              
         u = na INTERSECT nb;  # Get neighbors in common
         tmp = SELECT p 
@@ -31,10 +31,10 @@ CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_r
               
     ELSE  # Traverse all edge types
         na = SELECT n 
-             FROM avs -()-> :n;  # Get vertex A's neighbors
+             FROM avs -()- :n;  # Get vertex A's neighbors
              
         nb = SELECT n 
-             FROM bvs -()-> :n;  # Get vertex B's neighbors
+             FROM bvs -()- :n;  # Get vertex B's neighbors
              
         u = na INTERSECT nb;  # Get neighbors in common
         tmp = SELECT p 
