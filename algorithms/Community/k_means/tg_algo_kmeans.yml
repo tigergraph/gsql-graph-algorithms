@@ -10,7 +10,8 @@
     name: K Means
     filename: "tg_kmeans.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: This algorithm takes a range for k and sorts vertices into k clusters based on their embeddings property.
+    schema_constraints: This algorithms requires the vertex type to have an attribute of type LIST<DOUBLE|INT|FLOAT> to use as the embeddings for the ver
     version: lib3.0
     include: false
     dependencies:

@@ -10,6 +10,6 @@
     name: K Nearest Neighbors (Single Source)
     filename: "tg_knn_cosine_ss.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: The k-Nearest Neighbors algorithm assumes that some or all the vertices in the graph have already been classified. The classification is stored as an attribute called the label. The goal is to predict the label of a given vertex based on the labels of its nearest vertices.
     version: lib3.0
     include: false

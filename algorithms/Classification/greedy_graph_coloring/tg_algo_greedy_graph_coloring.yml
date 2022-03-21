@@ -10,6 +10,6 @@
     name: Greedy Graph Coloring
     filename: "tg_greedy_graph_coloring.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: This algorithm assigns a unique integer value known as its color to the vertices of a graph such that no neighboring vertices share the same color. The reason why this is called color is that this task is equivalent to assigning a color to each nation on a map so that no neighboring nations share the same color.
+    description: This algorithm assigns a unique integer value known as its color to the vertices of a graph such that no neighboring vertices share the same color.
     version: lib3.0
     include: false

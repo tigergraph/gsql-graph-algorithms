@@ -10,7 +10,7 @@
     name: Fast Random Projection
     filename: "tg_fastRP.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: This algorithm generates node embeddings (vectors) of low dimensionality through random projections from the graph's adjacency matrix (a high-dimensional matrix) to a low-dimensional matrix, significantly reducing the computing power required to process the data.
     schema_constraints: This algorithm can optionally write the embedding results back to the graph if the target vertex type(s) have a list attribute of type DOUBLE.
     version: lib3.0
     include: false

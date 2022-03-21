@@ -10,7 +10,7 @@
     name: Closeness Centrality
     filename: "tg_closeness_cent.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: TigerGraph’s closeness centrality algorithm uses multi-source breadth-first search (MS-BFS) to traverse the graph and calculate the sum of a vertex’s distance to every other vertex in the graph, which vastly improves the performance of the algorithm.
+    description: "Calculates the exact closeness centrality of an algorithm. This algorithm might be time-consuming on large graphs when compared to the approximate version."
     schema_constraints: If you want to write the results of this algorithm (FLOAT) back to the vertices, you must have a FLOAT attribute on the target vertex type.
     version: lib3.0
     include: true
