@@ -1,2 +1,4 @@
 ---
-  description: Link Prediction is the task of predicting the likelihood of the existence of an edge between two vertices. This has many applications, including product recommendation, fraud detection, and many others. The algorithms in this category techincally use a combination of techniques found in other categories of algorithms (Similarity, Community), but they are all intended to produce scores representing likelihood of connection.
+  description: Link Prediction is the task of predicting the likelihood of the existence of an edge between two vertices.
+    This has many applications, including product recommendation, fraud detection, and many others. 
+    The algorithms in this category technically use a combination of techniques found in other categories of algorithms (Similarity, Community), but they are all intended to produce scores representing likelihood of connection.
