@@ -1,0 +1,17 @@
+# Automatically request reviews from other team members.
+# See .github/auto_request_review.yml for configurations.
+# See https://github.com/marketplace/actions/auto-request-review for more info.
+
+name: Auto Request Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+jobs:
+  auto-request-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: necojackarc/auto-request-review@v0.4.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

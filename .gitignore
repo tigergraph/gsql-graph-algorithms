@@ -1,0 +1,15 @@
+**/.DS_Store
+.vscode/settings.json
+
+
+UDF/geographical/*
+UDF/string/*
+UDF/numerical/*
+
+
+
+automdfiles.env
+algorithms/automdfiles.py
+algorithms/.env
+algorithms/lmao.py
+algorithms/automd.py
