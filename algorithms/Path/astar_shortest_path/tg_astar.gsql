@@ -14,7 +14,7 @@ wt_type: weight data type (INT,FLOAT,DOUBLE)
 display: output edges for visualization
 */
 
-TYPEDEF TUPLE<FLOAT dist, VERTEX v> path_Tuple;    # <shotest distance, parent node>
+TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
 HeapAccum<path_Tuple>(1, dist ASC) @@find_min_v_heap;  # retain 1 shortest path
 HeapAccum<path_Tuple>(1, dist ASC) @min_dist_heap;
 OrAccum @or_visited, @@or_valid_path_exists;
