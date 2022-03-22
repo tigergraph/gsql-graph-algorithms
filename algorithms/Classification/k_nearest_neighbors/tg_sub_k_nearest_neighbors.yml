@@ -1,2 +1,2 @@
 ---
-  description: The k-Nearest Neighbors algorithm predicts the label of a given vertex based on the labels of its nearest vertices. The label is an attribute of the vertices that stores the classification of a vertex.
+  description: "Predicts the label of a given vertex based on the labels of its nearest vertices. The label is an attribute of the vertices that stores the classification of a vertex. This algorithm assumes that the vertices have already been classified. "
