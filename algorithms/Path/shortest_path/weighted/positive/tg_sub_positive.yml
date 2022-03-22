@@ -1,2 +1,2 @@
 ---
-  description: These algorithms assume that all edges have a positive weight.
+  description: Finds the shortest paths for a graph where all edges have a positive weight.

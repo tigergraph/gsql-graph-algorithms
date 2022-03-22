@@ -10,6 +10,6 @@
     name: Cycle Detection (Full Result)
     filename: "tg_cycle_detection.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: This algorithm seeks to find all the cycles in a graph. Cycles are paths that start and end at the same vertex but otherwise never visit any vertex twice.
+    description: "Finds all paths that start and end at the same vertex without visiting any other vertex twice."
     version: lib3.0
     include: true

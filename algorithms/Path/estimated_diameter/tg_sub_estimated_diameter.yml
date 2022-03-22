@@ -1,2 +1,2 @@
 ---
-  description: These algorithms estimate the diameter of a graph. The diameter of a graph is the worst-case length of a shortest path between any pair of vertices in a graph.
+  description: "These algorithms estimate the worst-case length of a shortest path between any pair of vertices in a graph."

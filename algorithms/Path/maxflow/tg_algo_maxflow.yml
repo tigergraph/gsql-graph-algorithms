@@ -10,7 +10,7 @@
     name: Maxflow
     filename: "tg_maxflow.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The maximum flow algorithm finds the maximum possible flow from a source vertex to the target vertex given a graph that represents a flow network where every edge has a capacity
+    description: "Finds the maximum possible flow from a source vertex to a target vertex."
     schema_constraints: This algorithm requires an INT, FLOAT, or DOUBLE capacity attribute on the target edge types.
     version: lib3.0
     include: false
