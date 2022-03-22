@@ -1,2 +1,2 @@
 ---
-  description: Computes the Jaccard index for a set of values for any two given vertices.
+  description: Generic Jaccard similarity compares two vectors. In our algorithm, the elements of those vectors are the vertices that are neighbors of the two vertices.
