@@ -1,2 +1,2 @@
 ---
-  description: The library is currently under construction! Descriptions will be added soon.
+  description: Strongly connected component (SCC) algorithms find subgraphs in a graph such that there is a path from every vertex to every other vertex.

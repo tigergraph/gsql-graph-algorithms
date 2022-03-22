@@ -1,2 +1,2 @@
 ---
-  description: The library is currently under construction! Descriptions will be added soon.
+  description: "Influence Maximization algorithms find a specified number of vertices that maximize the expected spread of influence in a network. The CELF version improves upon the efficiency of the greedy version and should be preferred in analyzing large networks."

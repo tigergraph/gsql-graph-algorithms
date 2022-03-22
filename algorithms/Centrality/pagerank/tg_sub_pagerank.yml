@@ -1,2 +1,2 @@
 ---
-  description: The library is currently under construction! Descriptions will be added soon.
+  description: "Measures the influence of each vertex on every other vertex. Originally used by Google to rank search results, the PageRank theory holds that an imaginary surfer who is randomly clicking on links will eventually stop clicking. There are two categories of the algorithm depending on where the surfer is assumed to start browsing."
