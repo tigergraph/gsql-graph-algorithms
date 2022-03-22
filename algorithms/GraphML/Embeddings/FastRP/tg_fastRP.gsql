@@ -1,94 +1,131 @@
 CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
- 					   STRING weights, FLOAT beta, INT k, INT reduced_dim,
-					   INT sampling_constant, INT random_seed,
-					   BOOL print_accum=FALSE, STRING result_attr="", STRING file_path="")  SYNTAX V1 {
-
-	/*
+              STRING weights, FLOAT beta, INT k, INT reduced_dim,
+             INT sampling_constant, INT random_seed,
+             BOOL print_accum=FALSE, STRING result_attr="") {
+  /*
     This query produces an embedding for each vertex.
     Assumes that tg_fastRP_preprocessing has been run first.
 
     NOTE: This query needs to be modified based upon your schema to set the embedding
-	attribute accordingly if you wish to store the embeddings in your graph. Each vertex should have
-	an attribute with type LIST<DOUBLE>. If you do not wish to store the embeddings in graph, the applicable lines.
+  attribute accordingly if you wish to store the embeddings in your graph. Each vertex should have
+  an attribute with type LIST<DOUBLE>. If you do not wish to store the embeddings in graph, the applicable lines.
+  
+    NOTE: FastRP was originally created to work on undirected graphs. It can work on directed graphs, although
+    we recommend to have reverse edges in your schema so the embeddings can be passed in both directions. If
+    using a directed graph, there is a modification to allow it to run with sink vertices, but this may
+    affect the embeddings.
 
     Parameters :
-        v_type: Set of strings representing the vertex types to embed.
-		e_type: Set of strings representing the edge types to use when producing embeddings
-		k: "depth" of embedding. k=2 means that the resulting embedding would take vertices within 2-hops into account
-		sampling_constant: controls the sparsity of the resulting embedding
-		reduced_dimension: dimension of the embedding
-		beta: hyperparameter that is typically between -1 and 0
-		weights: comma seperated string of weights for each hop in the graph, (eg "1,2,4") when k=3
-		index_attr: attribute where the fastrp_preprocessing query results are stored
-		print_accum: print resulting embeddings to Json
-		store_attr: option to write embeddings to a vertex attribute (NOTE: SCHEMA MUST SUPPORT THIS)
-		file_path: path to write embeddings to file
+    v_type: Set of strings representing the vertex types to embed.
+    e_type: Set of strings representing the edge types to use when producing embeddings
+    k: "depth" of embedding. k=2 means that the resulting embedding would take vertices within 2-hops into account
+    sampling_constant: controls the sparsity of the resulting embedding
+    reduced_dimension: dimension of the embedding
+    beta: hyperparameter that is typically between -1 and 0
+    weights: comma seperated string of weights for each hop in the graph, (eg "1,2,4") when k=3
+    index_attr: attribute where the fastrp_preprocessing query results are stored
+    print_accum: print resulting embeddings to Json
+    store_attr: option to write embeddings to a vertex attribute (NOTE: SCHEMA MUST SUPPORT THIS)
+    file_path: path to write embeddings to file
     */
-    ArrayAccum<SumAccum<FLOAT>> @embedding_arr[200];
-	ArrayAccum<AvgAccum> @final_embedding_arr[200];
-	ListAccum<FLOAT> @final_embedding_list;
-	SumAccum<FLOAT> @L, @@m;
-	ListAccum<FLOAT> @@weights;
-	FILE f (file_path);
-	INT depth = 0;
+  ArrayAccum<SumAccum<FLOAT>> @embedding_arr[128];
+  ArrayAccum<SumAccum<FLOAT>> @final_embedding_arr[128];
+  ListAccum<FLOAT> @final_embedding_list;
+  SumAccum<FLOAT> @L, @@m;
+  ListAccum<FLOAT> @@weights;
+  INT depth = 0;
 
-	@@weights = tg_extract_list(weights);
+  INT _mod, _mult, _inc;
+  _mod = pow(2, 31)-1; 
+  _mult = 1664525;
+  _inc = 1013904223;
+  
+  FLOAT p1, p2, p3;
+  float v1, v2, v3; 
+  
+  v1 = sqrt(sampling_constant);
+  v2 = -v1;
+  v3 = 0.0;
+  
+  p1 = 0.5 / sampling_constant;
+  p2 = p1; 
+  p3 = 1 - 1.0 / sampling_constant;
 
-	verts = {v_type};
+  @@weights = tg_extract_list(weights);
 
-	verts =
-		SELECT s FROM verts:s -(:e)- :t
-		ACCUM @@m += 1
-		POST-ACCUM s.@L = pow(s.outdegree() / @@m, beta);
+  verts = {v_type};
 
-	verts =
-		SELECT s FROM verts:s -(e_type)- :t
-		ACCUM
-			FOREACH i IN RANGE[0, reduced_dim-1] DO
-			FLOAT tmp = tg_fastrp_rand_func(getvid(s), i, random_seed, sampling_constant),
-			t.@embedding_arr[i] += tmp * s.@L
-			END;
+  verts =
+    SELECT s FROM verts:s -(:e)- :t
+    ACCUM @@m += 1
+    POST-ACCUM s.@L = pow(s.outdegree() / @@m, beta);
 
-	WHILE depth < k DO
-		// avg neighboring intermediate embeddings and normalize
-		verts =
-		SELECT s FROM verts:s -(e_type)- :t
-		ACCUM
-			t.@embedding_arr += s.@embedding_arr
-		POST-ACCUM
-			FLOAT square_sum = 0,
-			FOREACH total IN t.@embedding_arr DO
-			square_sum = square_sum + pow(total / t.outdegree(), 2)
-			END,
-			square_sum = sqrt(square_sum),
-			FOREACH i IN RANGE[0, reduced_dim-1] DO
-			IF square_sum == 0.0 THEN
-				BREAK
-			END,
-			t.@final_embedding_arr[i] = t.@embedding_arr[i] / t.outdegree() / square_sum * @@weights.get(depth),
-			t.@embedding_arr[i] = (t.@embedding_arr[i] / t.outdegree() / square_sum)
-			END;
-		depth = depth + 1;
-	END;
+  verts =
+    SELECT s FROM verts:s -(e_type)- :t
+    ACCUM
+      INT inc = (getvid(s)+_inc),
+      INT r = ((inc+_mult*random_seed) % _mod),
+      FLOAT mr = 0,
+      FOREACH i IN RANGE[0, reduced_dim-1] DO
+        r = ((r * _mult + inc) % _mod),
+        mr = r / (_mod * 1.0),
+        if (mr <= p1) THEN
+          t.@embedding_arr[i] = v1 * s.@L
+        ELSE IF (mr <= p1 + p2) THEN
+          t.@embedding_arr[i] = v2 * s.@L
+        ELSE
+          t.@embedding_arr[i] = v3 * s.@L
+        END
+      END;
 
-	verts =
-		SELECT s FROM verts:s
-		POST-ACCUM s.@embedding_arr.reallocate(0); // want to make sure this executes before updating the list accum
-	verts =
-		SELECT s FROM verts:s
-		POST-ACCUM
-		FOREACH i IN RANGE[0, reduced_dim-1] DO
-			s.@final_embedding_list += s.@final_embedding_arr[i]
-		END;
+  WHILE depth < k DO
+    // avg neighboring intermediate embeddings and normalize
+    verts =
+    SELECT s FROM verts:s -(e_type)- :t
+    ACCUM
+      t.@embedding_arr += s.@embedding_arr
+    POST-ACCUM
+      FLOAT square_sum = 0,
+      INT out = t.outdegree(),
+      FOREACH total IN t.@embedding_arr DO
+        IF out != 0 THEN
+          square_sum = square_sum + pow(total / t.outdegree(), 2)
+        ELSE
+          square_sum = square_sum + pow(total, 2)
+        END
+      END,
+      square_sum = sqrt(square_sum),
+      FOREACH i IN RANGE[0, reduced_dim-1] DO
+      IF square_sum == 0.0 THEN
+        BREAK
+      END,
+      IF out != 0 THEN
+        t.@final_embedding_arr[i] += t.@embedding_arr[i] / t.outdegree() / square_sum * @@weights.get(depth),
+        t.@embedding_arr[i] = (t.@embedding_arr[i] / t.outdegree() / square_sum)
+      ELSE
+        t.@final_embedding_arr[i] += t.@embedding_arr[i] / square_sum * @@weights.get(depth),
+        t.@embedding_arr[i] = (t.@embedding_arr[i] / square_sum)
+      END
+      END;
+    depth = depth + 1;
+  END;
 
-	IF print_accum THEN
-		res = SELECT a FROM verts:a;
-		PRINT res[res.@final_embedding_arr];
-	END;
-	IF file_path != "" THEN
-		res = SELECT a FROM verts:a POST-ACCUM f.println(a, a.@final_embedding_arr);
-	END;
-	IF result_attr != "" THEN
-		storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.fastrp_embedding = s.@final_embedding_list;
+  verts =
+    SELECT s FROM verts:s
+    POST-ACCUM s.@embedding_arr.reallocate(0); // want to make sure this executes before updating the list accum
+  verts =
+    SELECT s FROM verts:s
+    POST-ACCUM
+    FOREACH i IN RANGE[0, reduced_dim-1] DO
+      s.@final_embedding_list += s.@final_embedding_arr[i] / @@weights.size() // Average by # of iterations
+    END,
+    s.@final_embedding_arr.reallocate(0);
+
+  IF print_accum THEN
+    res = SELECT a FROM verts:a;
+    PRINT res[res.@final_embedding_arr];
+  END;
+  IF result_attr != "" THEN
+    storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.embedding = s.@final_embedding_list;
   END;
 }
