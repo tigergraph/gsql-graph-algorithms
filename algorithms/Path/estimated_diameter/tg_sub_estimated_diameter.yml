@@ -1,2 +1,2 @@
 ---
-  description: "These algorithms estimate the worst-case length of a shortest path between any pair of vertices in a graph."
+  description: "Estimate the worst-case length of a shortest path between any pair of vertices in a graph."

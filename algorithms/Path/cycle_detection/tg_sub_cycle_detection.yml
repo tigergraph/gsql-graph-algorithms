@@ -1,2 +1,2 @@
 ---
-  description: Calculates cycles, or paths that start and end at the same vertex without visiting any other vertices twice.
+  description: "Calculates cycles, or paths that start and end at the same vertex without visiting any other vertices twice."
