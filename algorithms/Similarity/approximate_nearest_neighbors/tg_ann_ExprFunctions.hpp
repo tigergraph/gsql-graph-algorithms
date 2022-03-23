@@ -1,3 +1,6 @@
+#ifndef EXPRFUNCTIONS_HPP_
+#define EXPRFUNCTIONS_HPP_
+
 #include <string>
 #include <gle/engine/cpplib/headers.hpp>
 #include <math.h>
