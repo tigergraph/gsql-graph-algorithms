@@ -10,7 +10,7 @@
     name: K-Core
     filename: "tg_kcore.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description:  A k-core of a graph is a maximal connected subgraph in which every vertex is connected to at least k vertices in the subgraph. This algorithm takes a range of values for k and returns the set of the vertices that constitute the k-core with the highest possible value of k within the range.
+    description:  "Takes a range of values for k and returns the set of the vertices that constitute the k-core with the highest possible value of k within the range. A k-core of a graph is a maximal connected subgraph in which every vertex is connected to at least k vertices in the subgraph. "
     schema_constraints: This algorithm can optionally write the 'core level' (INT) to each vertex respectively, if the vertex has an INT attribute.
     version: lib3.0
     include: true

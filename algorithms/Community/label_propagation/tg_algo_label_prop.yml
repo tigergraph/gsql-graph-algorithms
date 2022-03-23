@@ -10,7 +10,7 @@
     name: Label Propagation
     filename: "tg_label_prop.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: Label Propagation is a heuristic method for determining communities. It determines communities by randomly propogating the label of a vertex to its neighbors.
+    description: "Determines communities by randomly propagating the label of a vertex to its neighbors."
     schema_constraints: This algorithm can optionally write the ID (INT) of the community that each vertex belongs to, if the vertex has an INT attribute.
     version: lib3.0
     include: true

@@ -10,6 +10,6 @@
     name: Triangle Count
     filename: "tg_tri_count.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: "This algorithm uses the classic edge-iterator method to count triangles."
+    description: "This algorithm uses the classic edge-iterator method to count triangles. It is slower than the fast version, but uses less memory."
     version: lib3.0
     include: false
