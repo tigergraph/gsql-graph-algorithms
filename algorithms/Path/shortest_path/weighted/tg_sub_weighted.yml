@@ -1,2 +1,2 @@
 ---
-  description: Weighted shortest path algorithms find the shortest paths between vertices when the edges are weighted.
+  description: "Finds the shortest paths between a vertex and all other vertices in a graph with weighted edges."

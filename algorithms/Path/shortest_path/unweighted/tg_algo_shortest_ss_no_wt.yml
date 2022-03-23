@@ -10,7 +10,7 @@
     name: Single Source Shortest Path (Unweighted)
     filename: "tg_shortest_ss_no_wt.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: This algorithm assumes that edges in the graph are unweighted and finds the shortest paths between a vertex and all other vertices.
+    description: "Finds the shortest paths between a vertex and all other vertices in a graph with unweighted edges."
     schema_constraints: This algorithm can optionally write the result (INT) to an attribute of the respective type on each visited vertex.
     version: lib3.0
     include: true

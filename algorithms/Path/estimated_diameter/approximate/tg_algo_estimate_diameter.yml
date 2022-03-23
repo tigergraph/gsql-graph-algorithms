@@ -10,6 +10,6 @@
     name: Estimated Diameter
     filename: "tg_estimate_diameter.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: This algorithm uses a simple heuristic to estimate the diameter of a graph.
+    description: "Estimates the diameter of a graph."
     version: lib3.0
     include: false
