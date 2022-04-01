@@ -3,11 +3,11 @@
 
 #### [Same Community Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/same_community/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Same Community Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
+## [TigerGraph Same Community Documentation](https://docs.tigergraph.com/graph-ml/current/link-prediction/same-community)
 
 ## Available Same Community Algorithms 
 
-* [`tg_same_community`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/same_community/tg_same_community.gsql)
+* [`tg_same_community`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological%20Link%20Prediction/same_community/tg_same_community.gsql)
 
 ## Installation 
 
