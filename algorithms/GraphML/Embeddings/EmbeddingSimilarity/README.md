@@ -3,13 +3,13 @@
 
 #### [Embeddingsimilarity Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/GraphML/Embeddings/EmbeddingSimilarity/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Embeddingsimilarity Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
+## [TigerGraph Embeddingsimilarity Documentation](https://docs.tigergraph.com/graph-ml/current/node-embeddings/)
 
 ## Available Embeddingsimilarity Algorithms 
 
-* [`tg_embedding_pairwise_cosine_sim`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/GraphML/Embeddings/EmbeddingSimilarity/tg_embedding_pairwise_cosine_sim.gsql)
+* [`tg_embedding_pairwise_cosine_sim`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/GraphML/Embeddings/EmbeddingSimilarity/pairwise/tg_embedding_pairwise_cosine_sim.gsql)
 
-* [`tg_embedding_cosine_similarity`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/GraphML/Embeddings/EmbeddingSimilarity/tg_embedding_cosine_similarity.gsql)
+* [`tg_embedding_cosine_similarity`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/GraphML/Embeddings/EmbeddingSimilarity/single_source/tg_embedding_cosine_sim.gsql)
 
 ## Installation 
 
