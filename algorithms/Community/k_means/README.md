@@ -3,7 +3,7 @@
 
 #### [K Means Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Community/k_means/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph K Means Documentation](https://docs.tigergraph.com/graph-ml/current/classification-algorithms/)
+## [TigerGraph K Means Documentation](https://docs.tigergraph.com/graph-ml/current/community-algorithms/)
 
 ## Available K Means Algorithms 
 
