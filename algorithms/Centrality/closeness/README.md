@@ -3,13 +3,13 @@
 
 #### [Closeness Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Closeness Documentation](https://docs.tigergraph.com/graph-algorithm-library/centrality/closeness-centrality)
+## [TigerGraph Closeness Documentation](https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/closeness-centrality)
 
 ## Available Closeness Algorithms 
 
-* [`tg_closeness_cent_approx`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/tg_closeness_cent_approx.gsql)
+* [`tg_closeness_cent_approx`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/approximate/tg_closeness_cent_approx.gsql)
 
-* [`tg_closeness_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/tg_closeness_cent.gsql)
+* [`tg_closeness_cent`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/closeness/exact/tg_closeness_cent.gsql)
 
 ## Installation 
 

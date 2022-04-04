@@ -1,4 +1,7 @@
 # FastRP
+
+## [TigerGraph FastRP Documentation](https://docs.tigergraph.com/graph-ml/current/node-embeddings/fast-random-projection)
+
 ## Instructions
 
 ### Preliminary Notes

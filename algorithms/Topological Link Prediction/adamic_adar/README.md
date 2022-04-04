@@ -3,11 +3,11 @@
 
 #### [Adamic Adar Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/adamic_adar/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Adamic Adar Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
+## [TigerGraph Adamic Adar Documentation](https://docs.tigergraph.com/graph-ml/current/link-prediction/adamic-adar)
 
 ## Available Adamic Adar Algorithms 
 
-* [`tg_adamic_adar`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological_Link_Prediction/adamic_adar/tg_adamic_adar.gsql)
+* [`tg_adamic_adar`](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Topological%20Link%20Prediction/adamic_adar/tg_adamic_adar.gsql)
 
 ## Installation 
 

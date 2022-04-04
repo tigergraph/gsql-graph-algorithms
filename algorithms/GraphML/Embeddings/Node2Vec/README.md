@@ -1,4 +1,7 @@
 # Node2Vec
+
+## [TigerGraph Node2Vec Documentation](https://docs.tigergraph.com/graph-ml/current/node-embeddings/node2vec)
+
 ## Instructions
 
 ### Preliminary Notes

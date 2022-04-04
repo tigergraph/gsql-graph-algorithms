@@ -3,7 +3,7 @@
 
 #### [Greedy Graph Coloring Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Classification/greedy_graph_coloring/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Greedy Graph Coloring Documentation](https://docs.tigergraph.com/graph-algorithm-library/classificationgreedy-graph-coloring)
+## [TigerGraph Greedy Graph Coloring Documentation](https://docs.tigergraph.com/graph-ml/current/classification-algorithms/greedy-graph-coloring)
 
 ## Available Greedy Graph Coloring Algorithms 
 
