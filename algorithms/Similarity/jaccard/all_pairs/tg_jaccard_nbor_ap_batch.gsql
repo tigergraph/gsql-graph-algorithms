@@ -20,7 +20,7 @@ STRING similarity_edge, INT src_batch_num = 50, INT nbor_batch_num = 10, BOOL pr
   */
 
   TYPEDEF TUPLE<VERTEX ver, FLOAT val> Res_Tup; // storing results in the Heap
-  MapAccum<VERTEX, INT> @@set_size_map, @intersection_size_map; // set sizes of all vertices
+  MapAccum<VERTEX, FLOAT> @@set_size_map, @intersection_size_map; // set sizes of all vertices
   SetAccum<STRING> @@all_e_types_set;
   SumAccum<FLOAT> @sum_outdegree;
   HeapAccum<Res_Tup>(top_k, val DESC) @sim_heap; // stores topK similarity results
