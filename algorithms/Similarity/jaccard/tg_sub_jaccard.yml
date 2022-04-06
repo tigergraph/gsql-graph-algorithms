@@ -1,2 +1,2 @@
 ---
-  description: The library is currently under construction! Descriptions will be added soon.
+  description: "Generic Jaccard similarity compares two vectors. In our algorithm, the elements of those vectors are the vertices that are neighbors of the two vertices."

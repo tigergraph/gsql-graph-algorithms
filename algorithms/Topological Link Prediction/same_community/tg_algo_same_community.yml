@@ -10,7 +10,7 @@
     name: Same Community
     filename: "tg_same_community.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: This algorithm takes two vertices, and returns 1 if they two vertices are in the same community, and returns 0 if they are not in the same community.
+    description: "Takes two vertices as input. Returns 1 if they are in the same community and 0 if they are not in the same community."
     schema_constraints: This algorithm requires an attribute of type UINT, INT, or STRING on the target vertex types, which represents each vertex's respective community ID.
     version: lib3.0
     include: true

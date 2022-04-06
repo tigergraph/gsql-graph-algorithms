@@ -10,6 +10,7 @@
     name: K Nearest Neighbors (Single Source)
     filename: "tg_knn_cosine_ss.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
+    description: "This algorithm calculates the distance between a single source vertex and all other vertices and selects the k vertices that are nearest. "
+    schema_constraints: "This algorithm requires a FLOAT attribute on the target edge types representing weight, and a STRING attribute representing the label."
     version: lib3.0
     include: false

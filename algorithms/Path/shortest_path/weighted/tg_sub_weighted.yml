@@ -1,2 +1,2 @@
 ---
-  description: The library is currently under construction! Descriptions will be added soon.
+  description: "Finds the shortest paths between a vertex and all other vertices in a graph with weighted edges."

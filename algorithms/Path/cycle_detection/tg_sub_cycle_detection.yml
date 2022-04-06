@@ -1,2 +1,2 @@
 ---
-  description: The library is currently under construction! Descriptions will be added soon.
+  description: "Calculates cycles (paths that start and end at the same vertex without visiting any other vertices twice)."

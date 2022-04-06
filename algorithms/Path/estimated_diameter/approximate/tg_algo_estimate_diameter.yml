@@ -10,6 +10,6 @@
     name: Estimated Diameter
     filename: "tg_estimate_diameter.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The diameter of a graph is the worst-case length of a shortest path between any pair of vertices in a graph. It is the farthest distance to travel, to get from one vertex to another, if you always take the shortest path. Finding the diameter requires calculating (the lengths of) all shortest paths, which can be quite slow. This algorithm uses a simple heuristic to estimate the diameter.
+    description: "Estimates the worst-case length of a shortest path between any pair of vertices in a graph."
     version: lib3.0
     include: false

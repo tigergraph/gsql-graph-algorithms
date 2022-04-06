@@ -6,9 +6,9 @@
 # *           : wildcard character
 # [x|y...|z]  : file/directory x, y, or z
 
-  algorithm:
-    name: Cycle Detection (Full Result, Batch)
-    filename: "tg_cycle_detection_batch.gsql"
-    sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The library is currently under construction! Descriptions will be added soon.
-    version: lib3.0
+algorithm:
+  name: Cycle Detection (Full Result, Batch)
+  filename: "tg_cycle_detection_batch.gsql"
+  sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
+  description: The library is currently under construction! Descriptions will be added soon.
+  version: lib3.0

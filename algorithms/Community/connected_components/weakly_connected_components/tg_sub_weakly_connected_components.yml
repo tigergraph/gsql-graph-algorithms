@@ -1,2 +1,2 @@
 ---
-  description: The library is currently under construction! Descriptions will be added soon.
+  description: This algorithm finds all weakly connected components in a graph and assigns a community ID to every vertex such that vertices in the same component share a community ID.

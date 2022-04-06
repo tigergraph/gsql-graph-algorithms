@@ -10,7 +10,8 @@
     name: K Nearest Neighbors (Cross Validation)
     filename: "tg_knn_cosine_cv.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: k-Nearest Neighbors (kNN) is often used for machine learning. You can choose the value for topK based on your experience, or using cross-validation to optimize the hyperparameters. In our library, Leave-one-out cross-validation for selecting optimal k is provided. Given a k value, we run the algorithm repeatedly using every vertex with a known label as the source vertex and predict its label. We assess the accuracy of the predictions for each value of k, and then repeat for different values of k in the given range. The goal is to find the value of k with highest predicting accuracy in the given range, for that dataset.
+    description: "This algorithm runs the single source version repeatedly using every vertex with a known label as the source vertex and predicts its label. It assesses the accuracy of the predictions for each value of k, and then repeats for different values of k in the given range.  The goal is to find the value of k with highest predicting accuracy in the given range, for that dataset."
+    schema_constraints: "This algorithm requires a FLOAT attribute on the target edge types representing weight, and a STRING attribute representing the label."
     version: lib3.0
     include: false
     dependencies:
