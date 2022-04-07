@@ -3,7 +3,7 @@
 
 #### [Eigenvector Changelog](https://github.com/tigergraph/gsql-graph-algorithms/blob/master/algorithms/Centrality/eigenvector/CHANGELOG.md) | [Discord](https://discord.gg/vFbmPyvJJN) | [Community](https://community.tigergraph.com) | [TigerGraph Starter Kits](https://github.com/zrougamed/TigerGraph-Starter-Kits-Parser)
 
-## [TigerGraph Eigenvector Documentation](https://docs.tigergraph.com/graph-algorithm-library/)
+## [TigerGraph Eigenvector Documentation](https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/eigenvector-centrality)
 
 ## Available Eigenvector Algorithms 
 
