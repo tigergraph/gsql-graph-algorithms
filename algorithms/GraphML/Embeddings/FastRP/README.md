@@ -37,5 +37,5 @@ $ PUT ExprFunctions from "/home/tigergraph/tigergraph/app/<TGversion>/dev/gdk/gs
 
 ### Running Queries
 The following instructions can be done with GraphStudio or GSQL terminal:
-1. Install the `tg_fastRP` query - **Note:** There are hard-coded parameters in the query, primarily in the ```@embedding_arr``` and ```@final_embedding_arr``` accumulators. Please change the size of these arrays to the desired dimension. Furthermore, the query assumes there is an ```LIST<FLOAT>``` attribute on every vertex with the name `fastrp_embedding`. If this is not the case, please change the query accordingly.
+1. Install the `tg_fastRP` query - **Note:** There are hard-coded parameters in the query, primarily in the ```@embedding_arr``` and ```@final_embedding_arr``` accumulators. Please change the size of these arrays to the desired dimension. Furthermore, the query assumes there is an ```LIST<DOUBLE>``` attribute on every vertex with the name `fastrp_embedding`. If this is not the case, please change the query accordingly.
 2. Run query `tg_fastRP`. Parameters following notation names defined in the original research paper : https://arxiv.org/pdf/1908.11512.pdf
