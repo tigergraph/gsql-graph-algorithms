@@ -13,4 +13,4 @@
     description: "Partitions vertices in a graph by approximately maximizing the graph’s modularity score. The modularity score for a partitioned graph assesses the difference in density of links within a partition vs. the density of links crossing from one partition to another."
     schema_constraints: This algorithm can optionally write the ID (INT) of the community that each vertex belongs to, if the vertex has an INT attribute. This algorithm also uses a FLOAT value on the target edges (representing weight or influence) to help calculate modularity.
     version: lib3.0
-    include: true
+    include: false

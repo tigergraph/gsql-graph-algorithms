@@ -12,3 +12,4 @@ algorithm:
   sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
   description: The library is currently under construction! Descriptions will be added soon.
   version: lib3.0
+  include: false
