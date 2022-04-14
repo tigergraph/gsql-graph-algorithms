@@ -49,7 +49,7 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
 
   # for populating starting array
   current = @@min_attr_value;
-  rangeDiv = abs(attr_range / (k-1.0));
+  range_div = abs(attr_range / (k-1.0));
 
   @@max_change = 99999;
 
