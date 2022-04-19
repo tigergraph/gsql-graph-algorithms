@@ -15,8 +15,8 @@ display: output edges for visualization
 */
 
 TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
-HeapAccum<path_Tuple>(1, dist ASC) @@find_min_v_heap;  # retain 1 shortest path
-HeapAccum<path_Tuple>(1, dist ASC) @min_dist_heap;
+HeapAccum<pathTuple>(1, dist ASC) @@find_min_v_heap;  # retain 1 shortest path
+HeapAccum<pathTuple>(1, dist ASC) @min_dist_heap;
 OrAccum @or_visited, @@or_valid_path_exists;
 ListAccum<VERTEX> @@tmp_list;  # the optimal node
 SumAccum<FLOAT> @@sum_total_dist;  # the shortest distance
@@ -44,7 +44,7 @@ Opt = {source_vertex};    # all of the optimal nodes
 Start = SELECT s
         FROM Start:s
         ACCUM s.@or_visited = True,
-              s.@min_dist_heap = path_Tuple(0,s);
+              s.@min_dist_heap = pathTuple(0,s);
 
 # run aster to find shortest distance greedily
 WHILE Opt.size() > 0 DO
