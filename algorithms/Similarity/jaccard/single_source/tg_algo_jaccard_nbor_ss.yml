@@ -10,7 +10,7 @@
     name: Neighborhood Jaccard Similarity (Single Source)
     filename: "tg_jaccard_nbor_ss.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The Jaccard index measures the relative overlap between two sets. To compare two vertices by Jaccard similarity, first select a set of values for each vertex. For example, a set of values for a Person could be the cities the Person has lived in. Then the Jaccard index is computed for the two vectors.
+    description: "Calculates the Jaccard index between a given source vertex and every other vertex with which it has at least one shared neighbor based on their connections to their shared neighbors."
     schema_constraints: This algorithm can optionally insert edges between the relevant vertex types, if such an edge type exists with a FLOAT attribute representing the similarity score.
     version: lib3.0
     include: false

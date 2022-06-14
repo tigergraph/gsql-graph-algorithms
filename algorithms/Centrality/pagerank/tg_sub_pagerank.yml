@@ -1,2 +1,3 @@
 ---
-  description: The library is currently under construction! Descriptions will be added soon.
+  description: "Measures the influence of each vertex on every other vertex. 
+  PageRank influence is defined recursively: a vertex’s influence is based on the influence of the vertices which refer to it."

@@ -10,6 +10,6 @@
     name: Common Neighbors
     filename: "tg_common_neighbors.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The common neighbors algorithm calculates the number of common neighbors between two vertices.
+    description: "Calculates the number of common neighbors between two vertices."
     version: lib3.0
     include: true

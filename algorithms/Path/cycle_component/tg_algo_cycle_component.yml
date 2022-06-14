@@ -1,0 +1,15 @@
+---
+# @           : this file
+# {x}         : the directory of file x
+# &x          : any file which matches pattern x
+# **         : any depth of arbitrary directories
+# *           : wildcard character
+# [x|y...|z]  : file/directory x, y, or z
+
+  algorithm:
+    name: cycle component
+    filename: "tg_cycle_component.gsql"
+    sha_id: 4569e4faa05d46caa2c333636fe37a2fb85da4dc
+    description: "need to add"
+    version: lib3.0
+    include: false

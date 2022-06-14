@@ -10,7 +10,7 @@
     name: A Star
     filename: "tg_astar.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: A* (pronounced A-star) is a graph traversal and path search algorithm, which achieves better performance by using heuristics to guide its search.
+    description: "Calculates the shortest distance and path from a source to a target vertex."
     schema_constraints: This algorithm requires latitude (FLOAT) and longitude (FLOAT) attributes on the target vertex types and a weight (FLOAT) attribute on the target edge types.
     version: lib3.0
     include: false

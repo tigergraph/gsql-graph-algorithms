@@ -10,6 +10,6 @@
     name: Cycle Detection (Count)
     filename: "tg_cycle_detection_count.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The Cycle Detection problem seeks to find all the cycles (loops) in a graph. We apply the usual restriction that the cycles must be "simple cycles", that is, they are paths that start and end at the same vertex but otherwise never visit any vertex twice. This algorithm counts number of cycles.
+    description: "Counts the number of paths that start and end at the same vertex without visiting any other vertex twice."
     version: lib3.0
     include: true

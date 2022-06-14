@@ -1,0 +1,41 @@
+CREATE QUERY tg_weisfeiler_lehman(string v_type,string e_type,INT DEPTH, INT out_put_limit, BOOL print_accum = TRUE, 
+  STRING result_attr = "",STRING file_path = "")SYNTAX v1 { 
+   
+  MaxAccum<STRING> @previous_label;
+  MaxAccum<STRING> @current_label;
+  ListAccum<STRING> @label_list;
+  FILE f (file_path);
+  
+  start = {v_type};
+  start = SELECT s 
+          FROM start:s 
+          POST-ACCUM s.@current_label="1",s.@previous_label="1";
+  WHILE TRUE LIMIT DEPTH DO
+        start = SELECT s 
+                FROM start:s-(e_type)-v_type:t 
+                ACCUM s.@label_list+=t.@current_label
+                POST-ACCUM s.@label_list += s.@current_label,
+                           s.@current_label = tg_hash_label(s.@label_list),
+                           s.@label_list.clear();
+  END;
+  #Output
+  IF file_path != "" THEN
+      f.println("Vertex_ID", "label");
+  END;
+
+  Start = SELECT s 
+          FROM start:s
+          POST-ACCUM
+              IF result_attr != "" THEN 
+                  s.setAttr(result_attr, s.@current_label) 
+              END,
+    
+              IF file_path != "" THEN 
+                  f.println(s, s.@current_label) 
+              END
+          LIMIT out_put_limit;
+        
+   IF print_accum THEN
+       PRINT Start;
+   END;
+}

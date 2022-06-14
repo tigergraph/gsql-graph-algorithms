@@ -1,2 +1,2 @@
 ---
-  description: Classification algorithms for graphs generally involve the categorization of vertices into nominal groups (that is to say that there is no inherent order or intervallic differences between the classifications). A widely used example is graph coloring, which attempts to assign 'colors' to vertices such that no two vertices with the same color are adjacent.
+  description: "Classification algorithms generally involve the categorization of vertices into nominal groups (with no inherent order or intervallic differences between the classifications)."

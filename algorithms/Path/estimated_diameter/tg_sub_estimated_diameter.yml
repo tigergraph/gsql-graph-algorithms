@@ -1,2 +1,2 @@
 ---
-  description: The library is currently under construction! Descriptions will be added soon.
+  description: "Estimates the worst-case length of a shortest path between any pair of vertices in a graph."

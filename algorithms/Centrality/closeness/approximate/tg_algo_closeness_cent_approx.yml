@@ -10,6 +10,6 @@
     name: Approximate Closeness Centrality
     filename: "tg_closeness_cent_approx.gsql"
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
-    description: The Approximate Closeness Centrality algorithm (based on Cohen et al. 2014) calculates the approximate closeness centrality score for each vertex by combining two estimation approaches - sampling and pivoting. This hybrid estimation approach offers near-linear time processing and linear space overhead within a small relative error. It runs on graphs with unweighted edges (directed or undirected).
+    description: "Calculates the approximate closeness centrality score for each vertex. This algorithm offers near-linear time processing and linear space overhead within a small relative error."
     version: lib3.0
     include: true
