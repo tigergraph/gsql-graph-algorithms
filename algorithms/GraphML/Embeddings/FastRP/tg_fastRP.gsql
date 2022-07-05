@@ -1,7 +1,7 @@
 CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
               STRING weights, FLOAT beta, INT k, INT reduced_dim,
              INT sampling_constant, INT random_seed,
-             BOOL print_accum=FALSE, STRING result_attr="") {
+             BOOL print_accum=FALSE, STRING result_attr="") SYNTAX v1{
   /*
     This query produces an embedding for each vertex.
     Assumes that tg_fastRP_preprocessing has been run first.
@@ -123,9 +123,9 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
 
   IF print_accum THEN
     res = SELECT a FROM verts:a;
-    PRINT res[res.@final_embedding_arr];
+    PRINT res[res.@final_embedding_list];
   END;
   IF result_attr != "" THEN
-    storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.embedding = s.@final_embedding_list;
+    storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.fastrp_embedding = s.@final_embedding_list;
   END;
 }
