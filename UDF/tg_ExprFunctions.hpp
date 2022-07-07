@@ -53,7 +53,7 @@
  *  contains user-defined expression function's signature and body.
  *  Please put user defined structs, helper functions etc. in tg_ExprUtil.hpp
  */
-#include "tg_ExprUtil.hpp"
+#include "ExprUtil.hpp"
 
 namespace UDIMPL {
   typedef std::string string; //XXX DON'T REMOVE
