@@ -2,6 +2,17 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
   STRING result_attr = "cid", STRING file_path = "", BOOL print_info = FALSE)  SYNTAX V1 {
 
   /*
+  Sample Inputs:
+  - v_type: Person
+  - e_type: Coworker, Friend
+  - w_attr: weight
+  - max_iter: 10
+  - result_attr: cid
+  - file_path:
+  - print_info: TRUE
+  */
+
+  /*
   louvain community detection algorithm
   add keyword DISTRIBUTED for cluster environment
 
@@ -21,15 +32,15 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
   */
 
   TYPEDEF TUPLE <FLOAT deltaQ, FLOAT weight, VERTEX cc> move;
-  SumAccum<FLOAT> @sum_ac; #sum of the degrees of all the vertices in community C of the vertex
-  ListAccum<VERTEX> @cc_list; #the community center
-  SumAccum<FLOAT> @sum_weight; # total weight incident to this vertex
-  SumAccum<FLOAT> @sum_cc_weight; # total weight incident to the cc vertex
-  MapAccum<VERTEX,SumAccum<FLOAT>> @A_map; #A[c]: sum of the edge weights for the edges in community c
-  MaxAccum<move> @max_best_move; # highest dQ, highest -Outdegree, highest cc
-  ListAccum<VERTEX> @cm_list;  #community member list
-  SumAccum<FLOAT> @@sum_m; # total edge weight
-  SumAccum<INT> @sum_outdegree;   # helper variable for outdegree calculation
+  SumAccum<FLOAT> @sum_ac; // sum of the degrees of all the vertices in community C of the vertex
+  ListAccum<VERTEX> @cc_list; // the community center
+  SumAccum<FLOAT> @sum_weight; // total weight incident to this vertex
+  SumAccum<FLOAT> @sum_cc_weight; // total weight incident to the cc vertex
+  MapAccum<VERTEX,SumAccum<FLOAT>> @A_map; // A[c]: sum of the edge weights for the edges in community c
+  MaxAccum<move> @max_best_move; // highest dQ, highest -Outdegree, highest cc
+  ListAccum<VERTEX> @cm_list;  // community member list
+  SumAccum<FLOAT> @@sum_m; // total edge weight
+  SumAccum<INT> @sum_outdegree;   // helper variable for outdegree calculation
   SumAccum<INT> @@sum_cc_change;
   MapAccum<INT, SumAccum<INT>> @@community_map;
   MapAccum<INT, SumAccum<INT>> @@community_size_count;
