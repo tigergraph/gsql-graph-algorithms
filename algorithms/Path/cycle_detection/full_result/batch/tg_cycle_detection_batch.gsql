@@ -18,7 +18,7 @@ Stop passing the sequence (v1,v2,v3, ...) when:
   FOREACH batch_number in RANGE[0,batch_num-1] DO
         Active = SELECT s
                  FROM all:s
-                 WHERE s.id%batch_num==batch_number
+                 WHERE %batch_num==batch_number
                  ACCUM s.@curr_list = [s];
         WHILE Active.size() > 0 LIMIT depth DO
             Active = SELECT t
