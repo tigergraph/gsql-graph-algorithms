@@ -1,0 +1,2 @@
+---
+  description: "Calculates the closeness centrality of vertices in a graph. TigerGraph offers different algorithms that calculate approximate or exact closeness centrality."

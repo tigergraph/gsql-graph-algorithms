@@ -393,7 +393,27 @@ namespace UDIMPL {
   */
 
   /* ============== END MAXIMAL INDEPENDENT SET ===== */
+  /* ============== START WEISFEILER LEHMAN ===== */
+  inline string tg_hash_label(ListAccum<string> label_list){
+    std::string string1;
+    std::list<std::string> string_list;
+    std::list<std::string>::iterator vi;
+    for(int i=0;i<label_list.size();++i){
+        string_list.push_back(label_list.get(i));
+    }
+    string_list.sort();
 
+    for( vi=string_list.begin();vi!=string_list.end();vi++)
+    {
+        string1 += *vi;
+    }
+    std::hash<std::string> h;
+    size_t n = h(string1);
+    std::string res = std::to_string(n);
+    return res;
+}
+
+  /* =========== END WEISFEILER LEHMAN ============= */
   /* ============== START APPROXIMATE NEAREST NEIGHBORS ===== */
 
   template < typename T >

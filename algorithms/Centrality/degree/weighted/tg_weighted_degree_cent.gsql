@@ -1,0 +1,57 @@
+CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING re_type, string weight, BOOL in_degree = TRUE, BOOL out_degree = TRUE, INT top_k=100, BOOL print_accum = TRUE, STRING result_attr = "",STRING file_path = "") SYNTAX V1 {
+
+  /* Compute weighted degree Centrality for each VERTEX.
+  Currently, this weighted degree centrality can only calculate one edge type and weight type.
+  The default weight data type is INT, if your data type is not int: 
+  PLEASE CHANGE "INT" in LINE 20,27,32 TO YOUR DATA TYPE
+  
+  Parameters:
+  v_type: vertex types to traverse
+  e_type: edge types to traverse
+  re_type: for indegree use
+  in_degree: if you want to count incoming relationships, set it to TRUE
+  out_degree: if you want to count outcoming relationships, set it to TRUE
+  top_k: report only this many top scores          print_accum: weather print the result
+  result_attr: attribute to write result to        file_path: file to write CSV output to
+  for undirected graph, you only need to set e_type and indegree
+   */
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
+  HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
+  SumAccum<INT> @sum_degree_score;
+  FILE f (file_path);
+
+  all = {v_type};
+  IF in_degree THEN 
+      sll = SELECT s 
+            FROM all:s-(re_type:e)-:t
+            ACCUM s.@sum_degree_score+=e.getAttr(weight,"INT");
+  END;
+  IF out_degree THEN 
+      sll = SELECT s 
+            FROM all:s-(e_type:e)-:t
+            ACCUM s.@sum_degree_score+=e.getAttr(weight,"INT");
+  END;
+  #Output
+  IF file_path != "" THEN
+      f.println("Vertex_ID", "Degree");
+  END;
+
+  Start = SELECT s 
+          FROM all:s
+          POST-ACCUM
+          IF result_attr != "" THEN 
+             s.setAttr(result_attr, s.@sum_degree_score) 
+          END,
+    
+          IF print_accum THEN 
+             @@top_scores_heap += Vertex_Score(s, s.@sum_degree_score) 
+          END,
+    
+          IF file_path != "" THEN 
+             f.println(s, s.@sum_degree_score) 
+          END;
+        
+   IF print_accum THEN
+       PRINT @@top_scores_heap AS top_scores;
+   END;
+}

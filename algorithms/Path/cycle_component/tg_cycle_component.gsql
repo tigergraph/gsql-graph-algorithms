@@ -1,0 +1,57 @@
+CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "") SYNTAX v1{ 
+  /* 
+  This algorithm is for undirected graph
+  Find all vertex which are in a cycle
+  
+  Parameters:
+  v_type: vertex types to traverse
+  e_type: edge types to traverse
+  print_accum: weather print the result
+  result_attr: attribute to write result to        file_path: file to write CSV output to
+   */
+  OrAccum @or_nocycle; #if the vertex is not on a cycle
+  SumAccum<INT> @sum_outdegree=0; #outdegree of vertex
+  FILE f (file_path);
+  All = {v_type};
+  #set outdegree
+  Start = SELECT s 
+          FROM All:s-(e_type)-v_type:t 
+          WHERE s!=t
+          ACCUM s.@sum_outdegree+=1
+          HAVING s.@sum_outdegree==1;
+  #avoid single node
+  single = SELECT s 
+          FROM All:s
+          WHERE s.@sum_outdegree==0
+          ACCUM s.@or_nocycle+=TRUE;
+  
+  WHILE Start.size()>0 DO
+        Start = SELECT t 
+                FROM Start:s-(e_type)-v_type:t 
+                WHERE  s!=t and t.@or_nocycle==FALSE
+                ACCUM s.@or_nocycle+=TRUE,t.@sum_outdegree+=-1
+                HAVING t.@sum_outdegree==1;
+  END;
+  # Output
+  IF file_path != "" THEN
+      f.println("Vertex_ID_In_cycle");
+  END;
+  Start = {v_type};
+  V = SELECT s 
+      FROM Start:s
+      WHERE s.@or_nocycle==FALSE
+      POST-ACCUM 
+          IF result_attr != "" THEN 
+              s.setAttr(result_attr, TRUE) 
+          END,
+   
+          IF file_path != "" THEN 
+              f.println(s) 
+          END;
+   
+  IF print_accum THEN
+      PRINT V;
+  END;
+  
+  PRINT "tg_cycle_component works!"; 
+}

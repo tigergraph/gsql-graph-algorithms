@@ -1,0 +1,105 @@
+CREATE QUERY tg_all_path_bidirection(VERTEX source_v, VERTEX target_v, SET<STRING> e_type, SET<STRING> re_type, INT depth = 3,
+  BOOL print_accum = TRUE, STRING file_path = "")SYNTAX v1 {
+  /*This algorithm is to find all path between two vertex
+  
+  Parameters:
+  source_v: source vertex                 
+  target_v: target vertex
+  e_type: edge types to traverse 
+  ve_type: reverse edge types to traverse, if the graph is undirected ve_type=e_type
+  depth: maxmium path length is 2*depth
+  print_accum: print JSON output    
+  file_path: file to write CSV output to
+  
+  */
+  ListAccum<ListAccum<VERTEX>> @path_source_list; //path from source
+  ListAccum<ListAccum<VERTEX>> @new_source_list; //update path
+  ListAccum<ListAccum<VERTEX>> @path_target_list; //path from target
+  ListAccum<ListAccum<VERTEX>> @new_target_list; //update path
+  ListAccum<ListAccum<VERTEX>> @edit_list; //this liet is a copy of target path, used to remove element
+  ListAccum<ListAccum<VERTEX>> @@total_path_list; // print all path as List
+  FILE f (file_path);
+  // 1. mark the target node as true
+  Targetset = {target_v};//will update in iteration
+  Targetset_set = {target_v};//this set is consist, only contains target vertex
+  Targetset = SELECT s
+           From Targetset:s
+           POST-ACCUM s.@path_target_list = [s],
+                      s.@edit_list=s.@path_target_list;//copy target path
+  
+  // 2. start from the initial node, save the node to the patt_list, and find all nodes connected through the given name
+  Source = {source_v}; //will update in iteration
+  Source_set = {source_v}; //this set is consist, only contains source vertex
+  Source = SELECT s 
+           FROM Source:s
+           ACCUM s.@path_source_list = [s];
+  //for bidirection search, we will add one hop from start vertex set in each iteration, and add one hop and two hops from target vertex set
+  WHILE true LIMIT depth DO 
+       Source = Select t 
+                 FROM Source:s -(e_type:e)- :t
+                 ACCUM FOREACH sequence IN s.@path_source_list DO 
+                              IF sequence.contains(t) == FALSE and sequence.contains(target_v)==FALSE THEN
+                                 t.@new_source_list += [sequence + [t]]  
+                              END
+                       END
+                 POST-ACCUM s.@path_source_list.clear();
+  
+       found = Source INTERSECT Targetset; 
+       #find the path which contains odd edges
+       found = SELECT s 
+               FROM found:s 
+               POST-ACCUM FOREACH sequence1 in s.@new_source_list DO
+                                  FOREACH sequence2 in s.@edit_list DO
+                                    sequence2.remove(0),
+                                    //avoid overlapping edge in undirected graph
+                                    //for example 1-2-3, and 3-2-4,1 is source and 4 is target
+                                    IF sequence2.size()>0 and sequence1.size()>1 and sequence2.get(0)==sequence1.get(sequence1.size()-2) THEN
+                                                  continue
+                                    END,
+                                    @@total_path_list+=sequence1+sequence2,
+                                    IF file_path != "" THEN 
+                                       f.println(sequence1+sequence2) 
+                                    END
+                                  END
+                          END;
+       
+       Targetset = SELECT t FROM Targetset:s-(re_type:e)-:t
+                ACCUM FOREACH sequence IN s.@path_target_list DO 
+                           IF sequence.contains(t) == FALSE THEN
+                              t.@new_target_list += [[t]+sequence]  
+                           END
+                      END
+                POST-ACCUM s.@path_target_list.clear()
+                POST-ACCUM t.@edit_list=t.@new_target_list;
+     #find the path which contains even edges
+      found2 = Source INTERSECT Targetset;
+
+      found2 = SELECT s 
+               FROM found2:s 
+               POST-ACCUM FOREACH sequence1 in s.@new_source_list DO
+                                  FOREACH sequence2 in s.@edit_list DO
+                                         sequence2.remove(0),
+                                         @@total_path_list+=sequence1+sequence2,
+                                         IF file_path != "" THEN 
+                                            f.println(sequence1+sequence2) 
+                                         END
+                                  END
+                          END;
+      Source = SELECT t 
+                FROM Source:t    
+                POST-ACCUM t.@path_source_list = t.@new_source_list,
+                           t.@new_source_list.clear()
+                HAVING t.@path_source_list.size() > 0;
+     Targetset = SELECT t 
+                FROM Targetset:t    
+                POST-ACCUM t.@path_target_list = t.@new_target_list,t.@edit_list=t.@path_target_list,
+                           t.@new_target_list.clear()
+                HAVING t.@path_target_list.size() > 0;
+     Source = Source MINUS Targetset_set;
+     Targetset = Targetset MINUS Source_set;
+  END;
+  // 3. return the final result
+  IF print_accum THEN
+      PRINT @@total_path_list as path;
+  END;  
+}
