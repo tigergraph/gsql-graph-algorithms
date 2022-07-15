@@ -1,5 +1,5 @@
 CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr = "weight", INT max_iter = 10, 
-  STRING result_attr = "cid", STRING file_path = "", BOOL print_info = FALSE)  SYNTAX V1 {
+  STRING result_attr = "", STRING file_path = "", BOOL print_info = FALSE)  SYNTAX V1 {
 
   /*
   Sample Inputs:
@@ -7,7 +7,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
   - e_type: Coworker, Friend
   - w_attr: weight
   - max_iter: 10
-  - result_attr: cid
+  - result_attr: 
   - file_path:
   - print_info: TRUE
   */
