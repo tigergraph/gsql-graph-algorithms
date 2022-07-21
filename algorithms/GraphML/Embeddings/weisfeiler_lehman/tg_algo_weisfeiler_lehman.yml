@@ -7,9 +7,9 @@
 # [x|y...|z]  : file/directory x, y, or z
 
   algorithm:
-    name: weisfeiler lehman
+    name: Weisfeiler-Lehman
     filename: "tg_weisfeiler_lehman.gsql"
     sha_id: 4569e4faa05d46caa2c333636fe37a2fb85da4dc
-    description: "need to add"
+    description: "This algorithm finds corresponding vertices in isomorphic subgraphs in a graph."
     version: lib3.0
     include: true

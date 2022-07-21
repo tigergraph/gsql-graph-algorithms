@@ -9,37 +9,29 @@ CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_accum = T
   print_accum: weather print the result
   result_attr: attribute to write result to        file_path: file to write CSV output to
    */
-  OrAccum @or_nocycle; #if the vertex is not on a cycle
-  SumAccum<INT> @sum_outdegree=0; #outdegree of vertex
+  OrAccum @or_nocycle;
+  SumAccum<INT> @sum_outdegree;
+  SumAccum<INT> @@sum_stop=1;
   FILE f (file_path);
-  All = {v_type};
-  #set outdegree
-  Start = SELECT s 
-          FROM All:s-(e_type)-v_type:t 
-          WHERE s!=t
-          ACCUM s.@sum_outdegree+=1
-          HAVING s.@sum_outdegree==1;
-  #avoid single node
-  single = SELECT s 
-          FROM All:s
-          WHERE s.@sum_outdegree==0
-          ACCUM s.@or_nocycle+=TRUE;
-  
-  WHILE Start.size()>0 DO
-        Start = SELECT t 
+  Start = {v_type};
+  WHILE @@sum_stop!=0 DO
+        @@sum_stop=0;
+        Start = SELECT s 
                 FROM Start:s-(e_type)-v_type:t 
-                WHERE  s!=t and t.@or_nocycle==FALSE
-                ACCUM s.@or_nocycle+=TRUE,t.@sum_outdegree+=-1
-                HAVING t.@sum_outdegree==1;
+                WHERE t.@or_nocycle==FALSE and s!=t
+                ACCUM s.@sum_outdegree+=1
+                POST-ACCUM IF s.@sum_outdegree==1 THEN @@sum_stop+=1,s.@or_nocycle+=TRUE END,
+                           s.@sum_outdegree=0
+                HAVING s.@or_nocycle==FALSE;
+        
   END;
   # Output
   IF file_path != "" THEN
       f.println("Vertex_ID_In_cycle");
   END;
-  Start = {v_type};
+
   V = SELECT s 
       FROM Start:s
-      WHERE s.@or_nocycle==FALSE
       POST-ACCUM 
           IF result_attr != "" THEN 
               s.setAttr(result_attr, TRUE) 
@@ -50,7 +42,7 @@ CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_accum = T
           END;
    
   IF print_accum THEN
-      PRINT V;
+      PRINT Start;
   END;
   
   PRINT "tg_cycle_component works!"; 
