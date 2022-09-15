@@ -1,4 +1,4 @@
-CREATE QUERY tg_preferential_attachment(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
+CREATE QUERY tg_preferential_attachment(VERTEX v_source, VERTEX v_target, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
 
     /*
     This query calculates the preferential attachment value between two vertices.

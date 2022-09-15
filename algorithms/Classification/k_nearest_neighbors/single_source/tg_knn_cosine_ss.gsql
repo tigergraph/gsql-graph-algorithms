@@ -1,5 +1,5 @@
-CREATE QUERY tg_knn_cosine_ss (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, 
-  STRING label, INT top_k, BOOL print_accum = TRUE, STRING file_path = "", STRING attr = "") RETURNS (STRING)  SYNTAX V1 {
+CREATE QUERY tg_knn_cosine_ss (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight, 
+  STRING label, INT top_k, BOOL print_results = TRUE, STRING file_path = "", STRING result_attribute = "") RETURNS (STRING)  SYNTAX V1 {
 
 /* This query is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
 Cosine similarity = A \dot B / ||A|| \dot ||B||
@@ -17,7 +17,7 @@ The output is the predicted label for the source vertex, which is the majority l
              ACCUM t.@sum_numerator = e.getAttr(weight, "FLOAT"),
                    @@sum_norm1 += pow(e.getAttr(weight, "FLOAT"), 2);
   neighbours = SELECT t
-               FROM subjects:s -(re_type:e)- :t
+               FROM subjects:s -(reverse_e_type:e)- :t
                WHERE t != source AND t.getAttr(label, "STRING") != ""    
                # only consider the neighbours with known label
                ACCUM t.@sum_numerator += s.@sum_numerator * e.getAttr(weight, "FLOAT");
@@ -46,7 +46,7 @@ The output is the predicted label for the source vertex, which is the majority l
               POST-ACCUM s.setAttr(attr, predicted_label);
   END;
         
-  IF print_accum THEN
+  IF print_results THEN
       PRINT predicted_label;
   END;
   

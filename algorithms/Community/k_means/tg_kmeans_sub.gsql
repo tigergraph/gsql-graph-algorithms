@@ -1,4 +1,4 @@
-CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_accum = TRUE, STRING file_path="") returns (ListAccum<Float>)  SYNTAX V1 {
+CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_results = TRUE, STRING file_path="") returns (ListAccum<Float>)  SYNTAX V1 {
 
   /*
     This query will run k-means clustering computation for a given K number of clusters.
@@ -14,7 +14,7 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
       v_type    : vertex type to start from
       e_type    : edge type to traverse
       random    : boolean to start from either random or non-random centroid positions 
-      print_accum : print JSON output
+      print_results : print JSON output
       file_path   : file to write CSV output to
   */
   TypeDef Tuple<int center, float value> distance_tuple; # tuple to store results in the Heap
@@ -126,7 +126,7 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
   END;
 
   # output
-  IF print_accum OR file_path != "" THEN
+  IF print_results OR file_path != "" THEN
       allProds = SELECT s 
                  FROM allProds:s
                  ACCUM @@cluster_sizes_map += (s.@sum_closest_center -> 1);
@@ -135,7 +135,7 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
           f.println(@@centroids_array, @@group_by_k_variation, @@cluster_sizes_map);
       END;
 
-      IF print_accum THEN
+      IF print_results THEN
           PRINT @@group_by_k_variation as clusterInfo;
           PRINT @@centroids_array as centroids;
           PRINT @@cluster_sizes_map as groupsSizes;

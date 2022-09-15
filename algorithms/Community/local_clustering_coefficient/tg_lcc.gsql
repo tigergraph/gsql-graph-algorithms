@@ -1,4 +1,4 @@
-CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_accum = True, STRING result_attr = "",
+CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_results = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE)  SYNTAX V1 { 
 
    /*
@@ -7,7 +7,7 @@ CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_accum
    lcc = Number_trangles/((n-1)n/2)
    Here n is the outdegreeof vertex.
   Parameters:
-  v_type: vertex types to traverse                 print_accum: print JSON output
+  v_type: vertex types to traverse                 print_results: print JSON output
   e_type: edge types to traverse                   result_attr: INT attr to store results to
   top_k: report only this many top scores          file_path: file to write CSV output to
   display_edges: output edges for visualization
@@ -55,7 +55,7 @@ CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_accum
 	      IF result_attr != "" THEN 
 	          s.setAttr(result_attr, s.@sum_lcc) 
               END,
-	      IF print_accum THEN 
+	      IF print_results THEN 
 	          @@top_scores_heap += Vertex_Score(s, s.@sum_lcc) 
               END,
 	      IF file_path != "" THEN 
@@ -66,7 +66,7 @@ CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_accum
       f.println("Vertex_ID", "lcc");
   END;
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@top_scores_heap AS top_scores;
       IF display_edges THEN
           PRINT Start[Start.@sum_lcc];

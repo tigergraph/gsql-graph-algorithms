@@ -1,7 +1,7 @@
 CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
-              STRING weights, FLOAT beta, INT k, INT reduced_dim,
+              STRING weights, FLOAT beta, INT k, INT embedding_dimension,
              INT sampling_constant, INT random_seed,
-             BOOL print_accum=FALSE, STRING result_attr="") {
+             BOOL print_results=FALSE, STRING result_attr="") {
   /*
     This query produces an embedding for each vertex.
     Assumes that tg_fastRP_preprocessing has been run first.
@@ -24,7 +24,7 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
     beta: hyperparameter that is typically between -1 and 0
     weights: comma seperated string of weights for each hop in the graph, (eg "1,2,4") when k=3
     index_attr: attribute where the fastrp_preprocessing query results are stored
-    print_accum: print resulting embeddings to Json
+    print_results: print resulting embeddings to Json
     store_attr: option to write embeddings to a vertex attribute (NOTE: SCHEMA MUST SUPPORT THIS)
     file_path: path to write embeddings to file
     */
@@ -66,7 +66,7 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
       INT inc = (getvid(s)+_inc),
       INT r = ((inc+_mult*random_seed) % _mod),
       FLOAT mr = 0,
-      FOREACH i IN RANGE[0, reduced_dim-1] DO
+      FOREACH i IN RANGE[0, embedding_dimension-1] DO
         r = ((r * _mult + inc) % _mod),
         mr = r / (_mod * 1.0),
         if (mr <= p1) THEN
@@ -95,7 +95,7 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
         END
       END,
       square_sum = sqrt(square_sum),
-      FOREACH i IN RANGE[0, reduced_dim-1] DO
+      FOREACH i IN RANGE[0, embedding_dimension-1] DO
       IF square_sum == 0.0 THEN
         BREAK
       END,
@@ -116,12 +116,12 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
   verts =
     SELECT s FROM verts:s
     POST-ACCUM
-    FOREACH i IN RANGE[0, reduced_dim-1] DO
+    FOREACH i IN RANGE[0, embedding_dimension-1] DO
       s.@final_embedding_list += s.@final_embedding_arr[i] / @@weights.size() // Average by # of iterations
     END,
     s.@final_embedding_arr.reallocate(0);
 
-  IF print_accum THEN
+  IF print_results THEN
     res = SELECT a FROM verts:a;
     PRINT res[res.@final_embedding_arr];
   END;

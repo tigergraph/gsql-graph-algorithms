@@ -1,13 +1,13 @@
-CREATE QUERY tg_jaccard_nbor_ss (VERTEX source, STRING e_type, STRING rev_e_type, 
- INT top_k = 100, BOOL print_accum = TRUE, STRING similarity_edge_type = "", STRING file_path = "")  SYNTAX V1 {
+CREATE QUERY tg_jaccard_nbor_ss (VERTEX source, STRING e_type, STRING reverse_e_type, 
+ INT top_k = 100, BOOL print_results = TRUE, STRING similarity_edge_type = "", STRING file_path = "")  SYNTAX V1 {
  
 /* 
 Calculates the Jaccard Similarity between a given vertex and every other vertex.
   Jaccard similarity = intersection_size / (size_A + size_B - intersection_size)
 Parameters:
  source: start vertex                           top_k: #top scores to report
- e_type: directed edge types to traverse        print_accum: print JSON output
- rev_e_type: reverse edge types to traverse     file_path: file to write CSV output to
+ e_type: directed edge types to traverse        print_results: print JSON output
+ reverse_e_type: reverse edge types to traverse     file_path: file to write CSV output to
  similarity_edge_type: edge type for storing vertex-vertex similarity scores
 
   This query current supports only a single edge type (not a set of types) - 8/13/20
@@ -26,7 +26,7 @@ Parameters:
 	     FROM Start:s-(e_type:e)-:t;
 
   Others = SELECT t
-	   FROM Subjects:s -(rev_e_type:e)- :t
+	   FROM Subjects:s -(reverse_e_type:e)- :t
 	   WHERE t != source
 	   ACCUM 
 	       t.@sum_intersection_size += 1,
@@ -50,7 +50,7 @@ Parameters:
 	           f.println(source, s, s.@sum_similarity) 
 	       END; 
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT Others[Others.@sum_similarity];
   END;
 }

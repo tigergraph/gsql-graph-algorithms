@@ -1,14 +1,14 @@
 CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, 
-  INT output_limit = -1, BOOL print_accum =TRUE, STRING result_attr ="", STRING file_path ="",
+  INT print_limit = -1, BOOL print_results =TRUE, STRING result_attr ="", STRING file_path ="",
   BOOL display_edges =FALSE)  SYNTAX V1 {
   
 /*
 Single-source shortest path algorithm, with unweighted edges.
 From the source vertex, finds the unweighted shortest path (number of hops, INT value)
- source: start vertex                         print_accum: print JSON output
+ source: start vertex                         print_results: print JSON output
  v_type: vertex types to traverse             result_attr: INT attr to store results to
  e_type: edge types to traverse               file_path: file to write CSV output to
- output_limit: max #vertices to output        display_edges: output edges for visualization
+ print_limit: max #vertices to output        display_edges: output edges for visualization
 */
 
   FILE f(file_path);
@@ -52,11 +52,11 @@ From the source vertex, finds the unweighted shortest path (number of hops, INT 
 		      f.println(s, s.@min_dis, s.@path_list)
 		  END;
   
-  IF print_accum THEN
-      IF output_limit >= 0 THEN
+  IF print_results THEN
+      IF print_limit >= 0 THEN
           ResultSet = SELECT s 
 	              FROM ResultSet:s 
-		      LIMIT output_limit;
+		      LIMIT print_limit;
       END;
       PRINT ResultSet[ResultSet.@min_dis, ResultSet.@path_list];
       IF display_edges THEN

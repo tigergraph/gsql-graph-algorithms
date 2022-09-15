@@ -1,15 +1,15 @@
-CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STRING wt_type,
-	BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
+CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight_attribute, STRING weight_type,
+	BOOL print_results = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
 
   /*
   * This query identifies minimum spanning trees using the algorithm in section 6.2 of Qin et al. 2014:
   * http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf.
  
   Parameters:
-  v_type: vertex types to traverse                print_accum: print JSON output
+  v_type: vertex types to traverse                print_results: print JSON output
   e_type: edge types to traverse                  result_attr: INT attr to store results to
-  wt_attr: attribute for edge weights             file_path: file to write CSV output to
-  wt_type: weight data type (INT,FLOAT,DOUBLE)
+  weight_attribute: attribute for edge weights             file_path: file to write CSV output to
+  weight_type: weight data type (INT,FLOAT,DOUBLE)
   */
   
   TYPEDEF TUPLE <FLOAT weight, VERTEX from_v, VERTEX to_v, EDGE e, INT vid> EDGE_WEIGHT;
@@ -23,9 +23,9 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STR
   OrAccum @or_ignore;
   FILE f (file_path);
         
-  # Check wt_type parameter
-  IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
-      PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+  # Check weight_type parameter
+  IF weight_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+      PRINT "weight_type must be INT, FLOAT, or DOUBLE" AS errMsg;
       RETURN;
   END;
   all_v = {v_type};
@@ -34,13 +34,13 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STR
   all_v = SELECT v 
           FROM all_v:v -(e_type:e)- :u
           ACCUM
-	      CASE wt_type
+	      CASE weight_type
 	          WHEN "INT" THEN
-		      v.@ew_heap += EDGE_WEIGHT(e.getAttr(wt_attr, "INT"), v,u,e, getvid(u))
+		      v.@ew_heap += EDGE_WEIGHT(e.getAttr(weight_attribute, "INT"), v,u,e, getvid(u))
 		  WHEN "FLOAT" THEN
-		      v.@ew_heap += EDGE_WEIGHT(e.getAttr(wt_attr, "FLOAT"), v,u,e, getvid(u))
+		      v.@ew_heap += EDGE_WEIGHT(e.getAttr(weight_attribute, "FLOAT"), v,u,e, getvid(u))
 		  WHEN "DOUBLE" THEN
-		      v.@ew_heap += EDGE_WEIGHT(e.getAttr(wt_attr, "DOUBLE"), v,u,e, getvid(u))
+		      v.@ew_heap += EDGE_WEIGHT(e.getAttr(weight_attribute, "DOUBLE"), v,u,e, getvid(u))
 		  END			
 	  POST-ACCUM
 	      @@parents_map += (v -> v.@ew_heap.top().to_v),
@@ -72,7 +72,7 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STR
 	              IF file_path != "" THEN 
 		          @@mst_set += v.@ew_heap.top() 
 		      END,
-	              IF print_accum OR result_attr != "" THEN 
+	              IF print_results OR result_attr != "" THEN 
 		          @@result_set += v.@ew_heap.top().e 
 		      END;
       ### UPDATE PARENT POINTERS ###
@@ -131,13 +131,13 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STR
 	           WHERE @@star_map.get(v) == true AND v.@min_parent != u.@min_parent
 	           ACCUM
 	               VERTEX parent = v.@min_parent,
-	               CASE wt_type
+	               CASE weight_type
 		           WHEN "INT" THEN
-		               parent.@ew_heap += EDGE_WEIGHT(e.getAttr(wt_attr, "INT"), v,u,e, getvid(u))
+		               parent.@ew_heap += EDGE_WEIGHT(e.getAttr(weight_attribute, "INT"), v,u,e, getvid(u))
 		           WHEN "FLOAT" THEN
-		    	       parent.@ew_heap += EDGE_WEIGHT(e.getAttr(wt_attr, "FLOAT"), v,u,e, getvid(u))
+		    	       parent.@ew_heap += EDGE_WEIGHT(e.getAttr(weight_attribute, "FLOAT"), v,u,e, getvid(u))
 		           WHEN "DOUBLE" THEN
-			       parent.@ew_heap += EDGE_WEIGHT(e.getAttr(wt_attr, "DOUBLE"), v,u,e, getvid(u))
+			       parent.@ew_heap += EDGE_WEIGHT(e.getAttr(weight_attribute, "DOUBLE"), v,u,e, getvid(u))
 		           END;
 		       
       updated_star_roots = SELECT v 
@@ -157,7 +157,7 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STR
 	          END;
   END;
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@result_set;
   END;
 

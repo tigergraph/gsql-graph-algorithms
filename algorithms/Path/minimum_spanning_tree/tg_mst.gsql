@@ -1,15 +1,15 @@
-CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr, STRING wt_type,
-  INT max_iter = -1, BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
+CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type, SET<STRING> e_type, STRING weight_attribute, STRING weight_type,
+  INT maximum_iteration = -1, BOOL print_results = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
 /* 
  Returns a set of edges which form a Minumum Spanning Tree for a connected component. The algorithm
  cans tart either with a user-provided seed vertex or a randomly chosen one.  If you want a set of
  tree which span all the graph's components, use the msf (minimum spanning forest) algorithm.
 Parameters:
- opt_source: start vertex (optional)              print_accum: print JSON output
+ opt_source: start vertex (optional)              print_results: print JSON output
  v_type: vertex types to traverse                result_attr: INT attr to store results to
  e_type: edge types to traverse                  file_path: file to write CSV output to
- wt_attr: attribute for edge weights             max_iter: max iterations/edges (-1 = ALL)
- wt_type: weight data type (INT,FLOAT,DOUBLE)    
+ weight_attribute: attribute for edge weights             maximum_iteration: max iterations/edges (-1 = ALL)
+ weight_type: weight data type (INT,FLOAT,DOUBLE)    
 */  
   TYPEDEF TUPLE<VERTEX from_v, VERTEX to_v, EDGE e, FLOAT weight, INT vid> EDGE_WEIGHT;
   HeapAccum<EDGE_WEIGHT>(1, weight ASC, vid ASC) @@chosen_edge_heap; // keep the minimal tuple
@@ -19,9 +19,9 @@ Parameters:
   INT iter_limit;
   FILE f (file_path);
   
-  # Check wt_type parameter
-  IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
-      PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+  # Check weight_type parameter
+  IF weight_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+      PRINT "weight_type must be INT, FLOAT, or DOUBLE" AS errMsg;
       RETURN;
   END;
 
@@ -42,21 +42,21 @@ Parameters:
     
   # Find the MST 
   iter_limit = All_v.size();      # set max #iterations
-  IF max_iter > 0 THEN
-      iter_limit = max_iter;
+  IF maximum_iteration > 0 THEN
+      iter_limit = maximum_iteration;
   END;
   WHILE (Current.size() > 0) LIMIT iter_limit DO
       Current = SELECT t
 	        FROM MSTNodes:s -(e_type:e)- v_type:t
 	        WHERE t.@or_chosen == false    // vertex not in MSTNodes
 	        ACCUM
-	            CASE wt_type
+	            CASE weight_type
 		        WHEN "INT" THEN
-		            @@chosen_edge_heap += EDGE_WEIGHT(s, t, e, e.getAttr(wt_attr,"INT"), getvid(t))
+		            @@chosen_edge_heap += EDGE_WEIGHT(s, t, e, e.getAttr(weight_attribute,"INT"), getvid(t))
 		        WHEN "FLOAT" THEN
-		            @@chosen_edge_heap += EDGE_WEIGHT(s, t, e, e.getAttr(wt_attr,"FLOAT"), getvid(t))
+		            @@chosen_edge_heap += EDGE_WEIGHT(s, t, e, e.getAttr(weight_attribute,"FLOAT"), getvid(t))
 		        WHEN "DOUBLE" THEN
-			    @@chosen_edge_heap += EDGE_WEIGHT(s, t, e, e.getAttr(wt_attr,"DOUBLE"), getvid(t))
+			    @@chosen_edge_heap += EDGE_WEIGHT(s, t, e, e.getAttr(weight_attribute,"DOUBLE"), getvid(t))
 		        END	
 	        POST-ACCUM
 	            IF t == @@chosen_edge_heap.top().to_v THEN    
@@ -74,7 +74,7 @@ Parameters:
 	  IF file_path != "" THEN
 	      @@mst_set += @@chosen_edge_heap.top();
 	  END;
-	  IF print_accum THEN
+	  IF print_results THEN
 	      @@result_set += @@chosen_edge_heap.top().e;
 	  END;
       END;    
@@ -83,7 +83,7 @@ Parameters:
   END;
 
   # Output
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@result_set as mst;
   END;
 

@@ -1,4 +1,4 @@
-CREATE QUERY tg_cycle_detection_count(SET<STRING> v_type, SET<STRING> e_type, INT depth, INT batches, BOOL print_accum = TRUE)  SYNTAX V1 {
+CREATE QUERY tg_cycle_detection_count(SET<STRING> v_type, SET<STRING> e_type, INT depth, INT batches, BOOL print_results = TRUE)  SYNTAX V1 {
 
 /* Rocha–Thatte cycle detection algorithm + fixes
 This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
@@ -67,7 +67,7 @@ selfy = SELECT vv
         WHERE vv==tt; 
 @@sum_cycles+=selfy.size();
 
-IF print_accum THEN
+IF print_results THEN
     PRINT @@sum_cycles AS cycles;
 END;  
 }

@@ -1,5 +1,5 @@
 CREATE QUERY tg_map_equation(
-  STRING v_type,STRING e_type,STRING community_attr,STRING weight_attr = "")  SYNTAX V1 {
+  STRING v_type,STRING e_type,STRING community_attribute,STRING weight_attr = "")  SYNTAX V1 {
 
   MinAccum<FLOAT> @@min_L;
   SumAccum<FLOAT>
@@ -30,7 +30,7 @@ CREATE QUERY tg_map_equation(
           FROM Start:s -(e_type:e)- v_type:t
           ACCUM
               @@sum_edge_count += 1,
-              IF s.getAttr(community_attr, "STRING") != t.getAttr(community_attr, "STRING") THEN
+              IF s.getAttr(community_attribute, "STRING") != t.getAttr(community_attribute, "STRING") THEN
                   IF weight_attr != "" THEN
                       s.@q += e.getAttr(weight_attr, "FLOAT")
                   ELSE
@@ -39,7 +39,7 @@ CREATE QUERY tg_map_equation(
               END
           POST-ACCUM
               FLOAT p = s.@sum_outdegree / @@sum_edge_count,
-              STRING c = s.getAttr(community_attr, "STRING"),
+              STRING c = s.getAttr(community_attribute, "STRING"),
               @@p_map += (c -> p),
               @@q_map += (c -> s.@q),
               @@sum_p_log += p * tg_log_2(p),
@@ -47,9 +47,9 @@ CREATE QUERY tg_map_equation(
 
   CommunityCenters = SELECT s
                      FROM Start:s
-                     WHERE @@community_center_map.get(s.getAttr(community_attr, "STRING")) == s
+                     WHERE @@community_center_map.get(s.getAttr(community_attribute, "STRING")) == s
                      ACCUM
-                         STRING c = s.getAttr(community_attr, "STRING"),
+                         STRING c = s.getAttr(community_attribute, "STRING"),
                          @@sum_q += @@q_map.get(c),
                          @@sum_q_log += @@q_map.get(c) * tg_log_2(@@q_map.get(c)),
                          @@sum_qp_log += (@@q_map.get(c) + @@p_map.get(c)) * tg_log_2(@@q_map.get(c) + @@p_map.get(c));

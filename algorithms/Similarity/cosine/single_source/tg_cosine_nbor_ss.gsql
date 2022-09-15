@@ -1,5 +1,5 @@
-CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> re_type, STRING weight, INT top_k, INT output_limit,
-  BOOL print_accum = TRUE, STRING file_path = "", STRING similarity_edge = "") RETURNS (MapAccum<VERTEX, FLOAT>)  SYNTAX V1 {
+CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight, INT top_k, INT print_limit,
+  BOOL print_results = TRUE, STRING file_path = "", STRING similarity_edge = "") RETURNS (MapAccum<VERTEX, FLOAT>)  SYNTAX V1 {
 
   /* This query calculates the Cosine Similarity between a given vertex and every other vertex.
   Cosine similarity = A \dot B / ||A|| \dot ||B||
@@ -17,7 +17,7 @@ CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> r
                    @@sum_norm1 += pow(e.getAttr(weight, "FLOAT"), 2);
 
   neighbours = SELECT t
-               FROM subjects:s -(re_type:e)-:t
+               FROM subjects:s -(reverse_e_type:e)-:t
                WHERE t != source
                ACCUM t.@sum_numerator += s.@sum_numerator * e.getAttr(weight, "FLOAT");
 
@@ -38,12 +38,12 @@ CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> r
                  IF file_path != "" THEN
                      f.println(source, s, s.@sum_similarity)
                  END,
-                 IF print_accum THEN
+                 IF print_results THEN
                      @@top_k_result_map += (s -> s.@sum_similarity)
                  END
-               LIMIT output_limit;
+               LIMIT print_limit;
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT neighbours[neighbours.@sum_similarity];
   END;
 

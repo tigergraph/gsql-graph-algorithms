@@ -1,4 +1,4 @@
-CREATE QUERY tg_resource_allocation(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
+CREATE QUERY tg_resource_allocation(VERTEX v_source, VERTEX v_target, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
     /*
     This query calculates the resource allocation value between two vertices.
     Higher the number, the closer two vertices are. A 0 value indicates two vertices are not close.

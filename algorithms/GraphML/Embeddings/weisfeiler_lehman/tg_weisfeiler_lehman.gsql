@@ -1,4 +1,4 @@
-CREATE QUERY tg_weisfeiler_lehman(string v_type,string e_type,INT DEPTH, INT out_put_limit, BOOL print_accum = TRUE, 
+CREATE QUERY tg_weisfeiler_lehman(string v_type,string e_type,INT DEPTH, INT out_put_limit, BOOL print_results = TRUE, 
   STRING result_attr = "",STRING file_path = "")SYNTAX v1 { 
    
   MaxAccum<STRING> @previous_label;
@@ -35,7 +35,7 @@ CREATE QUERY tg_weisfeiler_lehman(string v_type,string e_type,INT DEPTH, INT out
               END
           LIMIT out_put_limit;
         
-   IF print_accum THEN
+   IF print_results THEN
        PRINT Start;
    END;
 }

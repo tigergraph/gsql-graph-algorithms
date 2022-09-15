@@ -1,4 +1,4 @@
-CREATE QUERY tg_knn_cosine_all_sub (VERTEX source, SET<STRING> e_type, SET<STRING> re_type, STRING weight, 
+CREATE QUERY tg_knn_cosine_all_sub (VERTEX source, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight, 
   STRING label, INT top_k) RETURNS (STRING)  SYNTAX V1 {
 
 /* This subquery is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
@@ -17,7 +17,7 @@ Cosine similarity = A \dot B / ||A|| \dot ||B||
                      @@sum_norm1 += pow(e.getAttr(weight, "FLOAT"), 2);
 
     neighbours = SELECT t
-                 FROM subjects:s -(re_type:e)- :t
+                 FROM subjects:s -(reverse_e_type:e)- :t
                  WHERE t != source AND t.getAttr(label, "STRING") != ""    # only consider the ones with known label
                  ACCUM t.@sum_numerator += s.@sum_numerator * e.getAttr(weight, "FLOAT");
 

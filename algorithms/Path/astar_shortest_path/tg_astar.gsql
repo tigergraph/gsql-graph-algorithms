@@ -1,5 +1,5 @@
-CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type, STRING wt_type, STRING latitude, STRING longitude,
-STRING wt_attr, BOOL display = False) SYNTAX V1 {
+CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type, STRING weight_type, STRING latitude, STRING longitude,
+STRING weight_attribute, BOOL print_stats = False) SYNTAX V1 {
 
 /* The A* (pronounced "A-Star") Shortest Path algorithm computes the shortest path between two nodes.
 A* is an informed search algorithm as it uses a heuristic function to guide the graph traversal.
@@ -9,9 +9,9 @@ Parameters:
 source_vertex:start vertex
 target_vertex:target vertex
 e_type: edge types to traverse
-wt_attr: attribute for edge weights
-wt_type: weight data type (INT,FLOAT,DOUBLE)
-display: output edges for visualization
+weight_attribute: attribute for edge weights
+weight_type: weight data type (INT,FLOAT,DOUBLE)
+print_stats: output edges for visualization
 */
 
 TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
@@ -25,9 +25,9 @@ SetAccum<VERTEX> @@display_node_set;
 INT hop;
 FLOAT x1,y1;
 
-# Check wt_type parameter
-IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
-    PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+# Check weight_type parameter
+IF weight_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+    PRINT "weight_type must be INT, FLOAT, or DOUBLE" AS errMsg;
     RETURN;
 END;
 
@@ -54,14 +54,14 @@ WHILE Opt.size() > 0 DO
           WHERE t.@or_visited == False
 	  ACCUM
               # we use Haversine formula as the heuristic function here
-              CASE wt_type WHEN "INT" THEN
-                  t.@min_dist_heap += pathTuple(s.@min_dist_heap.top().dist + e.getAttr(wt_attr, "INT")
+              CASE weight_type WHEN "INT" THEN
+                  t.@min_dist_heap += pathTuple(s.@min_dist_heap.top().dist + e.getAttr(weight_attribute, "INT")
 		  +  tg_GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
               WHEN "FLOAT" THEN
-                  t.@min_dist_heap += pathTuple(s.@min_dist_heap.top().dist + e.getAttr(wt_attr, "FLOAT")
+                  t.@min_dist_heap += pathTuple(s.@min_dist_heap.top().dist + e.getAttr(weight_attribute, "FLOAT")
 		  +  tg_GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
               WHEN "DOUBLE" THEN
-                  t.@min_dist_heap += pathTuple(s.@min_dist_heap.top().dist + e.getAttr(wt_attr, "DOUBLE")
+                  t.@min_dist_heap += pathTuple(s.@min_dist_heap.top().dist + e.getAttr(weight_attribute, "DOUBLE")
 		  +  tg_GetDistance(t.getAttr(latitude,"FLOAT"),t.getAttr(longitude,"FLOAT"),x1,y1),s)
               END;
 
@@ -103,12 +103,12 @@ IF @@or_valid_path_exists THEN
         WHERE t == s.@min_dist_heap.top().v
         ACCUM
 	    @@display_edge_set += e,
-            CASE wt_type WHEN "INT" THEN
-                @@sum_total_dist += e.getAttr(wt_attr, "INT")
+            CASE weight_type WHEN "INT" THEN
+                @@sum_total_dist += e.getAttr(weight_attribute, "INT")
             WHEN "FLOAT" THEN
-                @@sum_total_dist += e.getAttr(wt_attr, "FLOAT")
+                @@sum_total_dist += e.getAttr(weight_attribute, "FLOAT")
             WHEN "DOUBLE" THEN
-                @@sum_total_dist += e.getAttr(wt_attr, "DOUBLE")
+                @@sum_total_dist += e.getAttr(weight_attribute, "DOUBLE")
             END,
             @@display_node_set += t;
             hop = hop + 1;
@@ -116,7 +116,7 @@ IF @@or_valid_path_exists THEN
     hop = hop - 1;
     PRINT @@sum_total_dist;
     PRINT hop;
-    IF display THEN
+    IF print_stats THEN
         tmp = {@@display_node_set};
         PRINT @@display_edge_set,tmp;
     END;

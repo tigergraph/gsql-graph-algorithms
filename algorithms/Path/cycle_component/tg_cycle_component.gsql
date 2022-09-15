@@ -1,4 +1,4 @@
-CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "") SYNTAX v1{ 
+CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_results = TRUE, STRING result_attr =  "", STRING file_path = "") SYNTAX v1{ 
   /* 
   This algorithm is for undirected graph
   Find all vertex which are in a cycle
@@ -6,7 +6,7 @@ CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_accum = T
   Parameters:
   v_type: vertex types to traverse
   e_type: edge types to traverse
-  print_accum: weather print the result
+  print_results: weather print the result
   result_attr: attribute to write result to        file_path: file to write CSV output to
    */
   OrAccum @or_nocycle;
@@ -41,7 +41,7 @@ CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_accum = T
               f.println(s) 
           END;
    
-  IF print_accum THEN
+  IF print_results THEN
       PRINT Start;
   END;
   

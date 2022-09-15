@@ -1,14 +1,14 @@
-CREATE QUERY tg_slpa (SET<STRING> v_type, SET<STRING> e_type, FLOAT threshold, INT max_iter, INT output_limit,
-BOOL print_accum = TRUE, STRING file_path = "") SYNTAX V1 {
+CREATE QUERY tg_slpa (SET<STRING> v_type, SET<STRING> e_type, FLOAT threshold, INT maximum_iteration, INT print_limit,
+BOOL print_results = TRUE, STRING file_path = "") SYNTAX V1 {
 
 /* The algorithm is an extension of the Label Propagation Algorithm for overlapping community detection.
 Link of the paper: http://arxiv.org/pdf/1109.5720
 Indicate community membership by assigning each vertex multiple community IDs.
 Parameters:
-  v_type: vertex types to traverse          print_accum: print JSON output
+  v_type: vertex types to traverse          print_results: print JSON output
   e_type: edge types to traverse            attr: INT attr to store results to
   threshold: threshold to drop a label      file_path: file to write CSV output to
-  max_iter: number of iterations            output_limit: max #vertices to output (-1 = all)
+  maximum_iteration: number of iterations            print_limit: max #vertices to output (-1 = all)
 */
 
     ListAccum<INT> @label_list;    # the memory of each vertex
@@ -27,7 +27,7 @@ Parameters:
                      ACCUM s.@label_list += getvid(s);
 
     # Evolution: Propagate labels to neighbors according to listener and speaker rules until the max iterations is reached
-    WHILE True LIMIT max_iter DO
+    WHILE True LIMIT maximum_iteration DO
         # Speaker rule: select a random label from its memory with probability proportional to the occurrence frequency of this label in the memory
         Start = SELECT s
                 FROM Start:s
@@ -132,7 +132,7 @@ Parameters:
                 FOREACH k in s.@community_set DO
                     IF @@nest_set.contains(k) THEN   # remove nested community
                         s.@community_set.remove(k)
-                    ELSE IF print_accum THEN
+                    ELSE IF print_results THEN
                         @@comm_sizes_map += (k -> 1)
                     END
                 END;
@@ -144,9 +144,9 @@ Parameters:
                  IF file_path != "" THEN
                      f.println(s, s.@community_set)
                  END
-             LIMIT output_limit;
+             LIMIT print_limit;
 
-    IF print_accum THEN
+    IF print_results THEN
         PRINT @@comm_sizes_map;
         PRINT Start[Start.@community_set];
     END;

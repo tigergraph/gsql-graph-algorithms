@@ -1,14 +1,14 @@
-CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT maxIter = 100, FLOAT convLimit = 0.000001,
-    INT top_k = 100, BOOL print_accum = True, STRING result_attr = "",STRING file_path = ""
+CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT maximum_iteration = 100, FLOAT convLimit = 0.000001,
+    INT top_k = 100, BOOL print_results = True, STRING result_attr = "",STRING file_path = ""
     ) SYNTAX V1 {
     
     /* Compute eigenvector Centrality for each VERTEX. 
     Parameters:
     v_type: vertex types to traverse                 
     e_type: edge types to traverse                   
-    maxIter: max iteration
+    maximum_iteration: max iteration
     convLimit: convergence limitation
-    top_k: report only this many top scores          print_accum: weather print the result
+    top_k: report only this many top scores          print_results: weather print the result
     result_attr: attribute to write result to        file_path: file to write CSV output to
      */ 
      
@@ -22,7 +22,7 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT max
     FLOAT conv_value = 9999;
     FILE f (file_path);
     Start = {v_type};
-    WHILE conv_value > convLimit LIMIT maxIter DO
+    WHILE conv_value > convLimit LIMIT maximum_iteration DO
         @@sum_squares_eigen_values = 0;
         @@sum_cur_norm_values = 0;
         V = SELECT s 
@@ -58,7 +58,7 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT max
                     s.setAttr(result_attr, s.@sum_eigen_value) 
                 END,
       
-    IF print_accum THEN 
+    IF print_results THEN 
                     @@top_scores_heap += Vertex_Score(s, s.@sum_eigen_value) 
                 END,
       
@@ -66,7 +66,7 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT max
                     f.println(s, s.@sum_eigen_value) 
                 END;
 
-    IF print_accum THEN
+    IF print_results THEN
         PRINT @@top_scores_heap AS top_scores;
     END;
 

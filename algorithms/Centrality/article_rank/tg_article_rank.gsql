@@ -1,17 +1,17 @@
 CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
- FLOAT max_change = 0.001, INT max_iter = 25, FLOAT damping = 0.85, INT top_k = 100,
- BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "") SYNTAX V1 {
+ FLOAT max_change = 0.001, INT maximum_iteration = 25, FLOAT damping = 0.85, INT top_k = 100,
+ BOOL print_results = TRUE, STRING result_attr =  "", STRING file_path = "") SYNTAX V1 {
  
 /*
  Compute the article rank score for each vertex in the GRAPH
  In each iteration, compute a score for each vertex:
      score = (1-damping) + damping*average outdegree*sum(received scores FROM its neighbors/average outdegree+Outdegree).
  The article Rank algorithm stops when either of the following is true:
- a) it reaches max_iter iterations;
+ a) it reaches maximum_iteration iterations;
  b) the max score change for any vertex compared to the last iteration <= max_change.
- v_type: vertex types to traverse          print_accum: print JSON output
+ v_type: vertex types to traverse          print_results: print JSON output
  e_type: edge types to traverse            result_attr: INT attr to store results to
- max_iter; max #iterations                 file_path: file to write CSV output to
+ maximum_iteration; max #iterations                 file_path: file to write CSV output to
  top_k: #top scores to output              display_edges: output edges for visualization
  max_change: max allowed change between iterations to achieve convergence
  damping: importance of traversal vs. random teleport
@@ -38,7 +38,7 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
               @@avg_out += s.outdegree(e_type);
    
   WHILE @@max_diff > max_change 
-      LIMIT max_iter DO @@max_diff = 0;
+      LIMIT maximum_iteration DO @@max_diff = 0;
    
       V = SELECT s 
           FROM Start:s -(e_type:e)- v_type:t
@@ -66,11 +66,11 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
               f.println(s, s.@sum_score) 
           END,
    
-    IF print_accum THEN 
+    IF print_results THEN 
               @@top_scores_heap += Vertex_Score(s, s.@sum_score) 
           END;
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@top_scores_heap;
   END;
 }

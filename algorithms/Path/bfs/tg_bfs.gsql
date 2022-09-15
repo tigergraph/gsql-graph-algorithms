@@ -1,10 +1,10 @@
 CREATE QUERY tg_bfs(SET<STRING> v_type, SET<STRING> e_type,INT max_hops=10, VERTEX v_start,
-BOOL print_accum = True, STRING result_attr = "",STRING file_path = "", BOOL display_edges = TRUE) SYNTAX V1 { 
+BOOL print_results = True, STRING result_attr = "",STRING file_path = "", BOOL display_edges = TRUE) SYNTAX V1 { 
 
 /*Breadth-First Search Algorithm from a single source node
 Parameters:
 v_type: vertex types to traverse                 v_start : source vertex for traverse
-e_type: edge types to traverse                   print_accum: print JSON output
+e_type: edge types to traverse                   print_results: print JSON output
 max_hops: look only this far from each vertex    result_attr: INT attr to store results to
 file_path: file to write CSV output to           display_edges: output edges for visualization
 */ 
@@ -51,7 +51,7 @@ file_path: file to write CSV output to           display_edges: output edges for
                     f.println(s, s.@sum_step) 
                 END; 
     # output
-    IF print_accum THEN
+    IF print_results THEN
         PRINT Start[Start.@sum_step];
         IF display_edges THEN
             PRINT @@edge_set;

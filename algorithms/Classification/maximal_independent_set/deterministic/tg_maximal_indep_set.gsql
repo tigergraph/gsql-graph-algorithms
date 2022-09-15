@@ -1,4 +1,4 @@
-CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT max_iter = 100, BOOL print_accum = TRUE, STRING file_path = "")  SYNTAX V1 { 
+CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT maximum_iteration = 100, BOOL print_results = TRUE, STRING file_path = "")  SYNTAX V1 { 
 
     /*
     Maximal Independent Set query only supports one edge type and works only for undirected graphs at the moment (8/12/20).
@@ -20,7 +20,7 @@ CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT max_iter = 1
                 END
             HAVING s.@and_active;
     
-    WHILE Start.size()>0 AND iter<max_iter DO
+    WHILE Start.size()>0 AND iter<maximum_iteration DO
         Start = SELECT s 
                 FROM Start:s
                 POST-ACCUM
@@ -65,7 +65,7 @@ CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT max_iter = 1
                     f.println(s) 
                 END;
                 
-    IF print_accum THEN
+    IF print_results THEN
       PRINT Start;
     END;
 }

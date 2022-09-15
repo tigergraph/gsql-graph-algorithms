@@ -1,5 +1,5 @@
-CREATE QUERY tg_scc (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> rev_e_type,
-  INT top_k_dist, INT output_limit, INT max_iter = 500, INT iter_wcc = 5, BOOL print_accum = TRUE, STRING result_attr= "", STRING file_path="")  SYNTAX V1 { 
+CREATE QUERY tg_scc (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type,
+  INT top_k_dist, INT print_limit, INT maximum_iteration = 500, INT iter_wcc = 5, BOOL print_results = TRUE, STRING result_attr= "", STRING file_path="")  SYNTAX V1 { 
     //INT iter_end_trim = 3
 
 /* This query detects strongly connected components based on the following papers:
@@ -34,7 +34,7 @@ active = SELECT s
 	 POST-ACCUM 
              s.@sum_cid = @@min_vid;
 
-WHILE active.size()>0 LIMIT max_iter DO	
+WHILE active.size()>0 LIMIT maximum_iteration DO	
     WHILE TRUE DO   
         tmp =  SELECT s
 	       FROM active:s -(e_type:e) - :t
@@ -43,7 +43,7 @@ WHILE active.size()>0 LIMIT max_iter DO
                    s.@or_has_pos_outdegree = TRUE;
 
 	tmp =  SELECT s
-	       FROM active:s -(rev_e_type:e) - :t
+	       FROM active:s -(reverse_e_type:e) - :t
 	       WHERE t.@or_detached == FALSE AND s.@sum_cid == t.@sum_cid
 	       ACCUM s.@or_has_pos_indegree = TRUE;
     
@@ -80,7 +80,7 @@ WHILE active.size()>0 LIMIT max_iter DO
         curr = active;
 	WHILE (curr.size()>0) DO
 	    curr = SELECT t
-	           FROM curr:s -((e_type|rev_e_type):e)- :t
+	           FROM curr:s -((e_type|reverse_e_type):e)- :t
 		   WHERE s.@sum_cid == t.@sum_cid AND t.@or_detached == FALSE
 		   ACCUM 
                        t.@min_wcc_id_curr += s.@min_wcc_id_prev // If s has a smaller id than t, copy the id to t
@@ -121,7 +121,7 @@ WHILE active.size()>0 LIMIT max_iter DO
      curr = pivots;
      WHILE curr.size()>0 DO
          curr = SELECT t 
-		FROM curr:s -(rev_e_type:e)-:t  // reverse edge
+		FROM curr:s -(reverse_e_type:e)-:t  // reverse edge
 		WHERE t.@or_detached == FALSE AND t.@or_is_backward == FALSE AND s.@sum_cid == t.@sum_cid // not traversed
 		ACCUM t.@or_is_backward = TRUE;
      END;
@@ -191,9 +191,9 @@ v_all = SELECT s
         IF file_path != "" THEN 
             f.println(s, s.@sum_cid) 
         END
-	LIMIT output_limit;
+	LIMIT print_limit;
 
-IF print_accum THEN
+IF print_results THEN
     PRINT v_all[v_all.@sum_cid];
 END;
 }

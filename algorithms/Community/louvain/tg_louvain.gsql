@@ -1,5 +1,5 @@
-CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr = "weight", INT max_iter = 10, 
-  STRING result_attr = "cid", STRING file_path = "", BOOL print_info = FALSE)  SYNTAX V1 {
+CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_attribute = "weight", INT maximum_iteration = 10, 
+  STRING result_attr = "cid", STRING file_path = "", BOOL print_stats = FALSE)  SYNTAX V1 {
 
   /*
   louvain community detection algorithm
@@ -8,16 +8,16 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
   Parameters:
   v_type: vertex types to traverse
   e_type: edge types to traverse
-  wt_attr: attribute name for edge weights use empty string is graph is unweighted
-  wt_attr type is hardcoded to FLOAT INT or DOUBLE can be supported by changing all `e.getAttr(wt_attr, "FLOAT")`
-  to `e.getAttr(wt_attr, "INT")` or `e.getAttr(wt_attr, "DOUBLE")`
+  weight_attribute: attribute name for edge weights use empty string is graph is unweighted
+  weight_attribute type is hardcoded to FLOAT INT or DOUBLE can be supported by changing all `e.getAttr(weight_attribute, "FLOAT")`
+  to `e.getAttr(weight_attribute, "INT")` or `e.getAttr(weight_attribute, "DOUBLE")`
   * note: when there is a weight attribute missmatch, there may not be an explicit error message
   all print results showing 0 data are present is an indication that there might be a weight attribute missmatch
   
-  max_iter: maximum iteration of louvain optimization
+  maximum_iteration: maximum iteration of louvain optimization
   result_attr: attribute name to assign community id results to; use empty string to skip
   file_path: file path to write CSV output to; use empty string to skip
-  print_info: print louvain execution info
+  print_stats: print louvain execution info
   */
 
   TYPEDEF TUPLE <FLOAT deltaQ, FLOAT weight, VERTEX cc> move;
@@ -40,9 +40,9 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
   Start = SELECT s 
           FROM Start:s -(e_type:e)- :t
           ACCUM
-              @@sum_m += e.getAttr(wt_attr, "FLOAT")*0.5,
-              s.@sum_weight += e.getAttr(wt_attr, "FLOAT")*1.0,
-              s.@sum_cc_weight += e.getAttr(wt_attr, "FLOAT")*1.0,
+              @@sum_m += e.getAttr(weight_attribute, "FLOAT")*0.5,
+              s.@sum_weight += e.getAttr(weight_attribute, "FLOAT")*1.0,
+              s.@sum_cc_weight += e.getAttr(weight_attribute, "FLOAT")*1.0,
               s.@sum_outdegree += 1
           // mark @cc only for vertices with more than 1 neighbors
           // and only the marked vertices will participate in the actual louvain algorithm
@@ -51,7 +51,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
               IF s.@sum_outdegree > 1 THEN 
                   s.@cc_list += s 
               END;
-  IF print_info THEN
+  IF print_stats THEN
       PRINT Start.size() AS AllVertexCount;
   END;
 
@@ -60,7 +60,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
           FROM Start:s -(e_type:e)- :t
           WHERE s.@sum_outdegree > 1 AND t.@sum_outdegree > 1
           ACCUM
-              t.@max_best_move += move(e.getAttr(wt_attr, "FLOAT")*1.0 + @@sum_m*t.@sum_weight * 
+              t.@max_best_move += move(e.getAttr(weight_attribute, "FLOAT")*1.0 + @@sum_m*t.@sum_weight * 
               (t.@sum_weight - s.@sum_weight), -s.@sum_cc_weight, s.@cc_list.get(0))
           POST-ACCUM
               IF t.@max_best_move.deltaQ > 0 THEN
@@ -78,12 +78,12 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
                       END
                   END
               END;
-  IF print_info THEN
+  IF print_stats THEN
       PRINT @@sum_cc_change AS InitChangeCount;
   END;
 
   // main loop
-  WHILE @@sum_cc_change > 0 LIMIT max_iter DO
+  WHILE @@sum_cc_change > 0 LIMIT maximum_iteration DO
       // initialize for iteration
       @@sum_cc_change = 0;
       Start = SELECT s 
@@ -107,7 +107,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
               FROM Start:s -(e_type:e)- :t
               WHERE t.@sum_outdegree > 1
               ACCUM 
-                  s.@A_map += (t.@cc_list.get(0) -> e.getAttr(wt_attr, "FLOAT")*1.0);
+                  s.@A_map += (t.@cc_list.get(0) -> e.getAttr(weight_attribute, "FLOAT")*1.0);
 
       Start = SELECT s 
               FROM Start:s
@@ -154,7 +154,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
                           END
                       END
                   END;
-      IF print_info THEN
+      IF print_stats THEN
           PRINT @@sum_cc_change AS IterChangeCount;
       END;
   END;
@@ -168,7 +168,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
           WHERE s.@sum_outdegree == 1 AND t.@sum_outdegree != 1
           ACCUM 
               s.@cc_list += t.@cc_list.get(0);
-  IF print_info THEN
+  IF print_stats THEN
       PRINT Start.size() AS VertexFollowedToCommunity;
   END;
 
@@ -182,7 +182,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
               ELSE
                   s.@cc_list += t
               END;
-  IF print_info THEN
+  IF print_stats THEN
       PRINT Start.size() AS VertexFollowedToVertex;
   END;
 
@@ -194,7 +194,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
           WHERE s.@sum_outdegree == 0
           ACCUM 
               s.@cc_list += s;
-  IF print_info THEN
+  IF print_stats THEN
       PRINT Start.size() AS VertexAssignedToItself;
   END;
 
@@ -211,7 +211,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
               END;
 
   // print result satistic
-  IF print_info THEN
+  IF print_stats THEN
       Start = SELECT s 
               FROM Start:s
               WHERE s.@cc_list.size() > 0

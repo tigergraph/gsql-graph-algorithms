@@ -1,4 +1,4 @@
-CREATE QUERY tg_total_neighbors(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
+CREATE QUERY tg_total_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
 
     /*
     This query calculates the number of total neighbors of two vertices.

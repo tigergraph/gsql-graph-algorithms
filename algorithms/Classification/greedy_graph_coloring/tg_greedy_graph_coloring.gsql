@@ -1,5 +1,5 @@
 CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT max_colors = 999999,
-  BOOL print_color_count = TRUE, BOOL display = TRUE, STRING file_path = "")  SYNTAX V1 {
+  BOOL print_color_count = TRUE, BOOL print_stats = TRUE, STRING file_path = "")  SYNTAX V1 {
   
   /* Greedy Graph Coloring algorithm
   This is a distributed algorithm for coloring graph on large-scale 
@@ -21,7 +21,7 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
                   required.
    -  print_color_count:  If set to true, the total colors used to color all vertex 
                           types will be displayed.
-   -  display: If set to true, will display all the vertices and associated color.
+   -  print_stats: If set to true, will display all the vertices and associated color.
    -  file_path: If provided, will print results with all vertex Set and color to a file.
   */
   
@@ -95,7 +95,7 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
       PRINT @@max_counter AS color_count;
   END;
     
-  IF display THEN
+  IF print_stats THEN
       PRINT start [start.@sum_color_vertex];
   END;
 

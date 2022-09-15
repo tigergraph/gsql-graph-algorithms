@@ -1,5 +1,5 @@
-CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, STRING label, INT top_k, 
-  BOOL print_accum = TRUE, STRING file_path = "", STRING attr = "")  SYNTAX V1 {
+CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight, STRING label, INT top_k, 
+  BOOL print_results = TRUE, STRING file_path = "", STRING result_attribute = "")  SYNTAX V1 {
 
     /*
     This query is k-nearest neighbors based on Cosine Similarity on all vertices.
@@ -12,7 +12,7 @@ CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
     source = SELECT s
              FROM source:s 
              WHERE s.getAttr(label, "STRING") == ""
-             POST-ACCUM s.@sum_predicted_label = tg_knn_cosine_all_sub(s, e_type,re_type, weight, label,top_k);
+             POST-ACCUM s.@sum_predicted_label = tg_knn_cosine_all_sub(s, e_type,reverse_e_type, weight, label,top_k);
   
     source = SELECT s 
              FROM source:s
@@ -24,7 +24,7 @@ CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
                      s.setAttr(attr, s.@sum_predicted_label) 
                  END;
       
-    IF print_accum THEN
+    IF print_results THEN
         PRINT source;
     END;  
 }

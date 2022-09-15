@@ -1,4 +1,4 @@
-CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, STRING label, INT min_k, INT max_k) RETURNS (INT) SYNTAX V1 {
+CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight, STRING label, INT min_k, INT max_k) RETURNS (INT) SYNTAX V1 {
 
 /* Leave-one-out cross validation for selecting optimal k. 
    The input is a range of k, output is the k with highest correct prediction rate.
@@ -18,7 +18,7 @@ CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
     start = SELECT s
             FROM start:s 
             WHERE s.getAttr(label, "STRING") != ""  // get the vertices with known label
-            ACCUM s.@predicted_label_list = tg_knn_cosine_cv_sub(s, e_type, re_type, label, weight, max_k)  
+            ACCUM s.@predicted_label_list = tg_knn_cosine_cv_sub(s, e_type, reverse_e_type, label, weight, max_k)  
 	    // get a list of predicted label wrt different k
             POST-ACCUM 
 	        FOREACH pred_label IN s.@predicted_label_list DO

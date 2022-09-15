@@ -1,6 +1,6 @@
 CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRING> e_type, 
    SET<STRING> reverse_e_type, STRING cap_attr, STRING cap_type, FLOAT min_flow_threshhold = 0.001, 
-   BOOL print_accum = TRUE, BOOL display_edges = TRUE, BOOL spit_to_file = FALSE, 
+   BOOL print_results = TRUE, BOOL display_edges = TRUE, BOOL spit_to_file = FALSE, 
    STRING file_path = "/home/tigergraph/tg_query_output.csv")  SYNTAX V1 { 
   
   /*
@@ -8,8 +8,8 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
 
    source: start vertex to  every other vertex.     cap_type: capacity data type (UINT, INT,FLOAT,DOUBLE)
    sink:   end vertex                               min_flow_threshhold: smallest epsilon for flow
-   v_type: vertex types to traverse                 print_accum: print JSON output
-   e_type: edge types to traverse                   display_edges: visualization when print_accum && display_edges 
+   v_type: vertex types to traverse                 print_results: print JSON output
+   e_type: edge types to traverse                   display_edges: visualization when print_results && display_edges 
    reverse_e_type: reverse edge of e_type           spit_to_file: spit output to file
    cap_attr: attribute for edge capacity            file_path: file to write CSV output to
      
@@ -30,7 +30,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
   @@max_cap_threshold = min_flow_threshhold;
          
   IF cap_type NOT IN ("UINT", "INT", "FLOAT", "DOUBLE") THEN
-      PRINT "wt_type must be UINT, INT, FLOAT, or DOUBLE" AS errMsg;
+      PRINT "weight_type must be UINT, INT, FLOAT, or DOUBLE" AS errMsg;
       RETURN;
   END;    
   
@@ -175,7 +175,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
               FROM start:s - (e_type:e) - v_type:t
               WHERE @@group_by_flow_accum.get(s,t).flow >= min_flow_threshhold 
               ACCUM
-                  IF print_accum THEN 
+                  IF print_results THEN 
 		      @@edges_set += e 
 		  END,
                   IF spit_to_file THEN 
@@ -183,7 +183,7 @@ CREATE QUERY tg_maxflow(VERTEX source, VERTEX sink, Set<STRING> v_type, SET<STRI
 		  END;
   END;
   
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@sum_max_flow;
       IF display_edges THEN
           PRINT @@edges_set; 

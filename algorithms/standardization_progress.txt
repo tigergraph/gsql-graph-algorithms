@@ -1,0 +1,46 @@
+General:
+Input Vertex Type: v_type
+Input Edge Type: e_type
+Input Reverse Edge Type: reverse_e_type - done
+Source Vertex: v_source  - done
+Destination/Target Vertex: v_target - done
+Result storing: result_attribute - done
+Weight Attribute: weight_attribute - done
+Weight Attribute Type: weight_type - done
+Max Loop Iterations: maximum_iteration - done
+Batching Number: batch_number
+Traversal Depth or Hops: depth
+Damping coefficient: damping
+Convergence Threshold: threshold
+Selection or sampling: k
+Get top quantity of k selections: top_k
+Sample (random) a quantity of k selections: choose_k
+Centrality-specific:
+
+
+Classification-specific:
+
+
+Community-specific:
+Community ID Attribute: community_attribute - done
+Community ID type: community_type
+Embedding-specific:
+Embedding Dimension: embedding_dimension - done
+Embedding: embedding_attribute
+Path-specific:
+
+
+Pattern-specific:
+
+
+Topo Link:
+
+
+
+Standard options:
+Output file: file_path
+Print output boolean: print_results - done
+Print stats boolean: print_stats - done
+Logging level: log_level
+Print Limiting: print_limit - done
+Display Edges boolean: display_edges

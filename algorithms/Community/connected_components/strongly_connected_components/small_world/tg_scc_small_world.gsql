@@ -1,4 +1,4 @@
-CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UINT threshold = 100000,
+CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING reverse_e_type, UINT threshold = 100000,
   BOOL to_show_cc_count=FALSE) SYNTAX V1 {
 
   ##
@@ -19,7 +19,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
 
   TrimSet = SELECT s 
             FROM Vertices:s
-            WHERE  s.outdegree(e_type) == 0 OR s.outdegree(re_type) == 0
+            WHERE  s.outdegree(e_type) == 0 OR s.outdegree(reverse_e_type) == 0
             ACCUM  s.@or_visited = TRUE,
                    s.@min_cc_id = getvid(s);
   
@@ -27,7 +27,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
   # and filter the vertices which have the product no less than the threshold
   PotentialPivots = SELECT s 
                     FROM Vertices:s
-                    POST-ACCUM s.@sum_indegree = s.outdegree(re_type),
+                    POST-ACCUM s.@sum_indegree = s.outdegree(reverse_e_type),
                                s.@sum_outdegree = s.outdegree(e_type),
                                s.@sum_degree_product = s.@sum_indegree * s.@sum_outdegree
                     HAVING s.@sum_degree_product >= threshold;
@@ -61,7 +61,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
   Vertices = Pivot;
   WHILE Vertices.size() > 0 DO
       Vertices = SELECT t 
-                 FROM Vertices:s -(re_type:e)- v_type:t
+                 FROM Vertices:s -(reverse_e_type:e)- v_type:t
                  WHERE  t.@or_FW_visited == TRUE AND t.@or_visited == FALSE
                  ACCUM  t.@min_cc_id = s.@min_cc_id
                  POST-ACCUM t.@or_visited += TRUE;
@@ -110,7 +110,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING re_type, UI
       # and remove the SCC from the set All_Vertices
       WHILE Vertices.size() > 0 DO
           Vertices = SELECT t 
-                     FROM Vertices:s -(re_type:e)- v_type:t
+                     FROM Vertices:s -(reverse_e_type:e)- v_type:t
                      WHERE  t.@or_visited == FALSE AND t.@min_cc_id == s.@min_cc_id
                      ACCUM  t.@or_visited = TRUE;
           All_Vertices = All_Vertices MINUS Vertices;

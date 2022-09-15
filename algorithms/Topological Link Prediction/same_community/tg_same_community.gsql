@@ -1,4 +1,4 @@
-CREATE QUERY tg_same_community(VERTEX a, VERTEX b, STRING community_attribute, STRING community_attr_type, BOOL print_res = TRUE)  SYNTAX V1 { 
+CREATE QUERY tg_same_community(VERTEX v_source, VERTEX v_target, STRING community_attribute, STRING community_attr_type, BOOL print_res = TRUE)  SYNTAX V1 { 
 
     /*
     This query returns 1 if the two vertices are in the same community, and 0 otherwise.

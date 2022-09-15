@@ -1,14 +1,14 @@
 CREATE QUERY tg_closeness_cent_approx (
-    SET<STRING> v_type, SET<STRING> e_type, STRING re_type, INT top_k=100, INT k = 100,  INT max_hops = 10,  DOUBLE epsilon = 0.1,  BOOL print_accum = true, 
+    SET<STRING> v_type, SET<STRING> e_type, STRING reverse_e_type, INT top_k=100, INT k = 100,  INT max_hops = 10,  DOUBLE epsilon = 0.1,  BOOL print_results = true, 
     STRING file_path = "",  INT debug = 0,  INT sample_index = 0,  INT max_size = 1000,   BOOL wf = True ) SYNTAX V1 {
       
     /* Compute Closeness Centrality for each VERTEX. 
     Use multi-sourse BFS.
     Parameters:
-    v_type: vertex types to traverse                 print_accum: print JSON output
+    v_type: vertex types to traverse                 print_results: print JSON output
     e_type: edge types to traverse                   k : sample num
     epsilon : eerror parameter                       debug: debug flag -- 0: No LOG;1: LOG without the sample-node bfs loop;2: ALL LOG.
-    re_type: reverse edge type in directed graph, in undirected graph set re_type=e_type
+    reverse_e_type: reverse edge type in directed graph, in undirected graph set reverse_e_type=e_type
     max_hops: max BFS explore steps ,look only this far from each vertex    
     file_path: file to write CSV output to
     top_k: report only this many top scores          sample_index : random sample group
@@ -249,7 +249,7 @@ CREATE QUERY tg_closeness_cent_approx (
 			   END
                        END,
 		       
-		       IF print_accum THEN 
+		       IF print_results THEN 
                            @@top_scores_heap += Vertex_Score(s, s.@sum_closeness) 
                        END,
   
@@ -297,7 +297,7 @@ CREATE QUERY tg_closeness_cent_approx (
       @@sum_count=0;
       WHILE (Start.size() > 0) LIMIT max_hops DO
             @@sum_curr_dist+=1;
-            Start = SELECT t FROM Start:s -(re_type:e)-v_type:t
+            Start = SELECT t FROM Start:s -(reverse_e_type:e)-v_type:t
                     WHERE s.@bitwise_or_visit&-t.@bitwise_or_seen-1>0 AND s!=t #use -t.@seen-1 to get the trverse of t.@seen
                     ACCUM
                       INT c = s.@bitwise_or_visit&-t.@bitwise_or_seen-1,
@@ -337,7 +337,7 @@ CREATE QUERY tg_closeness_cent_approx (
 		       f.println(s,s.@sum_closeness)
                    END;
   
-       IF print_accum THEN
+       IF print_results THEN
            PRINT Start[Start.@sum_closeness];
        END;
        LOG(debug > 0,"closeness output finished");

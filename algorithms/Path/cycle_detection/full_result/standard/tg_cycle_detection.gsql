@@ -1,4 +1,4 @@
-CREATE QUERY tg_cycle_detection (SET<STRING> v_type, SET<STRING> e_type, INT depth, BOOL print_accum = TRUE, STRING file_path = "")  SYNTAX V1 {
+CREATE QUERY tg_cycle_detection (SET<STRING> v_type, SET<STRING> e_type, INT depth, BOOL print_results = TRUE, STRING file_path = "")  SYNTAX V1 {
 
 /* Rocha–Thatte cycle detection algorithm
 This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
@@ -31,7 +31,7 @@ Stop passing the sequence (v1,v2,v3, ...) when:
                                END
                            END,
                            IF t_is_min == TRUE THEN  # if it has the minimal label in the list, report 
-                               IF print_accum THEN 
+                               IF print_results THEN 
                                    @@cycles_list += sequence 
                                END,
                                IF file_path != "" THEN 
@@ -49,7 +49,7 @@ Stop passing the sequence (v1,v2,v3, ...) when:
               HAVING t.@curr_list.size() > 0;  # IF receive no sequences, deactivate it;
   END;
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@cycles_list as cycles;
   END;  
 }

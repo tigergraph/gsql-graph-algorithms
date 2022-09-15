@@ -1,13 +1,13 @@
-CREATE QUERY tg_wcc (SET<STRING> v_type, SET<STRING> e_type, INT output_limit = 100,
- BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
+CREATE QUERY tg_wcc (SET<STRING> v_type, SET<STRING> e_type, INT print_limit = 100,
+ BOOL print_results = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
 
 /*
  This query identifies the Connected Components (undirected edges). When finished, each
  vertex is assigned an INT label = its component ID number.
-  v_type: vertex types to traverse          print_accum: print JSON output
+  v_type: vertex types to traverse          print_results: print JSON output
   e_type: edge types to traverse            result_attr: INT attr to store results to
   file_path: file to write CSV output to    display_edges: output edges for visualization
-  output_limit: max #vertices to output (-1 = all)  
+  print_limit: max #vertices to output (-1 = all)  
 */
 
 MinAccum<INT> @min_cc_id = 0;       //each vertex's tentative component id
@@ -41,18 +41,18 @@ Start = SELECT s
 	        s.setAttr(result_attr, s.@min_cc_id) 
 	    END,
 	    
-	    IF print_accum THEN 
+	    IF print_results THEN 
 	        @@comp_sizes_map += (s.@min_cc_id -> 1) 
 	    END,
 	    
 	    IF file_path != "" THEN 
 	        f.println(s, s.@min_cc_id) 
 	    END;
-IF print_accum THEN
-    IF output_limit >= 0 THEN
+IF print_results THEN
+    IF print_limit >= 0 THEN
         Start = SELECT s 
                 FROM Start:s 
-                LIMIT output_limit;
+                LIMIT print_limit;
     END;
     FOREACH (compId,size) IN @@comp_sizes_map DO
         @@comp_group_by_size_map += (size -> compId);

@@ -1,5 +1,5 @@
 CREATE QUERY tg_cosine_nbor_ap_batch(STRING vertex_type, STRING edge_type, STRING edge_attribute, INT top_k, 
-  BOOL print_accum = true, STRING file_path, STRING similarity_edge, INT num_of_batches = 1)  SYNTAX V1 {
+  BOOL print_results = true, STRING file_path, STRING similarity_edge, INT num_of_batches = 1)  SYNTAX V1 {
   
   /*
     This query calculates the Cosine Similarity of a given vertex and every other vertex.
@@ -10,7 +10,7 @@ CREATE QUERY tg_cosine_nbor_ap_batch(STRING vertex_type, STRING edge_type, STRIN
       edge_type   : edge type to traverse
       edge_attribute  : name of the attribute on the edge_type
       top_k        : # top scores to report
-      print_accum : print JSON output
+      print_results : print JSON output
       file_path   : file to write CSV output to
       similarity_edge : edge type for storing vertex-vertex similarity scores
       num_of_batches  : how many batches to split the query into (trade off parallelism for memory optimization)
@@ -74,7 +74,7 @@ CREATE QUERY tg_cosine_nbor_ap_batch(STRING vertex_type, STRING edge_type, STRIN
               END
           ORDER BY getvid(t) ASC;
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT start[start.@heap];
   END;
 }

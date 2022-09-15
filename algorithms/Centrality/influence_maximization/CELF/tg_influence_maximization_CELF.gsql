@@ -1,5 +1,5 @@
 CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING weight,INT top_k,
-  BOOL print_accum = True, STRING file_path = "")  SYNTAX V1 {
+  BOOL print_results = True, STRING file_path = "")  SYNTAX V1 {
 
   /* get the vertex which has maximum influence. 
   Parameters:
@@ -8,7 +8,7 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
   weight: enter weight attribute name
   top_k: report only this many top scores          
   file_path: file to write CSV output to
-  print_accum: weather print the result
+  print_results: weather print the result
    */  
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
   HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
@@ -96,7 +96,7 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
       END;
   END;
   
-  IF print_accum THEN
+  IF print_results THEN
      PRINT @@res_list;
   END;
 }

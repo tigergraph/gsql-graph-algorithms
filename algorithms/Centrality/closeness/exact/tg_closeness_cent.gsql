@@ -1,14 +1,14 @@
-CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re_type,INT max_hops = 10,
-  INT top_k = 100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
+CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING reverse_e_type,INT max_hops = 10,
+  INT top_k = 100, BOOL wf = TRUE, BOOL print_results = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE) SYNTAX V1 {
   
   /* Compute Closeness Centrality for each VERTEX. 
   Use multi-sourse BFS.
   Link of the paper: http://www.vldb.org/pvldb/vol8/p449-then.pdf
   Parameters:
-  v_type: vertex types to traverse                 print_accum: print JSON output
+  v_type: vertex types to traverse                 print_results: print JSON output
   e_type: edge types to traverse                   result_attr: INT attr to store results to
-  re_type: reverse edge type in directed graph, in undirected graph set re_type=e_type
+  reverse_e_type: reverse edge type in directed graph, in undirected graph set reverse_e_type=e_type
   max_hops: look only this far from each vertex    file_path: file to write CSV output to
   top_k: report only this many top scores          display_edges: output edges for visualization
   wf: Wasserman and Faust normalization factor for multi-component graphs */ 
@@ -68,7 +68,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
       
           WHILE (Start.size() > 0) LIMIT max_hops DO
                 @@sum_curr_dist+=1;
-                Start = SELECT t FROM Start:s -(re_type:e)-v_type:t
+                Start = SELECT t FROM Start:s -(reverse_e_type:e)-v_type:t
                         WHERE s.@bitwise_or_visit&-t.@bitwise_or_seen-1>0 and s!=t #use -t.@seen-1 to get the trverse of t.@seen
                         ACCUM
                               INT c = s.@bitwise_or_visit&-t.@bitwise_or_seen-1,
@@ -111,7 +111,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
                     s.setAttr(result_attr, s.@sum_score) 
                 END,
     
-                IF print_accum THEN 
+                IF print_results THEN 
                     @@top_scores_heap += Vertex_Score(s, s.@sum_score) 
                 END,
     
@@ -120,7 +120,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
                 END;
    #test
 
-   IF print_accum THEN
+   IF print_results THEN
        Start = SELECT s 
                FROM all:s
                WHERE s.@sum_res<=0 

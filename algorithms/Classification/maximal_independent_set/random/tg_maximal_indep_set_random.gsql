@@ -1,7 +1,7 @@
 CREATE QUERY tg_maximal_indep_set_random(
   SET<STRING> v_type,
   SET<STRING> e_type,
-  BOOL print_accum = TRUE,
+  BOOL print_results = TRUE,
   STRING file_path = "")  SYNTAX V1 {
 
   TYPEDEF TUPLE<VERTEX v, DOUBLE score> VertexScore;
@@ -59,7 +59,7 @@ CREATE QUERY tg_maximal_indep_set_random(
  		POST-ACCUM
  			IF file_path != "" THEN f.println(s) END;
 
- 	IF print_accum THEN
+ 	IF print_results THEN
  		PRINT Results;
  	END;
   PRINT Results.size();

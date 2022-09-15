@@ -1,14 +1,14 @@
-CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING wt_attr,INT top_k,
-  BOOL print_accum = True, STRING file_path = "") SYNTAX V1 {
+CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING weight_attribute,INT top_k,
+  BOOL print_results = True, STRING file_path = "") SYNTAX V1 {
 
   /* get the vertex which has maximum influence.
   Parameters:
   v_type: vertex types to traverse
   e_type: edge types to traverse
-  wt_attr: enter weight attribute name
+  weight_attribute: enter weight attribute name
   top_k: report only this many top scores
   file_path: file to write CSV output to
-  print_accum: weather print the result
+  print_results: weather print the result
    */  
 
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
@@ -26,8 +26,8 @@ CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING
               FROM start:s-(e_type:e)-v_type:v
               WHERE s.@or_in_seed == FALSE AND v.@or_influenced == FALSE
               ACCUM
-                  IF wt_attr != ""  THEN
-                      s.@sum_influence_value+=e.getAttr(wt_attr,"FLOAT")
+                  IF weight_attribute != ""  THEN
+                      s.@sum_influence_value+=e.getAttr(weight_attribute,"FLOAT")
                   ELSE
                       s.@sum_influence_value+=1
                   END
@@ -52,7 +52,7 @@ CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING
       END;
   END;
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@res_list;
   END;
 }
