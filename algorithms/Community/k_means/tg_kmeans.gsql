@@ -1,18 +1,47 @@
 CREATE QUERY tg_kmeans(int k = 2, int max_k = 5, float max_change = 1.0, string v_type, string e_type, bool random = FALSE, BOOL print_results = TRUE, STRING file_path="")  SYNTAX V1 {
 
-  /*
-    Runs k-means clustering algorithm for a range of K values
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
-    Parameters :
-      k      : starting value of K range
-      maxK   : ending value of K range
-      maxChange   : maximum centroid vector change condition
-      v_type : vertex type to start from
-      e_type : edge type to traverse
-      random : boolean to start from either random or non-random centroid positions
-      print_results : print JSON output
-      file_path   : file to write CSV output to
-  */
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Production
+
+    Description: 
+        Runs k-means clustering algorithm for a range of K values
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        NA
+
+    Parameters:
+        k:
+            starting value of K range
+        max_k:
+            ending value of K range
+        max_change:
+            maximum centroid vector change condition
+        v_type:
+            vertex type to start from
+        e_type:
+            edge type to traverse
+        random:
+            boolean to start from either random or non-random centroid positions
+        print_results:
+            print JSON output
+        file_path:
+            file to write CSV output to
+    */
+
   MapAccum<int, ListAccum<float>> @@k_map;
   file f (file_path);
 

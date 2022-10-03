@@ -1,16 +1,49 @@
 CREATE QUERY tg_cycle_detection_count(SET<STRING> v_type, SET<STRING> e_type, INT depth, INT batches, BOOL print_results = TRUE)  SYNTAX V1 {
 
-/* Rocha–Thatte cycle detection algorithm + fixes
-This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
-Stop passing the sequence (v1,v2,v3, ...) when:
-1. v = v1. If v has the minimum label in the sequence, report the cycle
-2. v = vi (i!=1). Do not report since this cycle is already reported in an earlier iteration
 
-Added a cull so we only count a cycle once by only counting a cycle if it starts from the lowest vid in that cycle.
-This allows for early exit in loop so should save memory too.
-Self cycles treated completely separately to save memory and increase speed
-    
-  */
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+        Rocha–Thatte cycle detection algorithm + fixes
+        This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
+        Stop passing the sequence (v1,v2,v3, ...) when:
+            1. v = v1. If v has the minimum label in the sequence, report the cycle
+            2. v = vi (i!=1). Do not report since this cycle is already reported in an earlier iteration
+
+        Added a cull so we only count a cycle once by only counting a cycle if it starts from the lowest vid in that cycle.
+        This allows for early exit in loop so should save memory too.
+        Self cycles treated completely separately to save memory and increase speed
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+        v_type:
+            Names of vertex types to use
+        e_type:
+            Names of edge types to use
+        depth:
+            Maximum cycle length to search for, equal to the maximum number of iterations
+        batches:
+            Number of batches to partition by
+        print_results:
+            If True, output JSON to standard output
+    */
   
 ListAccum<ListAccum<UINT>> @curr_list, @new_list; //, @@out_cycles;
 SumAccum<INT> @@sum_cycles=0;

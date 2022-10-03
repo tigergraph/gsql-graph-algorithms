@@ -1,16 +1,45 @@
 CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight_attribute, STRING weight_type,
-	BOOL print_results = TRUE, STRING result_attr = "", STRING file_path = "")  SYNTAX V1 {
+	BOOL print_results = TRUE, STRING result_attribute = "", STRING file_path = "")  SYNTAX V1 {
 
-  /*
-  * This query identifies minimum spanning trees using the algorithm in section 6.2 of Qin et al. 2014:
-  * http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf.
- 
-  Parameters:
-  v_type: vertex types to traverse                print_results: print JSON output
-  e_type: edge types to traverse                  result_attr: INT attr to store results to
-  weight_attribute: attribute for edge weights             file_path: file to write CSV output to
-  weight_type: weight data type (INT,FLOAT,DOUBLE)
-  */
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+        This query identifies minimum spanning trees using the algorithm in section 6.2 of Qin et al. 2014
+
+    Publications:
+        http://www-std1.se.cuhk.edu.hk/~hcheng/paper/SIGMOD2014qin.pdf
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/minimum-spanning-forest
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        print_results:
+            print JSON output
+        e_type:
+            edge types to traverse
+        result_attribute:
+            INT attr to store results to
+        weight_attribute:
+            attribute for edge weights
+        file_path:
+            file to write CSV output to
+        weight_type:
+            weight data type (INT,FLOAT,DOUBLE)
+    */
   
   TYPEDEF TUPLE <FLOAT weight, VERTEX from_v, VERTEX to_v, EDGE e, INT vid> EDGE_WEIGHT;
   MapAccum<VERTEX, VERTEX> @@parents_map;
@@ -72,7 +101,7 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight_attri
 	              IF file_path != "" THEN 
 		          @@mst_set += v.@ew_heap.top() 
 		      END,
-	              IF print_results OR result_attr != "" THEN 
+	              IF print_results OR result_attribute != "" THEN 
 		          @@result_set += v.@ew_heap.top().e 
 		      END;
       ### UPDATE PARENT POINTERS ###
@@ -146,14 +175,14 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight_attri
 		           POST-ACCUM
 		               @@parents_map += (v -> @@parents_map.get(v.@ew_heap.top().to_v));
   END;
-  IF result_attr != "" THEN
+  IF result_attribute != "" THEN
       all_v = SELECT v 
               FROM all_v:v -(e_type:e)- :u
               ACCUM
 	          IF e IN @@result_set THEN
-	              e.setAttr(result_attr, TRUE)
+	              e.setAttr(result_attribute, TRUE)
 	          ELSE
-		      e.setAttr(result_attr, FALSE)
+		      e.setAttr(result_attribute, FALSE)
 	          END;
   END;
 

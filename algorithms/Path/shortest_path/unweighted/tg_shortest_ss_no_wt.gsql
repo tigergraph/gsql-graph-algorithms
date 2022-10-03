@@ -1,12 +1,39 @@
 CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, 
-  INT print_limit = -1, BOOL print_results =TRUE, STRING result_attr ="", STRING file_path ="",
+  INT print_limit = -1, BOOL print_results =TRUE, STRING result_attribute ="", STRING file_path ="",
   BOOL display_edges =FALSE)  SYNTAX V1 {
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+
+    */
   
 /*
 Single-source shortest path algorithm, with unweighted edges.
 From the source vertex, finds the unweighted shortest path (number of hops, INT value)
  source: start vertex                         print_results: print JSON output
- v_type: vertex types to traverse             result_attr: INT attr to store results to
+ v_type: vertex types to traverse             result_attribute: INT attr to store results to
  e_type: edge types to traverse               file_path: file to write CSV output to
  print_limit: max #vertices to output        display_edges: output edges for visualization
 */
@@ -45,8 +72,8 @@ From the source vertex, finds the unweighted shortest path (number of hops, INT 
   ResultSet = SELECT s 
               FROM ResultSet:s 
               POST-ACCUM 
-                  IF result_attr != "" 
-		      THEN s.setAttr(result_attr, s.@min_dis) 
+                  IF result_attribute != "" 
+		      THEN s.setAttr(result_attribute, s.@min_dis) 
 		  END,
                   IF file_path != "" THEN 
 		      f.println(s, s.@min_dis, s.@path_list)

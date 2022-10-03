@@ -1,5 +1,35 @@
 CREATE QUERY tg_max_BFS_depth(VERTEX source, SET<STRING> e_type) RETURNS (INT)  SYNTAX V1 { 
 
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+		Finds the maximum depth of a graph using breadth-first search.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        NA
+
+    Parameters:
+		v_type:
+			vertex type to traverse
+		e_type:
+			edge types to traverse
+    */
+
 	OrAccum @or_visited;
 	INT depth=-1;
 	start = {source};

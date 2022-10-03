@@ -1,17 +1,52 @@
 CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type, BOOL in_degree = TRUE, BOOL out_degree = TRUE,
-  INT top_k=100, BOOL print_results = TRUE, STRING result_attr = "",STRING file_path = "") SYNTAX V1 {
+  INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
 
-  /* Compute degree Centrality for each VERTEX.
-  Parameters:
-  v_type: vertex types to traverse
-  e_type: edge types to traverse
-  reverse_e_type: for indegree use
-  in_degree: if you want to count incoming relationships, set it to TRUE
-  out_degree: if you want to count outcoming relationships, set it to TRUE
-  top_k: report only this many top scores          print_results: weather print the result
-  result_attr: attribute to write result to        file_path: file to write CSV output to
-  for undirected graph, you only need to set e_type and indegree
-   */
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Centrality
+
+    Maturity:
+        Production
+
+    Description: 
+        Compute degree Centrality for each VERTEX.
+        for undirected graph, you only need to set e_type and indegree
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/degree-centrality
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        e_type:
+            edge types to traverse
+        reverse_e_type:
+            for indegree use
+        in_degree:
+            if you want to count incoming relationships, set it to TRUE
+        out_degree:
+            if you want to count outcoming relationships, set it to TRUE
+        top_k:
+            report only this many top scores
+        print_results:
+            weather print the result
+        result_attribute:
+            attribute to write result to
+        file_path:
+            file to write CSV output to
+
+  */
+
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
   HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
   SumAccum<INT> @sum_degree_score;
@@ -38,8 +73,8 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> 
   Start = SELECT s 
           FROM all:s
 	  POST-ACCUM
-	      IF result_attr != "" THEN 
-                  s.setAttr(result_attr, s.@sum_degree_score) 
+	      IF result_attribute != "" THEN 
+                  s.setAttr(result_attribute, s.@sum_degree_score) 
               END,
     
 	      IF print_results THEN 

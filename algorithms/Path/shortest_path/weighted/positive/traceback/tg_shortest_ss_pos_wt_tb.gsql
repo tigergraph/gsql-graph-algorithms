@@ -1,7 +1,34 @@
 CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
  STRING weight_attribute, STRING weight_type, FLOAT epsilon = 0.001,BOOL print_results = TRUE, INT print_limit = -1, 
- BOOL display_edges = FALSE, STRING result_attr = "", BOOL spit_to_file = FALSE, 
+ BOOL display_edges = FALSE, STRING result_attribute = "", BOOL spit_to_file = FALSE, 
  STRING file_path = "/home/tigergraph/tg_query_output.csv", UINT write_size = 10000)  SYNTAX V1 {
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+
+    */
 
 /*
  Single-source shortest path algorithm (traceback version), with positive weight edges. 
@@ -10,7 +37,7 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
  source: start vertex to  every other vertex.     print_results: print JSON output
  v_type: vertex types to traverse                 print_limit: max #vertices to output
  e_type: edge types to traverse                   display_edges: output edges for visualization
- weight_attribute: attribute for edge weights              result_attr: INT attr to store results to
+ weight_attribute: attribute for edge weights              result_attribute: INT attr to store results to
  weight_type: weight data type (INT,FLOAT,DOUBLE)     spit_to_file: spit data to file 
  epsilon: min delta weight                        file_path: file to write CSV output to
  write_size: number of paths to write concurrently
@@ -84,8 +111,8 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
               FROM component:s
               WHERE s.@min_prev_min_path != -1
               POST-ACCUM 
-	          IF result_attr != "" THEN 
-		      s.setAttr(result_attr, s.@min_path_heap.top().cost) 
+	          IF result_attribute != "" THEN 
+		      s.setAttr(result_attribute, s.@min_path_heap.top().cost) 
 		  END;
 
   //store and write paths by batches to reduce memory consumption

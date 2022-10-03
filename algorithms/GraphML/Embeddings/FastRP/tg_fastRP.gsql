@@ -1,33 +1,68 @@
 CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
               STRING weights, FLOAT beta, INT k, INT embedding_dimension,
              INT sampling_constant, INT random_seed,
-             BOOL print_results=FALSE, STRING result_attr="") {
-  /*
-    This query produces an embedding for each vertex.
-    Assumes that tg_fastRP_preprocessing has been run first.
+             BOOL print_results=FALSE, STRING result_attribute="") {
 
-    NOTE: This query needs to be modified based upon your schema to set the embedding
-  attribute accordingly if you wish to store the embeddings in your graph. Each vertex should have
-  an attribute with type LIST<DOUBLE>. If you do not wish to store the embeddings in graph, the applicable lines.
 
-    NOTE: FastRP was originally created to work on undirected graphs. It can work on directed graphs, although
-    we recommend to have reverse edges in your schema so the embeddings can be passed in both directions. If
-    using a directed graph, there is a modification to allow it to run with sink vertices, but this may
-    affect the embeddings.
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
-    Parameters :
-    v_type: Set of strings representing the vertex types to embed.
-    e_type: Set of strings representing the edge types to use when producing embeddings
-    k: "depth" of embedding. k=2 means that the resulting embedding would take vertices within 2-hops into account
-    sampling_constant: controls the sparsity of the resulting embedding
-    reduced_dimension: dimension of the embedding
-    beta: hyperparameter that is typically between -1 and 0
-    weights: comma seperated string of weights for each hop in the graph, (eg "1,2,4") when k=3
-    index_attr: attribute where the fastrp_preprocessing query results are stored
-    print_results: print resulting embeddings to Json
-    store_attr: option to write embeddings to a vertex attribute (NOTE: SCHEMA MUST SUPPORT THIS)
-    file_path: path to write embeddings to file
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/GraphML/Embeddings
+
+    Maturity:
+        alpha
+
+    Description: 
+        This query produces an embedding for each vertex.
+        Assumes that tg_fastRP_preprocessing has been run first.
+
+        NOTE - This query needs to be modified based upon your schema to set the embedding
+            attribute accordingly if you wish to store the embeddings in your graph. Each vertex should have
+            an attribute with type LIST<DOUBLE>. If you do not wish to store the embeddings in graph, the applicable lines.
+
+        NOTE - FastRP was originally created to work on undirected graphs. It can work on directed graphs, although
+            we recommend to have reverse edges in your schema so the embeddings can be passed in both directions. If
+            using a directed graph, there is a modification to allow it to run with sink vertices, but this may
+            affect the embeddings.
+
+    Publications:
+        https://docs.tigergraph.com/graph-ml/current/node-embeddings/fast-random-projection
+
+    TigerGraph Documentation:
+        https://arxiv.org/pdf/1908.11512.pdf
+
+    Parameters:
+        v_type:
+            Set of strings representing the vertex types to embed.
+        e_type:
+            Set of strings representing the edge types to use when producing embeddings
+        k:
+            "depth" of embedding. k=2 means that the resulting embedding would take vertices within 2-hops into account
+        sampling_constant:
+            controls the sparsity of the resulting embedding
+        embedding_dimension:
+            dimension of the embedding
+        beta:
+            hyperparameter that is typically between -1 and 0
+        weights:
+            comma seperated string of weights for each hop in the graph, (eg "1,2,4") when k=3
+        index_attr:
+            attribute where the fastrp_preprocessing query results are stored
+        print_results:
+            print resulting embeddings to Json
+        result_attribute:
+            option to write embeddings to a vertex attribute
+            (NOTE - SCHEMA MUST SUPPORT THIS)
+        file_path:
+            path to write embeddings to file
     */
+    
   ArrayAccum<SumAccum<FLOAT>> @embedding_arr[128];
   ArrayAccum<SumAccum<FLOAT>> @final_embedding_arr[128];
   ListAccum<FLOAT> @final_embedding_list;
@@ -125,7 +160,7 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
     res = SELECT a FROM verts:a;
     PRINT res[res.@final_embedding_arr];
   END;
-  IF result_attr != "" THEN
+  IF result_attribute != "" THEN
     storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.embedding = s.@final_embedding_list;
   END;
 }

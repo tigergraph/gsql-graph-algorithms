@@ -1,24 +1,48 @@
 CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_attribute = "weight", INT maximum_iteration = 10, 
-  STRING result_attr = "cid", STRING file_path = "", BOOL print_stats = FALSE)  SYNTAX V1 {
+  STRING result_attribute = "cid", STRING file_path = "", BOOL print_stats = FALSE)  SYNTAX V1 {
 
-  /*
-  louvain community detection algorithm
-  add keyword DISTRIBUTED for cluster environment
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
-  Parameters:
-  v_type: vertex types to traverse
-  e_type: edge types to traverse
-  weight_attribute: attribute name for edge weights use empty string is graph is unweighted
-  weight_attribute type is hardcoded to FLOAT INT or DOUBLE can be supported by changing all `e.getAttr(weight_attribute, "FLOAT")`
-  to `e.getAttr(weight_attribute, "INT")` or `e.getAttr(weight_attribute, "DOUBLE")`
-  * note: when there is a weight attribute missmatch, there may not be an explicit error message
-  all print results showing 0 data are present is an indication that there might be a weight attribute missmatch
-  
-  maximum_iteration: maximum iteration of louvain optimization
-  result_attr: attribute name to assign community id results to; use empty string to skip
-  file_path: file path to write CSV output to; use empty string to skip
-  print_stats: print louvain execution info
-  */
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Production
+
+    Description: 
+        louvain community detection algorithm
+        add keyword DISTRIBUTED for cluster environment
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/community-algorithms/louvain
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        e_type:
+            edge types to traverse
+        weight_attribute:
+            attribute name for edge weights use empty string is graph is unweighted
+            * note
+                when there is a weight attribute missmatch, there may not be an explicit error message
+        maximum_iteration:
+            maximum iteration of louvain optimization
+        result_attribute:
+            attribute name to assign community id results to; use empty string to skip
+        file_path:
+            file path to write CSV output to; use empty string to skip
+        print_stats:
+            print louvain execution info
+    */
 
   TYPEDEF TUPLE <FLOAT deltaQ, FLOAT weight, VERTEX cc> move;
   SumAccum<FLOAT> @sum_ac; #sum of the degrees of all the vertices in community C of the vertex
@@ -203,8 +227,8 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
   Start = SELECT s 
           FROM Start:s
           POST-ACCUM
-              IF result_attr != "" THEN 
-                  s.setAttr(result_attr, getvid(s.@cc_list.get(0))) 
+              IF result_attribute != "" THEN 
+                  s.setAttr(result_attribute, getvid(s.@cc_list.get(0))) 
               END,
               IF file_path != "" THEN 
                   f.println(s, getvid(s.@cc_list.get(0))) 

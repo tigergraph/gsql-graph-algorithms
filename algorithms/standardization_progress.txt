@@ -9,6 +9,7 @@ Weight Attribute: weight_attribute - done
 Weight Attribute Type: weight_type - done
 Max Loop Iterations: maximum_iteration - done
 Batching Number: batch_number
+Result Attribute: result_attribute - done
 Traversal Depth or Hops: depth
 Damping coefficient: damping
 Convergence Threshold: threshold
@@ -44,3 +45,10 @@ Print stats boolean: print_stats - done
 Logging level: log_level
 Print Limiting: print_limit - done
 Display Edges boolean: display_edges
+
+TODO:
+    - edit to where params listed in header are in the same order as the params in the query definition.
+    - add headers to subqueries.
+    - adding committers
+    - verify maturities
+    - header and parameters for embeddings need to be triple checked

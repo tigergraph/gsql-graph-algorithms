@@ -1,7 +1,39 @@
 CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT maximum_iteration = 100, BOOL print_results = TRUE, STRING file_path = "")  SYNTAX V1 { 
 
     /*
-    Maximal Independent Set query only supports one edge type and works only for undirected graphs at the moment (8/12/20).
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Classification
+
+    Maturity:
+        Production
+
+    Description: 
+        Maximal Independent Set query only supports one edge type and works only for undirected graphs at the moment (8/12/20).
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/classification-algorithms/maximal-independent-set
+
+    Parameters:
+        v_type:
+            Name of vertex type to use
+        e_type:
+            Name of edge type to use
+        maximum_iteration:
+            maximum number of iterations for the search
+        print_results:
+            If True, output JSON to standard output
+        file_path:
+            If not empty, write output to this file.
     */
   
     AndAccum @and_active;

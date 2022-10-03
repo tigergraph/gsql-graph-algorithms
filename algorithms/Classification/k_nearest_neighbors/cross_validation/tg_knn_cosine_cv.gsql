@@ -1,9 +1,47 @@
 CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight, STRING label, INT min_k, INT max_k) RETURNS (INT) SYNTAX V1 {
 
-/* Leave-one-out cross validation for selecting optimal k. 
-   The input is a range of k, output is the k with highest correct prediction rate.
-   Note: When one vertex has no neighbor with known label, the prediction is considered false
-*/
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Classification
+
+    Maturity:
+        Production
+
+    Description: 
+        Leave-one-out cross validation for selecting optimal k. 
+        The input is a range of k, output is the k with highest correct prediction rate.
+        Note: When one vertex has no neighbor with known label, the prediction is considered false
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/classification-algorithms/k-nearest-neighbors-cross-validation
+
+    Parameters:
+        v_type:
+            Vertex types to calculate distance to source vertex for
+        e_type:
+            Edge types to traverse
+        reverse_e_type:
+            Reverse edge types to traverse
+        weight:
+            Edge attribute to use as the weight of the edge
+        label:
+            Vertex attribute to recognize as the label of the vertex
+        min_k:
+            lower bound of k (inclusive)
+        max_k:
+            upper bound of k (inclusive)
+    */
+
     ListAccum<FLOAT> @@correct_rate_list; 
     ListAccum<INT> @is_correct_list; 
     ListAccum<STRING> @predicted_label_list;

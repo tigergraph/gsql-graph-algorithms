@@ -1,12 +1,48 @@
 CREATE QUERY tg_cycle_detection_batch (SET<STRING> v_type, SET<STRING> e_type, INT batch_num,
              INT depth, BOOL print_results = TRUE, STRING file_path = "")SYNTAX v2{
 
-/* Rocha–Thatte cycle detection algorithm
-This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
-Stop passing the sequence (v1,v2,v3, ...) when:
-1. v = v1. If v has the minimum label in the sequence, report the cycle
-2. v = vi (i!=1). Do not report since this cycle is already reported in an earlier iteration
-*/
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+        Rocha–Thatte cycle detection algorithm + fixes
+        This is a distributed algorithm for detecting all the cycles on large-scale directed graphs.In every iteration, the vertices send its sequences to its out-neighbors, and receive the sequences from the in-neighbors.
+        Stop passing the sequence (v1,v2,v3, ...) when:
+            1. v = v1. If v has the minimum label in the sequence, report the cycle
+            2. v = vi (i!=1). Do not report since this cycle is already reported in an earlier iteration
+
+    Publications:
+        https://en.wikipedia.org/wiki/Rocha%E2%80%93Thatte_cycle_detection_algorithm
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/cycle-detection
+
+    Parameters:
+        v_type:
+            Names of vertex types to use
+        e_type:
+            Names of edge types to use
+        batch_num:
+            Number of batches to partition by
+        depth:
+            Maximum cycle length to search for, equal to the maximum number of iterations
+        print_results:
+            If True, output JSON to standard output
+        file_path:
+            If not empty, write output to this file.
+    */
+
   ListAccum<ListAccum<VERTEX>> @curr_list, @new_list;
   ListAccum<ListAccum<VERTEX>> @@cycles_list;
   SumAccum<INT> @sum_uid;

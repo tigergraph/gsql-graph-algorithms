@@ -1,15 +1,48 @@
 CREATE QUERY tg_slpa (SET<STRING> v_type, SET<STRING> e_type, FLOAT threshold, INT maximum_iteration, INT print_limit,
 BOOL print_results = TRUE, STRING file_path = "") SYNTAX V1 {
 
-/* The algorithm is an extension of the Label Propagation Algorithm for overlapping community detection.
-Link of the paper: http://arxiv.org/pdf/1109.5720
-Indicate community membership by assigning each vertex multiple community IDs.
-Parameters:
-  v_type: vertex types to traverse          print_results: print JSON output
-  e_type: edge types to traverse            attr: INT attr to store results to
-  threshold: threshold to drop a label      file_path: file to write CSV output to
-  maximum_iteration: number of iterations            print_limit: max #vertices to output (-1 = all)
-*/
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Production
+
+    Description: 
+        The algorithm is an extension of the Label Propagation Algorithm for overlapping community detection.
+        Indicate community membership by assigning each vertex multiple community IDs.
+
+    Publications:
+        http://arxiv.org/pdf/1109.5720
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/community-algorithms/slpa
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        e_type:
+            edge types to traverse
+        print_results:
+            print JSON output
+        attr:
+            INT attr to store results to
+        threshold:
+            threshold to drop a label
+        file_path:
+            file to write CSV output to
+        maximum_iteration:
+            number of iterations
+        print_limit:
+            max #vertices to output (-1 = all)
+    */
 
     ListAccum<INT> @label_list;    # the memory of each vertex
     SumAccum<INT> @sum_send;      # the label sended by speaker rule

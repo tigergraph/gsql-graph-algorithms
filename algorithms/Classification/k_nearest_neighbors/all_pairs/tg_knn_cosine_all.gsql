@@ -2,9 +2,50 @@ CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
   BOOL print_results = TRUE, STRING file_path = "", STRING result_attribute = "")  SYNTAX V1 {
 
     /*
-    This query is k-nearest neighbors based on Cosine Similarity on all vertices.
-    The output is the predicted label for all the vertices depending on the majority label of their k-nearest neighbors.
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Classification
+
+    Maturity:
+        Production
+
+    Description: 
+        This query is k-nearest neighbors based on Cosine Similarity on all vertices.
+        The output is the predicted label for all the vertices depending on the majority label of their k-nearest neighbors.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/classification-algorithms/k-nearest-neighbors-batch
+
+    Parameters:
+        v_type: 
+            Vertex types to calculate distance to source vertex for
+        e_type:
+            Edge types to traverse
+        reverse_e_type:
+            Reverse edge types to traverse
+        weight:
+            Edge attribute to use as the weight of the edge
+        label:
+            Vertex attribute to recognize as the label of the vertex
+        top_k:
+            number of nearest neighbors to consider
+        print_results:
+            Boolean value that indicates whether to output to console in JSON
+        file_path:
+            If provided, the algorithm will output to this file path in CSV format
+        result_attribute:
+            Vertex attribute to save the predicted label as.
     */
+
     SumAccum<STRING> @sum_predicted_label;
     FILE f (file_path);
         

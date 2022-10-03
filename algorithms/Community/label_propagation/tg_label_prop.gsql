@@ -1,8 +1,47 @@
 CREATE QUERY tg_label_prop (SET<STRING> v_type, SET<STRING> e_type, INT maximum_iteration, INT print_limit, 
   BOOL print_results = TRUE, STRING file_path = "", STRING result_attribute = "")  SYNTAX V1 {
 
-# Partition the vertices into communities, according to the Label Propagation method.
-# Indicate community membership by assigning each vertex a community ID.
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Production
+
+    Description: 
+        Partition the vertices into communities, according to the Label Propagation method.
+        Indicate community membership by assigning each vertex a community ID.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/community-algorithms/label-propagation
+
+    Parameters:
+        v_type:
+            Names of vertex types to use
+        e_type:
+            Names of edge types to use
+        maximum_iteration:
+            Number of maximum iteration of the algorithm
+        print_limit:
+            If >=0, max number of vertices to output to JSON.
+        print_results:
+            If True, output JSON to standard output
+        result_attribute:
+            If not empty, store community id values (INT) to this attribute
+        file_path:
+            If not empty, write output to this file.
+    */
 
 OrAccum @@or_changed = true;
 MapAccum<INT, INT> @map;     # <communityId, numNeighbors>

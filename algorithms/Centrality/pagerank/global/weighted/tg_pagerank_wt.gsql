@@ -1,25 +1,63 @@
 CREATE QUERY tg_pagerank_wt (STRING v_type, STRING e_type, STRING weight_attribute,
  FLOAT max_change=0.001, INT maximum_iteration=25, FLOAT damping=0.85, INT top_k = 100,
- BOOL print_results = TRUE, STRING result_attr =  "", STRING file_path = "",
+ BOOL print_results = TRUE, STRING result_attribute =  "", STRING file_path = "",
  BOOL display_edges = FALSE) SYNTAX V1 {
 
-/*
- Compute the pageRank score for each vertex in the GRAPH
- In each iteration, compute a score for each vertex:
-     score = (1-damping) + damping*sum(received scores FROM its neighbors).
- The pageRank algorithm stops when either of the following is true:
- a) it reaches maximum_iteration iterations;
- b) the max score change for any vertex compared to the last iteration <= max_change.
- v_type: vertex types to traverse          print_results: print JSON output
- e_type: edge types to traverse            result_attr: INT attr to store results to
- weight_attribute: attribute for edge weights
- maximum_iteration: max #iterations                 file_path: file to write CSV output to
- top_k: #top scores to output              display_edges: output edges for visualization
- max_change: max allowed change between iterations to achieve convergence
- damping: importance of traversal vs. random teleport
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
- This query supports only taking in a single edge for the time being (8/13/2020).
-*/
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Centrality
+
+    Maturity:
+        Production
+
+    Description: 
+        Compute the pageRank score for each vertex in the GRAPH
+        In each iteration, compute a score for each vertex:
+            score = (1-damping) + damping*sum(received scores FROM its neighbors).
+        The pageRank algorithm stops when either of the following is true:
+        a) it reaches maximum_iteration iterations;
+        b) the max score change for any vertex compared to the last iteration <= max_change.
+
+        This query supports only taking in a single edge for the time being (8/13/2020).
+
+    Publications:
+        http://infolab.stanford.edu/~backrub/google.html
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/pagerank
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        print_results:
+            print JSON output
+        e_type:
+            edge types to traverse
+        result_attribute:
+            INT attr to store results to
+        weight_attribute:
+            attribute for edge weights
+        maximum_iteration:
+            max #iterations
+        file_path:
+            file to write CSV output to
+        top_k:
+            #top scores to output
+        display_edges:
+            output edges for visualization
+        max_change:
+            max allowed change between iterations to achieve convergence
+        damping:
+            importance of traversal vs. random teleport
+    */
+
 TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
 HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
 MaxAccum<FLOAT> @@max_diff = 9999;    # max score change in an iteration
@@ -54,8 +92,8 @@ END;
 V = SELECT s 
     FROM Start:s
     POST-ACCUM 
-        IF result_attr != "" THEN 
-            s.setAttr(result_attr, s.@sum_score) 
+        IF result_attribute != "" THEN 
+            s.setAttr(result_attribute, s.@sum_score) 
         END,
    
 	IF file_path != "" THEN 

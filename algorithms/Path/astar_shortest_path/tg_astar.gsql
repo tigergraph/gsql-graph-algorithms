@@ -1,18 +1,46 @@
 CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type, STRING weight_type, STRING latitude, STRING longitude,
 STRING weight_attribute, BOOL print_stats = False) SYNTAX V1 {
 
-/* The A* (pronounced "A-Star") Shortest Path algorithm computes the shortest path between two nodes.
-A* is an informed search algorithm as it uses a heuristic function to guide the graph traversal.
-The heuristic function must be admissible, which means it is always less or equal to the distance to the target.
-The algorithm supports weighted graphs with positive relationship weights.
-Parameters:
-source_vertex:start vertex
-target_vertex:target vertex
-e_type: edge types to traverse
-weight_attribute: attribute for edge weights
-weight_type: weight data type (INT,FLOAT,DOUBLE)
-print_stats: output edges for visualization
-*/
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+        
+    Maturity:
+        production
+
+    Description: 
+        The A* (pronounced "A-Star") Shortest Path algorithm computes the shortest path between two nodes.
+        A* is an informed search algorithm as it uses a heuristic function to guide the graph traversal.
+        The heuristic function must be admissible, which means it is always less or equal to the distance to the target.
+        The algorithm supports weighted graphs with positive relationship weights.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/a-star
+
+    Parameters:
+        source_vertex:
+            start vertex
+        target_vertex:
+            target vertex
+        e_type:
+            edge types to traverse
+        weight_attribute:
+            attribute for edge weights
+        weight_type:
+            weight data type (INT,FLOAT,DOUBLE)
+        print_stats:
+            output edges for visualization
+    */
 
 TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
 HeapAccum<pathTuple>(1, dist ASC) @@find_min_v_heap;  # retain 1 shortest path

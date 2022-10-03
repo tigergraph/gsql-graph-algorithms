@@ -1,6 +1,46 @@
-CREATE QUERY tg_weisfeiler_lehman(string v_type,string e_type,INT DEPTH, INT out_put_limit, BOOL print_results = TRUE, 
-  STRING result_attr = "",STRING file_path = "")SYNTAX v1 { 
+CREATE QUERY tg_weisfeiler_lehman(string v_type,string e_type,INT DEPTH, INT print_limit, BOOL print_results = TRUE, 
+  STRING result_attribute = "",STRING file_path = "")SYNTAX v1 { 
    
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/GraphML/Embeddings
+
+    Maturity:
+        alpha
+
+    Description: 
+        This algorithm finds corresponding vertices in isomorphic subgraphs in a graph.
+
+    Publications:
+        https://davidbieber.com/post/2019-05-10-weisfeiler-lehman-isomorphism-test/
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/node-embeddings/weisfeiler-lehman
+
+    Parameters:
+        v_type:
+            Vertex type to consider.
+        e_type:
+            Edge type to traverse.
+        depth:
+            Number of hops to consider
+        print_limit:
+            If print_accum is set to true, print a maximum of this number of vertices..
+        print_results:
+            If true, print JSON to standard output.
+        result_attribute:
+            If not empty, save the label of each vertex to this attribute.
+        file_path:
+            If not empty, save the result in CSV format to this filepath.
+    */
+
   MaxAccum<STRING> @previous_label;
   MaxAccum<STRING> @current_label;
   ListAccum<STRING> @label_list;
@@ -26,14 +66,14 @@ CREATE QUERY tg_weisfeiler_lehman(string v_type,string e_type,INT DEPTH, INT out
   Start = SELECT s 
           FROM start:s
           POST-ACCUM
-              IF result_attr != "" THEN 
-                  s.setAttr(result_attr, s.@current_label) 
+              IF result_attribute != "" THEN 
+                  s.setAttr(result_attribute, s.@current_label) 
               END,
     
               IF file_path != "" THEN 
                   f.println(s, s.@current_label) 
               END
-          LIMIT out_put_limit;
+          LIMIT print_limit;
         
    IF print_results THEN
        PRINT Start;

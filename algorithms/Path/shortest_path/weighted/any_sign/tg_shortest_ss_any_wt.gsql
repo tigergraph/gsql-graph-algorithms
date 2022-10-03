@@ -1,6 +1,33 @@
 CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
  STRING weight_attribute, STRING weight_type, INT print_limit = -1, BOOL print_results = TRUE,
- STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE)  SYNTAX V1 {
+ STRING result_attribute = "", STRING file_path = "", BOOL display_edges = FALSE)  SYNTAX V1 {
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+
+    */
 
 /*
  Single-source shortest path algorithm, with weight edges, possibly negative.
@@ -8,7 +35,7 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
  The Bellman-Ford algorithm for Single-Source Shortest Path with edge weights,
  is used.  If any loop in the graph has a net negative weight, the algorithm will exit.
  source: start vertex                            print_results: print JSON output
- v_type: vertex types to traverse                result_attr: INT attr to store results to
+ v_type: vertex types to traverse                result_attribute: INT attr to store results to
  e_type: edge types to traverse                  file_path: file to write CSV output to
  weight_attribute: attribute for edge weights             print_limit: max #vertices to output
  weight_type: weight data type (INT,FLOAT,DOUBLE)    display_edges: output edges for visualization
@@ -112,8 +139,8 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   component = SELECT s 
               FROM component:s
         POST-ACCUM 
-        IF result_attr != "" THEN 
-            s.setAttr(result_attr, s.@min_path_heap.top().dist) 
+        IF result_attribute != "" THEN 
+            s.setAttr(result_attribute, s.@min_path_heap.top().dist) 
         END,
         IF file_path != "" THEN 
             f.println(s, s.@min_path_heap.top().dist, s.@path_list) 

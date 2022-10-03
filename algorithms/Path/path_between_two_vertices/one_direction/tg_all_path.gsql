@@ -1,5 +1,33 @@
 CREATE QUERY tg_all_path(VERTEX v_source, VERTEX target_v, INT depth = 10,
   BOOL print_results = TRUE, STRING file_path = "")SYNTAX v1 {
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+
+    */
+    
   /*This algorithm is to find all path between two vertex
   
   Parameters:
