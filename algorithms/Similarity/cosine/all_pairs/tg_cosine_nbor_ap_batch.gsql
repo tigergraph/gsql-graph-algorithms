@@ -1,29 +1,58 @@
-CREATE QUERY tg_cosine_nbor_ap_batch(STRING vertex_type, STRING edge_type, STRING edge_attribute, INT top_k, 
+CREATE QUERY tg_cosine_nbor_ap_batch(STRING v_type, STRING e_type, STRING edge_attribute, INT top_k, 
   BOOL print_results = true, STRING file_path, STRING similarity_edge, INT num_of_batches = 1)  SYNTAX V1 {
-  
-  /*
-    This query calculates the Cosine Similarity of a given vertex and every other vertex.
-      Cosine Similarity = A \dot B/ ||A|| \dot ||B||/
 
-    Parameters :
-      vertex_type : start vertex types
-      edge_type   : edge type to traverse
-      edge_attribute  : name of the attribute on the edge_type
-      top_k        : # top scores to report
-      print_results : print JSON output
-      file_path   : file to write CSV output to
-      similarity_edge : edge type for storing vertex-vertex similarity scores
-      num_of_batches  : how many batches to split the query into (trade off parallelism for memory optimization)
-  */
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Similarity
+
+    Maturity:
+        production
+
+    Description: 
+        This query calculates the Cosine Similarity of a given vertex and every other vertex.
+        Cosine Similarity = A \dot B/ ||A|| \dot ||B||/
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/similarity-algorithms/cosine-similarity-of-neighborhoods-batch
+
+    Parameters:
+        v_type:
+            start vertex types
+        e_type:
+            edge type to traverse
+        edge_attribute:
+            name of the attribute on the e_type
+        top_k:
+            # top scores to report
+        print_results:
+            print JSON output
+        file_path:
+            file to write CSV output to
+        similarity_edge:
+            edge type for storing vertex-vertex similarity scores
+        num_of_batches:
+            how many batches to split the query into (trade off parallelism for memory optimization)
+    */
+  
   TYPEDEF TUPLE<VERTEX ver, FLOAT val> res_tup; # storing results in the heap
   MapAccum<VERTEX, FLOAT> @numerator_map, @@norm_map; # weight value from edge, normalized value
   HeapAccum<res_tup>(top_k, val desc) @heap; # stores topK similarity results
   FILE f (file_path);
 
 # get numerator value and normalized value from edge attribute
-  start = {vertex_type};
+  start = {v_type};
   subjects = SELECT t
-             FROM start:s -(edge_type:e)- :t
+             FROM start:s -(e_type:e)- :t
              WHERE e.getAttr(edge_attribute, "FLOAT") > 0
              ACCUM t.@numerator_map += (s -> e.getAttr(edge_attribute, "FLOAT")),
                    @@norm_map += (s -> pow(e.getAttr(edge_attribute, "FLOAT"), 2));
@@ -31,7 +60,7 @@ CREATE QUERY tg_cosine_nbor_ap_batch(STRING vertex_type, STRING edge_type, STRIN
 # compute the cosine simliarity, broken up into 2 parts
   FOREACH i IN RANGE[0, num_of_batches-1] DO
       neighbours = SELECT t
-                   FROM subjects:s -(edge_type:e)- :t
+                   FROM subjects:s -(e_type:e)- :t
                    WHERE e.getAttr(edge_attribute, "FLOAT") > 0
                    AND getvid(t) % num_of_batches == i
                    ACCUM

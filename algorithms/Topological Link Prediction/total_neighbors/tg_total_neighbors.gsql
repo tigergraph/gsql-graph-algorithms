@@ -1,18 +1,42 @@
-CREATE QUERY tg_total_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
+CREATE QUERY tg_total_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e_type, BOOL print_results = TRUE)  SYNTAX V1 { 
 
     /*
-    This query calculates the number of total neighbors of two vertices.
-    Higher the number, the closer two vertices are.
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
-    Parameters :
-        a : Input vertex one
-        b : Input vertex two
-        e_type: edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
-        print_res: Boolean of if you want to print result (True by default)
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Topological%20Link%20Prediction
+
+    Maturity:
+        production
+
+    Description: 
+        This query calculates the number of total neighbors of two vertices.
+        Higher the number, the closer two vertices are.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/link-prediction/total-neighbors
+
+    Parameters:
+        v_source:
+            Input vertex one
+        v_target:
+            Input vertex two
+        e_type:
+            edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
+        print_results:
+            Boolean of if you want to print result (True by default)
     */
 
-    avs = {a};
-    bvs = {b};
+    avs = {v_source};
+    bvs = {v_target};
 
     IF "ALL" NOT IN e_type THEN  # Specific edge types defined as parameters
         na = SELECT n 
@@ -29,7 +53,7 @@ CREATE QUERY tg_total_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e_
              FROM bvs -()- :n;  # Get vertex B's neighbors
     END;
     u = na UNION nb;  # Get all neighbors
-    IF print_res THEN
+    IF print_results THEN
         PRINT u.size() as closeness; 
     END;
 }

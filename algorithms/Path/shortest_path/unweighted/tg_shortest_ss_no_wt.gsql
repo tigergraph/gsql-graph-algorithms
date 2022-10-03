@@ -17,26 +17,33 @@ CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING
         production
 
     Description: 
-
+        Single-source shortest path algorithm, with unweighted edges.
+        From the source vertex, finds the unweighted shortest path (number of hops, INT value)
 
     Publications:
-        <link>
+        NA
 
     TigerGraph Documentation:
-        <link>
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/single-source-shortest-path-unweighted
 
     Parameters:
-
+        source:
+            start vertex
+        print_results:
+            print JSON output
+        v_type:
+            vertex types to traverse
+        result_attribute:
+            INT attr to store results to
+        e_type:
+            edge types to traverse
+        file_path:
+            file to write CSV output to
+        print_limit:
+            max #vertices to output
+        display_edges:
+            output edges for visualization
     */
-  
-/*
-Single-source shortest path algorithm, with unweighted edges.
-From the source vertex, finds the unweighted shortest path (number of hops, INT value)
- source: start vertex                         print_results: print JSON output
- v_type: vertex types to traverse             result_attribute: INT attr to store results to
- e_type: edge types to traverse               file_path: file to write CSV output to
- print_limit: max #vertices to output        display_edges: output edges for visualization
-*/
 
   FILE f(file_path);
   MinAccum<INT> @min_dis;

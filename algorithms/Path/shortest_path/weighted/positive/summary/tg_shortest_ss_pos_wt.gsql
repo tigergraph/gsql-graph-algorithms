@@ -1,7 +1,7 @@
 CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
  STRING weight_attribute, STRING weight_type, FLOAT epsilon = 0.001,BOOL print_results = TRUE, INT print_limit = -1, 
- BOOL display_edges = FALSE, STRING result_attribute = "", BOOL spit_to_file = FALSE, 
- STRING file_path = "/home/tigergraph/tg_query_output.csv")  SYNTAX V1 {
+ BOOL display_edges = FALSE, STRING result_attribute = "", 
+ STRING file_path = "")  SYNTAX V1 {
 
     /*
     First Author: <First Author Name>
@@ -18,29 +18,39 @@ CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
         production
 
     Description: 
-
+        Single-source shortest path algorithm, with positive weight edges.
+        From the source vertex, finds the weighted shortest path (FLOAT value).
 
     Publications:
-        <link>
+        NA
 
     TigerGraph Documentation:
-        <link>
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/single-source-shortest-path-weighted
 
     Parameters:
-
+        source:
+            start vertex to
+        print_results:
+            print JSON output
+        v_type:
+            vertex types to traverse
+        print_limit:
+            max #vertices to output
+        e_type:
+            edge types to traverse
+        display_edges:
+            output edges for visualization
+        weight_attribute:
+            attribute for edge weights
+        result_attribute:
+            INT attr to store results to
+        weight_type:
+            weight data type (INT,FLOAT,DOUBLE)
+        epsilon:
+            min delta weight
+        file_path:
+            file to write CSV output to
     */
-
-/*
- Single-source shortest path algorithm, with positive weight edges.
- From the source vertex, finds the weighted shortest path (FLOAT value).
-
- source: start vertex to  every other vertex.     print_results: print JSON output
- v_type: vertex types to traverse                 print_limit: max #vertices to output
- e_type: edge types to traverse                   display_edges: output edges for visualization
- weight_attribute: attribute for edge weights              result_attribute: INT attr to store results to
- weight_type: weight data type (INT,FLOAT,DOUBLE)     spit_to_file: spit data to file 
- epsilon: min delta weight                        file_path: file to write CSV output to
-*/
 
   MinAccum<FLOAT> @min_path = GSQL_INT_MAX;       # retain 1 shortest path
   MinAccum<FLOAT> @min_prev_path = -1;
@@ -94,7 +104,7 @@ CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
 	          IF result_attribute != "" THEN 
 		      s.setAttr(result_attribute, s.@min_path) 
 		  END,  
-                  IF spit_to_file THEN 
+                  IF file_path != "" THEN 
 		      f.println(s, s.@min_path) 
 		  END;
    

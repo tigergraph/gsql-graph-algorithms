@@ -16,18 +16,27 @@ CREATE QUERY tg_all_path(VERTEX v_source, VERTEX target_v, INT depth = 10,
         production
 
     Description: 
-
+        Finds all paths between two vertices in a directed graph.
 
     Publications:
-        <link>
+        NA
 
     TigerGraph Documentation:
-        <link>
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/single-pair-all-paths
 
     Parameters:
-
+        v_source:
+            source vertex
+        target_v:
+            target vertex
+        depth:
+            maxmium path length is 2*depth
+        print_results:
+            print JSON output
+        file_path:
+            file to write CSV output to
     */
-    
+
   /*This algorithm is to find all path between two vertex
   
   Parameters:

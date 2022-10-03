@@ -17,29 +17,39 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
         production
 
     Description: 
-
+        Single-source shortest path algorithm, with weight edges, possibly negative.
+        From the source vertex, finds the weighted shortest path (FLOAT value).
+        The Bellman-Ford algorithm for Single-Source Shortest Path with edge weights,
+        is used.  If any loop in the graph has a net negative weight, the algorithm will exit.
 
     Publications:
-        <link>
+        NA
 
     TigerGraph Documentation:
-        <link>
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/single-source-shortest-path-weighted
 
     Parameters:
-
+        source:
+            start vertex
+        print_results:
+            print JSON output
+        v_type:
+            vertex types to traverse
+        result_attribute:
+            INT attr to store results to
+        e_type:
+            edge types to traverse
+        file_path:
+            file to write CSV output to
+        weight_attribute:
+            attribute for edge weights
+        print_limit:
+            max #vertices to output
+        weight_type:
+            weight data type (INT,FLOAT,DOUBLE)
+        display_edges:
+            output edges for visualization
     */
-
-/*
- Single-source shortest path algorithm, with weight edges, possibly negative.
- From the source vertex, finds the weighted shortest path (FLOAT value).
- The Bellman-Ford algorithm for Single-Source Shortest Path with edge weights,
- is used.  If any loop in the graph has a net negative weight, the algorithm will exit.
- source: start vertex                            print_results: print JSON output
- v_type: vertex types to traverse                result_attribute: INT attr to store results to
- e_type: edge types to traverse                  file_path: file to write CSV output to
- weight_attribute: attribute for edge weights             print_limit: max #vertices to output
- weight_type: weight data type (INT,FLOAT,DOUBLE)    display_edges: output edges for visualization
-*/
 
   TYPEDEF TUPLE<FLOAT dist, VERTEX pred> Path_Tuple;    
   HeapAccum<Path_Tuple>(1, dist ASC) @min_path_heap;       # retain 1 shortest path

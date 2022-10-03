@@ -1,32 +1,54 @@
 CREATE QUERY tg_fpm(STRING unify_vertex_type, STRING item_vertex_type, STRING connect_edge, DOUBLE support, UINT min_length,
 UINT max_count = 10000, INT print_limit = -1, STRING file_path = "")  SYNTAX V1 {
 
-  /*
-  Paper Reference:
-  Shintani, Takahiko & Kitsuregawa, Masaru. (1999). Mining Algorithms for Sequential Patterns in Parallel: Hash Based Approach.
-  Lecture Notes in Computer Science. 1394. 10.1007/3-540-64383-4_24.
-  https://www.researchgate.net/publication/2642957_Mining_Algorithms_for_Sequential_Patterns_in_Parallel_Hash_Based_Approach
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
-  Schema examples: user - (buys) - product
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Patterns
+
+    Maturity:
+        alpha
+
+    Description: 
+        The library is currently under construction! Descriptions will be added soon.
+
+        Schema examples: user - (buys) - product
                    user - (visits) - page
                    user - (rates) - product
 
-  Precondition:
-  unify_vertex_type has a List<INT> item_list as an attribute (This can be achived by running pre_process query)
+        Precondition:
+        unify_vertex_type has a List<INT> item_list as an attribute (This can be achived by running pre_process query)
 
-  Parameters:
-  unify_vertex_type - aggregate vertex
-  item_vertex_type - item vertex
-  connect_edge - undirected edge that connect the two vertices above
+    Publications:
+        https://www.researchgate.net/publication/2642957_Mining_Algorithms_for_Sequential_Patterns_in_Parallel_Hash_Based_Approach
 
-  support: minimum pattern frequency to be considered in result
-  min_length: minimum pattern length to be considered in result
-  max_count: maximum number of patterns returned by the algorithm
-             if more patterns satisfy the condition, the most frequent patterns will be returned
-  print_limit: an integer to limit the length of the query result printed; use -1 for no limit
-  file_path: file path to write csv output to; use empty string to skip output to file
-  Output: A list of frequenncy and pattern (list of vertices' id), ordered by frequency.
-  */
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+        unify_vertex_type:
+            aggregate vertex
+        item_vertex_type:
+            item vertex
+        connect_edge:
+            undirected edge that connect the two vertices above
+        support:
+            minimum pattern frequency to be considered in result
+        min_length:
+            minimum pattern length to be considered in result
+        max_count:
+            maximum number of patterns returned by the algorithm
+        print_limit:
+            an integer to limit the length of the query result printed; use -1 for no limit
+        file_path:
+            file path to write csv output to; use empty string to skip output to file
+    */
 
   TYPEDEF TUPLE<INT pattern_key, INT suffix_key> key_pair;
   TYPEDEF TUPLE<INT pattern_key, DOUBLE frequency, INT length> frequent_pattern_node;

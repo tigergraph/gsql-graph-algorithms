@@ -17,30 +17,32 @@ CREATE QUERY tg_all_path_bidirection(VERTEX v_source, VERTEX target_v, SET<STRIN
         production
 
     Description: 
-
+        Finds all paths between two vertices in a graph with undirected edges.
 
     Publications:
-        <link>
+        NA
 
     TigerGraph Documentation:
-        <link>
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/single-pair-all-paths
 
     Parameters:
-
+        v_source:
+            source vertex
+        target_v:
+            target vertex
+        e_type:
+            edge types to traverse
+        reverse_e_type:
+            reverse edge types to traverse, if the graph is undirected reverse_e_type=e_type
+        depth:
+            maxmium path length is 2*depth
+        print_results:
+            print JSON output
+        file_path:
+            file to write CSV output to
     */
-    
-  /*This algorithm is to find all path between two vertex
-  
-  Parameters:
-  v_source: source vertex                 
-  target_v: target vertex
-  e_type: edge types to traverse 
-  ve_type: reverse edge types to traverse, if the graph is undirected ve_type=e_type
-  depth: maxmium path length is 2*depth
-  print_results: print JSON output    
-  file_path: file to write CSV output to
-  
-  */
+
+
   ListAccum<ListAccum<VERTEX>> @path_source_list; //path from source
   ListAccum<ListAccum<VERTEX>> @new_source_list; //update path
   ListAccum<ListAccum<VERTEX>> @path_target_list; //path from target

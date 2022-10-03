@@ -1,9 +1,51 @@
-CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight, INT top_k, INT print_limit,
+CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight_attribute, INT top_k, INT print_limit,
   BOOL print_results = TRUE, STRING file_path = "", STRING similarity_edge = "") RETURNS (MapAccum<VERTEX, FLOAT>)  SYNTAX V1 {
 
-  /* This query calculates the Cosine Similarity between a given vertex and every other vertex.
-  Cosine similarity = A \dot B / ||A|| \dot ||B||
-  */
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Similarity
+
+    Maturity:
+        production
+
+    Description: 
+        This query calculates the Cosine Similarity between a given vertex and every other vertex.
+        Cosine similarity = A \dot B / ||A|| \dot ||B||
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/similarity-algorithms/cosine-similarity-of-neighborhoods-single-source
+
+    Parameters:
+        source:
+            start vertex types
+        e_type:
+            edge type to traverse
+        reverse_e_type:
+            reverse edge type to traverse
+        weight_attribute:
+            edge attribute that holds the weight
+        top_k:
+            top scores to report
+        print_limit:
+            limit the number of vertices printed
+        print_results:
+            print JSON output
+        file_path:
+            file to write CSV output to
+        similarity_edge:
+            edge type for storing vertex-vertex similarity scores
+    */
+
 
   SumAccum<FLOAT> @sum_numerator, @@sum_norm1, @sum_norm2, @sum_similarity;
   MapAccum<VERTEX, FLOAT> @@top_k_result_map;
@@ -13,17 +55,17 @@ CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> r
   start = {source};
   subjects = SELECT t
              FROM start:s -(e_type:e)- :t
-             ACCUM t.@sum_numerator = e.getAttr(weight, "FLOAT"),
-                   @@sum_norm1 += pow(e.getAttr(weight, "FLOAT"), 2);
+             ACCUM t.@sum_numerator = e.getAttr(weight_attribute, "FLOAT"),
+                   @@sum_norm1 += pow(e.getAttr(weight_attribute, "FLOAT"), 2);
 
   neighbours = SELECT t
                FROM subjects:s -(reverse_e_type:e)-:t
                WHERE t != source
-               ACCUM t.@sum_numerator += s.@sum_numerator * e.getAttr(weight, "FLOAT");
+               ACCUM t.@sum_numerator += s.@sum_numerator * e.getAttr(weight_attribute, "FLOAT");
 
   neighbours = SELECT s
                FROM neighbours:s -(e_type:e)- :t
-               ACCUM s.@sum_norm2 += pow(e.getAttr(weight, "FLOAT"), 2)
+               ACCUM s.@sum_norm2 += pow(e.getAttr(weight_attribute, "FLOAT"), 2)
                POST-ACCUM s.@sum_similarity = s.@sum_numerator/sqrt(@@sum_norm1 * s.@sum_norm2)
                ORDER BY s.@sum_similarity DESC
                LIMIT top_k;

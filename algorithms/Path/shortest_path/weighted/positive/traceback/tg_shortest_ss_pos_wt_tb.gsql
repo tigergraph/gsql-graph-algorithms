@@ -1,7 +1,7 @@
 CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
  STRING weight_attribute, STRING weight_type, FLOAT epsilon = 0.001,BOOL print_results = TRUE, INT print_limit = -1, 
- BOOL display_edges = FALSE, STRING result_attribute = "", BOOL spit_to_file = FALSE, 
- STRING file_path = "/home/tigergraph/tg_query_output.csv", UINT write_size = 10000)  SYNTAX V1 {
+ BOOL display_edges = FALSE, STRING result_attribute = "",
+ STRING file_path = "", UINT write_size = 10000)  SYNTAX V1 {
 
     /*
     First Author: <First Author Name>
@@ -18,30 +18,41 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
         production
 
     Description: 
-
+        Single-source shortest path algorithm (traceback version), with positive weight edges. 
+        From the source vertex, finds the weighted shortest path (FLOAT value).
 
     Publications:
-        <link>
+        NA
 
     TigerGraph Documentation:
-        <link>
+        NA
 
     Parameters:
-
+        source:
+            start vertex to
+        print_results:
+            print JSON output
+        v_type:
+            vertex types to traverse
+        print_limit:
+            max #vertices to output
+        e_type:
+            edge types to traverse
+        display_edges:
+            output edges for visualization
+        weight_attribute:
+            attribute for edge weights
+        result_attribute:
+            INT attr to store results to
+        weight_type:
+            weight data type (INT,FLOAT,DOUBLE)
+        epsilon:
+            min delta weight
+        file_path:
+            file to write CSV output to
+        write_size:
+            number of paths to write concurrently
     */
-
-/*
- Single-source shortest path algorithm (traceback version), with positive weight edges. 
- From the source vertex, finds the weighted shortest path (FLOAT value).
-
- source: start vertex to  every other vertex.     print_results: print JSON output
- v_type: vertex types to traverse                 print_limit: max #vertices to output
- e_type: edge types to traverse                   display_edges: output edges for visualization
- weight_attribute: attribute for edge weights              result_attribute: INT attr to store results to
- weight_type: weight data type (INT,FLOAT,DOUBLE)     spit_to_file: spit data to file 
- epsilon: min delta weight                        file_path: file to write CSV output to
- write_size: number of paths to write concurrently
-*/
 
   TYPEDEF TUPLE<FLOAT cost, INT length, VERTEX pred> min_tup;
   HeapAccum<min_tup>(1, cost ASC, length ASC) @min_path_heap;
@@ -100,7 +111,7 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
   END;
   
   ##### Output #####
-  IF spit_to_file THEN
+  IF file_path != "" THEN
       f.println("Vertex_ID","Distance","Shortest_Path");
   END;
   
@@ -156,7 +167,7 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
                      s.@path_receiver_list.clear();
       END;
    
-      IF spit_to_file THEN
+      IF file_path != "" THEN
           tmp = SELECT s
                 FROM tmp:s
                 POST-ACCUM
