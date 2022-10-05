@@ -8,7 +8,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING wt_attr =
   Parameters:
   v_type: vertex types to traverse
   e_type: edge types to traverse
-  wt_attr: attribute name for edge weights use empty string if graph is unweighted
+  wt_attr: attribute name for edge weights use empty string is graph is unweighted
   wt_attr type is hardcoded to FLOAT INT or DOUBLE can be supported by changing all `e.getAttr(wt_attr, "FLOAT")`
   to `e.getAttr(wt_attr, "INT")` or `e.getAttr(wt_attr, "DOUBLE")`
   * note: when there is a weight attribute missmatch, there may not be an explicit error message

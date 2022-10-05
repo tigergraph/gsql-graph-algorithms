@@ -1,4 +1,4 @@
-CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type,INT max_hops = 10,
+CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re_type,INT max_hops = 10,
   INT top_k = 100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
   STRING file_path = "", BOOL display_edges = FALSE) SYNTAX V1 {
   
@@ -31,7 +31,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
   FILE f (file_path);
   INT num_vert;
   INT batch_number;
-# Compute closeness	
+# Compute closeness  
   all = {v_type};
   
   num_vert = all.size();
@@ -44,23 +44,23 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
                   FROM all:s
                   WHERE getvid(s)%batch_number == i
                   POST-ACCUM 
-		        @@map+=(getvid(s)->0),
+            @@map+=(getvid(s)->0),
                         @@batch_set+=getvid(s);
   
           FOREACH ver in @@batch_set DO 
               @@map+=(ver->@@sum_count); 
-	      @@sum_count+=1;
+        @@sum_count+=1;
           END; #set a unique ID for each vertex, ID from 1-63
     
           Start = SELECT s 
                   FROM Start:s 
                   POST-ACCUM 
-		         s.@sum_id=@@map.get(getvid(s));
+             s.@sum_id=@@map.get(getvid(s));
     
           Start = Select s 
                   FROM Start:s
                   POST-ACCUM 
-		         s.@bitwise_or_seen=1<<s.@sum_id,
+             s.@bitwise_or_seen=1<<s.@sum_id,
                          s.@bitwise_or_visit=1<<s.@sum_id; # set initial seen and visit s.@seen1 s.@seen2 
           @@batch_set.clear();
           @@map.clear();
@@ -92,13 +92,13 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
   END;
   
   #Output
-	IF file_path != "" THEN
-	    f.println("Vertex_ID", "Closeness");
-	END;
-	
+  IF file_path != "" THEN
+      f.println("Vertex_ID", "Closeness");
+  END;
+  
   Start = SELECT s 
           FROM all:s
-	  # Calculate Closeness Centrality for each vertex
+    # Calculate Closeness Centrality for each vertex
           WHERE s.@sum_res>0
           POST-ACCUM 
                 IF wf THEN 
@@ -107,15 +107,15 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
                     s.@sum_score = s.@sum_size*1.0/s.@sum_res*1.0 
                 END,
     
-		            IF result_attr != "" THEN 
+                IF result_attr != "" THEN 
                     s.setAttr(result_attr, s.@sum_score) 
                 END,
     
-	              IF print_accum THEN 
+                IF print_accum THEN 
                     @@top_scores_heap += Vertex_Score(s, s.@sum_score) 
                 END,
     
-		            IF file_path != "" THEN 
+                IF file_path != "" THEN 
                     f.println(s, s.@sum_score) 
                 END;
    #test
@@ -128,12 +128,14 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
                      @@top_scores_heap += Vertex_Score(s, -1);
        PRINT @@top_scores_heap AS top_scores;
        IF display_edges THEN
-	   PRINT Start[Start.@sum_score];
-       Start = SELECT s
-	       FROM Start:s -(e_type:e)-:t
-	       ACCUM 
-                     @@edge_set += e;
-	       PRINT @@edge_set;
+          Start = SELECT s 
+                  FROM all:s 
+                  WHERE s.@sum_res>0;
+          PRINT Start[Start.@sum_score];
+          Start = SELECT s
+                  FROM Start:s -(e_type:e)-:t
+                  ACCUM @@edge_set += e;
+          PRINT @@edge_set;
        END;
     END;
 }

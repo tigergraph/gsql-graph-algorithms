@@ -1,5 +1,16 @@
-CREATE QUERY tg_all_path(VERTEX source_v, VERTEX target_v, INT maxDepth = 10,
+CREATE QUERY tg_all_path(VERTEX source_v, VERTEX target_v, INT depth = 10,
   BOOL print_accum = TRUE, STRING file_path = "")SYNTAX v1 {
+  /*This algorithm is to find all path between two vertex
+  
+  Parameters:
+  source_v: source vertex                 
+  target_v: target vertex  
+  e_type: edge types to traverse
+  depth: maxmium path length
+  print_accum: print JSON output    
+  file_path: file to write CSV output to
+  
+  */
   ListAccum<ListAccum<VERTEX>> @path_list; 
   ListAccum<ListAccum<VERTEX>> @new_list;
   OrAccum @end_point;
@@ -17,7 +28,7 @@ CREATE QUERY tg_all_path(VERTEX source_v, VERTEX target_v, INT maxDepth = 10,
            FROM Source:s
            ACCUM s.@path_list = [s];
   
-  WHILE Source.size() > 0 LIMIT maxDepth DO 
+  WHILE Source.size() > 0 LIMIT depth DO 
        Source = SELECT t 
                  FROM Source:s -(:e)- :t
                  ACCUM 

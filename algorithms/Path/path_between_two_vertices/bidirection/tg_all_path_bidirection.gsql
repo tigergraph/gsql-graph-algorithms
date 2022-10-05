@@ -1,5 +1,17 @@
-CREATE QUERY tg_all_path_bidirection(VERTEX source_v, VERTEX target_v, SET<STRING> e_type, INT maxDepth = 3,
+CREATE QUERY tg_all_path_bidirection(VERTEX source_v, VERTEX target_v, SET<STRING> e_type, SET<STRING> re_type, INT depth = 3,
   BOOL print_accum = TRUE, STRING file_path = "")SYNTAX v1 {
+  /*This algorithm is to find all path between two vertex
+  
+  Parameters:
+  source_v: source vertex                 
+  target_v: target vertex
+  e_type: edge types to traverse 
+  ve_type: reverse edge types to traverse, if the graph is undirected ve_type=e_type
+  depth: maxmium path length is 2*depth
+  print_accum: print JSON output    
+  file_path: file to write CSV output to
+  
+  */
   ListAccum<ListAccum<VERTEX>> @path_source_list; //path from source
   ListAccum<ListAccum<VERTEX>> @new_source_list; //update path
   ListAccum<ListAccum<VERTEX>> @path_target_list; //path from target
@@ -22,7 +34,7 @@ CREATE QUERY tg_all_path_bidirection(VERTEX source_v, VERTEX target_v, SET<STRIN
            FROM Source:s
            ACCUM s.@path_source_list = [s];
   //for bidirection search, we will add one hop from start vertex set in each iteration, and add one hop and two hops from target vertex set
-  WHILE true LIMIT maxDepth DO 
+  WHILE true LIMIT depth DO 
        Source = Select t 
                  FROM Source:s -(e_type:e)- :t
                  ACCUM FOREACH sequence IN s.@path_source_list DO 
@@ -51,7 +63,7 @@ CREATE QUERY tg_all_path_bidirection(VERTEX source_v, VERTEX target_v, SET<STRIN
                                   END
                           END;
        
-       Targetset = SELECT t FROM Targetset:s-(e_type:e)-:t
+       Targetset = SELECT t FROM Targetset:s-(re_type:e)-:t
                 ACCUM FOREACH sequence IN s.@path_target_list DO 
                            IF sequence.contains(t) == FALSE THEN
                               t.@new_target_list += [[t]+sequence]  
@@ -61,7 +73,7 @@ CREATE QUERY tg_all_path_bidirection(VERTEX source_v, VERTEX target_v, SET<STRIN
                 POST-ACCUM t.@edit_list=t.@new_target_list;
      #find the path which contains even edges
       found2 = Source INTERSECT Targetset;
-  
+
       found2 = SELECT s 
                FROM found2:s 
                POST-ACCUM FOREACH sequence1 in s.@new_source_list DO

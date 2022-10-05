@@ -7,9 +7,9 @@
 # [x|y...|z]  : file/directory x, y, or z
 
   algorithm:
-    name: cycle component
+    name: Cycle Component
     filename: "tg_cycle_component.gsql"
     sha_id: 4569e4faa05d46caa2c333636fe37a2fb85da4dc
-    description: "need to add"
+    description: "Finds components which are on cycles without printing the entire cycle."
     version: lib3.0
-    include: false
+    include: true

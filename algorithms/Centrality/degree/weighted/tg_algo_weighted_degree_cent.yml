@@ -7,10 +7,10 @@
 # [x|y...|z]  : file/directory x, y, or z
 
   algorithm:
-    name: weighted degree cent
+    name: Weighted Degree Centrality
     filename: "tg_weighted_degree_cent.gsql"
     sha_id: 4569e4faa05d46caa2c333636fe37a2fb85da4dc
-    description: "need to add"
+    description: "Calculates the weighted degree centrality for each vertex in a graph."
     version: lib3.0
     include: true
 

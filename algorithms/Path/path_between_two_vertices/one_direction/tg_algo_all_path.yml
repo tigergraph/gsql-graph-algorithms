@@ -7,10 +7,10 @@
 # [x|y...|z]  : file/directory x, y, or z
 
   algorithm:
-    name: path between two vertices
+    name: All Path between Two Vertices (Directed Graph)
     filename: "tg_all_path.gsql"
     sha_id: 4569e4faa05d46caa2c333636fe37a2fb85da4dc
-    description: "need to add"
+    description: "Finds all paths between two vertices in a directed graph."
     version: lib3.0
-    include: false
+    include: true
 
