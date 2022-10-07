@@ -18,7 +18,7 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
 
     Description: 
         Compute Harmonic Centrality for each VERTEX. 
-        Use multi-sourse BFS.
+        Use multi-source BFS.
 
     Publications:
         https://arxiv.org/pdf/cond-mat/0008357.pdf

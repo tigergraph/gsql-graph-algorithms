@@ -25,7 +25,7 @@ CREATE QUERY tg_pagerank_pers(SET<VERTEX> source, STRING e_type,
         a) it reaches maximum_iteration iterations;
         b) the max score change for any vertex compared to the last iteration <= maxChange.
 
-        This query supports only taking in a single edge for the time being (8/13/2020).
+        This query currently supports only taking in a single edge.
 
     Publications:
         NA

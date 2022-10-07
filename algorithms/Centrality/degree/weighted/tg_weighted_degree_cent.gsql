@@ -29,7 +29,7 @@ CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING revers
 
    Parameters:
       v_type:
-            vertex types to traverse
+         vertex types to traverse
       e_type:
          edge types to traverse
       reverse_e_type:
@@ -41,7 +41,7 @@ CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING revers
       top_k:
          report only this many top scores
       print_results:
-         weather print the result
+         whether to print the results
       result_attribute:
          attribute to write result to
       file_path:

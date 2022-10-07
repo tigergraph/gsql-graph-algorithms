@@ -30,9 +30,9 @@ CREATE QUERY tg_map_equation(
         e_type:
             edge types to traverse
         weight_attribute:
-            attribute name for edge weights use empty string is graph is unweighted
+            attribute name for edge weights (use an empty string if the graph is unweighted)
             * note
-                when there is a weight attribute missmatch, there may not be an explicit error message
+                when there is a weight attribute mismatch, there may not be an explicit error message
         result_attribute:
             attribute name to assign community id results to; use empty string to skip
     */

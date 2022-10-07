@@ -28,7 +28,7 @@ CREATE QUERY tg_knn_cosine_ss (VERTEX source, SET<STRING> v_type, SET<STRING> e_
 
     Parameters:
         source:
-            The vertex which you want to predict the label
+            The vertex whose label to predict
         v_type:
             Vertex types to calculate distance to source vertex for
         e_type:
@@ -46,7 +46,7 @@ CREATE QUERY tg_knn_cosine_ss (VERTEX source, SET<STRING> v_type, SET<STRING> e_
         file_path:
             If provided, the algorithm will output to this file path in CSV format
         result_attribute:
-            Vertex attribute to save the predicted label as.
+            Vertex attribute where the predicted label should be saved
     */
 
   SumAccum<FLOAT> @sum_numerator, @@sum_norm1, @sum_norm2, @sum_similarity;

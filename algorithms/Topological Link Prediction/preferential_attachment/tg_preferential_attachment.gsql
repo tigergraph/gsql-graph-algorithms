@@ -16,7 +16,7 @@ CREATE QUERY tg_preferential_attachment(VERTEX v_source, VERTEX v_target, SET<ST
 
     Description: 
         This query calculates the preferential attachment value between two vertices.
-        Higher the number, the closer two vertices are.
+        The higher the number, the closer two vertices are.
 
         Preferential attachment is calculated by multiplying the number of each input vertices neighbors together.
 

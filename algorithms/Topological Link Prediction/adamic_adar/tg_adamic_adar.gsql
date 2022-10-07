@@ -16,7 +16,7 @@ CREATE QUERY tg_adamic_adar(VERTEX v_source, VERTEX v_target, SET<STRING> e_type
 
     Description: 
         This query calculates the Adamic Adar value between two vertices.
-        Higher the number, the closer two vertices are. A 0 value indicates two vertices are not close.
+        The higher the number, the closer two vertices are. A 0 value indicates two vertices are not close.
 
         Formula of caluclation is found here: https://en.wikipedia.org/wiki/Adamic/Adar_index
 

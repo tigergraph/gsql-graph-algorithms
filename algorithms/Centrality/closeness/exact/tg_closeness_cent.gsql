@@ -18,7 +18,7 @@ CREATE QUERY tg_closeness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING re
 
         Description: 
             Compute Closeness Centrality for each VERTEX. 
-            Use multi-sourse BFS.
+            Use multi-source BFS.
 
         Publications:
             http://www.vldb.org/pvldb/vol8/p449-then.pdf

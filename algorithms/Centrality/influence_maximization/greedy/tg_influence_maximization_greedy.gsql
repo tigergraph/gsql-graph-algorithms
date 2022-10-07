@@ -36,7 +36,7 @@ CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING
         file_path:
             file to write CSV output to
         print_results:
-            weather print the result
+            whether to print the results
     */
 
   /* get the vertex which has maximum influence.
@@ -46,7 +46,7 @@ CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING
   weight_attribute: enter weight attribute name
   top_k: report only this many top scores
   file_path: file to write CSV output to
-  print_results: weather print the result
+  print_results: whether to print the results
    */  
 
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;

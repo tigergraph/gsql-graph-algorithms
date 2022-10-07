@@ -43,7 +43,7 @@ CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
         file_path:
             If provided, the algorithm will output to this file path in CSV format
         result_attribute:
-            Vertex attribute to save the predicted label as.
+            Vertex attribute where the predicted label should be saved
     */
 
     SumAccum<STRING> @sum_predicted_label;

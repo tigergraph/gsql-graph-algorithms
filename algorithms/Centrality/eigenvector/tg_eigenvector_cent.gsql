@@ -37,7 +37,7 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT max
             top_k:
                 report only this many top scores
             print_results:
-                weather print the result
+                whether to print the results
             result_attribute:
                 attribute to write result to
             file_path:

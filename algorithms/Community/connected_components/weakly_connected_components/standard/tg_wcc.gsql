@@ -39,7 +39,7 @@ CREATE QUERY tg_wcc (SET<STRING> v_type, SET<STRING> e_type, INT print_limit = 1
         display_edges:
             output edges for visualization
         print_limit:
-            max #vertices to output (-1 = all)
+            maximum number of vertices to output (-1 = all)
     */
 
 /*

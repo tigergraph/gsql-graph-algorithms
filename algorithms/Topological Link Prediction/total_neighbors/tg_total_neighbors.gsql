@@ -16,7 +16,7 @@ CREATE QUERY tg_total_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e_
 
     Description: 
         This query calculates the number of total neighbors of two vertices.
-        Higher the number, the closer two vertices are.
+        The higher the number, the closer two vertices are.
 
     Publications:
         NA

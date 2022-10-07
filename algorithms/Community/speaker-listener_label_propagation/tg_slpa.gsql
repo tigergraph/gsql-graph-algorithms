@@ -41,7 +41,7 @@ BOOL print_results = TRUE, STRING file_path = "") SYNTAX V1 {
         maximum_iteration:
             number of iterations
         print_limit:
-            max #vertices to output (-1 = all)
+            maximum number of vertices to output (-1 = all)
     */
 
     ListAccum<INT> @label_list;    # the memory of each vertex

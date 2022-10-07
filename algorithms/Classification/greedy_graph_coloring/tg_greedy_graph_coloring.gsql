@@ -16,13 +16,13 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
         Production
 
     Description: 
-        This is a distributed algorithm for coloring graph on large-scale 
-        undirect graphs with one edge type.In every iteration, the vertices 
-        send its color to its out-neighbors, and the neighbors get assigned 
+        This is a distributed algorithm for coloring graphs on large-scale 
+        undirected graphs with one edge type. In every iteration, the vertices 
+        send their colors to their out-neighbors, and the neighbors get assigned 
         a different color. 
         Conditions:
             -  No two adjacent vertices in the graph should have same color
-            -  Until above condition is achieved , keep on finding conflicts 
+            -  Until above condition is achieved , continue finding conflicts 
             and resolve them.
             -  Stop the conflict detection when there are no resolution left.
 
@@ -34,7 +34,7 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
 
     Parameters:
         v_type:
-            Pass a set of all the vertex types which need to colored
+            Pass a set of all the vertex types which need to be colored
             from the graph.
         e_type:
             Pass a set of all the edge types connecting above mentioned

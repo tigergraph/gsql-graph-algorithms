@@ -31,9 +31,9 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
         e_type:
             edge types to traverse
         weight_attribute:
-            attribute name for edge weights use empty string is graph is unweighted
+            attribute name for edge weights (use an empty string if the graph is unweighted)
             * note
-                when there is a weight attribute missmatch, there may not be an explicit error message
+                when there is a weight attribute mismatch, there may not be an explicit error message
         maximum_iteration:
             maximum iteration of louvain optimization
         result_attribute:

@@ -16,7 +16,7 @@ CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT e
 
     Description: 
         This query calculates the embedding cosine similarity between one vertex and another.
-        Higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.
+        The higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.
 
         NOTE - This query needs to be modified based upon your schema to set the embedding attribute accordingly.
 

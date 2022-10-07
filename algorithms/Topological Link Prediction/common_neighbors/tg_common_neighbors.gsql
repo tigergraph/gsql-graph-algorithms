@@ -16,7 +16,7 @@ CREATE QUERY tg_common_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e
 
     Description: 
         This query calculates the number of common neighbors between two vertices.
-        Higher the number, the closer two vertices are.
+        The higher the number, the closer two vertices are.
 
     Publications:
         NA

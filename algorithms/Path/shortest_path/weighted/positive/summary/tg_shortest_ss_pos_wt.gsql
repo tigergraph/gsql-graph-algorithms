@@ -29,7 +29,7 @@ CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
 
     Parameters:
         source:
-            start vertex to
+            start vertex
         print_results:
             print JSON output
         v_type:
