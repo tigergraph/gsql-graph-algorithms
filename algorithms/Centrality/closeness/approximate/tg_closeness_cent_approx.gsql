@@ -36,7 +36,7 @@ CREATE QUERY tg_closeness_cent_approx (
         k:
             sample num
         epsilon:
-            eerror parameter
+            error parameter
         debug:
             debug flag -- 0
         reverse_e_type:
