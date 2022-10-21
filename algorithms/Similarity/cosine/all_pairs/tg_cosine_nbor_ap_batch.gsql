@@ -35,7 +35,7 @@ CREATE QUERY tg_cosine_nbor_ap_batch(STRING v_type, STRING e_type, STRING edge_a
         top_k:
             # top scores to report
         print_results:
-            print JSON output
+            If True, print JSON output
         file_path:
             file to write CSV output to
         similarity_edge:

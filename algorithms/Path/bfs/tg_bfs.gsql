@@ -1,4 +1,4 @@
-CREATE QUERY tg_bfs(SET<STRING> v_type, SET<STRING> e_type,INT max_hops=10, VERTEX v_start,
+CREATE QUERY tg_bfs(SET<STRING> v_type_set, SET<STRING> e_type_set,INT max_hops=10, VERTEX v_start,
 BOOL print_results = True, STRING result_attribute = "",STRING file_path = "", BOOL display_edges = TRUE) SYNTAX V1 { 
 
     /*
@@ -25,22 +25,22 @@ BOOL print_results = True, STRING result_attribute = "",STRING file_path = "", B
         https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/bfs
 
     Parameters:
-        v_type:
+        v_type_set:
             vertex types to traverse
         v_start:
             source vertex for traverse
-        e_type:
+        e_type_set:
             edge types to traverse
         print_results:
-            print JSON output
+            If True, print JSON output
         max_hops:
             look only this far from each vertex
         result_attribute:
-            INT attr to store results to
+            INT attribute to store results to
         file_path:
             file to write CSV output to
         display_edges:
-            output edges for visualization
+            If True, output edges for visualization
     */
 
     SumAccum<INT> @@sum_cur_step;  # current step
@@ -62,7 +62,7 @@ BOOL print_results = True, STRING result_attribute = "",STRING file_path = "", B
     WHILE Start.size() > 0 LIMIT max_hops DO
         @@sum_cur_step += 1;
         Start = SELECT t 
-                FROM Start:s-(e_type:e)- :t
+                FROM Start:s-(e_type_set:e)- :t
                 WHERE t.@or_visited == FALSE
                 ACCUM 
                     IF display_edges THEN 
@@ -73,7 +73,7 @@ BOOL print_results = True, STRING result_attribute = "",STRING file_path = "", B
                     t.@sum_step = @@sum_cur_step;
     END;
     
-    Start = {v_type};
+    Start = {v_type_set};
     Start = SELECT s 
             FROM Start:s
             WHERE s.@or_visited == TRUE

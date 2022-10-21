@@ -1,4 +1,4 @@
-CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
+CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set,
  STRING weight_attribute, STRING weight_type, INT print_limit = -1, BOOL print_results = TRUE,
  STRING result_attribute = "", STRING file_path = "", BOOL display_edges = FALSE)  SYNTAX V1 {
 
@@ -32,12 +32,12 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
         source:
             start vertex
         print_results:
-            print JSON output
-        v_type:
+            If True, print JSON output
+        v_type_set:
             vertex types to traverse
         result_attribute:
-            INT attr to store results to
-        e_type:
+            INT attribute to store results to
+        e_type_set:
             edge types to traverse
         file_path:
             file to write CSV output to
@@ -80,7 +80,7 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   ##### Get the connected component #####      
   WHILE start.size() > 0 DO
       start = SELECT t
-        FROM start:s -(e_type:e)- v_type:t
+        FROM start:s -(e_type_set:e)- v_type_set:t
         WHERE NOT t.@or_visited
         ACCUM t.@or_visited = TRUE;
       component = component UNION start;
@@ -91,7 +91,7 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   iter = component.size() - 1;    # the max iteration is N-1
   WHILE TRUE LIMIT iter DO 
       tmp = SELECT s
-            FROM component:s -(e_type:e)- v_type:t
+            FROM component:s -(e_type_set:e)- v_type_set:t
       ACCUM 
           IF s.@min_path_heap.size()>0 /*AND s.@minPath.top().dist < GSQL_INT_MAX*1.0*/ THEN
                     CASE weight_type
@@ -107,7 +107,7 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
 
   ##### Check for loops with net negative weight #####
   component = SELECT s
-        FROM component:s -(e_type:e)- v_type:t
+        FROM component:s -(e_type_set:e)- v_type_set:t
         ACCUM CASE weight_type
                   WHEN "INT" THEN
           @@or_has_neg_loop +=
@@ -132,7 +132,7 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   POST-ACCUM s.@or_visited = FALSE;
   WHILE start.size() > 0 LIMIT iter DO     # Limit the number of hops
       start = SELECT t
-        FROM start:s -(e_type:e)- v_type:t
+        FROM start:s -(e_type_set:e)- v_type_set:t
         WHERE NOT t.@or_visited
         ACCUM IF s == t.@min_path_heap.top().pred THEN 
         t.@or_visited = TRUE,
@@ -164,7 +164,7 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
       PRINT component[component.@min_path_heap.top().dist, component.@path_list];
       IF display_edges THEN
           tmp = SELECT s
-    FROM component:s -(e_type:e)- v_type:t
+    FROM component:s -(e_type_set:e)- v_type_set:t
     ACCUM @@edge_set += e;
     PRINT @@edge_set;
       END;

@@ -1,4 +1,4 @@
-CREATE QUERY tg_estimate_diameter(SET<STRING> v_type, SET<STRING> e_type, INT seed_set_length, BOOL print_results = TRUE, STRING file_path = "", BOOL print_stats = FALSE) SYNTAX V1 {
+CREATE QUERY tg_estimate_diameter(SET<STRING> v_type_set, SET<STRING> e_type_set, INT seed_set_length, BOOL print_results = TRUE, STRING file_path = "", BOOL print_stats = FALSE) SYNTAX V1 {
 
     /*
     First Author: <First Author Name>
@@ -24,9 +24,9 @@ CREATE QUERY tg_estimate_diameter(SET<STRING> v_type, SET<STRING> e_type, INT se
         https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/estimated-diameter
 
     Parameters:
-        v_type:
+        v_type_set:
             Names of vertex types to use
-        e_type:
+        e_type_set:
             Names of edge types to use
         seed_set_length:
             The number k of random seed vertices to use
@@ -38,7 +38,7 @@ CREATE QUERY tg_estimate_diameter(SET<STRING> v_type, SET<STRING> e_type, INT se
   
   MaxAccum<INT> @@max_diameter;
   FILE f (file_path);
-  start = {v_type};
+  start = {v_type_set};
   start = SELECT s
           FROM start:s
           LIMIT seed_set_length;
@@ -49,7 +49,7 @@ CREATE QUERY tg_estimate_diameter(SET<STRING> v_type, SET<STRING> e_type, INT se
   
   start = SELECT s
           FROM start:s
-          ACCUM @@max_diameter += tg_max_BFS_depth(s, e_type);
+          ACCUM @@max_diameter += tg_max_BFS_depth(s, e_type_set);
         
   IF print_results THEN
       PRINT @@max_diameter as diameter;

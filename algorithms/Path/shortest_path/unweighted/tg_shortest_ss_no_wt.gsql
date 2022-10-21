@@ -1,4 +1,4 @@
-CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, 
+CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set, 
   INT print_limit = -1, BOOL print_results =TRUE, STRING result_attribute ="", STRING file_path ="",
   BOOL display_edges =FALSE)  SYNTAX V1 {
 
@@ -30,12 +30,12 @@ CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING
         source:
             start vertex
         print_results:
-            print JSON output
-        v_type:
+            If True, print JSON output
+        v_type_set:
             vertex types to traverse
         result_attribute:
-            INT attr to store results to
-        e_type:
+            INT attribute to store results to
+        e_type_set:
             edge types to traverse
         file_path:
             file to write CSV output to
@@ -63,7 +63,7 @@ CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING
   ##### Calculate distances and paths #####
   WHILE(Source.size()>0) DO
       Source = SELECT t
-	       FROM Source:s -(e_type:e)- v_type:t
+	       FROM Source:s -(e_type_set:e)- v_type_set:t
 	       WHERE t.@or_visited == false
 	       ACCUM t.@min_dis += s.@min_dis + 1,
 	             t.@path_list = s.@path_list + [t],
@@ -95,7 +95,7 @@ CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type, SET<STRING
       PRINT ResultSet[ResultSet.@min_dis, ResultSet.@path_list];
       IF display_edges THEN
           ResultSet = SELECT s 
-	              FROM ResultSet:s -(e_type:e)- v_type:t
+	              FROM ResultSet:s -(e_type_set:e)- v_type_set:t
                       ACCUM @@edge_set += e;
           PRINT @@edge_set;
       END;

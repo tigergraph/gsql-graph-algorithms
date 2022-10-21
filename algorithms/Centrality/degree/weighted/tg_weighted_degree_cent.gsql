@@ -1,4 +1,4 @@
-CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING reverse_e_type, string weight, BOOL in_degree = TRUE, BOOL out_degree = TRUE, INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
+CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING reverse_e_type, string weight_attribute, BOOL in_degree = TRUE, BOOL out_degree = TRUE, INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
 
    /*
    First Author: <First Author Name>
@@ -19,7 +19,7 @@ CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING revers
       Currently, this weighted degree centrality can only calculate one edge type and weight type.
       The default weight data type is INT, if your data type is not int: 
       PLEASE CHANGE "INT" in LINE 20,27,32 TO YOUR DATA TYPE
-      for undirected graph, you only need to set e_type and indegree
+      for undirected graph, you only need to set e_type and in_degree
 
    Publications:
       <link>
@@ -35,13 +35,13 @@ CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING revers
       reverse_e_type:
          for indegree use
       in_degree:
-         if you want to count incoming relationships, set it to TRUE
+         If True, count incoming relationships
       out_degree:
-         if you want to count outcoming relationships, set it to TRUE
+         If True, count outcoming relationships
       top_k:
          report only this many top scores
       print_results:
-         whether to print the results
+         If True, print the results
       result_attribute:
          attribute to write result to
       file_path:
@@ -57,12 +57,12 @@ CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING revers
   IF in_degree THEN 
       sll = SELECT s 
             FROM all:s-(reverse_e_type:e)-:t
-            ACCUM s.@sum_degree_score+=e.getAttr(weight,"INT");
+            ACCUM s.@sum_degree_score+=e.getAttr(weight_attribute,"INT");
   END;
   IF out_degree THEN 
       sll = SELECT s 
             FROM all:s-(e_type:e)-:t
-            ACCUM s.@sum_degree_score+=e.getAttr(weight,"INT");
+            ACCUM s.@sum_degree_score+=e.getAttr(weight_attribute,"INT");
   END;
   #Output
   IF file_path != "" THEN

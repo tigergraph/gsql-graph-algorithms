@@ -1,4 +1,4 @@
-CREATE QUERY tg_slpa (SET<STRING> v_type, SET<STRING> e_type, FLOAT threshold, INT maximum_iteration, INT print_limit,
+CREATE QUERY tg_slpa (SET<STRING> v_type_set, SET<STRING> e_type_set, FLOAT threshold, INT maximum_iteration, INT print_limit,
 BOOL print_results = TRUE, STRING file_path = "") SYNTAX V1 {
 
     /*
@@ -26,14 +26,14 @@ BOOL print_results = TRUE, STRING file_path = "") SYNTAX V1 {
         https://docs.tigergraph.com/graph-ml/current/community-algorithms/slpa
 
     Parameters:
-        v_type:
+        v_type_set:
             vertex types to traverse
-        e_type:
+        e_type_set:
             edge types to traverse
         print_results:
-            print JSON output
-        attr:
-            INT attr to store results to
+            If True, print JSON output
+        attribute:
+            INT attribute to store results to
         threshold:
             threshold to drop a label
         file_path:
@@ -53,7 +53,7 @@ BOOL print_results = TRUE, STRING file_path = "") SYNTAX V1 {
     ListAccum<INT> @@community_list;    # all communityId
     SetAccum<INT> @@com1_set,@@com2_set,@@tmp1_set,@@tmp2_set;   # community set
     FILE f (file_path);
-    Start = {v_type};
+    Start = {v_type_set};
 
     # Initialization: Assign unique labels to the memory of each vertex
     Start = SELECT s FROM Start:s
@@ -68,7 +68,7 @@ BOOL print_results = TRUE, STRING file_path = "") SYNTAX V1 {
 
         # listener rule: select the most popular label
         Start = SELECT s
-                FROM Start:s -(e_type:e)-> :t
+                FROM Start:s -(e_type_set:e)-> :t
                 ACCUM t.@recv_map += (s.@sum_send -> 1)  # count the occurrences of received labels
                 POST-ACCUM
                     INT maxV = 0,

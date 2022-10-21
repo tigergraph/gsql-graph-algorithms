@@ -1,4 +1,4 @@
-CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_attribute = "weight", INT maximum_iteration = 10, 
+CREATE QUERY tg_louvain(SET<STRING> v_type_set, SET<STRING> e_type_set, STRING weight_attribute = "weight", INT maximum_iteration = 10, 
   STRING result_attribute = "cid", STRING file_path = "", BOOL print_stats = FALSE)  SYNTAX V1 {
 
     /*
@@ -26,9 +26,9 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
         https://docs.tigergraph.com/graph-ml/current/community-algorithms/louvain
 
     Parameters:
-        v_type:
+        v_type_set:
             vertex types to traverse
-        e_type:
+        e_type_set:
             edge types to traverse
         weight_attribute:
             attribute name for edge weights (use an empty string if the graph is unweighted)
@@ -41,7 +41,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
         file_path:
             file path to write CSV output to; use empty string to skip
         print_stats:
-            print louvain execution info
+            If True, print louvain execution info
     */
 
   TYPEDEF TUPLE <FLOAT deltaQ, FLOAT weight, VERTEX cc> move;
@@ -60,9 +60,9 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
   FILE f(file_path);
 
   // initialize
-  Start = {v_type};
+  Start = {v_type_set};
   Start = SELECT s 
-          FROM Start:s -(e_type:e)- :t
+          FROM Start:s -(e_type_set:e)- :t
           ACCUM
               @@sum_m += e.getAttr(weight_attribute, "FLOAT")*0.5,
               s.@sum_weight += e.getAttr(weight_attribute, "FLOAT")*1.0,
@@ -81,7 +81,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
 
   // special @cc update in the first iteration
   Start = SELECT t 
-          FROM Start:s -(e_type:e)- :t
+          FROM Start:s -(e_type_set:e)- :t
           WHERE s.@sum_outdegree > 1 AND t.@sum_outdegree > 1
           ACCUM
               t.@max_best_move += move(e.getAttr(weight_attribute, "FLOAT")*1.0 + @@sum_m*t.@sum_weight * 
@@ -128,7 +128,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
                   END;
 
       Start = SELECT s 
-              FROM Start:s -(e_type:e)- :t
+              FROM Start:s -(e_type_set:e)- :t
               WHERE t.@sum_outdegree > 1
               ACCUM 
                   s.@A_map += (t.@cc_list.get(0) -> e.getAttr(weight_attribute, "FLOAT")*1.0);
@@ -153,7 +153,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
 
       // compute @max_dQ
       Start = SELECT s 
-              FROM Start:s -(e_type:e)- :t
+              FROM Start:s -(e_type_set:e)- :t
               WHERE t.@sum_outdegree > 1
               ACCUM
                   INT A_s = 0,
@@ -186,9 +186,9 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
   // process node with outdegree=1
   // follow the vertex to its neighbor's community
   // if the neighbor also have outdegree=1, mark the two vertices as one community
-  Start = {v_type};
+  Start = {v_type_set};
   Start = SELECT s 
-          FROM Start:s -(e_type:e)- :t
+          FROM Start:s -(e_type_set:e)- :t
           WHERE s.@sum_outdegree == 1 AND t.@sum_outdegree != 1
           ACCUM 
               s.@cc_list += t.@cc_list.get(0);
@@ -196,9 +196,9 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
       PRINT Start.size() AS VertexFollowedToCommunity;
   END;
 
-  Start = {v_type};
+  Start = {v_type_set};
   Start = SELECT s 
-          FROM Start:s -(e_type:e)- :t
+          FROM Start:s -(e_type_set:e)- :t
           WHERE s.@sum_outdegree == 1 AND t.@sum_outdegree == 1
           ACCUM
               IF getvid(s) <= getvid(t) THEN
@@ -212,7 +212,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
 
   // process node with outdegree=0
   // assign them to communities containing only itself
-  Start = {v_type};
+  Start = {v_type_set};
   Start = SELECT s 
           FROM Start:s
           WHERE s.@sum_outdegree == 0
@@ -223,7 +223,7 @@ CREATE QUERY tg_louvain(SET<STRING> v_type, SET<STRING> e_type, STRING weight_at
   END;
 
   // save result
-  Start = {v_type};
+  Start = {v_type_set};
   Start = SELECT s 
           FROM Start:s
           POST-ACCUM

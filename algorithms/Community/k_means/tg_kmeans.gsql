@@ -35,9 +35,9 @@ CREATE QUERY tg_kmeans(int k = 2, int max_k = 5, float max_change = 1.0, string 
         e_type:
             edge type to traverse
         random:
-            boolean to start from either random or non-random centroid positions
+            if True, start from random (if false, non-random) centroid positions
         print_results:
-            print JSON output
+            If True, print JSON output
         file_path:
             file to write CSV output to
     */

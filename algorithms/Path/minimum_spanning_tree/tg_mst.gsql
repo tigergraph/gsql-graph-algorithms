@@ -1,4 +1,4 @@
-CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type, SET<STRING> e_type, STRING weight_attribute, STRING weight_type,
+CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type_set, SET<STRING> e_type_set, STRING weight_attribute, STRING weight_type,
   INT maximum_iteration = -1, BOOL print_results = TRUE, STRING result_attribute = "", STRING file_path = "")  SYNTAX V1 {
 
     /*
@@ -30,12 +30,12 @@ CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type, SET<STRING> e_type, S
         opt_source:
             start vertex (optional)
         print_results:
-            print JSON output
-        v_type:
+            If True, print JSON output
+        v_type_set:
             vertex types to traverse
         result_attribute:
-            INT attr to store results to
-        e_type:
+            INT attribute to store results to
+        e_type_set:
             edge types to traverse
         file_path:
             file to write CSV output to
@@ -63,7 +63,7 @@ CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type, SET<STRING> e_type, S
 
 
   # Pick the start vertex to initialize
-  All_v = {v_type}; 
+  All_v = {v_type_set}; 
   MSTNodes = SELECT s 
              FROM All_v:s LIMIT 1;
   IF opt_source IS NOT NULL THEN
@@ -83,7 +83,7 @@ CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type, SET<STRING> e_type, S
   END;
   WHILE (Current.size() > 0) LIMIT iter_limit DO
       Current = SELECT t
-	        FROM MSTNodes:s -(e_type:e)- v_type:t
+	        FROM MSTNodes:s -(e_type_set:e)- v_type_set:t
 	        WHERE t.@or_chosen == false    // vertex not in MSTNodes
 	        ACCUM
 	            CASE weight_type
@@ -103,7 +103,7 @@ CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type, SET<STRING> e_type, S
       IF @@chosen_edge_heap.size() > 0 THEN
           IF result_attribute != "" THEN
 	      S = SELECT s
-	   	  FROM Current:s -(e_type:e) - v_type:t
+	   	  FROM Current:s -(e_type_set:e) - v_type_set:t
 		  WHERE t == @@chosen_edge_heap.top().from_v
 		  ACCUM e.setAttr(result_attribute, TRUE);
 	  END;

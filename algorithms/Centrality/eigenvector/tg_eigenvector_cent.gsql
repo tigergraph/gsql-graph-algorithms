@@ -1,4 +1,4 @@
-CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT maximum_iteration = 100, FLOAT convLimit = 0.000001,
+CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, INT maximum_iteration = 100, FLOAT conv_limit = 0.000001,
     INT top_k = 100, BOOL print_results = True, STRING result_attribute = "",STRING file_path = ""
     ) SYNTAX V1 {
 
@@ -26,18 +26,18 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT max
             https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/eigenvector-centrality
 
         Parameters:
-            v_type:
+            v_type_set:
                 vertex types to traverse
-            e_type:
+            e_type_set:
                 edge types to traverse
             maximum_iteration:
                 max iteration
-            convLimit:
+            conv_limit:
                 convergence limitation
             top_k:
                 report only this many top scores
             print_results:
-                whether to print the results
+                If True, print the results
             result_attribute:
                 attribute to write result to
             file_path:
@@ -53,12 +53,12 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type, SET<STRING> e_type, INT max
     SumAccum<FLOAT> @@sum_prev_norm_values;
     FLOAT conv_value = 9999;
     FILE f (file_path);
-    Start = {v_type};
-    WHILE conv_value > convLimit LIMIT maximum_iteration DO
+    Start = {v_type_set};
+    WHILE conv_value > conv_limit LIMIT maximum_iteration DO
         @@sum_squares_eigen_values = 0;
         @@sum_cur_norm_values = 0;
         V = SELECT s 
-            FROM Start:s - (e_type:e) - v_type:t
+            FROM Start:s - (e_type_set:e) - v_type_set:t
             ACCUM t.@sum_received_value += s.@sum_eigen_value;
         V = SELECT s 
             FROM Start:s

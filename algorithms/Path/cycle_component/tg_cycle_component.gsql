@@ -31,7 +31,7 @@ CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_results =
         e_type:
             edge types to traverse
         print_results:
-            weather print the result
+            If True, weather print the result
         result_attribute:
             attribute to write result to
         file_path:

@@ -1,4 +1,4 @@
-CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING reverse_e_type,INT max_hops = 10,
+CREATE QUERY tg_betweenness_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, STRING reverse_e_type,INT max_hops = 10,
     INT top_k = 100, BOOL print_results = True, STRING result_attribute = "",
     STRING file_path = "", BOOL display_edges = FALSE) SYNTAX V1 { 
 
@@ -27,16 +27,16 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
         https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/betweenness-centrality
 
     Parameters:
-        v_type:
+        v_type_set:
             vertex types to traverse
         print_results:
-            print JSON output
-        e_type:
+            If True, print JSON output
+        e_type_set:
             edge types to traverse
         result_attribute:
-            INT attr to store results to
+            INT attribute to store results to
         reverse_e_type:
-            reverse edge type in directed graph, in undirected graph set reverse_e_type=e_type
+            reverse edge type in directed graph, in undirected graph set reverse_e_type=e_type_set
         max_hops:
             look only this far from each vertex
         file_path:
@@ -44,7 +44,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
         top_k:
             report only this many top scores
         display_edges:
-            output edges for visualization
+            If True, output edges for visualization
     */
 
     TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score; #tuple to store betweenness centrality score
@@ -68,7 +68,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
     INT batch_number;
 
     # Compute betweenness	
-    all = {v_type};
+    all = {v_type_set};
     num_vert = all.size();
     batch_number = num_vert/60;
 
@@ -110,7 +110,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
             @@sum_curr_dist+=1;
 
             Start = SELECT t 
-                FROM Start:s -(reverse_e_type:e)-v_type:t
+                FROM Start:s -(reverse_e_type:e)-v_type_set:t
                 WHERE s.@bitwise_or_visit&-t.@bitwise_or_seen-1>0 AND s!=t #use -t.@seen-1 to get the trverse of t.@seen
                 ACCUM                               #updatevisitNext
                     INT c = s.@bitwise_or_visit&-t.@bitwise_or_seen-1,
@@ -134,7 +134,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
         WHILE (Start.size()>0) LIMIT max_hops DO
             @@sum_curr_dist+=-1;
             Start = SELECT t 
-                FROM Start:s -(reverse_e_type:e)- v_type:t
+                FROM Start:s -(reverse_e_type:e)- v_type_set:t
                 WHERE t.@times_map.get(@@sum_curr_dist)&s.@times_map.get(@@sum_curr_dist+1)!=0  
                 ACCUM 
                     FLOAT currValue=t.@sigma_map.get(@@sum_curr_dist)/(s.@sigma_map.get(@@sum_curr_dist+1)*(1+s.@sum_delta)),
@@ -188,7 +188,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type, SET<STRING> e_type, STRING 
             PRINT Start[Start.@sum_delta];
 
             Start = SELECT s
-                FROM Start:s -(e_type:e)-:t
+                FROM Start:s -(e_type_set:e)-:t
                 ACCUM 
                     @@edge_set += e;
 

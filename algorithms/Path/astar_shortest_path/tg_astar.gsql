@@ -1,4 +1,4 @@
-CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type, STRING weight_type, STRING latitude, STRING longitude,
+CREATE QUERY tg_astar (VERTEX source_vertex, VERTEX target_vertex, SET<STRING> e_type_set, STRING weight_type, STRING latitude, STRING longitude,
 STRING weight_attribute, BOOL print_stats = False) SYNTAX V1 {
 
     /*
@@ -32,14 +32,14 @@ STRING weight_attribute, BOOL print_stats = False) SYNTAX V1 {
             start vertex
         target_vertex:
             target vertex
-        e_type:
+        e_type_set:
             edge types to traverse
         weight_attribute:
             attribute for edge weights
         weight_type:
             weight data type (INT,FLOAT,DOUBLE)
         print_stats:
-            output edges for visualization
+            If True, output edges for visualization
     */
 
 TYPEDEF TUPLE<FLOAT dist, VERTEX v> pathTuple;    # <shotest distance, parent node>
@@ -78,7 +78,7 @@ Start = SELECT s
 WHILE Opt.size() > 0 DO
     # find the node with shortest distance
     Opt = SELECT t
-          FROM Opt:s-(e_type:e)-> :t
+          FROM Opt:s-(e_type_set:e)-> :t
           WHERE t.@or_visited == False
 	  ACCUM
               # we use Haversine formula as the heuristic function here
@@ -94,7 +94,7 @@ WHILE Opt.size() > 0 DO
               END;
 
     Opt = SELECT t
-          FROM Start:s-(e_type:e)-> :t
+          FROM Start:s-(e_type_set:e)-> :t
           WHERE t.@or_visited == False
           POST-ACCUM @@find_min_v_heap += pathTuple(t.@min_dist_heap.top().dist,t);
 
@@ -127,7 +127,7 @@ IF @@or_valid_path_exists THEN
     WHILE Start.size() > 0 DO
         Start =
 	SELECT t
-	FROM Start:s-(e_type:e)-> :t
+	FROM Start:s-(e_type_set:e)-> :t
         WHERE t == s.@min_dist_heap.top().v
         ACCUM
 	    @@display_edge_set += e,

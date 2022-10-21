@@ -1,4 +1,4 @@
-CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type, BOOL in_degree = TRUE, BOOL out_degree = TRUE,
+CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, BOOL in_degree = TRUE, BOOL out_degree = TRUE,
   INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
 
     /*
@@ -17,7 +17,7 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> 
 
     Description: 
         Compute degree Centrality for each VERTEX.
-        for undirected graph, you only need to set e_type and indegree
+        for undirected graph, you only need to set e_type_set and indegree
 
     Publications:
         NA
@@ -26,20 +26,20 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> 
         https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/degree-centrality
 
     Parameters:
-        v_type:
+        v_type_set:
             vertex types to traverse
-        e_type:
+        e_type_set:
             edge types to traverse
-        reverse_e_type:
+        reverse_e_type_set:
             for indegree use
         in_degree:
-            if you want to count incoming relationships, set it to TRUE
+            If True, count incoming relationships
         out_degree:
-            if you want to count outcoming relationships, set it to TRUE
+            If True, count outcoming relationships
         top_k:
             report only this many top scores
         print_results:
-            weather print the result
+            If True, print the result
         result_attribute:
             attribute to write result to
         file_path:
@@ -52,16 +52,16 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> 
   SumAccum<INT> @sum_degree_score;
   FILE f (file_path);
 
-  all = {v_type};
+  all = {v_type_set};
   sll = SELECT s 
         FROM all:s
         ACCUM IF in_degree THEN
-                 FOREACH edge_type in reverse_e_type DO
+                 FOREACH edge_type in reverse_e_type_set DO
                      s.@sum_degree_score+=s.outdegree(edge_type)
                  END
               END,
               IF out_degree THEN
-                  FOREACH edge_type in e_type DO
+                  FOREACH edge_type in e_type_set DO
                       s.@sum_degree_score+=s.outdegree(edge_type)
                   END
               END;

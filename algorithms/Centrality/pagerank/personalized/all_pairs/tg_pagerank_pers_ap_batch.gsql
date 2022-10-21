@@ -28,7 +28,7 @@ CREATE QUERY tg_pagerank_pers_ap_batch(STRING v_type, STRING e_type,
         v_type:
             vertex types to traverse
         print_results:
-            print JSON output
+            If True, print JSON output
         e_type:
             edge types to traverse
         file_path:

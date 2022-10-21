@@ -1,4 +1,4 @@
-CREATE QUERY tg_cycle_detection (SET<STRING> v_type, SET<STRING> e_type, INT depth, BOOL print_results = TRUE, STRING file_path = "")  SYNTAX V1 {
+CREATE QUERY tg_cycle_detection (SET<STRING> v_type_set, SET<STRING> e_type_set, INT depth, BOOL print_results = TRUE, STRING file_path = "")  SYNTAX V1 {
 
     /*
     First Author: <First Author Name>
@@ -28,9 +28,9 @@ CREATE QUERY tg_cycle_detection (SET<STRING> v_type, SET<STRING> e_type, INT dep
         https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/cycle-detection
 
     Parameters:
-        v_type:
+        v_type_set:
             Names of vertex types to use
-        e_type:
+        e_type_set:
             Names of edge types to use
         depth:
             Maximum cycle length to search for, equal to the maximum number of iterations
@@ -46,14 +46,14 @@ CREATE QUERY tg_cycle_detection (SET<STRING> v_type, SET<STRING> e_type, INT dep
   FILE f (file_path);
   
   # initialization
-  Active = {v_type};
+  Active = {v_type_set};
   Active = SELECT s 
            FROM Active:s
            ACCUM s.@curr_list = [s];
   
   WHILE Active.size() > 0 LIMIT depth DO 
       Active = SELECT t 
-               FROM Active:s -(e_type:e)- :t
+               FROM Active:s -(e_type_set:e)- :t
                ACCUM 
                    FOREACH sequence IN s.@curr_list DO
                        BOOL t_is_min = TRUE, 

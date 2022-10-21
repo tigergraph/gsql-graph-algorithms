@@ -1,4 +1,4 @@
-CREATE QUERY tg_preferential_attachment(VERTEX v_source, VERTEX v_target, SET<STRING> e_type, BOOL print_results = TRUE)  SYNTAX V1 { 
+CREATE QUERY tg_preferential_attachment(VERTEX v_source, VERTEX v_target, SET<STRING> e_type_set, BOOL print_results = TRUE)  SYNTAX V1 { 
 
     /*
     First Author: <First Author Name>
@@ -31,22 +31,22 @@ CREATE QUERY tg_preferential_attachment(VERTEX v_source, VERTEX v_target, SET<ST
             Input vertex one
         v_target:
             Input vertex two
-        e_type:
+        e_type_set:
             edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
         print_results:
-            Boolean of if you want to print result (True by default)
+            if True, print result (True by default)
     */
 
     avs = {v_source};
     bvs = {v_target};
 
     # See if user specified edge types to traverse
-    IF "ALL" NOT IN e_type THEN
+    IF "ALL" NOT IN e_type_set THEN
         na = SELECT n 
-             FROM avs -(e_type)- :n;  # Get neighbors of vertex A
+             FROM avs -(e_type_set)- :n;  # Get neighbors of vertex A
           
         nb = SELECT n 
-             FROM bvs -(e_type)- :n;  // Get neighbors of vertex B
+             FROM bvs -(e_type_set)- :n;  // Get neighbors of vertex B
              
     ELSE  // traverse all edge types
         na = SELECT n 

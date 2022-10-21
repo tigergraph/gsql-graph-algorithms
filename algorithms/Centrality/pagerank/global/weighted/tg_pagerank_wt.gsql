@@ -37,11 +37,11 @@ CREATE QUERY tg_pagerank_wt (STRING v_type, STRING e_type, STRING weight_attribu
         v_type:
             vertex types to traverse
         print_results:
-            print JSON output
+            If True, print JSON output
         e_type:
             edge types to traverse
         result_attribute:
-            INT attr to store results to
+            INT attribute to store results to
         weight_attribute:
             attribute for edge weights
         maximum_iteration:

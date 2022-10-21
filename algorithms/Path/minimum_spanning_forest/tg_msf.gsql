@@ -1,4 +1,4 @@
-CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight_attribute, STRING weight_type,
+CREATE QUERY tg_msf (SET<STRING> v_type_set, SET<STRING> e_type_set, STRING weight_attribute, STRING weight_type,
 	BOOL print_results = TRUE, STRING result_attribute = "", STRING file_path = "")  SYNTAX V1 {
 
     /*
@@ -25,14 +25,14 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight_attri
         https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/minimum-spanning-forest
 
     Parameters:
-        v_type:
+        v_type_set:
             vertex types to traverse
         print_results:
-            print JSON output
-        e_type:
+            If True, print JSON output
+        e_type_set:
             edge types to traverse
         result_attribute:
-            INT attr to store results to
+            INT attribute to store results to
         weight_attribute:
             attribute for edge weights
         file_path:
@@ -57,11 +57,11 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight_attri
       PRINT "weight_type must be INT, FLOAT, or DOUBLE" AS errMsg;
       RETURN;
   END;
-  all_v = {v_type};
+  all_v = {v_type_set};
   ### FOREST INITIALIZATION ###
   # For each node v, let parent p(v) = neighbor of v connected via the least-weighted edge.
   all_v = SELECT v 
-          FROM all_v:v -(e_type:e)- :u
+          FROM all_v:v -(e_type_set:e)- :u
           ACCUM
 	      CASE weight_type
 	          WHEN "INT" THEN
@@ -156,7 +156,7 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight_attri
 	          v.@min_parent = @@parents_map.get(v);
 	      
       star_nodes = SELECT v 
-                   FROM all_v:v -(e_type:e)- :u
+                   FROM all_v:v -(e_type_set:e)- :u
 	           WHERE @@star_map.get(v) == true AND v.@min_parent != u.@min_parent
 	           ACCUM
 	               VERTEX parent = v.@min_parent,
@@ -177,7 +177,7 @@ CREATE QUERY tg_msf (SET<STRING> v_type, SET<STRING> e_type, STRING weight_attri
   END;
   IF result_attribute != "" THEN
       all_v = SELECT v 
-              FROM all_v:v -(e_type:e)- :u
+              FROM all_v:v -(e_type_set:e)- :u
               ACCUM
 	          IF e IN @@result_set THEN
 	              e.setAttr(result_attribute, TRUE)

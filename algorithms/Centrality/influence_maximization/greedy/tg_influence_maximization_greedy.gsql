@@ -36,7 +36,7 @@ CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING
         file_path:
             file to write CSV output to
         print_results:
-            whether to print the results
+            If True, to print the results
     */
 
   /* get the vertex which has maximum influence.

@@ -31,17 +31,17 @@ CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_resul
         v_type:
             vertex types to traverse
         print_results:
-            print JSON output
+            If True, print JSON output
         e_type:
             edge types to traverse
         result_attribute:
-            INT attr to store results to
+            INT attribute to store results to
         top_k:
             report only this many top scores
         file_path:
             file to write CSV output to
         display_edges:
-            output edges for visualization
+            If True, output edges for visualization
     */
    
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;

@@ -1,4 +1,4 @@
-CREATE QUERY tg_total_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e_type, BOOL print_results = TRUE)  SYNTAX V1 { 
+CREATE QUERY tg_total_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e_type_set, BOOL print_results = TRUE)  SYNTAX V1 { 
 
     /*
     First Author: <First Author Name>
@@ -29,21 +29,21 @@ CREATE QUERY tg_total_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e_
             Input vertex one
         v_target:
             Input vertex two
-        e_type:
+        e_type_set:
             edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
         print_results:
-            Boolean of if you want to print result (True by default)
+            if True, print result (True by default)
     */
 
     avs = {v_source};
     bvs = {v_target};
 
-    IF "ALL" NOT IN e_type THEN  # Specific edge types defined as parameters
+    IF "ALL" NOT IN e_type_set THEN  # Specific edge types defined as parameters
         na = SELECT n 
-             FROM avs -(e_type)- :n;  # Get vertex A's neighbors
+             FROM avs -(e_type_set)- :n;  # Get vertex A's neighbors
   
         nb = SELECT n 
-             FROM bvs -(e_type)- :n;  # Get vertex B's neighbors
+             FROM bvs -(e_type_set)- :n;  # Get vertex B's neighbors
   
     ELSE  # Use all edge types
         na = SELECT n 

@@ -1,6 +1,6 @@
 CREATE QUERY tg_maximal_indep_set_random(
-  SET<STRING> v_type,
-  SET<STRING> e_type,
+  SET<STRING> v_type_set,
+  SET<STRING> e_type_set,
   BOOL print_results = TRUE,
   STRING file_path = "")  SYNTAX V1 {
 
@@ -29,9 +29,9 @@ CREATE QUERY tg_maximal_indep_set_random(
         https://docs.tigergraph.com/graph-ml/current/classification-algorithms/maximal-independent-set
 
     Parameters:
-        v_type:
+        v_type_set:
             Name of vertex type to use
-        e_type:
+        e_type_set:
             Name of edge type to use
         print_results:
             If True, output JSON to standard output
@@ -51,7 +51,7 @@ CREATE QUERY tg_maximal_indep_set_random(
   _mod = 100000000;
   _mult =  pow(2, 31)-1;
 
-  Start = {v_type};
+  Start = {v_type_set};
 
   Pool =
     SELECT s FROM Start:s
@@ -64,7 +64,7 @@ CREATE QUERY tg_maximal_indep_set_random(
       SELECT s FROM Pool:s
       WHERE s.@disincluded == FALSE AND s.@included == FALSE;
     PriorityCalculation =
-      SELECT s FROM Pool:s -(e_type:e)- v_type:t
+      SELECT s FROM Pool:s -(e_type_set:e)- v_type_set:t
       ACCUM
         IF t.@disincluded == FALSE AND t.@included == FALSE THEN
           s.@MISHeap += VertexScore(t, t.@r)
@@ -74,7 +74,7 @@ CREATE QUERY tg_maximal_indep_set_random(
           s.@included = TRUE
         END;
     Culling =
-      SELECT s FROM Pool:s -(e_type:e)- v_type:t
+      SELECT s FROM Pool:s -(e_type_set:e)- v_type_set:t
       WHERE s.@included == TRUE
       ACCUM
         t.@disincluded += TRUE;

@@ -1,4 +1,4 @@
-CREATE QUERY tg_cycle_detection_batch (SET<STRING> v_type, SET<STRING> e_type, INT batch_num,
+CREATE QUERY tg_cycle_detection_batch (SET<STRING> v_type_set, SET<STRING> e_type_set, INT batch_num,
              INT depth, BOOL print_results = TRUE, STRING file_path = "")SYNTAX v2{
 
     /*
@@ -29,9 +29,9 @@ CREATE QUERY tg_cycle_detection_batch (SET<STRING> v_type, SET<STRING> e_type, I
         https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/cycle-detection
 
     Parameters:
-        v_type:
+        v_type_set:
             Names of vertex types to use
-        e_type:
+        e_type_set:
             Names of edge types to use
         batch_num:
             Number of batches to partition by
@@ -50,7 +50,7 @@ CREATE QUERY tg_cycle_detection_batch (SET<STRING> v_type, SET<STRING> e_type, I
 
   # initialization
 
-  all = {v_type};
+  all = {v_type_set};
   FOREACH batch_number in RANGE[0,batch_num-1] DO
         Active = SELECT s
                  FROM all:s
@@ -58,7 +58,7 @@ CREATE QUERY tg_cycle_detection_batch (SET<STRING> v_type, SET<STRING> e_type, I
                  ACCUM s.@curr_list = [s];
         WHILE Active.size() > 0 LIMIT depth DO
             Active = SELECT t
-                     FROM Active:s -(e_type:e)- :t
+                     FROM Active:s -(e_type_set:e)- :t
                      ACCUM
                          FOREACH sequence IN s.@curr_list DO
                              BOOL t_is_min = TRUE,

@@ -1,4 +1,4 @@
-CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
+CREATE QUERY tg_fastRP(SET<STRING> v_type_set, SET<STRING> e_type_set,
               STRING weights, FLOAT beta, INT k, INT embedding_dimension,
              INT sampling_constant, INT random_seed,
              BOOL print_results=FALSE, STRING result_attribute="") {
@@ -38,9 +38,9 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
         https://arxiv.org/pdf/1908.11512.pdf
 
     Parameters:
-        v_type:
+        v_type_set:
             Set of strings representing the vertex types to embed.
-        e_type:
+        e_type_set:
             Set of strings representing the edge types to use when producing embeddings
         k:
             "depth" of embedding. k=2 means that the resulting embedding would take vertices within 2-hops into account
@@ -55,7 +55,7 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
         index_attr:
             attribute where the fastrp_preprocessing query results are stored
         print_results:
-            print resulting embeddings to Json
+            If True, print resulting embeddings to Json
         result_attribute:
             option to write embeddings to a vertex attribute
             (NOTE - SCHEMA MUST SUPPORT THIS)
@@ -88,7 +88,7 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
 
   @@weights = tg_extract_list(weights);
 
-  verts = {v_type};
+  verts = {v_type_set};
 
   verts =
     SELECT s FROM verts:s -(:e)- :t
@@ -96,7 +96,7 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
     POST-ACCUM s.@L = pow(s.outdegree() / @@m, beta);
 
   verts =
-    SELECT s FROM verts:s -(e_type)- :t
+    SELECT s FROM verts:s -(e_type_set)- :t
     ACCUM
       INT inc = (getvid(s)+_inc),
       INT r = ((inc+_mult*random_seed) % _mod),
@@ -116,7 +116,7 @@ CREATE QUERY tg_fastRP(SET<STRING> v_type, SET<STRING> e_type,
   WHILE depth < k DO
     // avg neighboring intermediate embeddings and normalize
     verts =
-    SELECT s FROM verts:s -(e_type)- :t
+    SELECT s FROM verts:s -(e_type_set)- :t
     ACCUM
       t.@embedding_arr += s.@embedding_arr
     POST-ACCUM

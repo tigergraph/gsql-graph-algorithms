@@ -1,4 +1,4 @@
-CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight, STRING label, INT min_k, INT max_k) RETURNS (INT) SYNTAX V1 {
+CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, STRING weight_attribute, STRING label, INT min_k, INT max_k) RETURNS (INT) SYNTAX V1 {
 
     /*
     First Author: <First Author Name>
@@ -26,13 +26,13 @@ CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
         https://docs.tigergraph.com/graph-ml/current/classification-algorithms/k-nearest-neighbors-cross-validation
 
     Parameters:
-        v_type:
+        v_type_set:
             Vertex types to calculate distance to source vertex for
-        e_type:
+        e_type_set:
             Edge types to traverse
-        reverse_e_type:
+        reverse_e_type_set:
             Reverse edge types to traverse
-        weight:
+        weight_attribute:
             Edge attribute to use as the weight of the edge
         label:
             Vertex attribute to recognize as the label of the vertex
@@ -52,11 +52,11 @@ CREATE QUERY tg_knn_cosine_cv (SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
     IF max_k < min_k OR max_k < 1 THEN  // terminate if the range is invalid
         RETURN 0;
     END;
-    start = {v_type};
+    start = {v_type_set};
     start = SELECT s
             FROM start:s 
             WHERE s.getAttr(label, "STRING") != ""  // get the vertices with known label
-            ACCUM s.@predicted_label_list = tg_knn_cosine_cv_sub(s, e_type, reverse_e_type, label, weight, max_k)  
+            ACCUM s.@predicted_label_list = tg_knn_cosine_cv_sub(s, e_type_set, reverse_e_type_set, label, weight_attribute, max_k)  
 	    // get a list of predicted label wrt different k
             POST-ACCUM 
 	        FOREACH pred_label IN s.@predicted_label_list DO

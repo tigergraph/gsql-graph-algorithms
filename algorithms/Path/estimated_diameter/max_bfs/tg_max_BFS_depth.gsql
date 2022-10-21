@@ -1,4 +1,4 @@
-CREATE QUERY tg_max_BFS_depth(VERTEX source, SET<STRING> e_type) RETURNS (INT)  SYNTAX V1 { 
+CREATE QUERY tg_max_BFS_depth(VERTEX source, SET<STRING> e_type_set) RETURNS (INT)  SYNTAX V1 { 
 
     /*
     First Author: <First Author Name>
@@ -26,7 +26,7 @@ CREATE QUERY tg_max_BFS_depth(VERTEX source, SET<STRING> e_type) RETURNS (INT)  
     Parameters:
 		v_type:
 			vertex type to traverse
-		e_type:
+		e_type_set:
 			edge types to traverse
     */
 
@@ -36,7 +36,7 @@ CREATE QUERY tg_max_BFS_depth(VERTEX source, SET<STRING> e_type) RETURNS (INT)  
 	WHILE start.size() > 0 DO
 		depth = depth + 1;
 		start = SELECT t
-			FROM start:s -(e_type:e) -:t 
+			FROM start:s -(e_type_set:e) -:t 
 			WHERE NOT t.@or_visited
 			ACCUM t.@or_visited = TRUE;
 	END;

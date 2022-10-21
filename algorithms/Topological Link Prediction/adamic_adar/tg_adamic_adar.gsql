@@ -1,4 +1,4 @@
-CREATE QUERY tg_adamic_adar(VERTEX v_source, VERTEX v_target, SET<STRING> e_type, BOOL print_results = TRUE)  SYNTAX V1 { 
+CREATE QUERY tg_adamic_adar(VERTEX v_source, VERTEX v_target, SET<STRING> e_type_set, BOOL print_results = TRUE)  SYNTAX V1 { 
 
     /*
     First Author: <First Author Name>
@@ -31,10 +31,10 @@ CREATE QUERY tg_adamic_adar(VERTEX v_source, VERTEX v_target, SET<STRING> e_type
             Input vertex one
         v_target:
             Input vertex two
-        e_type:
+        e_type_set:
             edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
         print_results:
-            Boolean of if you want to print result (True by default)
+            if True, print result (True by default)
     */
     
     SumAccum<INT> @sum_num_neighbors;
@@ -43,16 +43,16 @@ CREATE QUERY tg_adamic_adar(VERTEX v_source, VERTEX v_target, SET<STRING> e_type
     bvs = {v_target};
 
     # See if user specified edge types to traverse
-    IF "ALL" NOT IN e_type THEN
+    IF "ALL" NOT IN e_type_set THEN
         na = SELECT n 
-             FROM avs -(e_type)- :n;  # Get vertex A's neighbors
+             FROM avs -(e_type_set)- :n;  # Get vertex A's neighbors
              
         nb = SELECT n 
-             FROM bvs -(e_type)- :n;  # Get vertex B's neighbors
+             FROM bvs -(e_type_set)- :n;  # Get vertex B's neighbors
              
         u = na INTERSECT nb;  # Get neighbors in common
         tmp = SELECT p 
-              FROM u:p -(e_type)- :r 
+              FROM u:p -(e_type_set)- :r 
               ACCUM p.@sum_num_neighbors += 1;  # count number of neighbors of in-common vertices
               
     ELSE  # Traverse all edge types

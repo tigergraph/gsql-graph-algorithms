@@ -1,4 +1,4 @@
-CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
+CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set,
  STRING weight_attribute, STRING weight_type, FLOAT epsilon = 0.001,BOOL print_results = TRUE, INT print_limit = -1, 
  BOOL display_edges = FALSE, STRING result_attribute = "", 
  STRING file_path = "")  SYNTAX V1 {
@@ -31,19 +31,19 @@ CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
         source:
             start vertex
         print_results:
-            print JSON output
-        v_type:
+            If True, print JSON output
+        v_type_set:
             vertex types to traverse
         print_limit:
             max #vertices to output
-        e_type:
+        e_type_set:
             edge types to traverse
         display_edges:
             output edges for visualization
         weight_attribute:
             attribute for edge weights
         result_attribute:
-            INT attr to store results to
+            INT attribute to store results to
         weight_type:
             weight data type (INT,FLOAT,DOUBLE)
         epsilon:
@@ -74,7 +74,7 @@ CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   ##### Do maximum N-1 iterations: Consider whether each edge lowers the best-known distance.
   WHILE start.size() != 0 DO 
       start = SELECT t
-              FROM start:s -(e_type:e)- v_type:t
+              FROM start:s -(e_type_set:e)- v_type_set:t
 	      ACCUM 
                   t.@or_is_candidate = FALSE,
                   CASE weight_type
@@ -96,7 +96,7 @@ CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
 
   END;
   ##### Output #####
-  component = {v_type};
+  component = {v_type_set};
   component = SELECT s 
               FROM component:s
               WHERE s.@min_prev_path != -1
@@ -118,7 +118,7 @@ CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
       PRINT component[component.@min_path as cost];
       IF display_edges THEN
           tmp = SELECT s
-		FROM component:s -(e_type:e)- v_type:t
+		FROM component:s -(e_type_set:e)- v_type_set:t
 	        ACCUM @@edge_set += e;
           PRINT @@edge_set;
       END;

@@ -31,10 +31,8 @@ CREATE QUERY tg_same_community(VERTEX v_source, VERTEX v_target, STRING communit
             Input vertex one
         v_target:
             Input vertex two
-        e_type:
-            edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
         print_results:
-            Boolean of if you want to print result (True by default)
+            if True, print result (True by default)
     */
 
     INT aCommunity;

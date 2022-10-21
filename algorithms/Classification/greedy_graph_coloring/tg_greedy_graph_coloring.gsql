@@ -1,4 +1,4 @@
-CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT max_colors = 999999,
+CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type_set,SET<STRING> e_type_set,UINT max_colors = 999999,
   BOOL print_color_count = TRUE, BOOL print_stats = TRUE, STRING file_path = "")  SYNTAX V1 {
 
     /*
@@ -33,10 +33,10 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
         https://docs.tigergraph.com/graph-ml/current/classification-algorithms/greedy-graph-coloring
 
     Parameters:
-        v_type:
+        v_type_set:
             Pass a set of all the vertex types which need to be colored
             from the graph.
-        e_type:
+        e_type_set:
             Pass a set of all the edge types connecting above mentioned
             edge types.
         max_colors:
@@ -44,10 +44,10 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
             Use a large number like 999999 unless there is strict limit 
             required.
         print_color_count:
-            If set to true, the total colors used to color all vertex 
+            If True, the total colors used to color all vertex 
             types will be displayed.
         print_stats:
-            If set to true, will display all the vertices and associated color.
+            If True, will display all the vertices and associated color.
         file_path:
             If provided, will print results with all vertex Set and color to a file.
     */
@@ -62,7 +62,7 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
   FILE f(file_path);
   
   #initialization - coloring All vertices
-  coloring = {v_type};
+  coloring = {v_type_set};
   coloring = SELECT s 
              FROM coloring:s 
              POST-ACCUM s.@sum_color_vertex+=1,
@@ -70,7 +70,7 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
   
   #conflict detection and resolution
   WHILE @@and_is_conflict DO
-      start= {v_type};
+      start= {v_type_set};
   
       #clear the color heap for all vertices
       start = SELECT s 
@@ -79,12 +79,12 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
   
       #create a color heap for all vertices
       start = SELECT t 
-              FROM start:s-(e_type:e)-v_type:t
+              FROM start:s-(e_type_set:e)-v_type_set:t
               ACCUM t.@color_heap+=test_color(s.@sum_color_vertex);
   
       #detect all conflicts
       conflict = SELECT t 
-                 FROM start:s-(e_type:e)-v_type:t
+                 FROM start:s-(e_type_set:e)-v_type_set:t
                  WHERE s.@sum_color_vertex == t.@sum_color_vertex AND getvid(s)>getvid(t);
   
       #resolve all detected conflicts 
@@ -109,9 +109,9 @@ CREATE QUERY tg_greedy_graph_coloring(SET<STRING> v_type,SET<STRING> e_type,UINT
   END;
   
   #collecting results
-  start = {v_type};
+  start = {v_type_set};
   start = SELECT t 
-          FROM start:s-(e_type:e)-v_type:t
+          FROM start:s-(e_type_set:e)-v_type_set:t
           POST-ACCUM 
               IF file_path != "" THEN
                   f.println(t,t.@sum_color_vertex)

@@ -1,4 +1,4 @@
-CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight, STRING label, INT top_k, 
+CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, STRING weight_attribute, STRING label, INT top_k, 
   BOOL print_results = TRUE, STRING file_path = "", STRING result_attribute = "")  SYNTAX V1 {
 
     /*
@@ -26,20 +26,20 @@ CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
         https://docs.tigergraph.com/graph-ml/current/classification-algorithms/k-nearest-neighbors-batch
 
     Parameters:
-        v_type: 
+        v_type_set: 
             Vertex types to calculate distance to source vertex for
-        e_type:
+        e_type_set:
             Edge types to traverse
-        reverse_e_type:
+        reverse_e_type_set:
             Reverse edge types to traverse
-        weight:
+        weight_attribute:
             Edge attribute to use as the weight of the edge
         label:
             Vertex attribute to recognize as the label of the vertex
         top_k:
             number of nearest neighbors to consider
         print_results:
-            Boolean value that indicates whether to output to console in JSON
+            if True, indicates whether to output to console in JSON
         file_path:
             If provided, the algorithm will output to this file path in CSV format
         result_attribute:
@@ -49,11 +49,11 @@ CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
     SumAccum<STRING> @sum_predicted_label;
     FILE f (file_path);
         
-    source = {v_type};        
+    source = {v_type_set};        
     source = SELECT s
              FROM source:s 
              WHERE s.getAttr(label, "STRING") == ""
-             POST-ACCUM s.@sum_predicted_label = tg_knn_cosine_all_sub(s, e_type,reverse_e_type, weight, label,top_k);
+             POST-ACCUM s.@sum_predicted_label = tg_knn_cosine_all_sub(s, e_type_set,reverse_e_type_set, weight_attribute, label,top_k);
   
     source = SELECT s 
              FROM source:s
@@ -61,8 +61,8 @@ CREATE QUERY tg_knn_cosine_all(SET<STRING> v_type, SET<STRING> e_type, SET<STRIN
                  IF file_path != "" THEN 
                      f.println(s, s.@sum_predicted_label) 
                  END,
-                 IF attr != "" THEN 
-                     s.setAttr(attr, s.@sum_predicted_label) 
+                 IF result_attribute != "" THEN 
+                     s.setAttr(result_attribute, s.@sum_predicted_label) 
                  END;
       
     IF print_results THEN

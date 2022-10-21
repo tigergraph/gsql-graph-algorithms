@@ -34,7 +34,7 @@ CREATE QUERY tg_scc_small_world(STRING v_type, STRING e_type, STRING reverse_e_t
         threshold:
             The threshold used to choose initial pivot vertices. Only vertices whose product of indegree and outdegree exceed this threshold will be considered candidates for the pivot vertex. This is an attempt to increase the chances that the initial pivot is contained within the largest SCC. The default value for this parameter is 100000. It is suggested that you keep this default value when running the algorithm.
         print_results:
-            If set to TRUE, the algorithm will return the number of vertices in each strongly connected component.
+            If True, the algorithm will return the number of vertices in each strongly connected component.
     */
 
   SumAccum<UINT> @sum_indegree;

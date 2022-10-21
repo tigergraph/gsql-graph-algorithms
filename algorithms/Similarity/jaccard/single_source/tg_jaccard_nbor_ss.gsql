@@ -33,7 +33,7 @@ CREATE QUERY tg_jaccard_nbor_ss (VERTEX source, STRING e_type, STRING reverse_e_
         e_type:
             directed edge types to traverse
         print_results:
-            print JSON output
+            If True, print JSON output
         reverse_e_type:
             reverse edge types to traverse
         file_path:

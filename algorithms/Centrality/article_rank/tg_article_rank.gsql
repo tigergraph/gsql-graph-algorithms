@@ -36,11 +36,11 @@ CREATE QUERY tg_article_rank (STRING v_type, STRING e_type,
         v_type:
             vertex types to traverse
         print_results:
-            print JSON output
+            If True, print JSON output
         e_type:
             edge types to traverse
         result_attribute:
-            INT attr to store results to
+            INT attribute to store results to
         maximum_iteration:
             max #iterations
         file_path:

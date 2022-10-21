@@ -1,5 +1,5 @@
 CREATE QUERY tg_closeness_cent_approx (
-    SET<STRING> v_type, SET<STRING> e_type, STRING reverse_e_type, INT top_k=100, INT k = 100,  INT max_hops = 10,  DOUBLE epsilon = 0.1,  BOOL print_results = true, 
+    SET<STRING> v_type_set, SET<STRING> e_type_set, STRING reverse_e_type, INT top_k=100, INT k = 100,  INT max_hops = 10,  DOUBLE epsilon = 0.1,  BOOL print_results = true, 
     STRING file_path = "",  INT debug = 0,  INT sample_index = 0,  INT max_size = 1000,   BOOL wf = True ) SYNTAX V1 {
       
     /*
@@ -27,11 +27,11 @@ CREATE QUERY tg_closeness_cent_approx (
         https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/closeness-centrality
 
     Parameters:
-        v_type:
+        v_type_set:
             vertex types to traverse
         print_results:
-            print JSON output
-        e_type:
+            If True, print JSON output
+        e_type_set:
             edge types to traverse
         k:
             sample num
@@ -40,7 +40,7 @@ CREATE QUERY tg_closeness_cent_approx (
         debug:
             debug flag -- 0
         reverse_e_type:
-            reverse edge type in directed graph, in undirected graph set reverse_e_type=e_type
+            reverse edge type in directed graph, in undirected graph set reverse_e_type=e_type_set
         max_hops:
             max BFS explore steps ,look only this far from each vertex
         file_path:
@@ -52,7 +52,7 @@ CREATE QUERY tg_closeness_cent_approx (
         max_size:
             max size of connected components using exact closeness algorithm
         wf:
-            Wasserman and Faust normalization factor for multi-component graphs
+            If True, enable Wasserman and Faust normalization factor for multi-component graphs
     */
     
     TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
@@ -94,7 +94,7 @@ CREATE QUERY tg_closeness_cent_approx (
     datetime t1,t2;
     FLOAT eps = 0.00001;
 	
-    Start = {v_type};
+    Start = {v_type_set};
     LOG(debug > 0,"query start",Start.size());
 
     # Total number of nodes
@@ -108,7 +108,7 @@ CREATE QUERY tg_closeness_cent_approx (
     # Propagate smaller internal IDs until no more ID changes can be DOne
     WHILE (comp.size()>0) DO
         comp = SELECT t 
-            FROM comp:s-(e_type)-v_type:t
+            FROM comp:s-(e_type_set)-v_type_set:t
             ACCUM t.@min_cc_id += s.@min_cc_id 	// If s has a smaller id than t, copy the id to t
             HAVING t.@min_cc_id != t.@min_cc_id'; 
     END;
@@ -178,7 +178,7 @@ CREATE QUERY tg_closeness_cent_approx (
             WHILE src.size() > 0 DO
                 @@sum_curDist += 1;
                 src = SELECT t 
-                    FROM src:s-(e_type)-v_type:t
+                    FROM src:s-(e_type_set)-v_type_set:t
                     WHERE t.@or_visited0 == False
                     ACCUM t.@max_pivot += s.@max_pivot
                     POST-ACCUM 
@@ -218,7 +218,7 @@ CREATE QUERY tg_closeness_cent_approx (
 
                     # decide whether the sample node is within or outside the threshold radius from the pivot of the visiting node
                     vnode = SELECT t 
-                        FROM vnode:s-(e_type)-v_type:t
+                        FROM vnode:s-(e_type_set)-v_type_set:t
                         WHERE t.@or_visited == False
                         POST-ACCUM 
                             t.@or_visited += True,
@@ -356,7 +356,7 @@ CREATE QUERY tg_closeness_cent_approx (
 
             @@sum_curr_dist+=1;
 
-            Start = SELECT t FROM Start:s -(reverse_e_type:e)-v_type:t
+            Start = SELECT t FROM Start:s -(reverse_e_type:e)-v_type_set:t
                 WHERE s.@bitwise_or_visit&-t.@bitwise_or_seen-1>0 AND s!=t #use -t.@seen-1 to get the trverse of t.@seen
                 ACCUM
                     INT c = s.@bitwise_or_visit&-t.@bitwise_or_seen-1,

@@ -1,4 +1,4 @@
-CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING weight,INT top_k,
+CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING weight_attribute,INT top_k,
   BOOL print_results = True, STRING file_path = "")  SYNTAX V1 {
 
     /*
@@ -29,14 +29,14 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
             vertex types to traverse
         e_type:
             edge types to traverse
-        weight:
-            enter weight attribute name
+        weight_attribute:
+            enter weight_attribute attribute name
         top_k:
             report only this many top scores
         file_path:
             file to write CSV output to
         print_results:
-            weather print the result
+            If True, print the result
   */
  
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
@@ -54,8 +54,8 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
   start = SELECT s 
           FROM all:s-(e_type:e)-v_type:v 
           ACCUM 
-              IF weight != ""  THEN 
-                  s.@influence_value+=e.getAttr(weight,"FLOAT") 
+              IF weight_attribute != ""  THEN 
+                  s.@influence_value+=e.getAttr(weight_attribute,"FLOAT") 
               ELSE  
                   s.@influence_value+=1 
               END
@@ -74,8 +74,8 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
             FROM all:s-(e_type:e)-v_type:v 
             WHERE s==k AND s.@or_in_seed == FALSE AND v.@or_influenced == FALSE
             ACCUM 
-                IF weight != ""  THEN 
-                    s.@influence_value+=e.getAttr(weight,"FLOAT") 
+                IF weight_attribute != ""  THEN 
+                    s.@influence_value+=e.getAttr(weight_attribute,"FLOAT") 
                 ELSE  
                     s.@influence_value+=1 
                 END 
@@ -99,8 +99,8 @@ CREATE QUERY tg_influence_maximization_CELF(STRING v_type,STRING e_type,STRING w
               FROM all:s-(e_type:e)-v_type:v 
               WHERE s.@or_in_seed == FALSE and v.@or_influenced == FALSE 
               ACCUM 
-                  IF weight != ""  THEN 
-                      s.@influence_value+=e.getAttr(weight,"FLOAT") 
+                  IF weight_attribute != ""  THEN 
+                      s.@influence_value+=e.getAttr(weight_attribute,"FLOAT") 
                   ELSE  
                       s.@influence_value+=1 
                   END

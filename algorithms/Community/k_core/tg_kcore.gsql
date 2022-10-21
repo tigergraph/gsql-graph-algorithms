@@ -42,13 +42,13 @@ CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -
         show_shells:
             The *k**-shell* is the set of vertices that are part of the k-core but not part of the (k+1)-core. If show_shells is true, the algorithm will return the k-shells found for every value of k. within the range provided. For each k-shell, the results will include its member vertices.
         print_results:
-            Boolean value that decides whether the algorithm will return output in JSON
+            if True, the algorithm will return output in JSON
         result_attribute:
-            Optional. An attribute of the vertex to save the core level of the vertex to. If attr is provided, the core level of the vertex will be saved to this attribute of the vertex.
+            Optional. An attribute of the vertex to save the core level of the vertex to. If attribute is provided, the core level of the vertex will be saved to this attribute of the vertex.
         file_path:
             Optional. If file_path is provided, the algorithm will output results to a file specified by the file path in CSV format.
         print_all_k:
-            Print all shells.
+            If True, Print all shells.
     */
   
   SumAccum<INT> @sum_deg;        // The number of edges v has to active vertices.

@@ -1,4 +1,4 @@
-CREATE QUERY tg_wcc (SET<STRING> v_type, SET<STRING> e_type, INT print_limit = 100,
+CREATE QUERY tg_wcc (SET<STRING> v_type_set, SET<STRING> e_type_set, INT print_limit = 100,
  BOOL print_results = TRUE, STRING result_attribute = "", STRING file_path = "")  SYNTAX V1 {
 
     /*
@@ -26,14 +26,14 @@ CREATE QUERY tg_wcc (SET<STRING> v_type, SET<STRING> e_type, INT print_limit = 1
         https://docs.tigergraph.com/graph-ml/current/community-algorithms/connected-components
 
     Parameters:
-        v_type:
+        v_type_set:
             vertex types to traverse
         print_results:
-            print JSON output
-        e_type:
+            If True, print JSON output
+        e_type_set:
             edge types to traverse
         result_attribute:
-            INT attr to store results to
+            INT attribute to store results to
         file_path:
             file to write CSV output to
         display_edges:
@@ -45,8 +45,8 @@ CREATE QUERY tg_wcc (SET<STRING> v_type, SET<STRING> e_type, INT print_limit = 1
 /*
  This query identifies the Connected Components (undirected edges). When finished, each
  vertex is assigned an INT label = its component ID number.
-  v_type: vertex types to traverse          print_results: print JSON output
-  e_type: edge types to traverse            result_attribute: INT attr to store results to
+  v_type_set: vertex types to traverse          print_results: print JSON output
+  e_type_set: edge types to traverse            result_attribute: INT attribute to store results to
   file_path: file to write CSV output to    display_edges: output edges for visualization
   print_limit: max #vertices to output (-1 = all)  
 */
@@ -56,7 +56,7 @@ MapAccum<INT, INT> @@comp_sizes_map;
 MapAccum<INT, ListAccum<INT>> @@comp_group_by_size_map;
 FILE f(file_path); 
 
-Start = {v_type};
+Start = {v_type_set};
 
 # Initialize: Label each vertex with its own internal ID
 S = SELECT x 
@@ -66,7 +66,7 @@ S = SELECT x
 # Propagate smaller internal IDs until no more ID changes can be Done
 WHILE (S.size()>0) DO
     S = SELECT t
-        FROM S:s -(e_type:e)- v_type:t
+        FROM S:s -(e_type_set:e)- v_type_set:t
 	ACCUM t.@min_cc_id += s.@min_cc_id // If s has smaller id than t, copy the id to t
 	HAVING t.@min_cc_id != t.@min_cc_id';
 END;
@@ -74,7 +74,7 @@ IF file_path != "" THEN
     f.println("Vertex_ID","Component_ID");
 END;
 
-Start = {v_type};
+Start = {v_type_set};
 Start = SELECT s 
         FROM Start:s
 	POST-ACCUM 

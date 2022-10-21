@@ -32,7 +32,7 @@ CREATE QUERY tg_all_path(VERTEX v_source, VERTEX target_v, INT depth = 10,
         depth:
             maxmium path length is 2*depth
         print_results:
-            print JSON output
+            If True, print JSON output
         file_path:
             file to write CSV output to
     */
@@ -42,7 +42,6 @@ CREATE QUERY tg_all_path(VERTEX v_source, VERTEX target_v, INT depth = 10,
   Parameters:
   v_source: source vertex                 
   target_v: target vertex  
-  e_type: edge types to traverse
   depth: maxmium path length
   print_results: print JSON output    
   file_path: file to write CSV output to

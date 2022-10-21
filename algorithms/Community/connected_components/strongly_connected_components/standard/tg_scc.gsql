@@ -1,4 +1,4 @@
-CREATE QUERY tg_scc (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse_e_type,
+CREATE QUERY tg_scc (SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set,
   INT top_k_dist, INT print_limit, INT maximum_iteration = 500, INT iter_wcc = 5, BOOL print_results = TRUE, STRING result_attribute= "", STRING file_path="")  SYNTAX V1 { 
     //INT iter_end_trim = 3
 
@@ -28,11 +28,11 @@ CREATE QUERY tg_scc (SET<STRING> v_type, SET<STRING> e_type, SET<STRING> reverse
         https://docs.tigergraph.com/graph-ml/current/community-algorithms/strongly-connected-components
 
     Parameters:
-		v_type:
+		v_type_set:
 			Names of vertex types to use
-		e_type:
+		e_type_set:
 			Names of edge types to use
-		reverse_e_type:
+		reverse_e_type_set:
 			Names of reverse direction edge types to use
 		top_k_dist:
 			top k result in SCC distribution
@@ -71,7 +71,7 @@ SumAccum<STRING> @sum_flag;
 MapAccum<INT, MinAccum<INT>> @@f_cid_map, @@b_cid_map, @@n_cid_map, @@s_cid_map;
 FILE f (file_path);
 INT i = 1;
-v_all = {v_type};
+v_all = {v_type_set};
 tmp(ANY) ={};
 
 active = SELECT s
@@ -85,13 +85,13 @@ active = SELECT s
 WHILE active.size()>0 LIMIT maximum_iteration DO	
     WHILE TRUE DO   
         tmp =  SELECT s
-	       FROM active:s -(e_type:e) - :t
+	       FROM active:s -(e_type_set:e) - :t
 	       WHERE t.@or_detached == FALSE AND s.@sum_cid == t.@sum_cid
 	       ACCUM 
                    s.@or_has_pos_outdegree = TRUE;
 
 	tmp =  SELECT s
-	       FROM active:s -(reverse_e_type:e) - :t
+	       FROM active:s -(reverse_e_type_set:e) - :t
 	       WHERE t.@or_detached == FALSE AND s.@sum_cid == t.@sum_cid
 	       ACCUM s.@or_has_pos_indegree = TRUE;
     
@@ -128,7 +128,7 @@ WHILE active.size()>0 LIMIT maximum_iteration DO
         curr = active;
 	WHILE (curr.size()>0) DO
 	    curr = SELECT t
-	           FROM curr:s -((e_type|reverse_e_type):e)- :t
+	           FROM curr:s -((e_type_set|reverse_e_type_set):e)- :t
 		   WHERE s.@sum_cid == t.@sum_cid AND t.@or_detached == FALSE
 		   ACCUM 
                        t.@min_wcc_id_curr += s.@min_wcc_id_prev // If s has a smaller id than t, copy the id to t
@@ -159,7 +159,7 @@ WHILE active.size()>0 LIMIT maximum_iteration DO
      curr = pivots;
      WHILE curr.size()>0 DO
          curr = SELECT t 
-		FROM curr:s -(e_type:e)-:t  // edge
+		FROM curr:s -(e_type_set:e)-:t  // edge
 		WHERE t.@or_detached == FALSE AND t.@or_is_forward == FALSE AND s.@sum_cid == t.@sum_cid // not traversed
 		ACCUM 
                     t.@or_is_forward = TRUE;
@@ -169,7 +169,7 @@ WHILE active.size()>0 LIMIT maximum_iteration DO
      curr = pivots;
      WHILE curr.size()>0 DO
          curr = SELECT t 
-		FROM curr:s -(reverse_e_type:e)-:t  // reverse edge
+		FROM curr:s -(reverse_e_type_set:e)-:t  // reverse edge
 		WHERE t.@or_detached == FALSE AND t.@or_is_backward == FALSE AND s.@sum_cid == t.@sum_cid // not traversed
 		ACCUM t.@or_is_backward = TRUE;
      END;

@@ -1,4 +1,4 @@
-CREATE QUERY tg_label_prop (SET<STRING> v_type, SET<STRING> e_type, INT maximum_iteration, INT print_limit, 
+CREATE QUERY tg_label_prop (SET<STRING> v_type_set, SET<STRING> e_type_set, INT maximum_iteration, INT print_limit, 
   BOOL print_results = TRUE, STRING file_path = "", STRING result_attribute = "")  SYNTAX V1 {
 
 
@@ -27,9 +27,9 @@ CREATE QUERY tg_label_prop (SET<STRING> v_type, SET<STRING> e_type, INT maximum_
         https://docs.tigergraph.com/graph-ml/current/community-algorithms/label-propagation
 
     Parameters:
-        v_type:
+        v_type_set:
             Names of vertex types to use
-        e_type:
+        e_type_set:
             Names of edge types to use
         maximum_iteration:
             Number of maximum iteration of the algorithm
@@ -48,7 +48,7 @@ MapAccum<INT, INT> @map;     # <communityId, numNeighbors>
 MapAccum<INT, INT> @@comm_sizes_map;   # <communityId, members>
 SumAccum<INT> @sum_label, @sum_num;  
 FILE f (file_path);
-Start = {v_type};
+Start = {v_type_set};
 
 # Assign unique labels to each vertex
 Start = SELECT s 
@@ -59,7 +59,7 @@ Start = SELECT s
 WHILE @@or_changed == true LIMIT maximum_iteration DO
     @@or_changed = false;
     Start = SELECT s 
-            FROM Start:s -(e_type:e)- :t
+            FROM Start:s -(e_type_set:e)- :t
             ACCUM t.@map += (s.@sum_label -> 1)  # count the occurrences of neighbor's labels
             POST-ACCUM
                 INT max_v = 0,
@@ -81,12 +81,12 @@ WHILE @@or_changed == true LIMIT maximum_iteration DO
                 t.@map.clear();
 END;
 
-Start = {v_type};
+Start = {v_type_set};
 Start =  SELECT s 
          FROM Start:s
          POST-ACCUM 
-             IF attr != "" THEN 
-                 s.setAttr(attr, s.@sum_label) 
+             IF result_attribute != "" THEN 
+                 s.setAttr(result_attribute, s.@sum_label) 
              END,
                
              IF file_path != "" THEN 

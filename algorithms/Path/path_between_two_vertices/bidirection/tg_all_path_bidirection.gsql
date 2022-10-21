@@ -1,4 +1,4 @@
-CREATE QUERY tg_all_path_bidirection(VERTEX v_source, VERTEX target_v, SET<STRING> e_type, SET<STRING> reverse_e_type, INT depth = 3,
+CREATE QUERY tg_all_path_bidirection(VERTEX v_source, VERTEX target_v, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, INT depth = 3,
   BOOL print_results = TRUE, STRING file_path = "")SYNTAX v1 {
 
 
@@ -30,14 +30,14 @@ CREATE QUERY tg_all_path_bidirection(VERTEX v_source, VERTEX target_v, SET<STRIN
             source vertex
         target_v:
             target vertex
-        e_type:
+        e_type_set:
             edge types to traverse
-        reverse_e_type:
-            reverse edge types to traverse, if the graph is undirected reverse_e_type=e_type
+        reverse_e_type_set:
+            reverse edge types to traverse, if the graph is undirected reverse_e_type_set=e_type_set
         depth:
             maxmium path length is 2*depth
         print_results:
-            print JSON output
+            If True, print JSON output
         file_path:
             file to write CSV output to
     */
@@ -67,7 +67,7 @@ CREATE QUERY tg_all_path_bidirection(VERTEX v_source, VERTEX target_v, SET<STRIN
   //for bidirection search, we will add one hop from start vertex set in each iteration, and add one hop and two hops from target vertex set
   WHILE true LIMIT depth DO 
        Source = Select t 
-                 FROM Source:s -(e_type:e)- :t
+                 FROM Source:s -(e_type_set:e)- :t
                  ACCUM FOREACH sequence IN s.@path_source_list DO 
                               IF sequence.contains(t) == FALSE and sequence.contains(target_v)==FALSE THEN
                                  t.@new_source_list += [sequence + [t]]  
@@ -94,7 +94,7 @@ CREATE QUERY tg_all_path_bidirection(VERTEX v_source, VERTEX target_v, SET<STRIN
                                   END
                           END;
        
-       Targetset = SELECT t FROM Targetset:s-(reverse_e_type:e)-:t
+       Targetset = SELECT t FROM Targetset:s-(reverse_e_type_set:e)-:t
                 ACCUM FOREACH sequence IN s.@path_target_list DO 
                            IF sequence.contains(t) == FALSE THEN
                               t.@new_target_list += [[t]+sequence]  

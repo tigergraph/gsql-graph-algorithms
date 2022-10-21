@@ -1,4 +1,4 @@
-CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> reverse_e_type, STRING weight_attribute, INT top_k, INT print_limit,
+CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, STRING weight_attribute, INT top_k, INT print_limit,
   BOOL print_results = TRUE, STRING file_path = "", STRING similarity_edge = "") RETURNS (MapAccum<VERTEX, FLOAT>)  SYNTAX V1 {
 
     /*
@@ -28,9 +28,9 @@ CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> r
     Parameters:
         source:
             start vertex types
-        e_type:
+        e_type_set:
             edge type to traverse
-        reverse_e_type:
+        reverse_e_type_set:
             reverse edge type to traverse
         weight_attribute:
             edge attribute that holds the weight
@@ -39,7 +39,7 @@ CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> r
         print_limit:
             limit the number of vertices printed
         print_results:
-            print JSON output
+            If True, print JSON output
         file_path:
             file to write CSV output to
         similarity_edge:
@@ -54,17 +54,17 @@ CREATE QUERY tg_cosine_nbor_ss (VERTEX source, SET<STRING> e_type, SET<STRING> r
 
   start = {source};
   subjects = SELECT t
-             FROM start:s -(e_type:e)- :t
+             FROM start:s -(e_type_set:e)- :t
              ACCUM t.@sum_numerator = e.getAttr(weight_attribute, "FLOAT"),
                    @@sum_norm1 += pow(e.getAttr(weight_attribute, "FLOAT"), 2);
 
   neighbours = SELECT t
-               FROM subjects:s -(reverse_e_type:e)-:t
+               FROM subjects:s -(reverse_e_type_set:e)-:t
                WHERE t != source
                ACCUM t.@sum_numerator += s.@sum_numerator * e.getAttr(weight_attribute, "FLOAT");
 
   neighbours = SELECT s
-               FROM neighbours:s -(e_type:e)- :t
+               FROM neighbours:s -(e_type_set:e)- :t
                ACCUM s.@sum_norm2 += pow(e.getAttr(weight_attribute, "FLOAT"), 2)
                POST-ACCUM s.@sum_similarity = s.@sum_numerator/sqrt(@@sum_norm1 * s.@sum_norm2)
                ORDER BY s.@sum_similarity DESC

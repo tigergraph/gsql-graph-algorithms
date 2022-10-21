@@ -13,8 +13,8 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
       maxChange : maximum centroid vector change condition
       v_type    : vertex type to start from
       e_type    : edge type to traverse
-      random    : boolean to start from either random or non-random centroid positions 
-      print_results : print JSON output
+      random    : if True, start from either random (if false, non-random) centroid positions 
+      print_results : If True, print JSON output
       file_path   : file to write CSV output to
   */
   TypeDef Tuple<int center, float value> distance_tuple; # tuple to store results in the Heap
