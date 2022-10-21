@@ -19,7 +19,7 @@ CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING revers
       Currently, this weighted degree centrality can only calculate one edge type and weight type.
       The default weight data type is INT, if your data type is not int: 
       PLEASE CHANGE "INT" in LINE 20,27,32 TO YOUR DATA TYPE
-      for undirected graph, you only need to set e_type and indegree
+      for undirected graph, you only need to set e_type and in_degree
 
    Publications:
       <link>
