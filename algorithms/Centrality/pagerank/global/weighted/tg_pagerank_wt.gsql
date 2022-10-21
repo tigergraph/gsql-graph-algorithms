@@ -1,25 +1,63 @@
-CREATE QUERY tg_pagerank_wt (STRING v_type, STRING e_type, STRING wt_attr,
- FLOAT max_change=0.001, INT max_iter=25, FLOAT damping=0.85, INT top_k = 100,
- BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "",
+CREATE QUERY tg_pagerank_wt (STRING v_type, STRING e_type, STRING weight_attribute,
+ FLOAT max_change=0.001, INT maximum_iteration=25, FLOAT damping=0.85, INT top_k = 100,
+ BOOL print_results = TRUE, STRING result_attribute =  "", STRING file_path = "",
  BOOL display_edges = FALSE) SYNTAX V1 {
 
-/*
- Compute the pageRank score for each vertex in the GRAPH
- In each iteration, compute a score for each vertex:
-     score = (1-damping) + damping*sum(received scores FROM its neighbors).
- The pageRank algorithm stops when either of the following is true:
- a) it reaches max_iter iterations;
- b) the max score change for any vertex compared to the last iteration <= max_change.
- v_type: vertex types to traverse          print_accum: print JSON output
- e_type: edge types to traverse            result_attr: INT attr to store results to
- wt_attr: attribute for edge weights
- max_iter: max #iterations                 file_path: file to write CSV output to
- top_k: #top scores to output              display_edges: output edges for visualization
- max_change: max allowed change between iterations to achieve convergence
- damping: importance of traversal vs. random teleport
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
- This query supports only taking in a single edge for the time being (8/13/2020).
-*/
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Centrality
+
+    Maturity:
+        Production
+
+    Description: 
+        Compute the pageRank score for each vertex in the GRAPH
+        In each iteration, compute a score for each vertex:
+            score = (1-damping) + damping*sum(received scores FROM its neighbors).
+        The pageRank algorithm stops when either of the following is true:
+        a) it reaches maximum_iteration iterations;
+        b) the max score change for any vertex compared to the last iteration <= max_change.
+
+        This query supports only taking in a single edge for the time being (8/13/2020).
+
+    Publications:
+        http://infolab.stanford.edu/~backrub/google.html
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/pagerank
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        print_results:
+            If True, print JSON output
+        e_type:
+            edge types to traverse
+        result_attribute:
+            INT attribute to store results to
+        weight_attribute:
+            attribute for edge weights
+        maximum_iteration:
+            max #iterations
+        file_path:
+            file to write CSV output to
+        top_k:
+            #top scores to output
+        display_edges:
+            output edges for visualization
+        max_change:
+            max allowed change between iterations to achieve convergence
+        damping:
+            importance of traversal vs. random teleport
+    */
+
 TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
 HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
 MaxAccum<FLOAT> @@max_diff = 9999;    # max score change in an iteration
@@ -33,15 +71,15 @@ Start = {v_type};
  # Calculate the total weight for each vertex
 Start = SELECT s                
         FROM Start:s -(e_type:e) - v_type:t
-        ACCUM s.@sum_total_wt += e.getAttr(wt_attr, "FLOAT"); 
+        ACCUM s.@sum_total_wt += e.getAttr(weight_attribute, "FLOAT"); 
             
 # PageRank iterations	
 # Start with all vertices of specified type(s)
-WHILE @@max_diff > max_change LIMIT max_iter DO
+WHILE @@max_diff > max_change LIMIT maximum_iteration DO
     @@max_diff = 0;
     V = SELECT s
 	FROM Start:s -(e_type:e)- v_type:t
-	ACCUM t.@sum_recvd_score += s.@sum_score * e.getAttr(wt_attr, "FLOAT")/s.@sum_total_wt
+	ACCUM t.@sum_recvd_score += s.@sum_score * e.getAttr(weight_attribute, "FLOAT")/s.@sum_total_wt
 	POST-ACCUM s.@sum_score = (1.0-damping) + damping * s.@sum_recvd_score,
 		   s.@sum_recvd_score = 0,
 		   @@max_diff += abs(s.@sum_score - s.@sum_score');
@@ -54,19 +92,19 @@ END;
 V = SELECT s 
     FROM Start:s
     POST-ACCUM 
-        IF result_attr != "" THEN 
-            s.setAttr(result_attr, s.@sum_score) 
+        IF result_attribute != "" THEN 
+            s.setAttr(result_attribute, s.@sum_score) 
         END,
    
 	IF file_path != "" THEN 
             f.println(s, s.@sum_score) 
         END,
    
-	IF print_accum THEN 
+	IF print_results THEN 
             @@top_scores_heap += Vertex_Score(s, s.@sum_score) 
         END;
 	
-IF print_accum THEN
+IF print_results THEN
     PRINT @@top_scores_heap;
     IF display_edges THEN
         PRINT Start[Start.@sum_score];

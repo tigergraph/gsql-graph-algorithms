@@ -1,17 +1,48 @@
-CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_accum = True, STRING result_attr = "",
+CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_results = True, STRING result_attribute = "",
   STRING file_path = "", BOOL display_edges = FALSE)  SYNTAX V1 { 
 
-   /*
-   The Local Clustering Coefficient algorithm computes the local clustering coefficient 
-   for each node in the graph. 
-   lcc = Number_trangles/((n-1)n/2)
-   Here n is the outdegreeof vertex.
-  Parameters:
-  v_type: vertex types to traverse                 print_accum: print JSON output
-  e_type: edge types to traverse                   result_attr: INT attr to store results to
-  top_k: report only this many top scores          file_path: file to write CSV output to
-  display_edges: output edges for visualization
-   */
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Production
+
+    Description: 
+        The Local Clustering Coefficient algorithm computes the local clustering coefficient 
+        for each node in the graph. 
+        lcc = Number_trangles/((n-1)n/2)
+        Here n is the outdegreeof vertex.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/community-algorithms/local-clustering-coefficient
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        print_results:
+            If True, print JSON output
+        e_type:
+            edge types to traverse
+        result_attribute:
+            INT attribute to store results to
+        top_k:
+            report only this many top scores
+        file_path:
+            file to write CSV output to
+        display_edges:
+            If True, output edges for visualization
+    */
    
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
   HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
@@ -52,10 +83,10 @@ CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_accum
           FROM Start:s
           # Calculate Closeness Centrality for each vertex
 	  POST-ACCUM 
-	      IF result_attr != "" THEN 
-	          s.setAttr(result_attr, s.@sum_lcc) 
+	      IF result_attribute != "" THEN 
+	          s.setAttr(result_attribute, s.@sum_lcc) 
               END,
-	      IF print_accum THEN 
+	      IF print_results THEN 
 	          @@top_scores_heap += Vertex_Score(s, s.@sum_lcc) 
               END,
 	      IF file_path != "" THEN 
@@ -66,7 +97,7 @@ CREATE QUERY tg_lcc (STRING v_type, STRING e_type,INT top_k=100,BOOL print_accum
       f.println("Vertex_ID", "lcc");
   END;
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@top_scores_heap AS top_scores;
       IF display_edges THEN
           PRINT Start[Start.@sum_lcc];

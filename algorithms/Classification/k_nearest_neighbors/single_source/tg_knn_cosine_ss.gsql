@@ -1,10 +1,54 @@
-CREATE QUERY tg_knn_cosine_ss (VERTEX source, SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type, STRING weight, 
-  STRING label, INT top_k, BOOL print_accum = TRUE, STRING file_path = "", STRING attr = "") RETURNS (STRING)  SYNTAX V1 {
+CREATE QUERY tg_knn_cosine_ss (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, STRING weight_attribute, 
+  STRING label, INT top_k, BOOL print_results = TRUE, STRING file_path = "", STRING result_attribute = "") RETURNS (STRING)  SYNTAX V1 {
 
-/* This query is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
-Cosine similarity = A \dot B / ||A|| \dot ||B||
-The output is the predicted label for the source vertex, which is the majority label of its k-nearest neighbors. 
-*/
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Classification
+
+    Maturity:
+        Production
+
+    Description: 
+        This query is k-nearest neighbors based on Cosine Similarity between a given vertex and every other vertex.
+        Cosine similarity = A \dot B / ||A|| \dot ||B||
+        The output is the predicted label for the source vertex, which is the majority label of its k-nearest neighbors. 
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/classification-algorithms/k-nearest-neighbors
+
+    Parameters:
+        source:
+            The vertex whose label to predict
+        v_type_set:
+            Vertex types to calculate distance to source vertex for
+        e_type_set:
+            Edge types to traverse
+        reverse_e_type_set:
+            Reverse edge types to traverse
+        weight_attribute:
+            Edge attribute to use as the weight of the edge
+        label:
+            Vertex attribute to recognize as the label of the vertex
+        top_k:
+            number of nearest neighbors to consider
+        print_results:
+            If true, the algorithm will output the result to the console in JSON format.
+        file_path:
+            If provided, the algorithm will output to this file path in CSV format
+        result_attribute:
+            Vertex attribute where the predicted label should be saved
+    */
+
   SumAccum<FLOAT> @sum_numerator, @@sum_norm1, @sum_norm2, @sum_similarity;
   MapAccum<STRING, INT> @@labels_count_map;
   FILE f(file_path);
@@ -13,17 +57,17 @@ The output is the predicted label for the source vertex, which is the majority l
   # calculate similarity and find the top k nearest neighbors
   start = {source};
   subjects = SELECT t
-             FROM start:s -(e_type:e)- :t
-             ACCUM t.@sum_numerator = e.getAttr(weight, "FLOAT"),
-                   @@sum_norm1 += pow(e.getAttr(weight, "FLOAT"), 2);
+             FROM start:s -(e_type_set:e)- :t
+             ACCUM t.@sum_numerator = e.getAttr(weight_attribute, "FLOAT"),
+                   @@sum_norm1 += pow(e.getAttr(weight_attribute, "FLOAT"), 2);
   neighbours = SELECT t
-               FROM subjects:s -(re_type:e)- :t
+               FROM subjects:s -(reverse_e_type_set:e)- :t
                WHERE t != source AND t.getAttr(label, "STRING") != ""    
                # only consider the neighbours with known label
-               ACCUM t.@sum_numerator += s.@sum_numerator * e.getAttr(weight, "FLOAT");
+               ACCUM t.@sum_numerator += s.@sum_numerator * e.getAttr(weight_attribute, "FLOAT");
   kNN = SELECT s
-        FROM neighbours:s -(e_type:e)- :t
-        ACCUM s.@sum_norm2 += pow(e.getAttr(weight, "FLOAT"), 2)
+        FROM neighbours:s -(e_type_set:e)- :t
+        ACCUM s.@sum_norm2 += pow(e.getAttr(weight_attribute, "FLOAT"), 2)
         POST-ACCUM s.@sum_similarity = s.@sum_numerator/sqrt(@@sum_norm1 * s.@sum_norm2)
         ORDER BY s.@sum_similarity DESC
         LIMIT top_k; 
@@ -40,13 +84,13 @@ The output is the predicted label for the source vertex, which is the majority l
       END;
   END;
   
-  IF attr != "" THEN
+  IF result_attribute != "" THEN
       start = SELECT s
               FROM start:s
-              POST-ACCUM s.setAttr(attr, predicted_label);
+              POST-ACCUM s.setAttr(result_attribute, predicted_label);
   END;
         
-  IF print_accum THEN
+  IF print_results THEN
       PRINT predicted_label;
   END;
   

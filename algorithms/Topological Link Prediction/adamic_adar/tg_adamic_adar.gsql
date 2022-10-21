@@ -1,32 +1,58 @@
-CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_res = TRUE)  SYNTAX V1 { 
+CREATE QUERY tg_adamic_adar(VERTEX v_source, VERTEX v_target, SET<STRING> e_type_set, BOOL print_results = TRUE)  SYNTAX V1 { 
+
     /*
-    This query calculates the Adamic Adar value between two vertices.
-    Higher the number, the closer two vertices are. A 0 value indicates two vertices are not close.
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
-    Formula of caluclation is found here: https://en.wikipedia.org/wiki/Adamic/Adar_index
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
 
-    Parameters :
-        a : Input vertex one
-        b : Input vertex two
-        e_type: edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
-        print_res: Boolean of if you want to print result (True by default)
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Topological%20Link%20Prediction
+
+    Maturity:
+        production
+
+    Description: 
+        This query calculates the Adamic Adar value between two vertices.
+        The higher the number, the closer two vertices are. A 0 value indicates two vertices are not close.
+
+        Formula of caluclation is found here: https://en.wikipedia.org/wiki/Adamic/Adar_index
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/link-prediction/adamic-adar
+
+    Parameters:
+        v_source:
+            Input vertex one
+        v_target:
+            Input vertex two
+        e_type_set:
+            edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
+        print_results:
+            if True, print result (True by default)
     */
+    
     SumAccum<INT> @sum_num_neighbors;
     SumAccum<DOUBLE> @@sum_closeness;
-    avs = {a};
-    bvs = {b};
+    avs = {v_source};
+    bvs = {v_target};
 
     # See if user specified edge types to traverse
-    IF "ALL" NOT IN e_type THEN
+    IF "ALL" NOT IN e_type_set THEN
         na = SELECT n 
-             FROM avs -(e_type)- :n;  # Get vertex A's neighbors
+             FROM avs -(e_type_set)- :n;  # Get vertex A's neighbors
              
         nb = SELECT n 
-             FROM bvs -(e_type)- :n;  # Get vertex B's neighbors
+             FROM bvs -(e_type_set)- :n;  # Get vertex B's neighbors
              
         u = na INTERSECT nb;  # Get neighbors in common
         tmp = SELECT p 
-              FROM u:p -(e_type)- :r 
+              FROM u:p -(e_type_set)- :r 
               ACCUM p.@sum_num_neighbors += 1;  # count number of neighbors of in-common vertices
               
     ELSE  # Traverse all edge types
@@ -46,7 +72,7 @@ CREATE QUERY tg_adamic_adar(VERTEX a, VERTEX b, SET<STRING> e_type, BOOL print_r
           FROM tmp:p 
           ACCUM @@sum_closeness += 1/log10(p.@sum_num_neighbors);  # calculates closeness measure
 
-    IF print_res THEN 
+    IF print_results THEN 
         PRINT @@sum_closeness; 
     END;
 }

@@ -20,7 +20,7 @@ CREATE QUERY tg_fpm_pre(STRING unify_vertex_type, STRING connect_edge, STRING it
   ListAccum<INT> @item_list;
   
   IF ts_attr_type NOT IN ("UINT", "INT", "FLOAT", "DOUBLE") THEN
-		PRINT "wt_type must be UINT, INT, FLOAT, or DOUBLE" AS errMsg;
+		PRINT "weight_type must be UINT, INT, FLOAT, or DOUBLE" AS errMsg;
 		RETURN;
 	END;
                            

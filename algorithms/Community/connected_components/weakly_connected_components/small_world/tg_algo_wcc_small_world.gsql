@@ -1,10 +1,40 @@
 CREATE QUERY tg_wcc_small_world(STRING v_type, STRING e_type, UINT threshold = 100000,
-  BOOL to_show_cc_count=FALSE)  SYNTAX V1 {
+  BOOL print_results=FALSE)  SYNTAX V1 {
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Production
+
+    Description: 
+        This query detects weakly connected components
+
+    Publications:
+        https://www.osti.gov/servlets/purl/1115145
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/community-algorithms/wcc-small-world
+
+    Parameters:
+        v_type:
+            The vertex type to count as part of a connected component
+        e_type:
+            The edge type to traverse
+        threshold:
+            The threshold used to choose initial pivot vertices. Only vertices whose product of indegree and outdegree exceed this threshold will be considered candidates for the pivot vertex. This is an attempt to increase the chances that the initial pivot is contained within the largest WCC. The default value for this parameter is 100000. It is suggested that you keep this default value when running the algorithm.
+        print_results:
+            If true, the algorithm will return the number of vertices in each connected component.
+    */
   
-  ##
-  # This query detects weakly connected components based on the following paper:
-  # https://www.osti.gov/servlets/purl/1115145
-  ##
   SumAccum<UINT> @sum_indegree;
   SumAccum<UINT> @sum_outdegree;
   SumAccum<INT> @sum_degree_product;
@@ -66,7 +96,7 @@ CREATE QUERY tg_wcc_small_world(STRING v_type, STRING e_type, UINT threshold = 1
                  ACCUM  t.@min_cc_id += s.@min_cc_id;
   END;
 
-  IF to_show_cc_count THEN
+  IF print_results THEN
       Vertices = {v_type};
       Vertices = SELECT s 
                  FROM Vertices:s
