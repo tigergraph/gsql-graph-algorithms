@@ -12,4 +12,4 @@
     sha_id: ed6ea869749977cc0f3df71225d7325fb81c9767
     description: "Predicts links in a social network according to the number of shared links between two nodes."
     version: lib3.0
-    include: false
+    include: true

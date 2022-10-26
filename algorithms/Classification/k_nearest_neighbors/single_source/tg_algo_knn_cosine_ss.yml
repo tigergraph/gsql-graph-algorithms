@@ -13,4 +13,4 @@
     description: "This algorithm calculates the distance between a single source vertex and all other vertices and selects the k vertices that are nearest. "
     schema_constraints: "This algorithm requires a FLOAT attribute on the target edge types representing weight, and a STRING attribute representing the label."
     version: lib3.0
-    include: false
+    include: true
