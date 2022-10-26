@@ -13,4 +13,4 @@
     description: "This version is more efficient than the greedy version and should be preferred in analyzing large networks."
     schema_constraints: This algorithm also requires a FLOAT attribute on the target edge types representing weight or influence.
     version: lib3.0
-    include: false
+    include: true
