@@ -7,7 +7,7 @@
 # [x|y...|z]  : file/directory x, y, or z
 
   algorithm:
-    name: All Paths between Two Vertices (Undirected Graph)
+    name: All Paths between Two Vertices (Bidirection search)
     filename: "tg_all_path_bidirection.gsql"
     sha_id: 4569e4faa05d46caa2c333636fe37a2fb85da4dc
     description: "Finds all paths between two vertices in a graph with undirected edges."
