@@ -1,12 +1,56 @@
-CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_accum = TRUE, 
-  STRING result_attr = "", STRING file_path = "", BOOL print_all_k = FALSE, BOOL show_shells=FALSE)  SYNTAX V1 { 
+CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_results = TRUE, 
+  STRING result_attribute = "", STRING file_path = "", BOOL print_all_k = FALSE, BOOL show_shells=FALSE)  SYNTAX V1 { 
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Production
+
+    Description: 
+        An implementation of Algorithm 2 in
+        Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
+        Tripathy et al., IEEE Big Data 2018.
+
+        This query is only supported for a single edge type at the moment (8/13/20)
+
+    Publications:
+        https://ieeexplore.ieee.org/document/8622056
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/community-algorithms/k-core-decomposition
+
+    Parameters:
+        v_type:
+            Vertex type to include in the k-core
+        e_type:
+            Edge type to count for k-core connections
+        k_min:
+            Minimum value of k. If the actual maximum core is below k_min, the algorithm will return an empty set.
+        k_max:
+            Maximum value of k. If k_max is smaller than k_min, the algorithm will ignore this parameter and keep looking for k-cores until it reaches a value of k where a k-core cannot be found.
+        show_membership:
+            If show_membership is true, the algorithm will return the k-cores found for every value of k within the range provided. For each k-core, the results will include its member vertices.
+        show_shells:
+            The *k**-shell* is the set of vertices that are part of the k-core but not part of the (k+1)-core. If show_shells is true, the algorithm will return the k-shells found for every value of k. within the range provided. For each k-shell, the results will include its member vertices.
+        print_results:
+            if True, the algorithm will return output in JSON
+        result_attribute:
+            Optional. An attribute of the vertex to save the core level of the vertex to. If attribute is provided, the core level of the vertex will be saved to this attribute of the vertex.
+        file_path:
+            Optional. If file_path is provided, the algorithm will output results to a file specified by the file path in CSV format.
+        print_all_k:
+            If True, Print all shells.
+    */
   
-/* An implementation of Algorithm 2 in
- * Scalable K-Core Decomposition for Static Graphs Using a Dynamic Graph Data Structure,
- * Tripathy et al., IEEE Big Data 2018.
- 
- This query is only supported for a single edge type at the moment (8/13/20)
- */
   SumAccum<INT> @sum_deg;        // The number of edges v has to active vertices.
   SumAccum<INT> @sum_core;       // The core level of vertex v
   FILE f(file_path);
@@ -51,7 +95,7 @@ CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -
       f.println("Vertex", "Core");
   END;
   
-  IF file_path != "" OR result_attr != "" THEN
+  IF file_path != "" OR result_attribute != "" THEN
       Seed = {v_type};
       Seed = SELECT s 
              FROM Seed:s
@@ -59,12 +103,12 @@ CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -
                  IF file_path != "" THEN 
 		     f.println(s, s.@sum_core) 
 		 END,
-                 IF result_attr != "" THEN 
-		     s.setAttr(result_attr, s.@sum_core) 
+                 IF result_attribute != "" THEN 
+		     s.setAttr(result_attribute, s.@sum_core) 
 		 END;
   END;
   
-  IF print_accum THEN
+  IF print_results THEN
       PRINT k, Q.size() as core_size, Q as max_core;
   END;	
 }

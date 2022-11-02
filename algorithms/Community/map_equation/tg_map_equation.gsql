@@ -1,5 +1,41 @@
 CREATE QUERY tg_map_equation(
-  STRING v_type,STRING e_type,STRING community_attr,STRING weight_attr = "")  SYNTAX V1 {
+  STRING v_type,STRING e_type,STRING result_attribute,STRING weight_attribute = "")  SYNTAX V1 {
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Alpha
+
+    Description: 
+        The library is currently under construction! Descriptions will be added soon.
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        e_type:
+            edge types to traverse
+        weight_attribute:
+            attribute name for edge weights (use an empty string if the graph is unweighted)
+            * note
+                when there is a weight attribute mismatch, there may not be an explicit error message
+        result_attribute:
+            attribute name to assign community id results to; use empty string to skip
+    */
 
   MinAccum<FLOAT> @@min_L;
   SumAccum<FLOAT>
@@ -30,16 +66,16 @@ CREATE QUERY tg_map_equation(
           FROM Start:s -(e_type:e)- v_type:t
           ACCUM
               @@sum_edge_count += 1,
-              IF s.getAttr(community_attr, "STRING") != t.getAttr(community_attr, "STRING") THEN
-                  IF weight_attr != "" THEN
-                      s.@q += e.getAttr(weight_attr, "FLOAT")
+              IF s.getAttr(result_attribute, "STRING") != t.getAttr(result_attribute, "STRING") THEN
+                  IF weight_attribute != "" THEN
+                      s.@q += e.getAttr(weight_attribute, "FLOAT")
                   ELSE
                       s.@q += 1
                   END
               END
           POST-ACCUM
               FLOAT p = s.@sum_outdegree / @@sum_edge_count,
-              STRING c = s.getAttr(community_attr, "STRING"),
+              STRING c = s.getAttr(result_attribute, "STRING"),
               @@p_map += (c -> p),
               @@q_map += (c -> s.@q),
               @@sum_p_log += p * tg_log_2(p),
@@ -47,9 +83,9 @@ CREATE QUERY tg_map_equation(
 
   CommunityCenters = SELECT s
                      FROM Start:s
-                     WHERE @@community_center_map.get(s.getAttr(community_attr, "STRING")) == s
+                     WHERE @@community_center_map.get(s.getAttr(result_attribute, "STRING")) == s
                      ACCUM
-                         STRING c = s.getAttr(community_attr, "STRING"),
+                         STRING c = s.getAttr(result_attribute, "STRING"),
                          @@sum_q += @@q_map.get(c),
                          @@sum_q_log += @@q_map.get(c) * tg_log_2(@@q_map.get(c)),
                          @@sum_qp_log += (@@q_map.get(c) + @@p_map.get(c)) * tg_log_2(@@q_map.get(c) + @@p_map.get(c));

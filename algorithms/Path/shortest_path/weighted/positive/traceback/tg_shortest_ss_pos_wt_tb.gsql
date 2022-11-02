@@ -1,20 +1,58 @@
-CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
- STRING wt_attr, STRING wt_type, FLOAT epsilon = 0.001,BOOL print_accum = TRUE, INT output_limit = -1, 
- BOOL display_edges = FALSE, STRING result_attr = "", BOOL spit_to_file = FALSE, 
- STRING file_path = "/home/tigergraph/tg_query_output.csv", UINT write_size = 10000)  SYNTAX V1 {
+CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set,
+ STRING weight_attribute, STRING weight_type, FLOAT epsilon = 0.001,BOOL print_results = TRUE, INT print_limit = -1, 
+ BOOL display_edges = FALSE, STRING result_attribute = "",
+ STRING file_path = "", UINT write_size = 10000)  SYNTAX V1 {
 
-/*
- Single-source shortest path algorithm (traceback version), with positive weight edges. 
- From the source vertex, finds the weighted shortest path (FLOAT value).
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
- source: start vertex to  every other vertex.     print_accum: print JSON output
- v_type: vertex types to traverse                 output_limit: max #vertices to output
- e_type: edge types to traverse                   display_edges: output edges for visualization
- wt_attr: attribute for edge weights              result_attr: INT attr to store results to
- wt_type: weight data type (INT,FLOAT,DOUBLE)     spit_to_file: spit data to file 
- epsilon: min delta weight                        file_path: file to write CSV output to
- write_size: number of paths to write concurrently
-*/
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+        Single-source shortest path algorithm (traceback version), with positive weight edges. 
+        From the source vertex, finds the weighted shortest path (FLOAT value).
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        NA
+
+    Parameters:
+        source:
+            start vertex
+        print_results:
+            If True, print JSON output
+        v_type_set:
+            vertex types to traverse
+        print_limit:
+            max #vertices to output
+        e_type_set:
+            edge types to traverse
+        display_edges:
+            output edges for visualization
+        weight_attribute:
+            attribute for edge weights
+        result_attribute:
+            INT attribute to store results to
+        weight_type:
+            weight data type (INT,FLOAT,DOUBLE)
+        epsilon:
+            min delta weight
+        file_path:
+            file to write CSV output to
+        write_size:
+            number of paths to write concurrently
+    */
 
   TYPEDEF TUPLE<FLOAT cost, INT length, VERTEX pred> min_tup;
   HeapAccum<min_tup>(1, cost ASC, length ASC) @min_path_heap;
@@ -26,9 +64,9 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
   FILE f(file_path);
   UINT print_count = 0;
    
-  # Check wt_type parameter
-  IF wt_type NOT IN ("UINT", "INT", "FLOAT", "DOUBLE") THEN
-      PRINT "wt_type must be UINT, INT, FLOAT, or DOUBLE" AS errMsg;
+  # Check weight_type parameter
+  IF weight_type NOT IN ("UINT", "INT", "FLOAT", "DOUBLE") THEN
+      PRINT "weight_type must be UINT, INT, FLOAT, or DOUBLE" AS errMsg;
       RETURN;
   END;
   
@@ -47,21 +85,21 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
   ##### Walk one step at a time until there is no more path.
   WHILE start.size() != 0 DO 
       start = SELECT t
-	      FROM start:s -(e_type:e)- v_type:t
+	      FROM start:s -(e_type_set:e)- v_type_set:t
 	      ACCUM 
                   t.@or_is_candidate = FALSE,
-                  CASE wt_type
+                  CASE weight_type
                       WHEN "UINT" THEN
-	                  t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(wt_attr, "UINT"), 
+	                  t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(weight_attribute, "UINT"), 
                           s.@min_path_heap.top().length + 1, s)
                       WHEN "INT" THEN
-			  t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(wt_attr, "INT"), 
+			  t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(weight_attribute, "INT"), 
                           s.@min_path_heap.top().length + 1, s)
                       WHEN "FLOAT" THEN
-                          t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(wt_attr, "FLOAT"), 
+                          t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(weight_attribute, "FLOAT"), 
                           s.@min_path_heap.top().length + 1, s)
                       WHEN "DOUBLE" THEN
-                          t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(wt_attr, "DOUBLE"), 
+                          t.@min_path_heap += min_tup(s.@min_path_heap.top().cost + e.getAttr(weight_attribute, "DOUBLE"), 
                           s.@min_path_heap.top().length + 1, s)
                   END
               POST-ACCUM
@@ -73,19 +111,19 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
   END;
   
   ##### Output #####
-  IF spit_to_file THEN
+  IF file_path != "" THEN
       f.println("Vertex_ID","Distance","Shortest_Path");
   END;
   
   start_set = {source};
-  component = {v_type};
+  component = {v_type_set};
   component = component MINUS start_set; 
   component = SELECT s 
               FROM component:s
               WHERE s.@min_prev_min_path != -1
               POST-ACCUM 
-	          IF result_attr != "" THEN 
-		      s.setAttr(result_attr, s.@min_path_heap.top().cost) 
+	          IF result_attribute != "" THEN 
+		      s.setAttr(result_attribute, s.@min_path_heap.top().cost) 
 		  END;
 
   //store and write paths by batches to reduce memory consumption
@@ -129,18 +167,18 @@ CREATE QUERY tg_shortest_ss_pos_wt_tb (VERTEX source, SET<STRING> v_type, SET<ST
                      s.@path_receiver_list.clear();
       END;
    
-      IF spit_to_file THEN
+      IF file_path != "" THEN
           tmp = SELECT s
                 FROM tmp:s
                 POST-ACCUM
                     f.println(s, s.@min_path_heap.top().cost, s.@path_list);
       END;
-      IF print_accum THEN
-          IF output_limit >= 0 THEN
-              IF print_count < output_limit THEN
+      IF print_results THEN
+          IF print_limit >= 0 THEN
+              IF print_count < print_limit THEN
                   tmp = SELECT s 
 	                FROM tmp:s 
-		        LIMIT output_limit - print_count; 
+		        LIMIT print_limit - print_count; 
                   print_count = print_count + tmp.size();
                   PRINT tmp[tmp.@min_path_heap.top().cost as cost, tmp.@path_list as p];
               END;

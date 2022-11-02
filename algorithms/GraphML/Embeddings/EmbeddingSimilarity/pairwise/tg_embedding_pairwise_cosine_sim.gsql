@@ -1,4 +1,41 @@
-CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT embedding_dim,STRING embedding)  SYNTAX V1 {
+CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT embedding_dimension,STRING embedding_attribute)  SYNTAX V1 {
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/GraphML/Embeddings
+
+    Maturity:
+        alpha
+
+    Description: 
+        This query calculates the embedding cosine similarity between one vertex and another.
+        The higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.
+
+        NOTE - This query needs to be modified based upon your schema to set the embedding attribute accordingly.
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+        v1:
+            Input vertex one
+        v2:
+            Input vertex two
+        embedding_dimension:
+            dimension of the vertex embedding
+        embedding_attribute:
+            node attribute for storing embedding
+    */
 
     /*
     This query calculates the embedding cosine similarity between one vertex and another.
@@ -20,12 +57,12 @@ CREATE QUERY tg_embedding_pairwise_cosine_similarity(VERTEX v1, VERTEX v2, INT e
 
     info = SELECT s
            FROM vs1:s
-           POST-ACCUM @@emb1_list += s.getAttr(embedding,"DOUBLE");
+           POST-ACCUM @@emb1_list += s.getAttr(embedding_attribute,"DOUBLE");
 
     info = SELECT s
            FROM vs2:s
-           POST-ACCUM @@emb2_list += s.getAttr(embedding,"DOUBLE");
+           POST-ACCUM @@emb2_list += s.getAttr(embedding_attribute,"DOUBLE");
 
-    similarity = tg_pairwise_cosine_similarity(@@emb1_list, @@emb2_list, embedding_dim);
+    similarity = tg_pairwise_cosine_similarity(@@emb1_list, @@emb2_list, embedding_dimension);
     PRINT similarity;
 }
