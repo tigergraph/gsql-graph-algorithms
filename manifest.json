@@ -1,0 +1,223 @@
+{
+   "Centrality": {
+      "pagerank": {
+         "weighted": {
+            "name": "tg_pagerank_wt",
+            "path": "algorithms/Centrality/pagerank/global/weighted/tg_pagerank_wt.gsql",
+            "schema_type": "VERTEX",
+            "value_type": "FLOAT"
+         },
+         "unweighted": {
+            "name": "tg_pagerank",
+            "path": "algorithms/Centrality/pagerank/global/unweighted/tg_pagerank.gsql",
+            "schema_type": "VERTEX",
+            "value_type": "FLOAT"
+         }
+      },
+      "article_rank": {
+         "name": "tg_article_rank",
+         "path": "algorithms/Centrality/article_rank/tg_article_rank.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "FLOAT"
+      },
+      "betweenness": {
+         "name": "tg_betweenness_cent",
+         "path": "algorithms/Centrality/betweenness/tg_betweenness_cent.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "FLOAT"
+      },
+      "closeness": {
+         "approximate": {
+            "name": "tg_closeness_cent_approx",
+            "path": "algorithms/Centrality/closeness/approximate/tg_closeness_cent_approx.gsql",
+            "schema_type": "VERTEX",
+            "value_type": "FLOAT"
+         },
+         "exact": {
+            "name": "tg_closeness_cent",
+            "path": "algorithms/Centrality/closeness/exact/tg_closeness_cent.gsql",
+            "schema_type": "VERTEX",
+            "value_type": "FLOAT"
+         }
+      },
+      "degree": {
+         "unweighted": {
+            "name": "tg_degree_cent",
+            "path": "algorithms/Centrality/degree/unweighted/tg_degree_cent.gsql",
+            "schema_type": "VERTEX",
+            "value_type": "INT"
+         },
+         "weighted": {
+            "name": "tg_weighted_degree_cent",
+            "path": "algorithms/Centrality/degree/weighted/tg_weighted_degree_cent.gsql",
+            "schema_type": "VERTEX",
+            "value_type": "INT"
+         }
+      },
+      "eigenvector": {
+         "name": "tg_eigenvector_cent",
+         "path": "algorithms/Centrality/eigenvector/tg_eigenvector_cent.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "FLOAT"
+      },
+      "harmonic": {
+         "name": "tg_harmonic_cent",
+         "path": "algorithms/Centrality/harmonic/tg_harmonic_cent.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "FLOAT"
+      }
+   },
+   "Classification": {
+      "greedy_graph_coloring": {
+         "name": "tg_greedy_graph_coloring",
+         "path": "algorithms/Classification/greedy_graph_coloring/tg_greedy_graph_coloring.gsql"
+      },
+      "k_nearest_neighbors": {
+         "all_pairs": {
+            "name": "tg_knn_cosine_all",
+            "path": "algorithms/Classification/k_nearest_neighbors/all_pairs/tg_knn_cosine_all_sub.gsql;algorithms/Classification/k_nearest_neighbors/all_pairs/tg_knn_cosine_all.gsql",
+            "schema_type": "VERTEX",
+            "value_type": "STRING"
+         },
+         "cross_validation": {
+            "name": "tg_knn_cosine_cv",
+            "path": "algorithms/Classification/k_nearest_neighbors/cross_validation/tg_knn_cosine_cv_sub.gsql;algorithms/Classification/k_nearest_neighbors/cross_validation/tg_knn_cosine_cv.gsql"
+         },
+         "single_source": {
+            "name": "tg_knn_cosine_ss",
+            "path": "algorithms/Classification/k_nearest_neighbors/single_source/tg_knn_cosine_ss.gsql",
+            "schema_type": "VERTEX",
+            "value_type": "STRING"
+         }
+      },
+      "maximal_independent_set": {
+         "deterministic": {
+            "name": "tg_maximal_indep_set",
+            "path": "algorithms/Classification/maximal_independent_set/deterministic/tg_maximal_indep_set.gsql"
+         },
+         "random": {
+            "name": "tg_maximal_indep_set_random",
+            "path": "algorithms/Classification/maximal_independent_set/random/tg_maximal_indep_set_random.gsql"
+         }
+      }
+   },
+   "Community": {
+      "connected_components": {
+         "strongly_connected_components": {
+            "name": "tg_scc",
+            "path": "algorithms/Community/connected_components/strongly_connected_components/standard/tg_scc.gsql",
+            "schema_type": "VERTEX",
+            "value_type": "INT"
+         }
+      },
+      "k_core": {
+         "name": "tg_kcore",
+         "path": "algorithms/Community/k_core/tg_kcore.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "INT"
+      },
+      "label_propagation": {
+         "name": "tg_label_prop",
+         "path": "algorithms/Community/label_propagation/tg_label_prop.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "INT"
+      },
+      "local_clustering_coefficient": {
+         "name": "tg_lcc",
+         "path": "algorithms/Community/local_clustering_coefficient/tg_lcc.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "FLOAT"
+      },
+      "louvain": {
+         "name": "tg_louvain",
+         "path": "algorithms/Community/louvain/tg_louvain.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "INT"
+      },
+      "triangle_counting": {
+         "name": "tg_tri_count_fast",
+         "path": "algorithms/Community/triangle_counting/fast/tg_tri_count_fast.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "INT"
+      }
+   },
+   "Embeddings": {
+      "FastRP": {
+         "name": "tg_fastRP",
+         "path": "algorithms/GraphML/Embeddings/FastRP/tg_fastRP.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "LIST<DOUBLE>"
+      }
+   },
+   "Path": {
+      "bfs": {
+         "name": "tg_bfs",
+         "path": "algorithms/Path/bfs/tg_bfs.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "INT"
+         
+      },
+      "cycle_detection": {
+         "name": "tg_cycle_detection_count",
+         "path": "algorithms/Path/cycle_detection/count/tg_cycle_detection_count.gsql"
+      },
+      "shortest_path": {
+         "name": "tg_shortest_ss_no_wt",
+         "path": "algorithms/Path/shortest_path/unweighted/tg_shortest_ss_no_wt.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "INT"
+      }
+   },
+   "Topological Link Prediction": {
+      "adamic_adar": {
+         "name": "tg_adamic_adar",
+         "path": "algorithms/Topological%20Link%20Prediction/adamic_adar/tg_adamic_adar.gsql"
+      },
+      "common_neighbors": {
+         "name": "tg_common_neighbors",
+         "path": "algorithms/Topological%20Link%20Prediction/common_neighbors/tg_common_neighbors.gsql"
+      },
+      "preferential_attachment": {
+         "name": "tg_preferential_attachment",
+         "path": "algorithms/Topological%20Link%20Prediction/preferential_attachment/tg_preferential_attachment.gsql"
+      },
+      "resource_allocation": {
+         "name": "tg_resource_allocation",
+         "path": "algorithms/Topological%20Link%20Prediction/resource_allocation/tg_resource_allocation.gsql"
+      },
+      "same_community": {
+         "name": "tg_same_community",
+         "path": "algorithms/Topological%20Link%20Prediction/same_community/tg_same_community.gsql",
+         "schema_type": "VERTEX",
+         "value_type": "STRING"
+      },
+      "total_neighbors": {
+         "name": "tg_total_neighbors",
+         "path": "algorithms/Topological%20Link%20Prediction/total_neighbors/tg_total_neighbors.gsql"
+      }
+   },
+   "Similarity": {
+      "cosine": {
+         "single_source": {
+            "name": "tg_cosine_nbor_ss",
+            "path": "algorithms/Similarity/cosine/single_source/tg_cosine_nbor_ss.gsql",
+            "schema_type": "EDGE",
+            "value_type": "STRING"
+         }
+      },
+      "jaccard": {
+         "all_pairs": {
+            "name": "tg_jaccard_nbor_ap_batch",
+            "path": "algorithms/Similarity/jaccard/all_pairs/tg_jaccard_nbor_ap_batch.gsql",
+            "schema_type": "EDGE",
+            "value_type": "STRING"
+         },
+         "single_source": {
+            "name": "tg_jaccard_nbor_ss",
+            "path": "algorithms/Similarity/jaccard/single_source/tg_jaccard_nbor_ss.gsql",
+            "schema_type": "EDGE",
+            "value_type": "STRING"
+         }
+      }
+   }
+}
