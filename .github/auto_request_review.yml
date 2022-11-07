@@ -9,17 +9,17 @@ reviewers:
   # Reviewer groups each of which has a list of GitHub usernames
   groups:
     group1:
-      - YimingPan-Code
-      - harshadindigal
+      - yimingpantg
       - TannerW
-    group2:
       - wyatt-joyner-tg
-      - tommytgraph
+      - parkererickson
+      - lennessyy
+      - a-m-thomas
     secondary:
-      - YimingPan-Code
+      - yimingpantg
       - wyatt-joyner-tg
     tertiary:
-      - xchang2014
+      - xinyuchtg
       - victor-gsl
 
 files:
