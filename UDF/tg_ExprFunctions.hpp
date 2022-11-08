@@ -288,6 +288,10 @@ namespace UDIMPL {
       return v3;
   }
 
+  inline float tg_str_to_float(std::string input) {
+    return std::stof(input);
+  }
+
   /* ============== END FAST RP ================= */
 
   /* ============== START NODE2VEC ================= */

@@ -9,13 +9,7 @@
 #include <math.h>
 #include <functional>
 
-inline ListAccum<float> tg_extract_list(string weights){
-  ListAccum<float> wghts;
-  string current_weight;
-  std::stringstream s_stream(weights);
-  while (s_stream.good()) {
-    std::getline(s_stream, current_weight, ',');
-    wghts.data_.push_back(std::stof(current_weight));
-  }
-  return wghts;
+
+inline float tg_str_to_float(std::string input) {
+  return std::stof(input);
 }

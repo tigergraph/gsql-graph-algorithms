@@ -1,0 +1,90 @@
+CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.weighted_degree_cent(STRING v_type, STRING e_type, STRING reverse_e_type, string weight_attribute, BOOL in_degree = TRUE, BOOL out_degree = TRUE, INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
+
+   /*
+   First Author: <First Author Name>
+   First Commit Date:  <First Commit Date>
+
+   Recent Author: <Recent Commit Author Name>
+   Recent Commit Date: <Recent Commit Date>
+
+
+   Repository:
+      https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Centrality
+
+   Maturity:
+      Production
+
+   Description: 
+      Compute weighted degree Centrality for each VERTEX.
+      Currently, this weighted degree centrality can only calculate one edge type and weight type.
+      The default weight data type is INT, if your data type is not int: 
+      PLEASE CHANGE "INT" in LINE 20,27,32 TO YOUR DATA TYPE
+      for undirected graph, you only need to set e_type and in_degree
+
+   Publications:
+      <link>
+
+   TigerGraph Documentation:
+      <link>
+
+   Parameters:
+      v_type:
+         vertex types to traverse
+      e_type:
+         edge types to traverse
+      reverse_e_type:
+         for indegree use
+      in_degree:
+         If True, count incoming relationships
+      out_degree:
+         If True, count outcoming relationships
+      top_k:
+         report only this many top scores
+      print_results:
+         If True, print the results
+      result_attribute:
+         attribute to write result to
+      file_path:
+         file to write CSV output to
+  */
+
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
+  HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
+  SumAccum<INT> @sum_degree_score;
+  FILE f (file_path);
+
+  all = {v_type};
+  IF in_degree THEN 
+      sll = SELECT s 
+            FROM all:s-(reverse_e_type:e)-:t
+            ACCUM s.@sum_degree_score+=e.getAttr(weight_attribute,"INT");
+  END;
+  IF out_degree THEN 
+      sll = SELECT s 
+            FROM all:s-(e_type:e)-:t
+            ACCUM s.@sum_degree_score+=e.getAttr(weight_attribute,"INT");
+  END;
+  #Output
+  IF file_path != "" THEN
+      f.println("Vertex_ID", "Degree");
+  END;
+
+  Start = SELECT s 
+          FROM all:s
+          POST-ACCUM
+          IF result_attribute != "" THEN 
+             s.setAttr(result_attribute, s.@sum_degree_score) 
+          END,
+    
+          IF print_results THEN 
+             @@top_scores_heap += Vertex_Score(s, s.@sum_degree_score) 
+          END,
+    
+          IF file_path != "" THEN 
+             f.println(s, s.@sum_degree_score) 
+          END;
+        
+   IF print_results THEN
+       PRINT @@top_scores_heap AS top_scores;
+   END;
+}

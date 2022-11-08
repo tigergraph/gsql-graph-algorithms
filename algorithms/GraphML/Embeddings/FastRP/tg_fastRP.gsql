@@ -1,166 +1,283 @@
-CREATE QUERY tg_fastRP(SET<STRING> v_type_set, SET<STRING> e_type_set,
-              STRING weights, FLOAT beta, INT k, INT embedding_dimension,
-             INT sampling_constant, INT random_seed,
-             BOOL print_results=FALSE, STRING result_attribute="") {
+CREATE QUERY tg_fastRP(
+  SET<STRING> v_type,
+  SET<STRING> e_type,
+  SET<STRING> output_v_type,
+  STRING iteration_weights,
+  FLOAT beta,
+  INT embedding_dimension,
+  INT default_index = 0,
+  INT default_length,
+  FLOAT default_weight = 1,
+  SET<STRING> embedding_dim_map,
+  INT sampling_constant = 3,
+  INT random_seed = 42,
+  STRING result_attribute="",
+  STRING component_attribute="",
+  INT batch_number=0,
+  STRING filepath="",
+  BOOL print_results=FALSE,
+  INT choose_k=5) SYNTAX V1 {
+  /*
+  First Author: Wyatt Joyner
+  First Commit Date:
 
+  Recent Author: Parker Erickson
+  Recent Commit Date:
 
-    /*
-    First Author: <First Author Name>
-    First Commit Date:  <First Commit Date>
-
-    Recent Author: <Recent Commit Author Name>
-    Recent Commit Date: <Recent Commit Date>
-
-
-    Repository:
-        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/GraphML/Embeddings
-
-    Maturity:
-        alpha
-
-    Description: 
-        This query produces an embedding for each vertex.
-        Assumes that tg_fastRP_preprocessing has been run first.
-
-        NOTE - This query needs to be modified based upon your schema to set the embedding
-            attribute accordingly if you wish to store the embeddings in your graph. Each vertex should have
-            an attribute with type LIST<DOUBLE>. If you do not wish to store the embeddings in graph, the applicable lines.
-
-        NOTE - FastRP was originally created to work on undirected graphs. It can work on directed graphs, although
-            we recommend to have reverse edges in your schema so the embeddings can be passed in both directions. If
-            using a directed graph, there is a modification to allow it to run with sink vertices, but this may
-            affect the embeddings.
-
-    Publications:
-        https://docs.tigergraph.com/graph-ml/current/node-embeddings/fast-random-projection
-
-    TigerGraph Documentation:
-        https://arxiv.org/pdf/1908.11512.pdf
-
-    Parameters:
-        v_type_set:
-            Set of strings representing the vertex types to embed.
-        e_type_set:
-            Set of strings representing the edge types to use when producing embeddings
-        k:
-            "depth" of embedding. k=2 means that the resulting embedding would take vertices within 2-hops into account
-        sampling_constant:
-            controls the sparsity of the resulting embedding
-        embedding_dimension:
-            dimension of the embedding
-        beta:
-            hyperparameter that is typically between -1 and 0
-        weights:
-            comma seperated string of weights for each hop in the graph, (eg "1,2,4") when k=3
-        index_attr:
-            attribute where the fastrp_preprocessing query results are stored
-        print_results:
-            If True, print resulting embeddings to Json
-        result_attribute:
-            option to write embeddings to a vertex attribute
-            (NOTE - SCHEMA MUST SUPPORT THIS)
-        file_path:
-            path to write embeddings to file
-    */
+  Repository:
+    https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/GraphML
     
-  ArrayAccum<SumAccum<FLOAT>> @embedding_arr[128];
-  ArrayAccum<SumAccum<FLOAT>> @final_embedding_arr[128];
-  ListAccum<FLOAT> @final_embedding_list;
+  Maturity:
+    Beta 
+  
+  Description:
+    FastRP is a vertex embedding algorithm. Embedding algorithms create vector representations of each
+    vertex in a reduced dimension ("embedding dimension"). These embeddings then can be used in downstream
+    tasks such as cosine similarity between two vertices, or machine learning algorithms. FastRP in particular
+    utilizes random projections to preserve pairwise distances between two vertices given their topological information
+    in the graph.
+
+    The original FastRP implementation does not account for heterogenous graphs (graphs with multiple edge types). 
+    This implementation allows users to section off certain areas of the embedding vector to be modified when defined
+    edge types are traversed. If users do not specify any particular embedding regions, all edge types will be considered.
+
+    NOTE: This query needs to be modified based upon your schema to set the embedding
+    attribute accordingly if you wish to store the embeddings in your graph. Each vertex should have
+    an attribute with type LIST<DOUBLE>. If you do not wish to store the embeddings in graph, remove the applicable lines.
+    
+    NOTE: FastRP was originally created to work on undirected graphs. It can work on directed graphs, although
+    we recommend to have reverse edges in your schema so the embeddings can be passed in both directions. If
+    using a directed graph, there is a modification to allow it to run with sink vertices, but this may
+    affect the embeddings.
+
+  Publications:
+    https://arxiv.org/pdf/1908.11512.pdf
+
+  TigerGraph Documentation:
+
+
+  Parameters:
+    v_type:
+      Set of all vertex types to traverse in the graph.
+    e_type:
+      Set of all edge types to traverse in the graph.
+    output_v_type:
+      Set of vertex types to produce output embeddings for.
+    iteration_weights:
+      A comma-separated string of numbers to weight each iteration of the embedding process.
+    beta:
+      A float value that normalizes high-degree vertices in the graph. Usually between -1 and 0, where
+      -1 penalizes high-degree vertices heavily. If desired, one can use a positive value to weight
+      high-degree vertices more than low-degree vertices.
+    embedding_dimension:
+      The total dimension of the desired embedding.
+    default_index:
+      Index in the embedding vector default edges (edge types that are not explicitly defined in `embedding_dim_map`) start to 
+      be incorporated in the vector.
+    default_length:
+      Length of the embedding region that incorporates default edge type information.
+    default_weight:
+      Influence that the default edge types have in the region of the embedding they are incorporated. Defaults to 1.
+    embedding_dim_map:
+      Set of comma-separated tuples of '<edge type>,<length>,<weight>,<starting index>'. Use if incorporating specific edge types
+      into certain regions of the embedding is desired. If the empty set is used, all edge types will be considered "default" edge types.
+    sampling_constant:
+      Parameter defined from the FastRP paper. Controls the sparsity of the embedding. Usually an integer between 1 (fully dense embedding)
+      and 3 works well.
+    random_seed:
+      Seed for random number generator. Defaults to 42.
+    result_attribute:
+      Attribute to store the result embedding to. Must be of type LIST<FLOAT>. If empty, algorithm does not write the embedding to an attribute.
+    component_attribute:
+      If batching the embedding process by connected components, specify the vertex attribute that contains the
+      integer ID of the component.
+    batch_number:
+      If batching by connected component, specify which batch to compute the embeddings for.
+    filepath:
+      If specified, what file to write the computed embeddings to.
+    print_results:
+      If TRUE, all vertex embeddings will be printed.
+    choose_k:
+      Will print a sample of K vertices and their embeddings. Defaults to 5.
+  */
+
+  TYPEDEF TUPLE<INT min_dim, INT max_dim, FLOAT weight> Dim_Tuple;
+
+  MapAccum<STRING, Dim_Tuple> @@feature_dim_map, @@embedding_dim_map;
+
+  MapAccum<INT, SumAccum<FLOAT>> @embedding_arr;
+  MapAccum<INT, SumAccum<FLOAT>> @final_embedding_arr;
+  ListAccum<DOUBLE> @final_embedding_list;
   SumAccum<FLOAT> @L, @@m;
   ListAccum<FLOAT> @@weights;
-  INT depth = 0;
+  OrAccum @include, @stop;
+  INT weight_idx, defined_dims;
 
+  STRING temp_dim_key;
+  INT idx_1, idx_2, idx_3, temp_length, temp_weight, emb_idx;
+  INT _edge_sample_cutoff;
+
+  FILE f(filepath);
+
+  // PRE-INITIALIZATION
+
+  // initialization of internal variables for PRNG
   INT _mod, _mult, _inc;
   _mod = pow(2, 31)-1;
   _mult = 1664525;
   _inc = 1013904223;
-
-  FLOAT p1, p2, p3;
-  float v1, v2, v3;
-
+  FLOAT p1, p2, p3, v1, v2, v3;
   v1 = sqrt(sampling_constant);
   v2 = -v1;
   v3 = 0.0;
-
   p1 = 0.5 / sampling_constant;
   p2 = p1;
   p3 = 1 - 1.0 / sampling_constant;
 
-  @@weights = tg_extract_list(weights);
+  // extract explicitly defined topological embedding regions
+  FOREACH string_tuple IN embedding_dim_map DO
+    idx_1 = instr(string_tuple, ",");
+    idx_2 = instr(string_tuple, ",", 0, 2);
+    idx_3 = instr(string_tuple, ",", 0, 3);
+    temp_dim_key = substr(string_tuple, 0, idx_1);
+    temp_length = str_to_int(substr(string_tuple, idx_1+1, idx_2-1-idx_1));
+    temp_weight = tg_str_to_float(substr(string_tuple, idx_2+1));
+    idx_3 = str_to_int(substr(string_tuple, idx_3+1));
+    @@embedding_dim_map += (temp_dim_key -> Dim_Tuple(idx_3, idx_3+temp_length, temp_weight));
+    defined_dims = defined_dims + temp_length;
+  END;
 
-  verts = {v_type_set};
+  @@embedding_dim_map += ("default" -> Dim_Tuple(default_index, default_index+default_length, default_weight));
 
+  PRINT @@embedding_dim_map;
+
+  // extract weights into usable accumulator
+  idx_1 = 0;
+  weight_idx = 1;
+  WHILE idx_1 != -1 DO
+    idx_2 = instr(iteration_weights, ",", idx_1);
+    IF idx_2 == -1 THEN
+      @@weights += tg_str_to_float(substr(iteration_weights, idx_1));
+      BREAK;
+    END;
+    @@weights += tg_str_to_float(substr(iteration_weights, idx_1, idx_2-idx_1));
+    idx_1 = idx_2+1;
+    weight_idx = weight_idx + 1;
+  END;
+
+  verts = {v_type};
+  // component_attr should indicate which batch each vertex belongs to, if none defined, just use all vertex types provided
+  IF component_attribute != "" THEN
+    verts =
+      SELECT s FROM verts:s
+      WHERE s.getAttr(component_attribute, "INT") == batch_number
+      POST-ACCUM s.@include += TRUE;
+  ELSE
+    verts =
+      SELECT s FROM verts:s POST-ACCUM s.@include += TRUE;
+  END;
+
+  // INITIALIZATION
+
+  // L stores the normalized diagonal elements of an inverse degree matrix
+  // this is defined in the original algorithm and is useful for initialization
   verts =
-    SELECT s FROM verts:s -(:e)- :t
+    SELECT s FROM verts:s -(e_type:e)- v_type:t
+    WHERE t.@include == TRUE
     ACCUM @@m += 1
-    POST-ACCUM s.@L = pow(s.outdegree() / @@m, beta);
+    POST-ACCUM s.@L = pow(s.outdegree(e_type) / @@m, beta);
 
+  // randomly initialize the topological embedding regions
   verts =
-    SELECT s FROM verts:s -(e_type_set)- :t
+    SELECT s FROM verts:s -(e_type:e)- v_type:t
+    WHERE t.@include == TRUE
     ACCUM
+      // PRNG code
       INT inc = (getvid(s)+_inc),
       INT r = ((inc+_mult*random_seed) % _mod),
       FLOAT mr = 0,
-      FOREACH i IN RANGE[0, embedding_dimension-1] DO
+      STRING temp_e_type = e.type,
+      // if the edge type wasn't explicitly specified, but was provided in e_type,
+      // then its information will reside in the 'default' region of the embedding vector
+      IF @@embedding_dim_map.containsKey(e.type) == FALSE THEN
+        temp_e_type = "default"
+      END,
+      FLOAT weight = @@embedding_dim_map.get(temp_e_type).weight,
+      FOREACH i IN RANGE[@@embedding_dim_map.get(temp_e_type).min_dim, @@embedding_dim_map.get(temp_e_type).max_dim-1] DO
         r = ((r * _mult + inc) % _mod),
         mr = r / (_mod * 1.0),
         if (mr <= p1) THEN
-          t.@embedding_arr[i] = v1 * s.@L
+          t.@embedding_arr += (i -> v1 * s.@L * weight)
         ELSE IF (mr <= p1 + p2) THEN
-          t.@embedding_arr[i] = v2 * s.@L
+          t.@embedding_arr += (i -> v2 * s.@L * weight)
         ELSE
-          t.@embedding_arr[i] = v3 * s.@L
+          t.@embedding_arr += (i -> v3 * s.@L * weight)
         END
       END;
 
-  WHILE depth < k DO
-    // avg neighboring intermediate embeddings and normalize
+   // MAIN EXECUTION
+
+  FOREACH depth IN RANGE[0, @@weights.size()-1] DO
+
+    // propagate embeddings to neighbors and normalize
     verts =
-    SELECT s FROM verts:s -(e_type_set)- :t
-    ACCUM
-      t.@embedding_arr += s.@embedding_arr
-    POST-ACCUM
-      FLOAT square_sum = 0,
-      INT out = t.outdegree(),
-      FOREACH total IN t.@embedding_arr DO
-        IF out != 0 THEN
-          square_sum = square_sum + pow(total / t.outdegree(), 2)
-        ELSE
-          square_sum = square_sum + pow(total, 2)
-        END
-      END,
-      square_sum = sqrt(square_sum),
-      FOREACH i IN RANGE[0, embedding_dimension-1] DO
-      IF square_sum == 0.0 THEN
-        BREAK
-      END,
-      IF out != 0 THEN
-        t.@final_embedding_arr[i] += t.@embedding_arr[i] / t.outdegree() / square_sum * @@weights.get(depth),
-        t.@embedding_arr[i] = (t.@embedding_arr[i] / t.outdegree() / square_sum)
-      ELSE
-        t.@final_embedding_arr[i] += t.@embedding_arr[i] / square_sum * @@weights.get(depth),
-        t.@embedding_arr[i] = (t.@embedding_arr[i] / square_sum)
-      END
-      END;
+      SELECT s FROM verts:s -(e_type)- v_type:t
+      WHERE t.@include == TRUE
+      ACCUM
+        t.@embedding_arr += s.@embedding_arr
+      POST-ACCUM
+        // first calculate square sum to help normalize
+        FLOAT square_sum = 0,
+        FLOAT out = max([1.0, t.outdegree(e_type)]),
+        FOREACH (i,total) IN t.@embedding_arr DO
+          square_sum = square_sum + pow(total / out, 2)
+        END,
+        square_sum = sqrt(square_sum),
+        FLOAT value = 0,
+        FOREACH i IN RANGE[0, embedding_dimension-1] DO
+          IF square_sum == 0.0 THEN
+            BREAK
+          END,
+          t.@final_embedding_arr += (i -> t.@embedding_arr.get(i) / out / square_sum * @@weights.get(depth)),
+          value = t.@embedding_arr.get(i) / out / square_sum,
+          t.@embedding_arr += (i -> -t.@embedding_arr.get(i)),
+          t.@embedding_arr += (i -> value)
+        END;
     depth = depth + 1;
   END;
 
+  // OUTPUT
+
+  // clearing the unneeded arrays will save on memory
   verts =
     SELECT s FROM verts:s
-    POST-ACCUM s.@embedding_arr.reallocate(0); // want to make sure this executes before updating the list accum
+    POST-ACCUM s.@embedding_arr.clear();
+
+  // the arrays are converted to lists for compatibility with GSQL's LIST type
   verts =
     SELECT s FROM verts:s
+    WHERE output_v_type.size() == 0 OR output_v_type.contains(s.type)
     POST-ACCUM
     FOREACH i IN RANGE[0, embedding_dimension-1] DO
-      s.@final_embedding_list += s.@final_embedding_arr[i] / @@weights.size() // Average by # of iterations
+      s.@final_embedding_list += s.@final_embedding_arr.get(i) / @@weights.size() // Average by # of iterations
     END,
-    s.@final_embedding_arr.reallocate(0);
+    s.@final_embedding_arr.clear();
 
   IF print_results THEN
     res = SELECT a FROM verts:a;
     PRINT res[res.@final_embedding_arr];
   END;
+
+  // (un)comment depending on whether you want to write to graph
+  // GSQL does not yet support dynamic setAttr calls for LIST types
   IF result_attribute != "" THEN
-    storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.embedding = s.@final_embedding_list;
+    storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.setAttr(result_attribute, s.@final_embedding_list);
   END;
+  IF filepath != "" THEN
+    writeEmbeddings = SELECT s FROM verts:s POST-ACCUM f.println(s, s.@final_embedding_list);
+  END;
+
+  sample_verts =
+    SELECT s FROM verts:s LIMIT choose_k;
+  PRINT sample_verts;
 }
