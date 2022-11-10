@@ -72,24 +72,6 @@
          "name": "tg_greedy_graph_coloring",
          "path": "algorithms/Classification/greedy_graph_coloring/tg_greedy_graph_coloring.gsql"
       },
-      "k_nearest_neighbors": {
-         "all_pairs": {
-            "name": "tg_knn_cosine_all",
-            "path": "algorithms/Classification/k_nearest_neighbors/all_pairs/tg_knn_cosine_all_sub.gsql;algorithms/Classification/k_nearest_neighbors/all_pairs/tg_knn_cosine_all.gsql",
-            "schema_type": "VERTEX",
-            "value_type": "STRING"
-         },
-         "cross_validation": {
-            "name": "tg_knn_cosine_cv",
-            "path": "algorithms/Classification/k_nearest_neighbors/cross_validation/tg_knn_cosine_cv_sub.gsql;algorithms/Classification/k_nearest_neighbors/cross_validation/tg_knn_cosine_cv.gsql"
-         },
-         "single_source": {
-            "name": "tg_knn_cosine_ss",
-            "path": "algorithms/Classification/k_nearest_neighbors/single_source/tg_knn_cosine_ss.gsql",
-            "schema_type": "VERTEX",
-            "value_type": "STRING"
-         }
-      },
       "maximal_independent_set": {
          "deterministic": {
             "name": "tg_maximal_indep_set",
