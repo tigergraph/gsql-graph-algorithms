@@ -273,11 +273,4 @@ CREATE QUERY tg_fastRP(
   IF result_attribute != "" THEN
     storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.setAttr(result_attribute, s.@final_embedding_list);
   END;
-  IF filepath != "" THEN
-    writeEmbeddings = SELECT s FROM verts:s POST-ACCUM f.println(s, s.@final_embedding_list);
-  END;
-
-  sample_verts =
-    SELECT s FROM verts:s LIMIT choose_k;
-  PRINT sample_verts;
 }
