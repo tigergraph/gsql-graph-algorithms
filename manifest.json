@@ -82,12 +82,6 @@
          "cross_validation": {
             "name": "tg_knn_cosine_cv",
             "path": "algorithms/Classification/k_nearest_neighbors/cross_validation/tg_knn_cosine_cv_sub.gsql;algorithms/Classification/k_nearest_neighbors/cross_validation/tg_knn_cosine_cv.gsql"
-         },
-         "single_source": {
-            "name": "tg_knn_cosine_ss",
-            "path": "algorithms/Classification/k_nearest_neighbors/single_source/tg_knn_cosine_ss.gsql",
-            "schema_type": "VERTEX",
-            "value_type": "STRING"
          }
       },
       "maximal_independent_set": {
