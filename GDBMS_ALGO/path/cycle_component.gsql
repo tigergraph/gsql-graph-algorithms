@@ -1,0 +1,78 @@
+CREATE TEMPLATE QUERY GDBMS_ALGO.path.cycle_component(STRING v_type,STRING e_type,BOOL print_results = TRUE, STRING result_attribute =  "", STRING file_path = "") SYNTAX v1{ 
+
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+        This algorithm is for undirected graph
+        Find all vertex which are in a cycle
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        e_type:
+            edge types to traverse
+        print_results:
+            If True, weather print the result
+        result_attribute:
+            attribute to write result to
+        file_path:
+            file to write CSV output to
+    */
+
+  OrAccum @or_nocycle;
+  SumAccum<INT> @sum_outdegree;
+  SumAccum<INT> @@sum_stop=1;
+  FILE f (file_path);
+  Start = {v_type};
+  WHILE @@sum_stop!=0 DO
+        @@sum_stop=0;
+        Start = SELECT s 
+                FROM Start:s-(e_type)-v_type:t 
+                WHERE t.@or_nocycle==FALSE and s!=t
+                ACCUM s.@sum_outdegree+=1
+                POST-ACCUM IF s.@sum_outdegree==1 THEN @@sum_stop+=1,s.@or_nocycle+=TRUE END,
+                           s.@sum_outdegree=0
+                HAVING s.@or_nocycle==FALSE;
+        
+  END;
+  # Output
+  IF file_path != "" THEN
+      f.println("Vertex_ID_In_cycle");
+  END;
+
+  V = SELECT s 
+      FROM Start:s
+      POST-ACCUM 
+          IF result_attribute != "" THEN 
+              s.setAttr(result_attribute, TRUE) 
+          END,
+   
+          IF file_path != "" THEN 
+              f.println(s) 
+          END;
+   
+  IF print_results THEN
+      PRINT Start;
+  END;
+  
+  PRINT "tg_cycle_component works!"; 
+}

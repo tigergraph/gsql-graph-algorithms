@@ -13,4 +13,4 @@
     description: "This version is more time-consuming than the CELF version."
     schema_constraints: This algorithm also requires a FLOAT attribute on the target edge types representing weight or influence.
     version: lib3.0
-    include: false
+    include: true

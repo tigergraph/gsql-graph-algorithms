@@ -1,26 +1,58 @@
 CREATE QUERY tg_pagerank_pers(SET<VERTEX> source, STRING e_type,
-  FLOAT max_change=0.001, INT max_iter=25, FLOAT damping = 0.85, INT top_k = 100,
-  BOOL print_accum = TRUE, STRING result_attr = "", STRING file_path = "") SYNTAX V1 {
+  FLOAT max_change=0.001, INT maximum_iteration=25, FLOAT damping = 0.85, INT top_k = 100,
+  BOOL print_results = TRUE, STRING result_attribute = "", STRING file_path = "") SYNTAX V1 {
 
-  /*
-  Compute the pageRank score for each vertex in the GRAPH, given a set of source vertices
-  In each iteration, compute a score for activated vertices if they are source vertices:
-  score = (1-damping) + damping*sum(received scores FROM its neighbors).
-  If they are not source vertices, then score = damping*sum(received scores FROM its neighbors).
-  The personalized pageRank algorithm stops when either of the following is true:
-  a) it reaches max_iter iterations;
-  b) the max score change for any vertex compared to the last iteration <= maxChange.
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
-  Parameters:
-  v_type: vertex types to traverse          print_accum: print JSON output
-  e_type: edge types to traverse            result_attr: INT attr to store results to
-  max_iter; max #iterations                 file_path: file to write CSV output to
-  top_k: #top scores to output              display_edges: output edges for visualization
-  max_change: max allowed change between iterations to achieve convergence
-  damping: importance of traversal vs. random teleport
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
 
-  This query supports only taking in a single edge for the time being (8/13/2020).
-*/
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Centrality
+
+    Maturity:
+        Production
+
+    Description: 
+        Compute the pageRank score for each vertex in the GRAPH, given a set of source vertices
+        In each iteration, compute a score for activated vertices if they are source vertices:
+        score = (1-damping) + damping*sum(received scores FROM its neighbors).
+        If they are not source vertices, then score = damping*sum(received scores FROM its neighbors).
+        The personalized pageRank algorithm stops when either of the following is true:
+        a) it reaches maximum_iteration iterations;
+        b) the max score change for any vertex compared to the last iteration <= maxChange.
+
+        This query currently supports only taking in a single edge.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/personalized-pagerank
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        print_results:
+            If True, print JSON output
+        e_type:
+            edge types to traverse
+        result_attribute:
+            INT attribute to store results to
+        file_path:
+            file to write CSV output to
+        top_k:
+            #top scores to output
+        display_edges:
+            output edges for visualization
+        max_change:
+            max allowed change between iterations to achieve convergence
+        damping:
+            importance of traversal vs. random teleport
+    */
 
   TYPEDEF TUPLE<VERTEX vertex_id, FLOAT score> Vertex_Score;
   HeapAccum<Vertex_Score>(top_k, score DESC) @@top_cores_heap;
@@ -42,7 +74,7 @@ CREATE QUERY tg_pagerank_pers(SET<VERTEX> source, STRING e_type,
                 s.@or_is_source = true;
   Total = Start;
   WHILE @@max_diff > max_change
-      LIMIT max_iter DO
+      LIMIT maximum_iteration DO
       @@max_diff = 0;
       V_tmp = SELECT t      # Only update score for activated vertices
               FROM Start:s -(e_type:e)- :t
@@ -65,19 +97,19 @@ CREATE QUERY tg_pagerank_pers(SET<VERTEX> source, STRING e_type,
   Total = SELECT s
           From Total:s
     POST-ACCUM
-              IF result_attr != "" THEN
-                  s.setAttr(result_attr, s.@sum_score)
+              IF result_attribute != "" THEN
+                  s.setAttr(result_attribute, s.@sum_score)
               END,
 
               IF file_path != "" THEN
                   f.println(s, s.@sum_score)
               END,
 
-        IF print_accum THEN
+        IF print_results THEN
                   @@top_cores_heap += Vertex_Score(s, s.@sum_score)
               END;
 
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@top_cores_heap as top_scores;
   END;
 }

@@ -1,18 +1,55 @@
-CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRING> e_type,
- STRING wt_attr, STRING wt_type, INT output_limit = -1, BOOL print_accum = TRUE,
- STRING result_attr = "", STRING file_path = "", BOOL display_edges = FALSE)  SYNTAX V1 {
+CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set,
+ STRING weight_attribute, STRING weight_type, INT print_limit = -1, BOOL print_results = TRUE,
+ STRING result_attribute = "", STRING file_path = "", BOOL display_edges = FALSE)  SYNTAX V1 {
 
-/*
- Single-source shortest path algorithm, with weight edges, possibly negative.
- From the source vertex, finds the weighted shortest path (FLOAT value).
- The Bellman-Ford algorithm for Single-Source Shortest Path with edge weights,
- is used.  If any loop in the graph has a net negative weight, the algorithm will exit.
- source: start vertex                            print_accum: print JSON output
- v_type: vertex types to traverse                result_attr: INT attr to store results to
- e_type: edge types to traverse                  file_path: file to write CSV output to
- wt_attr: attribute for edge weights             output_limit: max #vertices to output
- wt_type: weight data type (INT,FLOAT,DOUBLE)    display_edges: output edges for visualization
-*/
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+        Single-source shortest path algorithm, with weight edges, possibly negative.
+        From the source vertex, finds the weighted shortest path (FLOAT value).
+        The Bellman-Ford algorithm for Single-Source Shortest Path with edge weights,
+        is used.  If any loop in the graph has a net negative weight, the algorithm will exit.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/single-source-shortest-path-weighted
+
+    Parameters:
+        source:
+            start vertex
+        print_results:
+            If True, print JSON output
+        v_type_set:
+            vertex types to traverse
+        result_attribute:
+            INT attribute to store results to
+        e_type_set:
+            edge types to traverse
+        file_path:
+            file to write CSV output to
+        weight_attribute:
+            attribute for edge weights
+        print_limit:
+            max #vertices to output
+        weight_type:
+            weight data type (INT,FLOAT,DOUBLE)
+        display_edges:
+            output edges for visualization
+    */
 
   TYPEDEF TUPLE<FLOAT dist, VERTEX pred> Path_Tuple;    
   HeapAccum<Path_Tuple>(1, dist ASC) @min_path_heap;       # retain 1 shortest path
@@ -25,9 +62,9 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   STRING msg40999 = "There is a loop with negative length. Shortest path is undefined.";
   EXCEPTION neg_loop_excep (40999);
 
-  # Check wt_type parameter
-  IF wt_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
-      PRINT "wt_type must be INT, FLOAT, or DOUBLE" AS errMsg;
+  # Check weight_type parameter
+  IF weight_type NOT IN ("INT", "FLOAT", "DOUBLE") THEN
+      PRINT "weight_type must be INT, FLOAT, or DOUBLE" AS errMsg;
       RETURN;
   END;
 
@@ -43,7 +80,7 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   ##### Get the connected component #####      
   WHILE start.size() > 0 DO
       start = SELECT t
-        FROM start:s -(e_type:e)- v_type:t
+        FROM start:s -(e_type_set:e)- v_type_set:t
         WHERE NOT t.@or_visited
         ACCUM t.@or_visited = TRUE;
       component = component UNION start;
@@ -54,33 +91,33 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   iter = component.size() - 1;    # the max iteration is N-1
   WHILE TRUE LIMIT iter DO 
       tmp = SELECT s
-            FROM component:s -(e_type:e)- v_type:t
+            FROM component:s -(e_type_set:e)- v_type_set:t
       ACCUM 
           IF s.@min_path_heap.size()>0 /*AND s.@minPath.top().dist < GSQL_INT_MAX*1.0*/ THEN
-                    CASE wt_type
+                    CASE weight_type
                         WHEN "INT" THEN
-          t.@min_path_heap += Path_Tuple(s.@min_path_heap.top().dist + e.getAttr(wt_attr, "INT"), s)
+          t.@min_path_heap += Path_Tuple(s.@min_path_heap.top().dist + e.getAttr(weight_attribute, "INT"), s)
                         WHEN "FLOAT" THEN
-                            t.@min_path_heap += Path_Tuple(s.@min_path_heap.top().dist + e.getAttr(wt_attr, "FLOAT"), s)
+                            t.@min_path_heap += Path_Tuple(s.@min_path_heap.top().dist + e.getAttr(weight_attribute, "FLOAT"), s)
                         WHEN "DOUBLE" THEN
-                            t.@min_path_heap += Path_Tuple(s.@min_path_heap.top().dist + e.getAttr(wt_attr, "DOUBLE"), s)
+                            t.@min_path_heap += Path_Tuple(s.@min_path_heap.top().dist + e.getAttr(weight_attribute, "DOUBLE"), s)
                         END
     END;
   END;
 
   ##### Check for loops with net negative weight #####
   component = SELECT s
-        FROM component:s -(e_type:e)- v_type:t
-        ACCUM CASE wt_type
+        FROM component:s -(e_type_set:e)- v_type_set:t
+        ACCUM CASE weight_type
                   WHEN "INT" THEN
           @@or_has_neg_loop +=
-          s.@min_path_heap.top().dist + e.getAttr(wt_attr,"INT") < t.@min_path_heap.top().dist
+          s.@min_path_heap.top().dist + e.getAttr(weight_attribute,"INT") < t.@min_path_heap.top().dist
                   WHEN "FLOAT" THEN
                       @@or_has_neg_loop +=
-          s.@min_path_heap.top().dist + e.getAttr(wt_attr,"FLOAT") < t.@min_path_heap.top().dist
+          s.@min_path_heap.top().dist + e.getAttr(weight_attribute,"FLOAT") < t.@min_path_heap.top().dist
                   WHEN "DOUBLE" THEN
                       @@or_has_neg_loop +=
-          s.@min_path_heap.top().dist + e.getAttr(wt_attr,"DOUBLE") < t.@min_path_heap.top().dist   
+          s.@min_path_heap.top().dist + e.getAttr(weight_attribute,"DOUBLE") < t.@min_path_heap.top().dist   
                   END;
  
   IF @@or_has_neg_loop THEN        
@@ -95,7 +132,7 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   POST-ACCUM s.@or_visited = FALSE;
   WHILE start.size() > 0 LIMIT iter DO     # Limit the number of hops
       start = SELECT t
-        FROM start:s -(e_type:e)- v_type:t
+        FROM start:s -(e_type_set:e)- v_type_set:t
         WHERE NOT t.@or_visited
         ACCUM IF s == t.@min_path_heap.top().pred THEN 
         t.@or_visited = TRUE,
@@ -112,22 +149,22 @@ CREATE QUERY tg_shortest_ss_any_wt (VERTEX source, SET<STRING> v_type, SET<STRIN
   component = SELECT s 
               FROM component:s
         POST-ACCUM 
-        IF result_attr != "" THEN 
-            s.setAttr(result_attr, s.@min_path_heap.top().dist) 
+        IF result_attribute != "" THEN 
+            s.setAttr(result_attribute, s.@min_path_heap.top().dist) 
         END,
         IF file_path != "" THEN 
             f.println(s, s.@min_path_heap.top().dist, s.@path_list) 
         END;    
-  IF print_accum THEN
-      IF output_limit >= 0 THEN
+  IF print_results THEN
+      IF print_limit >= 0 THEN
           component = SELECT s 
                 FROM component:s 
-          LIMIT output_limit;
+          LIMIT print_limit;
       END;
       PRINT component[component.@min_path_heap.top().dist, component.@path_list];
       IF display_edges THEN
           tmp = SELECT s
-    FROM component:s -(e_type:e)- v_type:t
+    FROM component:s -(e_type_set:e)- v_type_set:t
     ACCUM @@edge_set += e;
     PRINT @@edge_set;
       END;

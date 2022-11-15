@@ -13,7 +13,7 @@
     description: "This algorithm makes a prediction for every vertex whose label is not known based on its k nearest neighbors' labels."
     schema_constraints: "This algorithm requires a FLOAT attribute on the target edge types representing weight, and a STRING attribute representing the label."
     version: lib3.0
-    include: false
+    include: true
     dependencies:
       queries:
         - file: "{@}/tg_knn_cosine_all_sub.gsql"
