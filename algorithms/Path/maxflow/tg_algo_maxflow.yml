@@ -13,4 +13,4 @@
     description: "Finds the maximum possible flow from a source vertex to a target vertex under the constraint that each edge has a flow capacity that cannot be exceeded and that the incoming and outgoing flow must be the same for the vertices in the middle."
     schema_constraints: This algorithm requires an INT, FLOAT, or DOUBLE capacity attribute on the target edge types.
     version: lib3.0
-    include: false
+    include: true

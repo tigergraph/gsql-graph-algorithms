@@ -1,13 +1,49 @@
-CREATE QUERY tg_all_path(VERTEX source_v, VERTEX target_v, INT depth = 10,
-  BOOL print_accum = TRUE, STRING file_path = "")SYNTAX v1 {
+CREATE QUERY tg_all_path(VERTEX v_source, VERTEX target_v, INT depth = 10,
+  BOOL print_results = TRUE, STRING file_path = "")SYNTAX v1 {
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+        Finds all paths between two vertices in a directed graph.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/single-pair-all-paths
+
+    Parameters:
+        v_source:
+            source vertex
+        target_v:
+            target vertex
+        depth:
+            maxmium path length is 2*depth
+        print_results:
+            If True, print JSON output
+        file_path:
+            file to write CSV output to
+    */
+
   /*This algorithm is to find all path between two vertex
   
   Parameters:
-  source_v: source vertex                 
+  v_source: source vertex                 
   target_v: target vertex  
-  e_type: edge types to traverse
   depth: maxmium path length
-  print_accum: print JSON output    
+  print_results: print JSON output    
   file_path: file to write CSV output to
   
   */
@@ -23,7 +59,7 @@ CREATE QUERY tg_all_path(VERTEX source_v, VERTEX target_v, INT depth = 10,
           ACCUM s.@end_point = true;
   
   // 2. start from the initial node, save the node to the patt_list, and find all nodes connected through the given name
-  Source = {source_v};
+  Source = {v_source};
   Source = SELECT s 
            FROM Source:s
            ACCUM s.@path_list = [s];
@@ -51,7 +87,7 @@ CREATE QUERY tg_all_path(VERTEX source_v, VERTEX target_v, INT depth = 10,
                 HAVING t.@path_list.size() > 0;
   END;
   // 3. return the final result
-  IF print_accum THEN
+  IF print_results THEN
       PRINT @@total_path_list as path;
   END;  
 }

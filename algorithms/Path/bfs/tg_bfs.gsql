@@ -1,13 +1,47 @@
-CREATE QUERY tg_bfs(SET<STRING> v_type, SET<STRING> e_type,INT max_hops=10, VERTEX v_start,
-BOOL print_accum = True, STRING result_attr = "",STRING file_path = "", BOOL display_edges = TRUE) SYNTAX V1 { 
+CREATE QUERY tg_bfs(SET<STRING> v_type_set, SET<STRING> e_type_set,INT max_hops=10, VERTEX v_start,
+BOOL print_results = True, STRING result_attribute = "",STRING file_path = "", BOOL display_edges = TRUE) SYNTAX V1 { 
 
-/*Breadth-First Search Algorithm from a single source node
-Parameters:
-v_type: vertex types to traverse                 v_start : source vertex for traverse
-e_type: edge types to traverse                   print_accum: print JSON output
-max_hops: look only this far from each vertex    result_attr: INT attr to store results to
-file_path: file to write CSV output to           display_edges: output edges for visualization
-*/ 
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+        Breadth-First Search Algorithm from a single source node
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/pathfinding-algorithms/bfs
+
+    Parameters:
+        v_type_set:
+            vertex types to traverse
+        v_start:
+            source vertex for traverse
+        e_type_set:
+            edge types to traverse
+        print_results:
+            If True, print JSON output
+        max_hops:
+            look only this far from each vertex
+        result_attribute:
+            INT attribute to store results to
+        file_path:
+            file to write CSV output to
+        display_edges:
+            If True, output edges for visualization
+    */
 
     SumAccum<INT> @@sum_cur_step;  # current step
     SumAccum<INT> @sum_step;  # step from source
@@ -28,7 +62,7 @@ file_path: file to write CSV output to           display_edges: output edges for
     WHILE Start.size() > 0 LIMIT max_hops DO
         @@sum_cur_step += 1;
         Start = SELECT t 
-                FROM Start:s-(e_type:e)- :t
+                FROM Start:s-(e_type_set:e)- :t
                 WHERE t.@or_visited == FALSE
                 ACCUM 
                     IF display_edges THEN 
@@ -39,19 +73,19 @@ file_path: file to write CSV output to           display_edges: output edges for
                     t.@sum_step = @@sum_cur_step;
     END;
     
-    Start = {v_type};
+    Start = {v_type_set};
     Start = SELECT s 
             FROM Start:s
             WHERE s.@or_visited == TRUE
             POST-ACCUM 
-                IF result_attr != "" THEN 
-                    s.setAttr(result_attr, s.@sum_step) 
+                IF result_attribute != "" THEN 
+                    s.setAttr(result_attribute, s.@sum_step) 
                 END,
                 IF file_path != "" THEN 
                     f.println(s, s.@sum_step) 
                 END; 
     # output
-    IF print_accum THEN
+    IF print_results THEN
         PRINT Start[Start.@sum_step];
         IF display_edges THEN
             PRINT @@edge_set;

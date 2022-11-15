@@ -1,16 +1,53 @@
-CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING> re_type,INT max_hops = 10,
-  INT top_k = 100, BOOL wf = TRUE, BOOL print_accum = True, STRING result_attr = "",
+CREATE QUERY tg_harmonic_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set,INT max_hops = 10,
+  INT top_k = 100, BOOL wf = TRUE, BOOL print_results = True, STRING result_attribute = "",
   STRING file_path = "", BOOL display_edges = FALSE) SYNTAX V1 { 
-   
-  /* Compute Harmonic Centrality for each VERTEX. 
-  Use multi-sourse BFS.
-  Parameters:
-  v_type: vertex types to traverse                 print_accum: print JSON output
-  e_type: edge types to traverse                   result_attr: INT attr to store results to
-  re_type: reverse edge type in directed graph, in undirected graph set re_type=e_type
-  max_hops: look only this far from each vertex    file_path: file to write CSV output to
-  top_k: report only this many top scores          display_edges: output edges for visualization
-  wf: Wasserman and Faust normalization factor for multi-component graphs */ 
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Centrality
+
+    Maturity:
+        Production
+
+    Description: 
+        Compute Harmonic Centrality for each VERTEX. 
+        Use multi-source BFS.
+
+    Publications:
+        https://arxiv.org/pdf/cond-mat/0008357.pdf
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/harmonic-centrality
+
+    Parameters:
+        v_type_set:
+            vertex types to traverse
+        print_results:
+            If True, print JSON output
+        e_type_set:
+            edge types to traverse
+        result_attribute:
+            INT attribute to store results to
+        reverse_e_type_set:
+            reverse edge type in directed graph, in undirected graph set reverse_e_type_set=e_type_set
+        max_hops:
+            look only this far from each vertex
+        file_path:
+            file to write CSV output to
+        top_k:
+            report only this many top scores
+        display_edges:
+            If True, output edges for visualization
+        wf:
+            If True, enable Wasserman and Faust normalization factor for multi-component graphs
+    */
   
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score; #tuple to store harmonic centrality score
   HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap; #heap to store top K score
@@ -31,7 +68,7 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
   INT num_vert;
   INT batch_number;
 # Compute harmonic	
-  all = {v_type};
+  all = {v_type_set};
   
   num_vert = all.size();
   batch_number = num_vert/60;
@@ -65,7 +102,7 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
       WHILE (Start.size() > 0) LIMIT max_hops DO
           @@sum_curr_dist+=1;
           Start = SELECT t 
-                  FROM Start:s -(re_type:e)-v_type:t
+                  FROM Start:s -(reverse_e_type_set:e)-v_type_set:t
                   WHERE s.@bitwise_or_visit&-t.@bitwise_or_seen-1>0 and s!=t #use -t.@seen-1 to get the trverse of t.@seen
                   ACCUM
                       INT c = s.@bitwise_or_visit&-t.@bitwise_or_seen-1,
@@ -101,11 +138,11 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
                   s.@sum_score = s.@sum_res*1.0 
               END,
     
-	      IF result_attr != "" THEN 
-                  s.setAttr(result_attr, s.@sum_score) 
+	      IF result_attribute != "" THEN 
+                  s.setAttr(result_attribute, s.@sum_score) 
               END,
     
-	      IF print_accum THEN 
+	      IF print_results THEN 
                   @@top_scores_heap += Vertex_Score(s, s.@sum_score) 
               END,
     
@@ -119,12 +156,12 @@ CREATE QUERY tg_harmonic_cent(SET<STRING> v_type, SET<STRING> e_type, SET<STRING
 	     f.println("Vertex_ID", "Harmonic");
 	 END;
 
-	 IF print_accum THEN
+	 IF print_results THEN
 	     PRINT @@top_scores_heap AS top_scores;
 	     IF display_edges THEN
 	         PRINT Start[Start.@sum_score];
 		 Start = SELECT s
-			 FROM Start:s -(e_type:e)-:t
+			 FROM Start:s -(e_type_set:e)-:t
 			 ACCUM @@edge_set += e;
 			 PRINT @@edge_set;
              END;

@@ -13,4 +13,4 @@
     description: "Calculates the cosine similarity between a given source vertex and every other vertex with which it has at least one shared neighbor based on their connections to their shared neighbors."
     schema_constraints: This algorithm requires a FLOAT weight attribute on the target edge types. This algorithm can also optionally insert edges between the relevant vertex types, if such an edge type exists with a FLOAT attribute representing the similarity score.
     version: lib3.0
-    include: false
+    include: true

@@ -13,7 +13,7 @@
     description: "This algorithm runs the single source version repeatedly using every vertex with a known label as the source vertex and predicts its label. It assesses the accuracy of the predictions for each value of k, and then repeats for different values of k in the given range.  The goal is to find the value of k with highest predicting accuracy in the given range, for that dataset."
     schema_constraints: "This algorithm requires a FLOAT attribute on the target edge types representing weight, and a STRING attribute representing the label."
     version: lib3.0
-    include: false
+    include: true
     dependencies:
       queries:
         - file: "{@}/tg_knn_cosine_cv_sub.gsql"

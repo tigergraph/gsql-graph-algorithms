@@ -13,4 +13,4 @@
     description: "This algorithm finds all weakly connected components in a graph and assigns a community ID to every vertex such that vertices in the same component share a community ID."
     schema_constraints: This algorithm can optionally write the ID (INT) of the weakly connected component that each vertex belongs to, if the vertex has an INT attribute.
     version: lib3.0
-    include: false
+    include: true

@@ -1,17 +1,45 @@
-CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, INT embedding_dim, INT k, STRING embedding)  SYNTAX V1 {
+CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, INT embedding_dimension, INT k, STRING embedding_attribute)  SYNTAX V1 {
+
 
     /*
-    This query calculates the embedding cosine similarity between one vertex and a set of others.
-    Higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
 
-    NOTE: This query needs to be modified based upon your schema to set the embedding attribute accordingly.
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
 
-    Parameters :
-        v1 : Input vertex one
-        vert_types: vertex types to compare the input vertex against
-        embeddingDim: dimension of the vertex embedding
-        k: number of similar vertices to return, with most similar first
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/GraphML/Embeddings
+
+    Maturity:
+        alpha
+
+    Description: 
+        This query calculates the embedding cosine similarity between one vertex and a set of others.
+        Higher the number (maximum of 1), the more similar two vertices are. A 0 value indicates two vertices are not similar.
+
+        NOTE- This query needs to be modified based upon your schema to set the embedding attribute accordingly.
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+        v1:
+            Input vertex one
+        vert_types:
+            vertex types to compare the input vertex against
+        embedding_dimension:
+            dimension of the vertex embedding
+        k:
+            number of similar vertices to return, with most similar first
+        embedding_attribute:
+            node attribute for storing embedding
     */
+
     ListAccum<DOUBLE> @@embedding1_list;
     MapAccum<INT, ListAccum<DOUBLE>> @@embeddings_map;
     MapAccum<INT, DOUBLE> @@similarity_map;
@@ -22,12 +50,12 @@ CREATE QUERY tg_embedding_cosine_similarity(VERTEX v1, SET<STRING> vert_types, I
 
     info = SELECT s
            FROM v1_set:s
-           POST-ACCUM @@embedding1_list += s.getAttr(embedding,"DOUBLE");
+           POST-ACCUM @@embedding1_list += s.getAttr(embedding_attribute,"DOUBLE");
     res = SELECT s
           FROM start:s WHERE s != v1
-          ACCUM @@embeddings_map += (getvid(s)->s.getAttr(embedding,"DOUBLE"));
+          ACCUM @@embeddings_map += (getvid(s)->s.getAttr(embedding_attribute,"DOUBLE"));
 
-    @@similarity_map = tg_cosine_similarity(@@embedding1_list, @@embeddings_map, embedding_dim);
+    @@similarity_map = tg_cosine_similarity(@@embedding1_list, @@embeddings_map, embedding_dimension);
     kMostSimilar = SELECT s
                    FROM start:s
                    POST-ACCUM s.@sum_similarity_score += @@similarity_map.get(getvid(s))

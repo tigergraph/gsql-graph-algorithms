@@ -1,14 +1,43 @@
-CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_accum = TRUE, STRING result_attr =  "", STRING file_path = "") SYNTAX v1{ 
-  /* 
-  This algorithm is for undirected graph
-  Find all vertex which are in a cycle
-  
-  Parameters:
-  v_type: vertex types to traverse
-  e_type: edge types to traverse
-  print_accum: weather print the result
-  result_attr: attribute to write result to        file_path: file to write CSV output to
-   */
+CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_results = TRUE, STRING result_attribute =  "", STRING file_path = "") SYNTAX v1{ 
+
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Path
+
+    Maturity:
+        production
+
+    Description: 
+        This algorithm is for undirected graph
+        Find all vertex which are in a cycle
+
+    Publications:
+        <link>
+
+    TigerGraph Documentation:
+        <link>
+
+    Parameters:
+        v_type:
+            vertex types to traverse
+        e_type:
+            edge types to traverse
+        print_results:
+            If True, weather print the result
+        result_attribute:
+            attribute to write result to
+        file_path:
+            file to write CSV output to
+    */
+
   OrAccum @or_nocycle;
   SumAccum<INT> @sum_outdegree;
   SumAccum<INT> @@sum_stop=1;
@@ -33,15 +62,15 @@ CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_accum = T
   V = SELECT s 
       FROM Start:s
       POST-ACCUM 
-          IF result_attr != "" THEN 
-              s.setAttr(result_attr, TRUE) 
+          IF result_attribute != "" THEN 
+              s.setAttr(result_attribute, TRUE) 
           END,
    
           IF file_path != "" THEN 
               f.println(s) 
           END;
    
-  IF print_accum THEN
+  IF print_results THEN
       PRINT Start;
   END;
   
