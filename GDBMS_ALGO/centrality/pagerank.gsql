@@ -56,6 +56,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.pagerank (STRING v_type, STRING e_ty
 
 TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
 HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
+SetAccum<VERTEX> @@top_vertices;      # vertices with top score
 MaxAccum<FLOAT> @@max_diff = 9999;    # max score change in an iteration
 SumAccum<FLOAT> @sum_recvd_score = 0; # sum of scores each vertex receives FROM neighbors
 SumAccum<FLOAT> @sum_score = 1;           # initial score for every vertex is 1.
@@ -99,11 +100,19 @@ V = SELECT s
 IF print_results THEN
     PRINT @@top_scores_heap;
     IF display_edges THEN
-        PRINT Start[Start.@sum_score];
-	Start = SELECT s
+	       
+        FOREACH vert IN @@top_scores_heap DO
+            @@top_vertices += vert.Vertex_ID;
+        END;
+       
+        Start = {@@top_vertices};
+        Start = SELECT s
 	        FROM Start:s -(e_type:e)- v_type:t
+            WHERE @@top_vertices.contains(t)
 	        ACCUM @@edge_set += e;
+        
         PRINT @@edge_set;
+        PRINT Start;
     END;
 END;
 }
