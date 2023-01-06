@@ -11,16 +11,17 @@ reviewers:
     group1:
       - yimingpantg
       - TannerW
-      - wyatt-joyner-tg
-      - parkererickson
-      - lennessyy
-      - a-m-thomas
+      - wyattjoynertg
+      - parkererickson-tg
+      - alexthomasTG
     secondary:
       - yimingpantg
-      - wyatt-joyner-tg
+      - wyattjoynertg
+      - TannerW
     tertiary:
       - xinyuchtg
-      - victor-gsl
+      - victorleeTG
+      - TannerW
 
 files:
   # All review request will be sent to the following groups/people.
