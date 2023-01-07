@@ -105,14 +105,14 @@ IF print_results THEN
             @@top_vertices += vert.Vertex_ID;
         END;
        
-        Start = {@@top_vertices};
-        Start = SELECT s
-	        FROM Start:s -(e_type:e)- v_type:t
+        Top = {@@top_vertices};
+        Top = SELECT s
+	        FROM Top:s -(e_type:e)- v_type:t
             WHERE @@top_vertices.contains(t)
 	        ACCUM @@edge_set += e;
         
         PRINT @@edge_set;
-        PRINT Start;
+        PRINT Top;
     END;
 END;
 }
