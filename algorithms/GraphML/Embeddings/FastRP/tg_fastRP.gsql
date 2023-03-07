@@ -1,7 +1,7 @@
 CREATE QUERY tg_fastRP(
-  SET<STRING> v_type,
-  SET<STRING> e_type,
-  SET<STRING> output_v_type,
+  SET<STRING> v_type_set,
+  SET<STRING> e_type_set,
+  SET<STRING> output_v_type_set,
   STRING iteration_weights,
   FLOAT beta,
   INT embedding_dimension,
@@ -57,11 +57,11 @@ CREATE QUERY tg_fastRP(
 
 
   Parameters:
-    v_type:
+    v_type_set:
       Set of all vertex types to traverse in the graph.
-    e_type:
+    e_type_set:
       Set of all edge types to traverse in the graph.
-    output_v_type:
+    output_v_type_set:
       Set of vertex types to produce output embeddings for.
     iteration_weights:
       A comma-separated string of numbers to weight each iteration of the embedding process.
@@ -165,7 +165,7 @@ CREATE QUERY tg_fastRP(
     weight_idx = weight_idx + 1;
   END;
 
-  verts = {v_type};
+  verts = {v_type_set};
   // component_attr should indicate which batch each vertex belongs to, if none defined, just use all vertex types provided
   IF component_attribute != "" THEN
     verts =
@@ -182,14 +182,14 @@ CREATE QUERY tg_fastRP(
   // L stores the normalized diagonal elements of an inverse degree matrix
   // this is defined in the original algorithm and is useful for initialization
   verts =
-    SELECT s FROM verts:s -(e_type:e)- v_type:t
+    SELECT s FROM verts:s -(e_type_set:e)- v_type_set:t
     WHERE t.@include == TRUE
     ACCUM @@m += 1
-    POST-ACCUM s.@L = pow(s.outdegree(e_type) / @@m, beta);
+    POST-ACCUM s.@L = pow(s.outdegree(e_type_set) / @@m, beta);
 
   // randomly initialize the topological embedding regions
   verts =
-    SELECT s FROM verts:s -(e_type:e)- v_type:t
+    SELECT s FROM verts:s -(e_type_set:e)- v_type_set:t
     WHERE t.@include == TRUE
     ACCUM
       // PRNG code
@@ -197,7 +197,7 @@ CREATE QUERY tg_fastRP(
       INT r = ((inc+_mult*random_seed) % _mod),
       FLOAT mr = 0,
       STRING temp_e_type = e.type,
-      // if the edge type wasn't explicitly specified, but was provided in e_type,
+      // if the edge type wasn't explicitly specified, but was provided in e_type_set,
       // then its information will reside in the 'default' region of the embedding vector
       IF @@embedding_dim_map.containsKey(e.type) == FALSE THEN
         temp_e_type = "default"
@@ -221,14 +221,14 @@ CREATE QUERY tg_fastRP(
 
     // propagate embeddings to neighbors and normalize
     verts =
-      SELECT s FROM verts:s -(e_type)- v_type:t
+      SELECT s FROM verts:s -(e_type_set)- v_type_set:t
       WHERE t.@include == TRUE
       ACCUM
         t.@embedding_arr += s.@embedding_arr
       POST-ACCUM
         // first calculate square sum to help normalize
         FLOAT square_sum = 0,
-        FLOAT out = max([1.0, t.outdegree(e_type)]),
+        FLOAT out = max([1.0, t.outdegree(e_type_set)]),
         FOREACH (i,total) IN t.@embedding_arr DO
           square_sum = square_sum + pow(total / out, 2)
         END,
@@ -256,7 +256,7 @@ CREATE QUERY tg_fastRP(
   // the arrays are converted to lists for compatibility with GSQL's LIST type
   verts =
     SELECT s FROM verts:s
-    WHERE output_v_type.size() == 0 OR output_v_type.contains(s.type)
+    WHERE output_v_type_set.size() == 0 OR output_v_type_set.contains(s.type)
     POST-ACCUM
     FOREACH i IN RANGE[0, embedding_dimension-1] DO
       s.@final_embedding_list += s.@final_embedding_arr.get(i) / @@weights.size() // Average by # of iterations
