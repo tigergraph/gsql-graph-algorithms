@@ -1,0 +1,62 @@
+CREATE TEMPLATE QUERY GDBMS_ALGO.topological_link_prediction.preferential_attachment(VERTEX v_source, VERTEX v_target, SET<STRING> e_type_set, BOOL print_results = TRUE)  SYNTAX V1 { 
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Topological%20Link%20Prediction
+
+    Maturity:
+        production
+
+    Description: 
+        This query calculates the preferential attachment value between two vertices.
+        The higher the number, the closer two vertices are.
+
+        Preferential attachment is calculated by multiplying the number of each input vertices neighbors together.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/link-prediction/preferential-attachment
+
+    Parameters:
+        v_source:
+            Input vertex one
+        v_target:
+            Input vertex two
+        e_type_set:
+            edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
+        print_results:
+            if True, print result (True by default)
+    */
+
+    avs = {v_source};
+    bvs = {v_target};
+
+    # See if user specified edge types to traverse
+    IF "ALL" NOT IN e_type_set THEN
+        na = SELECT n 
+             FROM avs -(e_type_set)- :n;  # Get neighbors of vertex A
+          
+        nb = SELECT n 
+             FROM bvs -(e_type_set)- :n;  // Get neighbors of vertex B
+             
+    ELSE  // traverse all edge types
+        na = SELECT n 
+             FROM avs -()- :n;  // Get neighbors of vertex A
+             
+        nb = SELECT n 
+             FROM bvs -()- :n;  // Get neighbors of vertex B
+    END;
+
+    IF print_results THEN
+        PRINT na.size()*nb.size() as closeness;  // calculate and return closeness value
+    END;
+}

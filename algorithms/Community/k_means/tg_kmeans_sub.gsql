@@ -73,7 +73,7 @@ CREATE QUERY tg_kmeans_sub(int k, float max_change = 1.0, string v_type, string 
   IF random == TRUE THEN
       FOREACH i IN range[0,k-1] DO
           FOREACH j IN range[0,99] DO
-              @@centroids_array[i][j] = rand_int(-2,5)-0.123*0.4;
+              @@centroids_array[i][j] = tg_rand_int(-2,5)-0.123*0.4;
           END;
       END;
   END;

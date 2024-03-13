@@ -1,0 +1,59 @@
+CREATE TEMPLATE QUERY GDBMS_ALGO.topological_link_prediction.total_neighbors(VERTEX v_source, VERTEX v_target, SET<STRING> e_type_set, BOOL print_results = TRUE)  SYNTAX V1 { 
+
+    /*
+    First Author: <First Author Name>
+    First Commit Date:  <First Commit Date>
+
+    Recent Author: <Recent Commit Author Name>
+    Recent Commit Date: <Recent Commit Date>
+
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Topological%20Link%20Prediction
+
+    Maturity:
+        production
+
+    Description: 
+        This query calculates the number of total neighbors of two vertices.
+        The higher the number, the closer two vertices are.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/link-prediction/total-neighbors
+
+    Parameters:
+        v_source:
+            Input vertex one
+        v_target:
+            Input vertex two
+        e_type_set:
+            edge types to traverse. If all edge types are desired, pass in "ALL" to the set.
+        print_results:
+            if True, print result (True by default)
+    */
+
+    avs = {v_source};
+    bvs = {v_target};
+
+    IF "ALL" NOT IN e_type_set THEN  # Specific edge types defined as parameters
+        na = SELECT n 
+             FROM avs -(e_type_set)- :n;  # Get vertex A's neighbors
+  
+        nb = SELECT n 
+             FROM bvs -(e_type_set)- :n;  # Get vertex B's neighbors
+  
+    ELSE  # Use all edge types
+        na = SELECT n 
+             FROM avs -()- :n;  # Get vertex A's neighbors
+  
+        nb = SELECT n 
+             FROM bvs -()- :n;  # Get vertex B's neighbors
+    END;
+    u = na UNION nb;  # Get all neighbors
+    IF print_results THEN
+        PRINT u.size() as closeness; 
+    END;
+}
