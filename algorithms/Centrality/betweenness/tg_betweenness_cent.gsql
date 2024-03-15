@@ -1,4 +1,4 @@
-CREATE QUERY tg_betweenness_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, STRING reverse_e_type,INT max_hops = 10,
+CREATE QUERY tg_betweenness_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type,INT max_hops = 10,
     INT top_k = 100, BOOL print_results = True, STRING result_attribute = "",
     STRING file_path = "", BOOL display_edges = FALSE) SYNTAX V1 { 
 
