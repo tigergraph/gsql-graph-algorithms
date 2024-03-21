@@ -1,3 +1,0 @@
-CREATE QUERY tg_node2vec(STRING filepath = "/home/tigergraph/path.csv", STRING output_file = "/home/tigergraph/embedding.csv", INT dimension)  SYNTAX V1 {
-   tg_node2vec_sub(dimension, filepath, output_file);
-}
