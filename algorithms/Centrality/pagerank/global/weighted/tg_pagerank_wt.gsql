@@ -89,9 +89,9 @@ END; # END WHILE loop
 IF file_path != "" THEN
     f.println("Vertex_ID", "PageRank");
 END;
-
+V_all = {v_type};
 V = SELECT s 
-    FROM Start:s
+    FROM V_all:s
     POST-ACCUM 
         IF result_attribute != "" THEN 
             s.setAttr(result_attribute, s.@sum_score) 
