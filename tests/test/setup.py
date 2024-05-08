@@ -10,7 +10,6 @@ from tqdm import tqdm
 
 load_dotenv()
 graph_name = "graph_algorithms_testing"
-DEV = os.getenv("DEV", "false").lower() == "true"
 pattern = re.compile(r'"name":\s*"tg_.*"')
 
 if __name__ == "__main__":
