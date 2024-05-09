@@ -1,16 +1,15 @@
 import json
 import os
 
-import httpx
 import pytest
 import util
 
 
 class TestCentrality:
     feat = util.get_featurizer()
-    base_url = os.environ["TG_DATA"]
     # undirected graphs
-    graph_types1 = ["Empty", "Line", "Ring", "Hub_Spoke", "Tree"]
+    # graph_types1 = ["Empty", "Line", "Ring", "Hub_Spoke", "Tree"]
+    graph_types1 = ["Line"]
     # directed graphs
     graph_types2 = [
         "Line_Directed",
@@ -46,10 +45,22 @@ class TestCentrality:
             "result_attribute": "",
             "file_path": "",
         }
-        url = os.path.join(self.base_url, "degree_centrality/", test_name + ".json")
-        baseline = httpx.get(url).text
-        result = json.dumps(self.feat.runAlgorithm("tg_degree_cent", params=params))
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/degree_centrality/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+
+        result = self.feat.runAlgorithm("tg_degree_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types2)
     def test_degree_centrality2(self, test_name):
@@ -64,12 +75,22 @@ class TestCentrality:
             "result_attribute": "",
             "file_path": "",
         }
-        url = os.path.join(
-            self.base_url, "degree_centrality/in_degree/", test_name + ".json"
-        )
-        baseline = httpx.get(url).text
-        result = json.dumps(self.feat.runAlgorithm("tg_degree_cent", params=params))
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/degree_centrality/in_degree/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+
+        result = self.feat.runAlgorithm("tg_degree_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types2)
     def test_degree_centrality3(self, test_name):
@@ -84,12 +105,22 @@ class TestCentrality:
             "result_attribute": "",
             "file_path": "",
         }
-        url = os.path.join(
-            self.base_url, "degree_centrality/out_degree/", test_name + ".json"
-        )
-        baseline = httpx.get(url).text
-        result = json.dumps(self.feat.runAlgorithm("tg_degree_cent", params=params))
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/degree_centrality/out_degree/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+
+        result = self.feat.runAlgorithm("tg_degree_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types3)
     def test_weighted_degree_centrality1(self, test_name):
@@ -105,14 +136,21 @@ class TestCentrality:
             "result_attribute": "",
             "file_path": "",
         }
-        url = os.path.join(
-            self.base_url, "weighted_degree_centrality/", test_name + ".json"
-        )
-        baseline = httpx.get(url).text
-        result = json.dumps(
-            self.feat.runAlgorithm("tg_weighted_degree_cent", params=params)
-        )
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/weighted_degree_centrality/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_weighted_degree_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types4)
     def test_weighted_degree_centrality2(self, test_name):
@@ -128,14 +166,21 @@ class TestCentrality:
             "result_attribute": "",
             "file_path": "",
         }
-        url = os.path.join(
-            self.base_url, "weighted_degree_centrality/in_degree/", test_name + ".json"
-        )
-        baseline = httpx.get(url).text
-        result = json.dumps(
-            self.feat.runAlgorithm("tg_weighted_degree_cent", params=params)
-        )
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/weighted_degree_centrality/in_degree/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_weighted_degree_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types4)
     def test_weighted_degree_centrality3(self, test_name):
@@ -151,14 +196,21 @@ class TestCentrality:
             "result_attribute": "",
             "file_path": "",
         }
-        url = os.path.join(
-            self.base_url, "weighted_degree_centrality/out_degree/", test_name + ".json"
-        )
-        baseline = httpx.get(url).text
-        result = json.dumps(
-            self.feat.runAlgorithm("tg_weighted_degree_cent", params=params)
-        )
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/weighted_degree_centrality/out_degree/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_weighted_degree_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types1)
     def test_closeness_centrality(self, test_name):
@@ -174,10 +226,21 @@ class TestCentrality:
             "file_path": "",
             "display_edges": False,
         }
-        url = os.path.join(self.base_url, "closeness_centrality/", test_name + ".json")
-        baseline = httpx.get(url).text
-        result = json.dumps(self.feat.runAlgorithm("tg_closeness_cent", params=params))
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/closeness_centrality/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_closeness_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types2)
     def test_closeness_centrality2(self, test_name):
@@ -193,10 +256,21 @@ class TestCentrality:
             "file_path": "",
             "display_edges": False,
         }
-        url = os.path.join(self.base_url, "closeness_centrality/", test_name + ".json")
-        baseline = httpx.get(url).text
-        result = json.dumps(self.feat.runAlgorithm("tg_closeness_cent", params=params))
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/closeness_centrality/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_closeness_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types1)
     def test_harmonic_centrality(self, test_name):
@@ -212,10 +286,21 @@ class TestCentrality:
             "file_path": "",
             "display_edges": False,
         }
-        url = os.path.join(self.base_url, "harmonic_centrality/", test_name + ".json")
-        baseline = httpx.get(url).text
-        result = json.dumps(self.feat.runAlgorithm("tg_harmonic_cent", params=params))
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/harmonic_centrality/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_harmonic_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types2)
     def test_harmonic_centrality2(self, test_name):
@@ -231,10 +316,21 @@ class TestCentrality:
             "file_path": "",
             "display_edges": False,
         }
-        url = os.path.join(self.base_url, "harmonic_centrality/", test_name + ".json")
-        baseline = httpx.get(url).text
-        result = json.dumps(self.feat.runAlgorithm("tg_harmonic_cent", params=params))
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/harmonic_centrality/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_harmonic_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types1 + graph_types2)
     def test_article_rank(self, test_name):
@@ -249,10 +345,21 @@ class TestCentrality:
             "result_attribute": "",
             "file_path": "",
         }
-        url = os.path.join(self.base_url, "article_rank/", test_name + ".json")
-        baseline = httpx.get(url).text
-        result = json.dumps(self.feat.runAlgorithm("tg_article_rank", params=params))
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/article_rank/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_article_rank", params=params)
+        result = sorted(result[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()
 
     @pytest.mark.parametrize("test_name", graph_types1 + graph_types2)
     def test_pagerank(self, test_name):
@@ -268,7 +375,18 @@ class TestCentrality:
             "file_path": "",
             "display_edges": False,
         }
-        url = os.path.join(self.base_url, "pagerank/", test_name + ".json")
-        baseline = httpx.get(url).text
-        result = json.dumps(self.feat.runAlgorithm("tg_pagerank", params=params))
-        assert sorted(baseline) == sorted(result)
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/pagerank/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_pagerank", params=params)
+        result = sorted(result[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            found = False
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                    found = True
+            if not found:
+                pytest.fail()

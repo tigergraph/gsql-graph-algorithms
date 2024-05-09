@@ -13,3 +13,4 @@ tmp
 __pycache__
 .env
 *.xml
+pyrightconfig.json
