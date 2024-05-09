@@ -17,9 +17,9 @@ def get_featurizer():
         username=user_name,
         password=password,
         graphname=graph_name,
-        tgCloud=True,
     )
-    conn.getToken()
+    if os.environ.get("USE_TKN", "true").lower() == "true":
+        conn.getToken()
     return conn.gds.featurizer()
 
 
