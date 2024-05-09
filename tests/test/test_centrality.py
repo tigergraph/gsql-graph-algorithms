@@ -1,5 +1,4 @@
 import json
-import os
 
 import pytest
 import util
@@ -8,8 +7,7 @@ import util
 class TestCentrality:
     feat = util.get_featurizer()
     # undirected graphs
-    # graph_types1 = ["Empty", "Line", "Ring", "Hub_Spoke", "Tree"]
-    graph_types1 = ["Line"]
+    graph_types1 = ["Empty", "Line", "Ring", "Hub_Spoke", "Tree"]
     # directed graphs
     graph_types2 = [
         "Line_Directed",
@@ -351,7 +349,9 @@ class TestCentrality:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_article_rank", params=params)
         result = sorted(result[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])
-        baseline = sorted(baseline[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(
+            baseline[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"]
+        )
 
         for b in baseline:
             found = False
@@ -381,7 +381,9 @@ class TestCentrality:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_pagerank", params=params)
         result = sorted(result[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])
-        baseline = sorted(baseline[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(
+            baseline[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"]
+        )
 
         for b in baseline:
             found = False
