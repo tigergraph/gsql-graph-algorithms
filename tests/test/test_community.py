@@ -1,5 +1,4 @@
 import json
-import os
 
 import pytest
 import util
@@ -7,7 +6,6 @@ import util
 
 class TestCommunity:
     feat = util.get_featurizer()
-
     base_path = "data/baseline/graph_algorithms_baselines/community"
     graph_types1 = [
         "Empty",
