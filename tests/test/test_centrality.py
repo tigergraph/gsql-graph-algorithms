@@ -7,7 +7,13 @@ import util
 class TestCentrality:
     feat = util.get_featurizer()
     # undirected graphs
-    graph_types1 = ["Empty", "Line", "Ring", "Hub_Spoke", "Tree"]
+    graph_types1 = [
+        "Empty",
+        "Line",
+        "Ring",
+        "Hub_Spoke",
+        "Tree",
+    ]
     # directed graphs
     graph_types2 = [
         "Line_Directed",
@@ -21,7 +27,6 @@ class TestCentrality:
         "Ring_Weighted",
         "Hub_Spoke_Weighted",
         "Tree_Weighted",
-        "CompleteWeighted",
     ]
     # weighted directed graphs
     graph_types4 = [
@@ -29,8 +34,9 @@ class TestCentrality:
         "Ring_Directed_Weighted",
         "Hub_Spoke_Directed_Weighted",
         "Tree_Directed_Weighted",
-        "CompleteUnweighted",
     ]
+    # Complete Graphs
+    graph_types5 = ["Complete"]
 
     @pytest.mark.parametrize("test_name", graph_types1)
     def test_degree_centrality1(self, test_name):
@@ -57,7 +63,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -87,7 +93,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -117,10 +123,34 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
+
+    @pytest.mark.parametrize("test_name", graph_types5)
+    def test_degree_centrality4(self, test_name):
+        params = {
+            "v_type_set": ["V8"],
+            "e_type_set": [test_name],
+            "reverse_e_type_set": ["reverse_" + test_name],
+            "in_degree": False,
+            "out_degree": True,
+            "print_results": True,
+        }
+        with open(
+            f"data/baseline/graph_algorithms_baselines/centrality/degree_centrality/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+
+        result = self.feat.runAlgorithm("tg_degree_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(b["score"]):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types3)
     def test_weighted_degree_centrality1(self, test_name):
@@ -147,7 +177,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -177,7 +207,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -207,7 +237,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -237,7 +267,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -267,7 +297,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -297,7 +327,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -327,7 +357,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -358,7 +388,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
@@ -390,7 +420,7 @@ class TestCentrality:
         for b in baseline:
             found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == r["score"]:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
                     found = True
             if not found:
                 pytest.fail()
