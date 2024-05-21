@@ -49,7 +49,7 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<
 
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
   HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap;
-  SumAccum<INT> @sum_degree_score;
+  SumAccum<DOUBLE> @sum_degree_score;
   FILE f (file_path);
 
   all = {v_type_set};
@@ -64,7 +64,8 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<
                   FOREACH edge_type in e_type_set DO
                       s.@sum_degree_score+=s.outdegree(edge_type)
                   END
-              END;
+              END
+        POST-ACCUM s.@sum_degree_score = s.@sum_degree_score / ( all.size()-1 );
   #Output
   IF file_path != "" THEN
       f.println("Vertex_ID", "Degree");
