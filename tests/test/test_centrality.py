@@ -21,6 +21,7 @@ class TestCentrality:
         "Ring_Weighted",
         "Hub_Spoke_Weighted",
         "Tree_Weighted",
+        "CompleteWeighted",
     ]
     # weighted directed graphs
     graph_types4 = [
@@ -28,6 +29,7 @@ class TestCentrality:
         "Ring_Directed_Weighted",
         "Hub_Spoke_Directed_Weighted",
         "Tree_Directed_Weighted",
+        "CompleteUnweighted",
     ]
 
     @pytest.mark.parametrize("test_name", graph_types1)
