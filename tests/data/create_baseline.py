@@ -38,6 +38,11 @@ def create_degree_baseline():
             f"{baseline_path_root}/centrality/degree_centrality/Complete.json",
             False,
         ),
+        (
+            "unweighted_edges/line_edges.csv",
+            f"{baseline_path_root}/centrality/degree_centrality/Complete.json",
+            False,
+        ),
         # (
         #     "weighted_edges/complete_edges.csv",
         #     f"{baseline_path_root}/centrality/weighted_degree_centrality/CompleteWeighted.json",
