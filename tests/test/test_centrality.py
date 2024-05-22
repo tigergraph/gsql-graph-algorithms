@@ -51,22 +51,20 @@ class TestCentrality:
             "result_attribute": "",
             "file_path": "",
         }
-        with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/degree_centrality/{test_name}.json"
-        ) as f:
+        with open(f"data/baseline/centrality/degree_centrality/{test_name}.json") as f:
             baseline = json.load(f)
 
         result = self.feat.runAlgorithm("tg_degree_cent", params=params)
         result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
+        # pytest.fail(str(result))
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types2)
     def test_degree_centrality2(self, test_name):
@@ -82,7 +80,7 @@ class TestCentrality:
             "file_path": "",
         }
         with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/degree_centrality/in_degree/{test_name}.json"
+            f"data/baseline/centrality/degree_centrality/in_degree/{test_name}.json"
         ) as f:
             baseline = json.load(f)
 
@@ -112,7 +110,7 @@ class TestCentrality:
             "file_path": "",
         }
         with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/degree_centrality/out_degree/{test_name}.json"
+            f"data/baseline/centrality/degree_centrality/out_degree/{test_name}.json"
         ) as f:
             baseline = json.load(f)
 
@@ -138,9 +136,7 @@ class TestCentrality:
             "out_degree": True,
             "print_results": True,
         }
-        with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/degree_centrality/{test_name}.json"
-        ) as f:
+        with open(f"data/baseline/centrality/degree_centrality/{test_name}.json") as f:
             baseline = json.load(f)
 
         result = self.feat.runAlgorithm("tg_degree_cent", params=params)
@@ -149,7 +145,9 @@ class TestCentrality:
 
         for b in baseline:
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(b["score"]):
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types3)
@@ -167,7 +165,7 @@ class TestCentrality:
             "file_path": "",
         }
         with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/weighted_degree_centrality/{test_name}.json"
+            f"data/baseline/centrality/weighted_degree_centrality/{test_name}.json"
         ) as f:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_weighted_degree_cent", params=params)
@@ -197,7 +195,7 @@ class TestCentrality:
             "file_path": "",
         }
         with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/weighted_degree_centrality/in_degree/{test_name}.json"
+            f"data/baseline/centrality/weighted_degree_centrality/in_degree/{test_name}.json"
         ) as f:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_weighted_degree_cent", params=params)
@@ -227,7 +225,7 @@ class TestCentrality:
             "file_path": "",
         }
         with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/weighted_degree_centrality/out_degree/{test_name}.json"
+            f"data/baseline/centrality/weighted_degree_centrality/out_degree/{test_name}.json"
         ) as f:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_weighted_degree_cent", params=params)
@@ -257,7 +255,7 @@ class TestCentrality:
             "display_edges": False,
         }
         with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/closeness_centrality/{test_name}.json"
+            f"data/baseline/centrality/closeness_centrality/{test_name}.json"
         ) as f:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_closeness_cent", params=params)
@@ -287,7 +285,7 @@ class TestCentrality:
             "display_edges": False,
         }
         with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/closeness_centrality/{test_name}.json"
+            f"data/baseline/centrality/closeness_centrality/{test_name}.json"
         ) as f:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_closeness_cent", params=params)
@@ -317,7 +315,7 @@ class TestCentrality:
             "display_edges": False,
         }
         with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/harmonic_centrality/{test_name}.json"
+            f"data/baseline/centrality/harmonic_centrality/{test_name}.json"
         ) as f:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_harmonic_cent", params=params)
@@ -347,7 +345,7 @@ class TestCentrality:
             "display_edges": False,
         }
         with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/harmonic_centrality/{test_name}.json"
+            f"data/baseline/centrality/harmonic_centrality/{test_name}.json"
         ) as f:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_harmonic_cent", params=params)
@@ -375,9 +373,7 @@ class TestCentrality:
             "result_attribute": "",
             "file_path": "",
         }
-        with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/article_rank/{test_name}.json"
-        ) as f:
+        with open(f"data/baseline/centrality/article_rank/{test_name}.json") as f:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_article_rank", params=params)
         result = sorted(result[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])
@@ -407,9 +403,7 @@ class TestCentrality:
             "file_path": "",
             "display_edges": False,
         }
-        with open(
-            f"data/baseline/graph_algorithms_baselines/centrality/pagerank/{test_name}.json"
-        ) as f:
+        with open(f"data/baseline/centrality/pagerank/{test_name}.json") as f:
             baseline = json.load(f)
         result = self.feat.runAlgorithm("tg_pagerank", params=params)
         result = sorted(result[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"])

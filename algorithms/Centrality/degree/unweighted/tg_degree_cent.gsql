@@ -1,50 +1,47 @@
-CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, BOOL in_degree = TRUE, BOOL out_degree = TRUE,
-  INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
-
+CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, BOOL in_degree = TRUE, BOOL out_degree = TRUE, INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
     /*
-    First Author: <First Author Name>
-    First Commit Date:  <First Commit Date>
+        First Author: <First Author Name>
+        First Commit Date:  <First Commit Date>
 
-    Recent Author: <Recent Commit Author Name>
-    Recent Commit Date: <Recent Commit Date>
+        Recent Author: Rob Rossmiller
+        Recent Commit Date: 05/2024
 
 
-    Repository:
-        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Centrality
+        Repository:
+            https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Centrality
 
-    Maturity:
-        Production
+        Maturity:
+            Production
 
-    Description: 
-        Compute degree Centrality for each VERTEX.
-        for undirected graph, you only need to set e_type_set and indegree
+        Description: 
+            Compute degree Centrality for each VERTEX.
+            for undirected graph, you only need to set e_type_set and indegree
 
-    Publications:
-        NA
+        Publications:
+            NA
 
-    TigerGraph Documentation:
-        https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/degree-centrality
+        TigerGraph Documentation:
+            https://docs.tigergraph.com/graph-ml/current/centrality-algorithms/degree-centrality
 
-    Parameters:
-        v_type_set:
-            vertex types to traverse
-        e_type_set:
-            edge types to traverse
-        reverse_e_type_set:
-            for indegree use
-        in_degree:
-            If True, count incoming relationships
-        out_degree:
-            If True, count outcoming relationships
-        top_k:
-            report only this many top scores
-        print_results:
-            If True, print the result
-        result_attribute:
-            attribute to write result to
-        file_path:
-            file to write CSV output to
-
+        Parameters:
+            v_type_set:
+                vertex types to traverse
+            e_type_set:
+                edge types to traverse
+            reverse_e_type_set:
+                for indegree use
+            in_degree:
+                If True, count incoming relationships
+            out_degree:
+                If True, count outcoming relationships
+            top_k:
+                report only this many top scores
+            print_results:
+                If True, print the result
+            result_attribute:
+                attribute to write result to
+            file_path:
+                file to write CSV output to
   */
 
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
@@ -55,16 +52,17 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<
   all = {v_type_set};
   sll = SELECT s 
         FROM all:s
-        ACCUM IF in_degree THEN
-                 FOREACH edge_type in reverse_e_type_set DO
-                     s.@sum_degree_score+=s.outdegree(edge_type)
-                 END
-              END,
-              IF out_degree THEN
-                  FOREACH edge_type in e_type_set DO
-                      s.@sum_degree_score+=s.outdegree(edge_type)
-                  END
+        ACCUM 
+            IF in_degree THEN
+              FOREACH edge_type in reverse_e_type_set DO
+                     s.@sum_degree_score += s.outdegree(edge_type)
               END
+            END,
+            IF out_degree THEN
+              FOREACH edge_type in e_type_set DO
+                s.@sum_degree_score += s.outdegree(edge_type)
+              END
+            END
         POST-ACCUM s.@sum_degree_score = s.@sum_degree_score / ( all.size()-1 );
   #Output
   IF file_path != "" THEN
