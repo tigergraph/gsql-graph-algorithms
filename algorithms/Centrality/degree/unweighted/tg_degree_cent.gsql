@@ -1,4 +1,4 @@
-CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, BOOL in_degree = TRUE, BOOL out_degree = TRUE, INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
+CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, BOOL in_degree = TRUE, BOOL out_degree = TRUE, INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "", normalize=TRUE) SYNTAX V1 {
     /*
         First Author: <First Author Name>
         First Commit Date:  <First Commit Date>
@@ -42,6 +42,8 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<
                 attribute to write result to
             file_path:
                 file to write CSV output to
+            normailize:
+                If True, return the normalized centrality. Default: True 
   */
 
   TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
@@ -63,7 +65,10 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<
                 s.@sum_degree_score += s.outdegree(edge_type)
               END
             END
-        POST-ACCUM s.@sum_degree_score = s.@sum_degree_score / ( all.size()-1 );
+        POST-ACCUM 
+            IF normalize THEN
+                s.@sum_degree_score = s.@sum_degree_score / (all.size() - 1)
+            END;
   #Output
   IF file_path != "" THEN
       f.println("Vertex_ID", "Degree");

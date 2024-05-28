@@ -89,12 +89,11 @@ class TestCentrality:
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types2)
     def test_degree_centrality3(self, test_name):
@@ -119,12 +118,11 @@ class TestCentrality:
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types5)
     def test_degree_centrality4(self, test_name):
@@ -173,12 +171,11 @@ class TestCentrality:
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types4)
     def test_weighted_degree_centrality2(self, test_name):
@@ -203,12 +200,11 @@ class TestCentrality:
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types4)
     def test_weighted_degree_centrality3(self, test_name):
@@ -233,12 +229,11 @@ class TestCentrality:
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types1)
     def test_closeness_centrality(self, test_name):
@@ -263,12 +258,11 @@ class TestCentrality:
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types2)
     def test_closeness_centrality2(self, test_name):
@@ -293,12 +287,11 @@ class TestCentrality:
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types1)
     def test_harmonic_centrality(self, test_name):
@@ -323,12 +316,11 @@ class TestCentrality:
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types2)
     def test_harmonic_centrality2(self, test_name):
@@ -353,12 +345,11 @@ class TestCentrality:
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types1 + graph_types2)
     def test_article_rank(self, test_name):
@@ -382,12 +373,11 @@ class TestCentrality:
         )
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", graph_types1 + graph_types2)
     def test_pagerank(self, test_name):
@@ -412,9 +402,8 @@ class TestCentrality:
         )
 
         for b in baseline:
-            found = False
             for r in result:
-                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] == b["score"]:
-                    found = True
-            if not found:
-                pytest.fail()
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
