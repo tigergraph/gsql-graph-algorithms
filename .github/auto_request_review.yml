@@ -9,19 +9,16 @@ reviewers:
   # Reviewer groups each of which has a list of GitHub usernames
   groups:
     group1:
-      - yimingpantg
-      - TannerW
+      - RobRossmiller-TG
       - wyattjoynertg
       - parkererickson-tg
-      - alexthomasTG
+      - GabrielTigerGraph
     secondary:
-      - yimingpantg
+      - RobRossmiller-TG
       - wyattjoynertg
-      - TannerW
     tertiary:
       - xinyuchtg
       - victorleeTG
-      - TannerW
 
 files:
   # All review request will be sent to the following groups/people.
