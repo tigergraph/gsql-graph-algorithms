@@ -56,19 +56,16 @@ CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<
         FROM all:s
         ACCUM 
             IF in_degree THEN
-              FOREACH edge_type in reverse_e_type_set DO
-                     s.@sum_degree_score += s.outdegree(edge_type)
-              END
+                s.@sum_degree_score += s.outdegree(reverse_e_type_set)
             END,
             IF out_degree THEN
-              FOREACH edge_type in e_type_set DO
-                s.@sum_degree_score += s.outdegree(edge_type)
-              END
+                s.@sum_degree_score += s.outdegree(e_type_set)
             END
         POST-ACCUM 
             IF normalize THEN
                 s.@sum_degree_score = s.@sum_degree_score / (all.size() - 1)
             END;
+
   #Output
   IF file_path != "" THEN
       f.println("Vertex_ID", "Degree");
