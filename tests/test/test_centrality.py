@@ -6,39 +6,34 @@ import util
 
 class TestCentrality:
     feat = util.get_featurizer()
-    # undirected graphs
-    graph_types1 = [
+    undirected_graphs = [
         "Empty",
         "Line",
         "Ring",
         "Hub_Spoke",
         "Tree",
     ]
-    # directed graphs
-    graph_types2 = [
+    directed_graphs = [
         "Line_Directed",
         "Ring_Directed",
         "Hub_Spoke_Directed",
         "Tree_Directed",
     ]
-    # weighted undirected graphs
-    graph_types3 = [
+    weighted_undirected_graphs = [
         "Line_Weighted",
         "Ring_Weighted",
         "Hub_Spoke_Weighted",
         "Tree_Weighted",
     ]
-    # weighted directed graphs
-    graph_types4 = [
+    weighted_directed_graphs = [
         "Line_Directed_Weighted",
         "Ring_Directed_Weighted",
         "Hub_Spoke_Directed_Weighted",
         "Tree_Directed_Weighted",
     ]
-    # Complete Graphs
-    graph_types5 = ["Complete"]
+    complete_graphs = ["Complete"]
 
-    @pytest.mark.parametrize("test_name", graph_types1)
+    @pytest.mark.parametrize("test_name", undirected_graphs)
     def test_degree_centrality1(self, test_name):
         params = {
             "v_type_set": ["V20"],
@@ -66,7 +61,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types2)
+    @pytest.mark.parametrize("test_name", directed_graphs)
     def test_degree_centrality2(self, test_name):
         params = {
             "v_type_set": ["V20"],
@@ -95,7 +90,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types2)
+    @pytest.mark.parametrize("test_name", directed_graphs)
     def test_degree_centrality3(self, test_name):
         params = {
             "v_type_set": ["V20"],
@@ -124,7 +119,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types5)
+    @pytest.mark.parametrize("test_name", complete_graphs)
     def test_degree_centrality4(self, test_name):
         params = {
             "v_type_set": ["V8"],
@@ -148,7 +143,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types3)
+    @pytest.mark.parametrize("test_name", weighted_undirected_graphs)
     def test_weighted_degree_centrality1(self, test_name):
         params = {
             "v_type": "V20",
@@ -177,7 +172,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types4)
+    @pytest.mark.parametrize("test_name", weighted_directed_graphs)
     def test_weighted_degree_centrality2(self, test_name):
         params = {
             "v_type": "V20",
@@ -206,7 +201,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types4)
+    @pytest.mark.parametrize("test_name", weighted_directed_graphs)
     def test_weighted_degree_centrality3(self, test_name):
         params = {
             "v_type": "V20",
@@ -235,7 +230,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types1)
+    @pytest.mark.parametrize("test_name", undirected_graphs)
     def test_closeness_centrality(self, test_name):
         params = {
             "v_type_set": ["V20"],
@@ -264,7 +259,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types2)
+    @pytest.mark.parametrize("test_name", directed_graphs)
     def test_closeness_centrality2(self, test_name):
         params = {
             "v_type_set": ["V20"],
@@ -293,7 +288,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types1)
+    @pytest.mark.parametrize("test_name", undirected_graphs)
     def test_harmonic_centrality(self, test_name):
         params = {
             "v_type_set": ["V20"],
@@ -322,7 +317,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types2)
+    @pytest.mark.parametrize("test_name", directed_graphs)
     def test_harmonic_centrality2(self, test_name):
         params = {
             "v_type_set": ["V20"],
@@ -351,7 +346,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types1 + graph_types2)
+    @pytest.mark.parametrize("test_name", undirected_graphs + directed_graphs)
     def test_article_rank(self, test_name):
         params = {
             "v_type": "V20",
@@ -379,7 +374,7 @@ class TestCentrality:
                 ):
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
-    @pytest.mark.parametrize("test_name", graph_types1 + graph_types2)
+    @pytest.mark.parametrize("test_name", undirected_graphs + directed_graphs)
     def test_pagerank(self, test_name):
         params = {
             "v_type": "V20",
