@@ -23,9 +23,9 @@ pip install -r requirements.txt
 
 `test/.env`
 
-- HOST_NAME: A that you have querywriter access to so setup.py can load data and queries to a subgraph named `graph_algorithms_testing`
-- USER_NAME=admin/writer
-- PASS=users_pass
+- HOST_NAME: A TG environment that you have querywriter access to so setup.py can load data and queries to a subgraph named `graph_algorithms_testing`
+- USER_NAME: user
+- PASS: user's password
 
 `run.sh` does a few things:
 
@@ -38,10 +38,10 @@ pip install -r requirements.txt
 
 Data: stores the satic data for creating graphs, and algorithm baseline results.
 
-- CSV files under `data/[heterogeneous_edges, unweighted_edges, weighted_edges]` store the adjacency information for creating graphs.
-  - for example `data/weighted_edges/line_edges.csv` stores the edges and weights to create a weighted, line graph.
-- JSON files under `data/baseline` store the results for a given algorithm on a given graph type.
-- for example `data/baseline/centrality/pagerank/Line_Directed.json` stores the results for pagerank on a directed line graph
+- CSV files under `data/[heterogeneous_edges, unweighted_edges, weighted_edges]` store the adjacency information for creating graphs. The baselines for algorithms are made from these graphs
+  - For example `data/weighted_edges/line_edges.csv` stores the edges and weights to create a weighted, line graph.
+- JSON files under `data/baseline` store the baseline results for a given algorithm on a given graph type.
+  - For example `data/baseline/centrality/pagerank/Line_Directed.json` stores the baseline results for pagerank on a directed line graph
 
 test:
 
@@ -71,10 +71,11 @@ test:
 
 ## Adding tests
 
-Start with the baseline. Add a section or module to `create_baseline.py` that creates a baseline for all the necessary graph types. The outline of the baseline should be written to the correct
-baseline path (see above [layout](#directory-layout)).
+Start with creating the baseline. Add a section to `create_baseline.py` that creates a baseline for all the necessary graph types for your algorithm. The output of the baseline should be written to 
+the correct baseline path (see above [layout](#directory-layout)).
 
-Add a method to the correct test file (i.e., community algorigthms go in community.py). The first test method in `test/test_centrality.py` is a good template to follow:
+If you're adding a new algorithm, add a test method for it to the algorithm family that it belongs to (i.e., community algorigthms go in community.py). The first test method in `test/test_centrality.py` 
+is a good template to follow:
 
 ```py
     # this function will run once for each of the graph names in the undirected_graphs list
