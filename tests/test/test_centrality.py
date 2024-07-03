@@ -1,6 +1,7 @@
 import json
 
 import pytest
+
 import util
 
 
@@ -30,8 +31,11 @@ class TestCentrality:
         "Ring_Directed_Weighted",
         "Hub_Spoke_Directed_Weighted",
         "Tree_Directed_Weighted",
+        "Complete_Directed_Weighted",
     ]
-    complete_graphs = ["Complete"]
+    complete_graphs = [
+        "Complete",
+    ]
 
     @pytest.mark.parametrize("test_name", undirected_graphs)
     def test_degree_centrality1(self, test_name):
@@ -165,6 +169,7 @@ class TestCentrality:
         result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
         baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
 
+        print(result)
         for b in baseline:
             for r in result:
                 if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
@@ -174,8 +179,9 @@ class TestCentrality:
 
     @pytest.mark.parametrize("test_name", weighted_directed_graphs)
     def test_weighted_degree_centrality2(self, test_name):
+        vt = "V20" if "Complete" not in test_name else "V8"
         params = {
-            "v_type": "V20",
+            "v_type": vt,
             "e_type": test_name,
             "reverse_e_type": "reverse_" + test_name,
             "weight_attribute": "weight",
@@ -203,8 +209,9 @@ class TestCentrality:
 
     @pytest.mark.parametrize("test_name", weighted_directed_graphs)
     def test_weighted_degree_centrality3(self, test_name):
+        vt = "V20" if "Complete" not in test_name else "V8"
         params = {
-            "v_type": "V20",
+            "v_type": vt,
             "e_type": test_name,
             "reverse_e_type": "reverse_" + test_name,
             "weight_attribute": "weight",
