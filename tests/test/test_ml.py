@@ -1,24 +1,15 @@
 import gzip
 import json
-import os
 
 import numpy as np
 import pytest
 from dotenv import load_dotenv
-from pyTigerGraph import TigerGraphConnection
+
+from util import get_featurizer
 
 load_dotenv()
 data_path_root = "data"
 baseline_path_root = f"{data_path_root}/baseline"
-
-
-conn = TigerGraphConnection(
-    host=os.environ["HOST_NAME"],
-    graphname="Cora",
-    username=os.environ["USER_NAME"],
-    password=os.environ["PASS"],
-)
-conn.getToken()
 
 
 def cos_sim(x, y):
@@ -29,6 +20,8 @@ def cos_sim(x, y):
 
 
 class TestML:
+    feat = get_featurizer("Cora")
+
     def test_fastRP(self):
         params = {
             "v_type_set": ["Paper"],
@@ -47,10 +40,9 @@ class TestML:
         with gzip.open(f"{baseline_path_root}/ml/fastRP.json.gz", "rb") as f:
             baseline = json.load(f)
 
-        result = conn.runInstalledQuery(
+        result = self.feat.runAlgorithm(
             "tg_fastRP",
             params=params,
-            usePost=True,
         )
         result = {
             v["v_id"]: v["attributes"]["res.@final_embedding_list"]
@@ -61,4 +53,4 @@ class TestML:
             v = result[bk]
             sim = abs(cos_sim(v, bv))
             if sim < threshold:
-                pytest.fail(f"cos-sim of {bk} is {sim} (< threshold of {threshold}")
+                pytest.fail(f"cos-sim of ID: {bk} is {sim} (< threshold of {threshold}")
