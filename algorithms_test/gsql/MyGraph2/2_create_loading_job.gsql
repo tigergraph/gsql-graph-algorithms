@@ -1,0 +1,13 @@
+# 1. Use graph
+USE GRAPH MyGraph2
+
+# 2. Create loading job
+CREATE LOADING JOB loading_job FOR GRAPH MyGraph2 {
+  DEFINE FILENAME f1;
+
+  LOAD f1 TO VERTEX MyNode VALUES($0, _) USING SEPARATOR="\t", HEADER="true", EOL="\n", QUOTE="DOUBLE";
+  LOAD f1 TO VERTEX MyNode VALUES($1, _) USING SEPARATOR="\t", HEADER="true", EOL="\n", QUOTE="DOUBLE";
+
+  LOAD f1 TO EDGE MyEdge VALUES($0, $1, $0) USING SEPARATOR="\t", HEADER="true", EOL="\n", QUOTE="DOUBLE";
+}
+

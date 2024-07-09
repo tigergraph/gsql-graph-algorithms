@@ -1,0 +1,621 @@
+{
+  "general_settings": {
+    "default_graph_name": "MyGraph",
+    "default_timeout_in_minutes": "15",
+    "default_output_directory": "~/data/algos",
+    "summary_file_path": "~/data/algos/summary.csv"
+  },
+  "algorithms": {
+    "topological_link_prediction/tg_preferential_attachment": [
+      {
+        "query_name": "tg_preferential_attachment",
+        "parameters": {
+          "v_source": "117001",
+          "v_source.type": "MyNode",
+          "v_target": "135375",
+          "v_target.type": "MyNode",
+          "e_type_set": "MyEdge"
+        }
+      }
+    ],
+    "topological_link_prediction/tg_resource_allocation": [
+      {
+        "query_name": "tg_resource_allocation",
+        "parameters": {
+          "v_source": "117001",
+          "v_source.type": "MyNode",
+          "v_target": "135375",
+          "v_target.type": "MyNode",
+          "e_type_set": "MyEdge"
+        }
+      }
+    ],
+    "topological_link_prediction/tg_same_community": [
+      {
+        "query_name": "tg_same_community",
+        "parameters": {
+          "v_source": "117001",
+          "v_source.type": "MyNode",
+          "v_target": "135375",
+          "v_target.type": "MyNode",
+          "community_attribute": "community",
+          "community_attr_type": "STRING"
+        }
+      }
+    ],
+    "topological_link_prediction/tg_adamic_adar": [
+      {
+        "query_name": "tg_adamic_adar",
+        "parameters": {
+          "v_source": "117001",
+          "v_source.type": "MyNode",
+          "v_target": "135375",
+          "v_target.type": "MyNode",
+          "e_type_set": "MyEdge"
+        }
+      }
+    ],
+    "topological_link_prediction/tg_total_neighbors": [
+      {
+        "query_name": "tg_total_neighbors",
+        "parameters": {
+          "v_source": "117001",
+          "v_source.type": "MyNode",
+          "v_target": "135375",
+          "v_target.type": "MyNode",
+          "e_type_set": "MyEdge"
+        }
+      }
+    ],
+    "classification/tg_greedy_graph_coloring": [
+      {
+        "query_name": "tg_greedy_graph_coloring",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "max_colors": 999999,
+          "print_color_count": true,
+          "print_stats": false,
+          "file_path": "/home/tigergraph/data/algos/classification/tg_greedy_graph_coloring/result.csv"
+        }
+      }
+    ],
+    "classification/tg_maximal_indep_set": [
+      {
+        "query_name": "tg_maximal_indep_set",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "maximum_iteration": 100,
+          "print_results": false,
+          "file_path": "/home/tigergraph/data/algos/classification/tg_maximal_indep_set/result.csv"
+        }
+      }
+    ],
+    "classification/tg_knn_cosine_ss": [
+      {
+        "query_name": "tg_knn_cosine_ss",
+        "parameters": {
+          "source": "117001",
+          "source.type": "MyNode",
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "reverse_e_type_set": "rev_MyEdge",
+          "weight_attribute": "weight",
+          "label": "community",
+          "top_k": 10,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/classification/tg_knn_cosine_ss/result.csv"
+        }
+      }
+    ],
+    "classification/tg_knn_cosine_cv": [
+      {
+        "query_name": "tg_knn_cosine_cv",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "reverse_e_type_set": "rev_MyEdge",
+          "weight_attribute": "weight",
+          "label": "community",
+          "min_k": 10,
+          "max_k": 20
+        }
+      }
+    ],
+    "community/tg_slpa": [
+      {
+        "query_name": "tg_slpa",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "threshold": 0.8,
+          "maximum_iteration": 10,
+          "print_limit": 10,
+          "print_results": false,
+          "file_path": "/home/tigergraph/data/algos/community/tg_slpa/result.csv"
+        }
+      }
+    ],
+    "community/tg_label_prop": [
+      {
+        "query_name": "tg_label_prop",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "maximum_iteration": 10,
+          "print_limit": 10,
+          "print_results": false,
+          "file_path": "/home/tigergraph/data/algos/community/tg_label_prop/result.csv"
+        }
+      }
+    ],
+    "community/tg_tri_count_fast": [
+      {
+        "query_name": "tg_tri_count_fast",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge"
+        }
+      }
+    ],
+    "community/tg_tri_count": [
+      {
+        "query_name": "tg_tri_count",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge"
+        }
+      }
+    ],
+    "community/tg_scc": [
+      {
+        "query_name": "tg_scc",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "reverse_e_type_set": "rev_MyEdge",
+          "top_k_dist": 10,
+          "print_limit": 10,
+          "maximum_iteration": 500,
+          "iter_wcc": 5,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/community/tg_scc/result.csv"
+        }
+      }
+    ],
+    "community/tg_scc_small_world": [
+      {
+        "query_name": "tg_scc_small_world",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "reverse_e_type": "rev_MyEdge",
+          "threshold": 100000,
+          "print_results": false
+        }
+      }
+    ],
+    "community/tg_wcc": [
+      {
+        "query_name": "tg_wcc",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "print_limit": 10,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/community/tg_wcc/result.csv"
+        }
+      }
+    ],
+    "community/tg_wcc_small_world": [
+      {
+        "query_name": "tg_wcc_small_world",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "threshold": 100000,
+          "print_results": false
+        }
+      }
+    ],
+    "community/tg_kcore": [
+      {
+        "query_name": "tg_kcore",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "k_min": 0,
+          "k_max": -1,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/community/tg_kcore/result.csv",
+          "print_all_k": false,
+          "show_shells": false
+        }
+      }
+    ],
+    "community/tg_map_equation": [
+      {
+        "query_name": "tg_map_equation",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "result_attribute": "",
+          "weight_attribute": ""
+        }
+      }
+    ],
+    "community/tg_lcc": [
+      {
+        "query_name": "tg_lcc",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "top_k": 10,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/community/tg_lcc/result.csv",
+          "display_edges": false
+        }
+      }
+    ],
+    "community/tg_louvain": [
+      {
+        "query_name": "tg_louvain",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "weight_attribute": "weight",
+          "maximum_iteration": 10,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/community/tg_lcc/result.csv",
+          "print_stats": false
+        }
+      }
+    ],
+    "path/tg_cycle_component": [
+      {
+        "query_name": "tg_cycle_component",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/path/tg_cycle_component/result.csv"
+        }
+      }
+    ],
+    "path/tg_shortest_ss_no_wt": [
+      {
+        "query_name": "tg_shortest_ss_no_wt",
+        "parameters": {
+          "source": "117001",
+          "source.type": "MyNode",
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "print_limit": -1,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/path/tg_shortest_ss_no_wt/result.csv",
+          "display_edges": false
+        }
+      }
+    ],
+    "path/tg_shortest_ss_any_wt": [
+      {
+        "query_name": "tg_shortest_ss_any_wt",
+        "parameters": {
+          "source": "117001",
+          "source.type": "MyNode",
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "weight_attribute": "weight",
+          "weight_type": "DOUBLE",
+          "print_limit": -1,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/path/tg_shortest_ss_any_wt/result.csv",
+          "display_edges": false
+        }
+      }
+    ],
+    "path/tg_shortest_ss_pos_wt": [
+      {
+        "query_name": "tg_shortest_ss_pos_wt",
+        "parameters": {
+          "source": "117001",
+          "source.type": "MyNode",
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "weight_attribute": "weight",
+          "weight_type": "DOUBLE",
+          "epsilon": 0.001,
+          "print_results": false,
+          "print_limit": -1,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/path/tg_shortest_ss_pos_wt/result.csv",
+          "display_edges": false
+        }
+      }
+    ],
+    "path/tg_shortest_ss_pos_wt_tb": [
+      {
+        "query_name": "tg_shortest_ss_pos_wt_tb",
+        "parameters": {
+          "source": "117001",
+          "source.type": "MyNode",
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "weight_attribute": "weight",
+          "weight_type": "DOUBLE",
+          "epsilon": 0.001,
+          "print_results": false,
+          "print_limit": -1,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/path/tg_shortest_ss_pos_wt_tb/result.csv",
+          "display_edges": false,
+          "write_size": 10000
+        }
+      }
+    ],
+    "path/tg_all_path": [
+      {
+        "query_name": "tg_all_path",
+        "parameters": {
+          "v_source": "117001",
+          "v_source.type": "MyNode",
+          "target_v": "135375",
+          "target_v.type": "MyNode",
+          "depth": 10,
+          "print_results": false,
+          "file_path": "/home/tigergraph/data/algos/path/tg_all_path/result.csv"
+        }
+      }
+    ],
+    "path/tg_msf": [
+      {
+        "query_name": "tg_msf",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "weight_attribute": "weight",
+          "weight_type": "DOUBLE",
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/path/tg_msf/result.csv"
+        }
+      }
+    ],
+    "path/tg_mst": [
+      {
+        "query_name": "tg_mst",
+        "parameters": {
+          "opt_source": "117001",
+          "opt_source.type": "MyNode",
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "weight_attribute": "weigth",
+          "weight_type": "DOUBLE",
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/path/tg_mst/result.csv"
+        }
+      }
+    ],
+    "path/tg_bfs": [
+      {
+        "query_name": "tg_bfs",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "max_hops": 10,
+          "v_start": "117001",
+          "v_start.type": "MyNode",
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/path/tg_bfs/result.csv",
+          "display_edges": true
+        }
+      }
+    ],
+    "centrality/tg_closeness_cent_approx": [
+      {
+        "query_name": "tg_closeness_cent_approx",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "reverse_e_type": "rev_MyEdge",
+          "top_k": 10,
+          "k": 10,
+          "max_hops": 10,
+          "epsilon": 0.1,
+          "print_results": false,
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_closeness_cent_approx/result.csv",
+          "debug": 0,
+          "sample_index": 0,
+          "max_size": 1000,
+          "wf": true
+        }
+      }
+    ],
+    "centrality/tg_eigenvector_cent": [
+      {
+        "query_name": "tg_eigenvector_cent",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "maximum_iteration": 10,
+          "conv_limit": 0.000001,
+          "top_k": 10,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_eigenvector_cent/result.csv"
+        }
+      }
+    ],
+    "centrality/tg_influence_maximization_greedy": [
+      {
+        "query_name": "tg_influence_maximization_greedy",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "weight_attribute": "weight",
+          "top_k": 10,
+          "print_results": false,
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_influence_maximization_greedy/result.csv"
+        }
+      }
+    ],
+    "centrality/tg_influence_maximization_CELF": [
+      {
+        "query_name": "tg_influence_maximization_CELF",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "weight_attribute": "weight",
+          "top_k": 10,
+          "print_results": false,
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_influence_maximization_CELF/result.csv"
+        }
+      }
+    ],
+    "centrality/tg_degree_cent": [
+      {
+        "query_name": "tg_degree_cent",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "reverse_e_type_set": "rev_MyEdge",
+          "in_degree": true,
+          "out_degree": true,
+          "top_k": 10,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_degree_cent/result.csv"
+        }
+      }
+    ],
+    "centrality/tg_weighted_degree_cent": [
+      {
+        "query_name": "tg_weighted_degree_cent",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "reverse_e_type": "rev_MyEdge",
+          "weight_attribute": "weight",
+          "in_degree": true,
+          "out_degree": true,
+          "top_k": 10,
+          "print_results": false,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_weighted_degree_cent/result.csv"
+        }
+      }
+    ],
+    "centrality/tg_pagerank": [
+      {
+        "query_name": "tg_pagerank",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "max_change": 0.001,
+          "maximum_iteration": 25,
+          "damping": 0.85,
+          "top_k": 10,
+          "print_results": true,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_pagerank/result.csv",
+          "display_edges": false
+        }
+      }
+    ],
+    "centrality/tg_pagerank_wt": [
+      {
+        "query_name": "tg_pagerank_wt",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "weight_attribute": "weight",
+          "max_change": 0.001,
+          "maximum_iteration": 25,
+          "damping": 0.85,
+          "top_k": 10,
+          "print_results": true,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_pagerank_wt/result.csv",
+          "display_edges": false
+        }
+      }
+    ],
+    "centrality/tg_pagerank_pers": [
+      {
+        "query_name": "tg_pagerank_pers",
+        "parameters": {
+          "source": "117001",
+          "source.type": "MyNode",
+          "e_type": "MyEdge",
+          "max_change": 0.001,
+          "maximum_iteration": 25,
+          "damping": 0.85,
+          "top_k": 10,
+          "print_results": true,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_pagerank_pers/result.csv"
+        }
+      }
+    ],
+    "centrality/tg_pagerank_pers_ap_batch": [
+      {
+        "query_name": "tg_pagerank_pers_ap_batch",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "max_change": 0.001,
+          "maximum_iteration": 25,
+          "damping": 0.85,
+          "top_k": 10,
+          "batch_num": 10,
+          "print_results": true,
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_pagerank_pers_ap_batch/result.csv"
+        }
+      }
+    ],
+    "centrality/tg_harmonic_cent": [
+      {
+        "query_name": "tg_harmonic_cent",
+        "parameters": {
+          "v_type_set": "MyNode",
+          "e_type_set": "MyEdge",
+          "reverse_e_type_set": "rev_MyEdge",
+          "max_hops": 10,
+          "top_k": 10,
+          "wf": true,
+          "print_results": true,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_harmonic_cent/result.csv",
+          "display_edges": false
+        }
+      }
+    ],
+    "centrality/tg_article_rank": [
+      {
+        "query_name": "tg_article_rank",
+        "parameters": {
+          "v_type": "MyNode",
+          "e_type": "MyEdge",
+          "max_change": 0.001,
+          "maximum_iteration": 25,
+          "damping": 0.85,
+          "top_k": 10,
+          "print_results": true,
+          "result_attribute": "",
+          "file_path": "/home/tigergraph/data/algos/centrality/tg_article_rank/result.csv"
+        }
+      }
+    ]
+  }
+}
