@@ -265,7 +265,7 @@ CREATE QUERY tg_fastRP(
 
   IF print_results THEN
     res = SELECT a FROM verts:a;
-    PRINT res[res.@final_embedding_arr];
+    PRINT res[res.@final_embedding_list];
   END;
 
   // (un)comment depending on whether you want to write to graph
