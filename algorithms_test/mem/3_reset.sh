@@ -39,6 +39,6 @@ while [ $check_count -lt $max_checks ]; do
 
   # Run the reset script and sleep for 1 second
   > ~/mem/mem.log
-  sleep 1
+  sleep 2
 done
 

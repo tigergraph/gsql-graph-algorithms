@@ -400,6 +400,7 @@
           "e_type_set": "MyEdge",
           "weight_attribute": "weigth",
           "weight_type": "DOUBLE",
+          "maximum_iteration": 100,
           "print_results": false,
           "result_attribute": "",
           "file_path": "/home/tigergraph/data/algos/path/tg_mst/result.csv"
