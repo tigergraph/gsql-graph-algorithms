@@ -1,4 +1,4 @@
-CREATE QUERY tg_scc (SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set,
+CREATE DISTRIBUTED QUERY tg_scc (SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set,
   INT top_k_dist, INT print_limit, INT maximum_iteration = 500, INT iter_wcc = 5, BOOL print_results = TRUE, STRING result_attribute= "", STRING file_path="")  SYNTAX V1 { 
     //INT iter_end_trim = 3
 

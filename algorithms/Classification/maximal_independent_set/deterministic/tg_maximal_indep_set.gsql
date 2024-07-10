@@ -1,4 +1,4 @@
-CREATE QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT maximum_iteration = 100, BOOL print_results = TRUE, STRING file_path = "")  SYNTAX V1 { 
+CREATE DISTRIBUTED QUERY tg_maximal_indep_set(STRING v_type, STRING e_type, INT maximum_iteration = 100, BOOL print_results = TRUE, STRING file_path = "")  SYNTAX V1 { 
 
     /*
     First Author: <First Author Name>

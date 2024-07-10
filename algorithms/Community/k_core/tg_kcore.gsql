@@ -1,4 +1,4 @@
-CREATE QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_results = TRUE, 
+CREATE DISTRIBUTED QUERY tg_kcore(STRING v_type, STRING e_type, INT k_min = 0, INT k_max = -1, BOOL print_results = TRUE, 
   STRING result_attribute = "", STRING file_path = "", BOOL print_all_k = FALSE, BOOL show_shells=FALSE)  SYNTAX V1 { 
 
     /*

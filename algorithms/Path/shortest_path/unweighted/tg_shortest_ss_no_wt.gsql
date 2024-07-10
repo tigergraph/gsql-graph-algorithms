@@ -1,4 +1,4 @@
-CREATE QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set, 
+CREATE DISTRIBUTED QUERY tg_shortest_ss_no_wt (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set, 
   INT print_limit = -1, BOOL print_results =TRUE, STRING result_attribute ="", STRING file_path ="",
   BOOL display_edges =FALSE)  SYNTAX V1 {
 

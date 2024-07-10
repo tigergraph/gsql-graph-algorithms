@@ -1,4 +1,4 @@
-CREATE QUERY tg_closeness_cent_approx (
+CREATE DISTRIBUTED QUERY tg_closeness_cent_approx (
     SET<STRING> v_type_set, SET<STRING> e_type_set, STRING reverse_e_type, INT top_k=100, INT k = 100,  INT max_hops = 10,  DOUBLE epsilon = 0.1,  BOOL print_results = true, 
     STRING file_path = "",  INT debug = 0,  INT sample_index = 0,  INT max_size = 1000,   BOOL wf = True ) SYNTAX V1 {
       

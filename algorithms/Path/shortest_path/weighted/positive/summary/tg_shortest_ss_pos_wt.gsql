@@ -1,4 +1,4 @@
-CREATE QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set,
+CREATE DISTRIBUTED QUERY tg_shortest_ss_pos_wt (VERTEX source, SET<STRING> v_type_set, SET<STRING> e_type_set,
  STRING weight_attribute, STRING weight_type, FLOAT epsilon = 0.001,BOOL print_results = TRUE, INT print_limit = -1, 
  BOOL display_edges = FALSE, STRING result_attribute = "", 
  STRING file_path = "")  SYNTAX V1 {

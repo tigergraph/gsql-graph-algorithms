@@ -1,4 +1,4 @@
-CREATE QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING reverse_e_type, string weight_attribute, BOOL in_degree = TRUE, BOOL out_degree = TRUE, INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
+CREATE DISTRIBUTED QUERY tg_weighted_degree_cent(STRING v_type, STRING e_type, STRING reverse_e_type, string weight_attribute, BOOL in_degree = TRUE, BOOL out_degree = TRUE, INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
 
    /*
    First Author: <First Author Name>

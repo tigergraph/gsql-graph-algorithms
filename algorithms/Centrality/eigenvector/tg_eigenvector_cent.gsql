@@ -1,4 +1,4 @@
-CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, INT maximum_iteration = 100, FLOAT conv_limit = 0.000001,
+CREATE DISTRIBUTED QUERY tg_eigenvector_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, INT maximum_iteration = 100, FLOAT conv_limit = 0.000001,
     INT top_k = 100, BOOL print_results = True, STRING result_attribute = "",STRING file_path = ""
     ) SYNTAX V1 {
 

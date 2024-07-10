@@ -1,4 +1,4 @@
-CREATE QUERY tg_wcc (SET<STRING> v_type_set, SET<STRING> e_type_set, INT print_limit = 100,
+CREATE DISTRIBUTED QUERY tg_wcc (SET<STRING> v_type_set, SET<STRING> e_type_set, INT print_limit = 100,
  BOOL print_results = TRUE, STRING result_attribute = "", STRING file_path = "")  SYNTAX V1 {
 
     /*

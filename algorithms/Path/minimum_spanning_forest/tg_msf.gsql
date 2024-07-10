@@ -1,4 +1,4 @@
-CREATE QUERY tg_msf (SET<STRING> v_type_set, SET<STRING> e_type_set, STRING weight_attribute, STRING weight_type,
+CREATE DISTRIBUTED QUERY tg_msf (SET<STRING> v_type_set, SET<STRING> e_type_set, STRING weight_attribute, STRING weight_type,
 	BOOL print_results = TRUE, STRING result_attribute = "", STRING file_path = "")  SYNTAX V1 {
 
     /*

@@ -1,4 +1,4 @@
-CREATE QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type_set, SET<STRING> e_type_set, STRING weight_attribute, STRING weight_type,
+CREATE DISTRIBUTED QUERY tg_mst(VERTEX opt_source, SET<STRING> v_type_set, SET<STRING> e_type_set, STRING weight_attribute, STRING weight_type,
   INT maximum_iteration = -1, BOOL print_results = TRUE, STRING result_attribute = "", STRING file_path = "")  SYNTAX V1 {
 
     /*

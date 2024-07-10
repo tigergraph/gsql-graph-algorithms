@@ -1,4 +1,4 @@
-CREATE QUERY tg_label_prop (SET<STRING> v_type_set, SET<STRING> e_type_set, INT maximum_iteration, INT print_limit, 
+CREATE DISTRIBUTED QUERY tg_label_prop (SET<STRING> v_type_set, SET<STRING> e_type_set, INT maximum_iteration, INT print_limit, 
   BOOL print_results = TRUE, STRING file_path = "", STRING result_attribute = "")  SYNTAX V1 {
 
 

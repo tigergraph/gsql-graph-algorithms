@@ -1,4 +1,4 @@
-CREATE QUERY tg_pagerank_pers_ap_batch(STRING v_type, STRING e_type,
+CREATE DISTRIBUTED QUERY tg_pagerank_pers_ap_batch(STRING v_type, STRING e_type,
   FLOAT max_change=0.001, INT maximum_iteration=25, FLOAT damping = 0.85, INT top_k = 100,INT batch_num,BOOL print_results,STRING file_path) SYNTAX V1 {
 
     /*

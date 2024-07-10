@@ -1,4 +1,4 @@
-CREATE QUERY tg_all_path(VERTEX v_source, VERTEX target_v, INT depth = 10,
+CREATE DISTRIBUTED QUERY tg_all_path(VERTEX v_source, VERTEX target_v, INT depth = 10,
   BOOL print_results = TRUE, STRING file_path = "")SYNTAX v1 {
 
     /*

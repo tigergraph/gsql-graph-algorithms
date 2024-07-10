@@ -1,4 +1,4 @@
-CREATE QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_results = TRUE, STRING result_attribute =  "", STRING file_path = "") SYNTAX v1{ 
+CREATE DISTRIBUTED QUERY tg_cycle_component(STRING v_type,STRING e_type,BOOL print_results = TRUE, STRING result_attribute =  "", STRING file_path = "") SYNTAX v1{ 
 
 
     /*

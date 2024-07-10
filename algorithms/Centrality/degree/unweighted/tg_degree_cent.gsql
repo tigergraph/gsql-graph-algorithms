@@ -1,4 +1,4 @@
-CREATE QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, BOOL in_degree = TRUE, BOOL out_degree = TRUE,
+CREATE DISTRIBUTED QUERY tg_degree_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, SET<STRING> reverse_e_type_set, BOOL in_degree = TRUE, BOOL out_degree = TRUE,
   INT top_k=100, BOOL print_results = TRUE, STRING result_attribute = "",STRING file_path = "") SYNTAX V1 {
 
     /*

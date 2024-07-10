@@ -1,4 +1,4 @@
-CREATE QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING weight_attribute,INT top_k,
+CREATE DISTRIBUTED QUERY tg_influence_maximization_greedy(STRING v_type,STRING e_type,STRING weight_attribute,INT top_k,
   BOOL print_results = True, STRING file_path = "") SYNTAX V1 {
 
     /*

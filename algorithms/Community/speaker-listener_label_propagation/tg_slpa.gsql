@@ -1,4 +1,4 @@
-CREATE QUERY tg_slpa (SET<STRING> v_type_set, SET<STRING> e_type_set, FLOAT threshold, INT maximum_iteration, INT print_limit,
+CREATE DISTRIBUTED QUERY tg_slpa (SET<STRING> v_type_set, SET<STRING> e_type_set, FLOAT threshold, INT maximum_iteration, INT print_limit,
 BOOL print_results = TRUE, STRING file_path = "") SYNTAX V1 {
 
     /*
