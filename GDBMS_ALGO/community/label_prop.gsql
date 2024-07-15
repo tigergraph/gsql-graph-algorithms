@@ -66,14 +66,13 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop(
 
   // Initialization
   All_Nodes = {v_type_set};
-  Tmp =
-    SELECT s
-    FROM   All_Nodes:s -(e_type_set:e)- :t
-    POST-ACCUM
-           s.@community_id = s,
-           s.@vid = getvid(s),
-           s.@batch_id = s.@vid % batch_num,
-           s.@degree = s.outdegree(e_type_set);
+  Tmp = SELECT s
+        FROM   All_Nodes:s -(e_type_set:e)- :t
+        POST-ACCUM
+               s.@community_id = s,
+               s.@vid = getvid(s),
+               s.@batch_id = s.@vid % batch_num,
+               s.@degree = s.outdegree(e_type_set);
   @@vertex_num = All_Nodes.size();
   @@vertex_num = @@vertex_num / batch_num;
 
@@ -84,104 +83,96 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop(
     hop = hop + 1;
     // Find the best move
     IF hop == 1 THEN // First iteration
-      ChangedNodes =
-        SELECT s
-        FROM   Candidates:s -(e_type_set:e)- :t
-        WHERE  s.@degree < t.@degree
-        ACCUM  s.@best_move += MoveScore(t.@degree, t.@community_id)
-        POST-ACCUM
-               IF s.@best_move.community != s.@community_id THEN
-                 s.@to_change_community = TRUE
-               END
-        HAVING s.@to_change_community == TRUE;
+      ChangedNodes = SELECT s
+                     FROM   Candidates:s -(e_type_set:e)- :t
+                     WHERE  s.@degree < t.@degree
+                     ACCUM  s.@best_move += MoveScore(t.@degree, t.@community_id)
+                     POST-ACCUM
+                            IF s.@best_move.community != s.@community_id THEN
+                              s.@to_change_community = TRUE
+                            END
+                     HAVING s.@to_change_community == TRUE;
     ELSE // Remaining iterations
       IF Candidates.size() < @@vertex_num OR batch_num == 1 THEN // No batch processing
-        ChangedNodes =
-          SELECT s
-          FROM   Candidates:s -(e_type_set:e)- :t
-          SAMPLE sample_edge_num EDGE WHEN s.outdegree(e_type_set) > sample_edge_num
-          ACCUM  s.@community_k_in_map += (t.@community_id -> 1)
-          POST-ACCUM
-                 s.@best_move = MoveScore(@@min_double, s), // Reset best move
-                 FOREACH (community_id, k_in) IN s.@community_k_in_map DO
-                   s.@best_move += MoveScore(k_in, community_id)
-                 END,
-                 IF s.@best_move.community != s.@community_id THEN
-                   s.@to_change_community = TRUE
-                 END,
-                 s.@community_k_in_map.clear()
-          HAVING s.@to_change_community == TRUE;
+        ChangedNodes = SELECT s
+                       FROM   Candidates:s -(e_type_set:e)- :t
+                       SAMPLE sample_edge_num EDGE WHEN s.outdegree(e_type_set) > sample_edge_num
+                       ACCUM  s.@community_k_in_map += (t.@community_id -> 1)
+                       POST-ACCUM
+                              s.@best_move = MoveScore(@@min_double, s), // Reset best move
+                              FOREACH (community_id, k_in) IN s.@community_k_in_map DO
+                                s.@best_move += MoveScore(k_in, community_id)
+                              END,
+                              IF s.@best_move.community != s.@community_id THEN
+                                s.@to_change_community = TRUE
+                              END,
+                              s.@community_k_in_map.clear()
+                       HAVING s.@to_change_community == TRUE;
       ELSE // Use batch processing
         ChangedNodes = {};
         FOREACH batch_id IN RANGE[0, batch_num-1] DO
-          Nodes =
-            SELECT s
-            FROM   Candidates:s
-            WHERE  s.@batch_id == batch_id;
-          Nodes =
-            SELECT s
-            FROM   Nodes:s -(e_type_set:e)- :t
-            SAMPLE sample_edge_num EDGE WHEN s.outdegree(e_type_set) > sample_edge_num
-            ACCUM  s.@community_k_in_map += (t.@community_id -> 1)
-            POST-ACCUM
-                   s.@best_move = MoveScore(@@min_double, s), // Reset best move
-                   FOREACH (community_id, k_in) IN s.@community_k_in_map DO
-                     s.@best_move += MoveScore(k_in, community_id)
-                   END,
-                   IF s.@best_move.community != s.@community_id THEN
-                     s.@to_change_community = TRUE
-                   END,
-                   s.@community_k_in_map.clear()
-            HAVING s.@to_change_community == TRUE;
+          Nodes = SELECT s
+                  FROM   Candidates:s
+                  WHERE  s.@batch_id == batch_id;
+          Nodes = SELECT s
+                  FROM   Nodes:s -(e_type_set:e)- :t
+                  SAMPLE sample_edge_num EDGE WHEN s.outdegree(e_type_set) > sample_edge_num
+                  ACCUM  s.@community_k_in_map += (t.@community_id -> 1)
+                  POST-ACCUM
+                         s.@best_move = MoveScore(@@min_double, s), // Reset best move
+                         FOREACH (community_id, k_in) IN s.@community_k_in_map DO
+                           s.@best_move += MoveScore(k_in, community_id)
+                         END,
+                         IF s.@best_move.community != s.@community_id THEN
+                           s.@to_change_community = TRUE
+                         END,
+                         s.@community_k_in_map.clear()
+                  HAVING s.@to_change_community == TRUE;
           ChangedNodes = ChangedNodes UNION Nodes;
         END;
       END;
     END;
 
     // Handle nodes that swap communities
-    SwapNodes =
-      SELECT s
-      FROM   ChangedNodes:s -(e_type_set:e)- :t
-      WHERE  s.@best_move.community == t.@community_id
-             AND t.@to_change_community == TRUE
-             AND t.@best_move.community == s.@community_id
-             AND (s.@best_move.score < t.@best_move.score
-                  OR (abs(s.@best_move.score - t.@best_move.score) < 0.00000000001
-                      AND s.@vid > t.@vid))
-      POST-ACCUM
-             s.@to_change_community = FALSE;
+    SwapNodes = SELECT s
+                FROM   ChangedNodes:s -(e_type_set:e)- :t
+                WHERE  s.@best_move.community == t.@community_id
+                       AND t.@to_change_community == TRUE
+                       AND t.@best_move.community == s.@community_id
+                       AND (s.@best_move.score < t.@best_move.score
+                            OR (abs(s.@best_move.score - t.@best_move.score) < 0.00000000001
+                                AND s.@vid > t.@vid))
+                POST-ACCUM
+                       s.@to_change_community = FALSE;
     ChangedNodes = ChangedNodes MINUS SwapNodes;
 
     // Update community IDs
-    ChangedNodes =
-      SELECT s
-      FROM   ChangedNodes:s
-      POST-ACCUM
-             s.@community_id = s.@best_move.community,
-             s.@to_change_community = FALSE;
+    ChangedNodes = SELECT s
+                   FROM   ChangedNodes:s
+                   POST-ACCUM
+                          s.@community_id = s.@best_move.community,
+                          s.@to_change_community = FALSE;
 
     // Find candidates for the next iteration
-    Candidates =
-      SELECT t
-      FROM   ChangedNodes:s -(e_type_set:e)- :t
-      WHERE  t.@community_id != s.@community_id;
+    Candidates = SELECT t
+                 FROM   ChangedNodes:s -(e_type_set:e)- :t
+                 WHERE  t.@community_id != s.@community_id;
   END;
 
   // Output results
-  Nodes =
-    SELECT s
-    FROM All_Nodes:s
-    POST-ACCUM
-      IF result_attribute != "" THEN
-          s.setAttr(result_attribute, getvid(s.@community_id))
-      END,
-      IF print_results THEN
-        @@comm_sizes_map += (s.@community_id -> 1)
-      END,
-      IF file_path != "" THEN
-        f.println(s.id, s.@community_id)
-      END
-    LIMIT print_limit;
+  Nodes = SELECT s
+          FROM All_Nodes:s
+          POST-ACCUM
+            IF result_attribute != "" THEN
+                s.setAttr(result_attribute, getvid(s.@community_id))
+            END,
+            IF print_results THEN
+              @@comm_sizes_map += (s.@community_id -> 1)
+            END,
+            IF file_path != "" THEN
+              f.println(s.id, s.@community_id)
+            END
+          LIMIT print_limit;
 
   // Print results if print_results is True
   IF print_results THEN
