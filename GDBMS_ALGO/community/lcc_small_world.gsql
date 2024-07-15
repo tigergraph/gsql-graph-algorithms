@@ -1,0 +1,234 @@
+CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc_small_world (
+  SET<STRING> v_type_set,
+  SET<STRING> e_type_set,
+  UINT threshold = 100000,
+  UINT top_k=100,
+  BOOL print_results = FALSE,
+  STRING result_attribute = "",
+  STRING file_path = "",
+  BOOL display_edges = FALSE
+)  SYNTAX V1 {
+
+    /*
+    First Author: xuanlei.lin@tigergraph.com
+    First Commit Date: 2024-07-15
+
+    Recent Author: xuanlei.lin@tigergraph.com
+    Recent Commit Date: 2024-07-15
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Production
+
+    Description: 
+        This query computes the Local Clustering Coefficient (LCC) for each node in the graph.
+        LCC = Number_of_triangles / ((n-1) * n / 2)
+        where n is the outdegree of the vertex.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/community-algorithms/local-clustering-coefficient
+
+    Parameters:
+        v_type_set:
+            The set of vertex types to traverse.
+        e_type_set:
+            The set of edge types to traverse.
+        threshold:
+            Threshold for choosing initial pivot vertices. Only vertices whose product of indegree 
+            and outdegree exceeds this threshold will be considered candidates for the pivot vertex. 
+            The default value is 100000.
+        top_k:
+            Number of top scores to report.
+        print_results:
+            If True, print JSON output.
+        result_attribute:
+            Attribute to store the results.
+        file_path:
+            File to write CSV output to.
+        display_edges:
+            If True, output edges for visualization. WARNING: Avoid displaying edges for large datasets.
+    */
+
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score;
+  HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap; # Heap to store top-k scores
+  SumAccum<INT> @sum_outdegree; # Accumulator for the outdegree
+  SumAccum<INT> @sum_indegree; # Accumulator for the indegree
+  SumAccum<INT> @sum_degree_product; # Accumulator for the product of outdegree and indegree
+  OrAccum @or_in_frontier; # Flag to check if the vertex is in the frontier
+  OrAccum @or_lcc_calculated; # Flag to check if the LCC of the vertex has been calculated
+  OrAccum @or_is_neighbor; # Flag to check if the vertex is a neighbor of nodes in the frontier
+  SetAccum<VERTEX> @set_nodes_in_frontier; # Set of nodes in the frontier
+  MapAccum<VERTEX, INT> @map_node_tri_count; # Map: node in the frontier -> triangle count
+  SumAccum<INT> @sum_tri_count; # Accumulator for the count of triangles
+  SumAccum<FLOAT> @sum_lcc; # Accumulator for LCC value
+  SetAccum<EDGE> @@edge_set; # Set of edges for visualization
+  FILE f (file_path); # File to write results to
+
+  // -------------------- 1. Handle nodes in large WCCs --------------------
+  # Calculate the product of indegree and outdegree, 
+  # and filter vertices with product no less than the threshold
+  AllNodes = {v_type_set};
+  PivotCandidates = SELECT s
+                    FROM AllNodes:s-(e_type_set)-v_type_set:t
+                    WHERE s != t
+                    ACCUM s.@sum_outdegree += 1,
+                          s.@sum_indegree += 1
+                    POST-ACCUM (s)
+                          s.@sum_degree_product = s.@sum_indegree * s.@sum_outdegree
+                    HAVING s.@sum_degree_product >= threshold;
+
+  # Calculate LCC for nodes in large WCCs
+  WHILE PivotCandidates.size() > 0 DO
+    # Select the initial pivot vertex with the largest product of indegree and outdegree
+    Nodes = SELECT s 
+            FROM PivotCandidates:s
+            ORDER BY s.@sum_degree_product DESC
+            LIMIT  1;
+    Nodes = SELECT s 
+            FROM Nodes:s
+            POST-ACCUM (s)
+              s.@or_in_frontier += TRUE;
+
+    # Use BFS to find all elements in its connected component
+    WHILE Nodes.size() > 0 DO
+      # Find neighbors of nodes in the frontier
+      Neighbors = SELECT t
+                  FROM Nodes:s-(e_type_set)-v_type_set:t
+                  WHERE s != t
+                        AND t.@or_lcc_calculated == FALSE # Don't visit nodes whose LCCs have been calculated
+                        AND (t.@or_in_frontier == FALSE # Neighbor not in the frontier
+                            OR getvid(s) > getvid(t)) # If neighbor is in the frontier, only consider one direction
+                  ACCUM t.@set_nodes_in_frontier += s
+                  POST-ACCUM (t)
+                    t.@or_is_neighbor += TRUE;
+
+      # Calculate the number of triangles involving nodes in the frontier
+      Tmp = SELECT s
+            FROM Neighbors:s-(e_type_set)-v_type_set:t
+            WHERE getvid(s) > getvid(t) # Traverse only one direction of the undirected edge
+                  AND t.@or_is_neighbor == TRUE
+            ACCUM FOREACH node_in_frontier IN s.@set_nodes_in_frontier INTERSECT t.@set_nodes_in_frontier DO
+                    s.@map_node_tri_count += (node_in_frontier -> 1),
+                    # s and t also increase the triangle count by 1
+                    s.@sum_tri_count += 1,
+                    t.@sum_tri_count += 1
+                  END;
+
+      # Calculate the sum of triangle counts for nodes in the frontier
+      Tmp = SELECT s
+            FROM Tmp:s-(e_type_set)-v_type_set:t
+            WHERE t.@or_in_frontier == TRUE
+                  AND s.@map_node_tri_count.containsKey(t)
+            ACCUM t.@sum_tri_count += s.@map_node_tri_count.get(t);
+
+      # Calculate LCC for nodes in the frontier
+      Nodes = SELECT s
+              FROM Nodes:s
+              POST-ACCUM (s)
+                s.@or_in_frontier = FALSE,
+                s.@or_lcc_calculated = TRUE,
+                IF s.@sum_outdegree > 1 THEN
+                  s.@sum_lcc = s.@sum_tri_count * 2.0 / s.@sum_outdegree / (s.@sum_outdegree - 1) 
+                END;
+
+      # Reset variables for the next iteration
+      Neighbors = SELECT s
+                  FROM Neighbors:s
+                  POST-ACCUM (s)
+                    s.@or_is_neighbor = FALSE,
+                    s.@map_node_tri_count.clear(),
+                    s.@set_nodes_in_frontier.clear();
+
+      # Use BFS to visit the next frontier
+      Nodes = SELECT t
+              FROM Nodes:s-(e_type_set:e)-v_type_set:t
+              WHERE t.@or_lcc_calculated == FALSE
+              POST-ACCUM t.@or_in_frontier += TRUE;
+    END;
+
+    # Remove visited vertices from the PivotCandidates set
+    PivotCandidates = SELECT s 
+                      FROM PivotCandidates:s
+                      WHERE s.@or_lcc_calculated == FALSE;
+  END;
+
+  // -------------------- 2. Handle nodes in small WCCs --------------------
+  # For remaining vertices in small WCCs
+  Nodes = SELECT s
+          FROM AllNodes:s
+          WHERE s.@or_lcc_calculated == FALSE;
+
+  Neighbors = SELECT t
+              FROM Nodes:s-(e_type_set)-v_type_set:t
+              WHERE getvid(s) > getvid(t)
+              ACCUM t.@set_nodes_in_frontier += s;
+
+  # Calculate the number of triangles involving nodes in the frontier
+  Tmp = SELECT s
+        FROM Neighbors:s-(e_type_set)-v_type_set:t
+        WHERE getvid(s) > getvid(t)
+        ACCUM FOREACH node_in_frontier IN s.@set_nodes_in_frontier INTERSECT t.@set_nodes_in_frontier DO
+                s.@map_node_tri_count += (node_in_frontier -> 1),
+                # s and t also increase the triangle count by 1
+                s.@sum_tri_count += 1,
+                t.@sum_tri_count += 1
+              END;
+
+  # Calculate the sum of triangle counts for nodes in the frontier
+  Tmp = SELECT s
+        FROM Tmp:s-(e_type_set)-v_type_set:t
+        WHERE s.@map_node_tri_count.containsKey(t)
+        ACCUM t.@sum_tri_count += s.@map_node_tri_count.get(t);
+
+  # Calculate LCC for nodes in the frontier
+  Nodes = SELECT s
+          FROM Nodes:s
+          POST-ACCUM (s)
+            IF s.@sum_outdegree > 1 THEN
+              s.@sum_lcc = s.@sum_tri_count * 2.0 / s.@sum_outdegree / (s.@sum_outdegree - 1) 
+            END;
+
+  # Reset variables for the next iteration
+  Neighbors = SELECT s
+              FROM Neighbors:s
+              POST-ACCUM (s)
+                s.@map_node_tri_count.clear(),
+                s.@set_nodes_in_frontier.clear();
+
+  // -------------------- 3. Output --------------------
+  # Output the results
+  AllNodes = SELECT s
+             FROM AllNodes:s
+             POST-ACCUM
+               IF result_attribute != "" THEN
+                   s.setAttr(result_attribute, s.@sum_lcc)
+               END,
+               IF print_results THEN
+                   @@top_scores_heap += Vertex_Score(s, s.@sum_lcc)
+               END,
+               IF file_path != "" THEN
+                   f.println(s, s.@sum_lcc)
+               END;
+
+  # Print header for CSV output
+  IF file_path != "" THEN
+    f.println("Vertex_ID", "lcc");
+  END;
+
+  # Print results if required
+  IF print_results THEN
+    PRINT @@top_scores_heap AS top_scores;
+    IF display_edges THEN
+      PRINT AllNodes[AllNodes.@sum_lcc];
+      AllNodes = SELECT s
+                 FROM AllNodes:s -(e_type_set:e)-:t
+                 ACCUM @@edge_set += e;
+      PRINT @@edge_set;
+    END;
+  END;
+}
