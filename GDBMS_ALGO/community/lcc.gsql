@@ -118,11 +118,6 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc (
                    f.println(s, s.@sum_lcc)
                END;
 
-  # Print header for CSV output if file_path is specified
-  IF file_path != "" THEN
-    f.println("Vertex_ID", "lcc");
-  END;
-
   # Print results if print_results is True
   IF print_results THEN
     PRINT @@top_scores_heap AS top_scores;

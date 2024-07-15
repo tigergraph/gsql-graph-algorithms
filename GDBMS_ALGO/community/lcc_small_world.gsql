@@ -215,11 +215,6 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc_small_world (
                    f.println(s, s.@sum_lcc)
                END;
 
-  # Print header for CSV output
-  IF file_path != "" THEN
-    f.println("Vertex_ID", "lcc");
-  END;
-
   # Print results if required
   IF print_results THEN
     PRINT @@top_scores_heap AS top_scores;
