@@ -6,9 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def get_featurizer():
-    graph_name = "graph_algorithms_testing"
-
+def get_featurizer(graph_name="graph_algorithms_testing"):
     host_name = os.getenv("HOST_NAME")
     user_name = os.getenv("USER_NAME")
     password = os.getenv("PASS")

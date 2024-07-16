@@ -1,57 +1,14 @@
 import csv
 import json
-from collections import Counter
 from functools import partial
 
 import networkx as nx
 import numpy as np
+from algos import run_degree_baseline, run_degree_baseline_complete, weighted_deg_cent
 from tqdm import tqdm
 
 data_path_root = "data/"
 baseline_path_root = f"{data_path_root}/baseline/"
-
-
-def weighted_deg_cent(
-    g: nx.Graph,
-    dir: str = "",
-):
-    res = Counter()
-    for e in g.edges:
-        a = g.get_edge_data(e[0], e[1])["weight"]
-        match dir:
-            case "in":
-                res[e[1]] += a
-            case "out":
-                res[e[0]] += a
-            case _:
-                res[e[0]] += a
-                res[e[1]] += a
-    return res
-
-
-def run_degree_baseline_complete(g: nx.Graph, _):
-    s = 1.0 / (len(g) - 1.0)
-
-    # d-1 because nx will double count the self-edge
-    res = {n: (d - 1) * s for n, d in g.degree()}
-
-    out = []
-    for k, v in res.items():
-        out.append({"Vertex_ID": k, "score": v})
-
-    out = [{"top_scores": out}]
-    return out
-
-
-def run_degree_baseline(g: nx.Graph, metric):
-    res = metric(g)
-
-    out = []
-    for k, v in res.items():
-        out.append({"Vertex_ID": k, "score": v})
-
-    out = [{"top_scores": out}]
-    return out
 
 
 def create_graph(edges, weights=False, directed=False):
@@ -90,7 +47,7 @@ def create_degree_baseline(paths):
             json.dump(res, f)  # , indent=2)
 
 
-if __name__ == "__main__":
+def run():
     # (data, output_path, fun, metric)
     paths = [
         # unweighted

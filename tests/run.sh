@@ -1,5 +1,4 @@
 clear
-python3 test/create_baseline.py &&
-  python3 test/setup.py &&
-  pytest test/test_centrality.py::TestCentrality
-# pytest
+python3 test/setup.py &&
+  python3 test/baseline/create_baselines.py &&
+  pytest test/test_centrality.py test/test_ml.py
