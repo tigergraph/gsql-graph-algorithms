@@ -6,8 +6,8 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop(
   UINT batch_num = 12,
   INT print_limit,
   BOOL print_results = TRUE,
-  STRING file_path="",
-  STRING result_attribute = ""
+  STRING result_attribute = "",
+  STRING file_path=""
 ) FOR GRAPH MyGraph SYNTAX V1 {
 
     /*
