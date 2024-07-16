@@ -15,7 +15,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop(
     First Commit Date: 2024-07-15
 
     Recent Author: xuanlei.lin@tigergraph.com
-    Recent Commit Date: 2024-07-15
+    Recent Commit Date: 2024-07-16
 
     Repository:
         https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
@@ -170,7 +170,12 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop(
               @@comm_sizes_map += (s.@community_id -> 1)
             END,
             IF file_path != "" THEN
-              f.println(s.id, s.@community_id)
+              IF v_type_set.size() == 1 THEN
+                f.println(s.id, s.@community_id)
+              ELSE
+                VERTEX node = s.@community_id,
+                f.println(s.type, s, node.type, node)
+              END
             END
           LIMIT print_limit;
 
