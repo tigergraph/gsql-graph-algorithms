@@ -29,23 +29,26 @@ pip install -r requirements.txt
 
 `run.sh` does a few things:
 
-- runs `data/create_baseline.py`
-  - this creates the baselines from the graphs listed in that file
-- runs the setup script to make sure the graph is created and data is loaded
+- runs the setup script to make sure the graphs are created and data is loaded
+- runs `test/create_baseline.py`
+  - this creates the baselines for the algorithm types listed in that file
 - runs the tests with pytest
 
 ## Directory layout
 
-Data: stores the satic data for creating graphs, and algorithm baseline results.
+`data`: stores the satic data for creating graphs, and algorithm baseline results.
 
 - CSV files under `data/[heterogeneous_edges, unweighted_edges, weighted_edges]` store the adjacency information for creating graphs. The baselines for algorithms are made from these graphs
   - For example `data/weighted_edges/line_edges.csv` stores the edges and weights to create a weighted, line graph.
 - JSON files under `data/baseline` store the baseline results for a given algorithm on a given graph type.
   - For example `data/baseline/centrality/pagerank/Line_Directed.json` stores the baseline results for pagerank on a directed line graph
 
+Some data (like the Cora graph) comes from [pyTigerGraph Datasets](https://docs.tigergraph.com/pytigergraph/current/datasets/datasets_object), so it will not be in the this path.
+
 test:
 
 - setup.py: creates the graph, loads the data and installs the queries from pyTG's featurizer. Any new/custom queries need to be manually installed
+- create_baseline.py: creates the baselines the algorithms will be compared to.
 - test<algo_family>.py: houses the testing code for each family of algorithms
 
 ```
@@ -56,25 +59,28 @@ test:
 │   │   │       └── <GraphType>.json
 │   ├── <edge_family>
 │   │   └── <graph_type>.csv
-│   └── create_baseline.py
 ├── requirements.txt
 ├── run.sh
 ├── test
 │   ├── pyrightconfig.json
 │   ├── setup.py
+│   ├── baseline/
+│   │   ├── algos/
+│   │   │   └── <baseline algorithms>.py
+│   │   └── <funcs for running baseline generation by algo family>.py
 │   ├── test_centrality.py
 │   ├── test_community.py
 │   ├── test_path_finding.py
-│   ├── test_topological_link_prediction.py
+│   ├── ...
 │   └── util.py
 ```
 
 ## Adding tests
 
-Start with creating the baseline. Add a section to `create_baseline.py` that creates a baseline for all the necessary graph types for your algorithm. The output of the baseline should be written to 
-the correct baseline path (see above [layout](#directory-layout)).
+Start with creating the baseline. Add a method call to `create_baseline.py` that creates a baseline for all the necessary graph types for your algorithm. The output of the baseline should be written to 
+the correct path in `data/baseline` (see above [layout](#directory-layout)).
 
-If you're adding a new algorithm, add a test method for it to the algorithm family that it belongs to (i.e., community algorigthms go in community.py). The first test method in `test/test_centrality.py` 
+If you're adding a new algorithm, add a test method to the algorithm family that it belongs to (i.e., community algorigthms go in community.py). The first test method in `test/test_centrality.py` 
 is a good template to follow:
 
 ```py
