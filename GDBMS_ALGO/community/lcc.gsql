@@ -49,62 +49,62 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc (
             If True, output edges for visualization. WARNING: Avoid displaying edges for large datasets.
     */
 
-  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score; # Define a tuple for storing vertex scores
-  HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap; # Heap to store top-k scores
-  SumAccum<INT> @sum_outdegree; # Accumulator for the outdegree of vertices
-  SetAccum<VERTEX> @set_nodes_in_frontier; # Set to store nodes in the frontier
-  MapAccum<VERTEX, INT> @map_node_tri_count; # Map: node in the frontier -> triangle count
-  SumAccum<INT> @sum_tri_count; # Accumulator for the count of triangles
-  SumAccum<FLOAT> @sum_lcc; # Accumulator for the LCC value
-  SetAccum<EDGE> @@edge_set; # Set of edges for visualization
-  FILE f (file_path); # File to write results to
+  TYPEDEF TUPLE<VERTEX Vertex_ID, FLOAT score> Vertex_Score; // Define a tuple for storing vertex scores
+  HeapAccum<Vertex_Score>(top_k, score DESC) @@top_scores_heap; // Heap to store top-k scores
+  SumAccum<INT> @sum_outdegree; // Accumulator for the outdegree of vertices
+  SetAccum<VERTEX> @set_nodes_in_frontier; // Set to store nodes in the frontier
+  MapAccum<VERTEX, INT> @map_node_tri_count; // Map: node in the frontier -> triangle count
+  SumAccum<INT> @sum_tri_count; // Accumulator for the count of triangles
+  SumAccum<FLOAT> @sum_lcc; // Accumulator for the LCC value
+  SetAccum<EDGE> @@edge_set; // Set of edges for visualization
+  FILE f (file_path); // File to write results to
 
-  # Calculate the outdegree for each vertex
+  // Calculate the outdegree for each vertex
   AllNodes = {v_type_set};
   Nodes = SELECT s
           FROM AllNodes:s-(e_type_set)-v_type_set:t
           WHERE s != t
           ACCUM s.@sum_outdegree += 1;
 
-  # Find neighbors and prepare for triangle counting
+  // Find neighbors and prepare for triangle counting
   Neighbors = SELECT t
               FROM Nodes:s-(e_type_set)-v_type_set:t
               WHERE getvid(s) > getvid(t)
               ACCUM t.@set_nodes_in_frontier += s;
 
-  # Calculate the number of triangles involving nodes in the frontier
+  // Calculate the number of triangles involving nodes in the frontier
   Tmp = SELECT s
         FROM Neighbors:s-(e_type_set)-v_type_set:t
         WHERE getvid(s) > getvid(t)
         ACCUM FOREACH node_in_frontier IN s.@set_nodes_in_frontier INTERSECT t.@set_nodes_in_frontier DO
                 s.@map_node_tri_count += (node_in_frontier -> 1),
-                # Increment triangle count for s and t
+                // Increment triangle count for s and t
                 s.@sum_tri_count += 1,
                 t.@sum_tri_count += 1
               END;
 
-  # Sum up the triangle counts for nodes in the frontier
+  // Sum up the triangle counts for nodes in the frontier
   Tmp = SELECT s
         FROM Tmp:s-(e_type_set)-v_type_set:t
         WHERE s.@map_node_tri_count.containsKey(t)
         ACCUM t.@sum_tri_count += s.@map_node_tri_count.get(t);
 
-  # Calculate the LCC for nodes in the frontier
+  // Calculate the LCC for nodes in the frontier
   Nodes = SELECT s
           FROM Nodes:s
           POST-ACCUM (s)
             IF s.@sum_outdegree > 1 THEN
-              s.@sum_lcc = s.@sum_tri_count * 2.0 / s.@sum_outdegree / (s.@sum_outdegree - 1) 
+              s.@sum_lcc = s.@sum_tri_count * 2.0 / (s.@sum_outdegree * (s.@sum_outdegree - 1))
             END;
 
-  # Reset variables
+  // Reset variables
   Neighbors = SELECT s
               FROM Neighbors:s
               POST-ACCUM (s)
                 s.@map_node_tri_count.clear(),
                 s.@set_nodes_in_frontier.clear();
 
-  # Output results
+  // Output results
   AllNodes = SELECT s
              FROM AllNodes:s
              POST-ACCUM
@@ -118,7 +118,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc (
                    f.println(s, s.@sum_lcc)
                END;
 
-  # Print results if print_results is True
+  // Print results if print_results is True
   IF print_results THEN
     PRINT @@top_scores_heap AS top_scores;
     IF display_edges THEN
