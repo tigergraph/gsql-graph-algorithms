@@ -151,7 +151,8 @@ function decrypt () {
   else
     QNAME=$1
   fi
-  codegen_path="$(getAppRoot)/dev/gdk/gsql/.tmp/codeGen"
+  version=$(basename "$(getAppRoot)")
+  codegen_path="$(gadmin config get System.DataRoot)/gsql/${version}/.tmp/codeGen"
   if [[ x$QNAME != x ]]
   then
     FILES=$(ls ${codegen_path}/*$QNAME.cpp 2>/dev/null)
@@ -181,7 +182,8 @@ function _complete_decrypt {
   fi
 
   local cur=${COMP_WORDS[COMP_CWORD]}
-  local QUERIES=$(ls $(getAppRoot)/dev/gdk/gsql/.tmp/codeGen/${cur}*.cpp 2>/dev/null)
+  local version=$(basename "$(getAppRoot)")
+  local QUERIES=$(ls "$(gadmin config get System.DataRoot)/gsql/${version}/.tmp/codeGen/${cur}*.cpp" 2>/dev/null)
 
   for QUERY in $QUERIES; do
     local filename=$(basename $QUERY)
