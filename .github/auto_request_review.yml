@@ -4,27 +4,28 @@
 reviewers:
   # The default reviewers if not assigned specifically 
   defaults:
+    - primary
     - secondary
     - tertiary
   # Reviewer groups each of which has a list of GitHub usernames
   groups:
-    group1:
+    primary:
       - RobRossmiller-TG
       - wyattjoynertg
       - parkererickson-tg
-      - GabrielTigerGraph
-    secondary:
-      - RobRossmiller-TG
-      - wyattjoynertg
-    tertiary:
-      - xinyuchtg
       - victorleeTG
+    # secondary:
+    #   - RobRossmiller-TG
+    #   - wyattjoynertg
+    # tertiary:
+    #   - victorleeTG
 
 files:
   # All review request will be sent to the following groups/people.
   '**':
-    - secondary
-    - tertiary
+    - primary
+    # - secondary
+    # - tertiary
 
 options:
   # ignore draft PRs
