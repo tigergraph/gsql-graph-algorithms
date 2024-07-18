@@ -1,7 +1,7 @@
 CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc (
   SET<STRING> v_type_set,
   SET<STRING> e_type_set,
-  UINT top_k=100,
+  UINT top_k = 100,
   BOOL print_results = FALSE,
   STRING result_attribute = "",
   STRING file_path = "",

@@ -1,20 +1,21 @@
 CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc_small_world (
   SET<STRING> v_type_set,
   SET<STRING> e_type_set,
+  UINT supernode_min_degree = 100000,
   UINT threshold = 100000,
-  UINT top_k=100,
+  UINT top_k = 100,
   BOOL print_results = FALSE,
   STRING result_attribute = "",
   STRING file_path = "",
   BOOL display_edges = FALSE
-)  SYNTAX V1 {
+) SYNTAX V1 {
 
     /*
     First Author: xuanlei.lin@tigergraph.com
     First Commit Date: 2024-07-15
 
     Recent Author: xuanlei.lin@tigergraph.com
-    Recent Commit Date: 2024-07-15
+    Recent Commit Date: 2024-07-18
 
     Repository:
         https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
@@ -41,6 +42,9 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc_small_world (
             The set of vertex types to traverse.
         e_type_set:
             The set of edge types to traverse.
+        supernode_min_degree:
+            The minimum degree for a vertex to be considered a supernode.
+            The default value is 100000.
         threshold:
             Threshold for choosing initial pivot vertices. Only vertices whose product of indegree 
             and outdegree exceeds this threshold will be considered candidates for the pivot vertex. 
@@ -72,8 +76,8 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc_small_world (
   SetAccum<EDGE> @@edge_set; // Set of edges for visualization
   FILE f (file_path); // File to write results to
 
-  // -------------------- 1. Handle nodes in large WCCs --------------------
-  // Calculate the product of indegree and outdegree, 
+  // -------------------- 1. Initialization --------------------
+  // Calculate the product of indegree and outdegree,
   // and filter vertices with product no less than the threshold
   AllNodes = {v_type_set};
   PivotCandidates = SELECT s
@@ -85,6 +89,75 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc_small_world (
                           s.@sum_degree_product = s.@sum_indegree * s.@sum_outdegree
                     HAVING s.@sum_degree_product >= threshold;
 
+  // -------------------- 2. Handle the supernodes --------------------
+  // Calculate LCC for supernodes
+  SuperNodes = SELECT s
+               FROM PivotCandidates:s
+               WHERE s.@sum_outdegree >= supernode_min_degree;
+  WHILE SuperNodes.size() > 0 DO
+    // Select some supernodes and set them as frontier
+    Nodes = SELECT s
+            FROM SuperNodes:s
+            LIMIT 10;
+    Nodes = SELECT s
+            FROM Nodes:s
+            POST-ACCUM (s)
+              s.@or_in_frontier += TRUE;
+
+    // Find neighbors of nodes in the frontier
+    Neighbors = SELECT t
+                FROM Nodes:s-(e_type_set)-v_type_set:t
+                WHERE s != t
+                      AND t.@or_lcc_calculated == FALSE // Don't visit nodes whose all triangles have been counted
+                      AND (t.@or_in_frontier == FALSE // Neighbor not in the frontier
+                          OR getvid(s) > getvid(t)) // If neighbor is in the frontier, only consider one direction
+                ACCUM t.@set_nodes_in_frontier += s
+                POST-ACCUM (t)
+                  t.@or_is_neighbor += TRUE;
+
+    // Calculate the number of triangles involving nodes in the frontier
+    Tmp = SELECT s
+          FROM Neighbors:s-(e_type_set)-v_type_set:t
+          WHERE getvid(s) > getvid(t) // Traverse only one direction of the undirected edge
+                AND t.@or_is_neighbor == TRUE
+          ACCUM FOREACH node_in_frontier IN s.@set_nodes_in_frontier INTERSECT t.@set_nodes_in_frontier DO
+                  s.@map_node_tri_count += (node_in_frontier -> 1),
+                  // s and t also increase the triangle count by 1
+                  s.@sum_tri_count += 1,
+                  t.@sum_tri_count += 1
+                END;
+
+    // Calculate the sum of triangle counts for nodes in the frontier
+    Tmp = SELECT s
+          FROM Tmp:s-(e_type_set)-v_type_set:t
+          WHERE t.@or_in_frontier == TRUE
+                AND s.@map_node_tri_count.containsKey(t)
+          ACCUM t.@sum_tri_count += s.@map_node_tri_count.get(t);
+
+    // Calculate LCC for nodes in the frontier
+    Nodes = SELECT s
+            FROM Nodes:s
+            POST-ACCUM (s)
+              s.@or_in_frontier = FALSE,
+              s.@or_lcc_calculated = TRUE,
+              IF s.@sum_outdegree > 1 THEN
+                s.@sum_lcc = s.@sum_tri_count * 2.0 / (s.@sum_outdegree * (s.@sum_outdegree - 1))
+              END;
+
+    // Reset variables for the next iteration
+    Neighbors = SELECT s
+                FROM Neighbors:s
+                POST-ACCUM (s)
+                  s.@or_is_neighbor = FALSE,
+                  s.@map_node_tri_count.clear(),
+                  s.@set_nodes_in_frontier.clear();
+
+    // Remove visited vertices from the SuperNodes set
+    SuperNodes = SuperNodes MINUS Nodes;
+    PivotCandidates = PivotCandidates MINUS Nodes;
+  END;
+
+  // -------------------- 3. Handle nodes in large WCCs --------------------
   // Calculate LCC for nodes in large WCCs
   WHILE PivotCandidates.size() > 0 DO
     // Select the initial pivot vertex with the largest product of indegree and outdegree
@@ -160,21 +233,26 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc_small_world (
                       WHERE s.@or_lcc_calculated == FALSE;
   END;
 
-  // -------------------- 2. Handle nodes in small WCCs --------------------
-  // For remaining vertices in small WCCs
+  // -------------------- 4. Handle nodes in small WCCs --------------------
+  // Calculate LCC for remaining vertices in small WCCs
   Nodes = SELECT s
           FROM AllNodes:s
           WHERE s.@or_lcc_calculated == FALSE;
 
+  // Find neighbors of the nodes
   Neighbors = SELECT t
               FROM Nodes:s-(e_type_set)-v_type_set:t
-              WHERE getvid(s) > getvid(t)
-              ACCUM t.@set_nodes_in_frontier += s;
+              WHERE t.@or_lcc_calculated == FALSE
+                    AND getvid(s) > getvid(t)
+              ACCUM t.@set_nodes_in_frontier += s
+              POST-ACCUM
+                    t.@or_is_neighbor = TRUE;
 
   // Calculate the number of triangles involving nodes in the frontier
   Tmp = SELECT s
         FROM Neighbors:s-(e_type_set)-v_type_set:t
         WHERE getvid(s) > getvid(t)
+              AND t.@or_is_neighbor == TRUE
         ACCUM FOREACH node_in_frontier IN s.@set_nodes_in_frontier INTERSECT t.@set_nodes_in_frontier DO
                 s.@map_node_tri_count += (node_in_frontier -> 1),
                 // s and t also increase the triangle count by 1
@@ -203,7 +281,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.lcc_small_world (
                 s.@map_node_tri_count.clear(),
                 s.@set_nodes_in_frontier.clear();
 
-  // -------------------- 3. Output --------------------
+  // -------------------- 5. Output --------------------
   // Output the results
   AllNodes = SELECT s
              FROM AllNodes:s
