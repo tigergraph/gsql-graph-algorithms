@@ -1,5 +1,3 @@
-[TOC]
-
 # Introduction
 
 This project contains a set of Bash scripts for automating various tasks related to dataset management, TigerGraph setup, and query execution. The scripts are designed to work with configuration files that specify the details for each task. Below is an overview of each script and the project structure.
