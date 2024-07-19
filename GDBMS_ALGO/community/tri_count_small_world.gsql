@@ -1,0 +1,206 @@
+CREATE TEMPLATE QUERY GDBMS_ALGO.community.tri_count_small_world(
+  SET<STRING> v_type_set,
+  SET<STRING> e_type_set,
+  UINT supernode_min_degree = 100000,
+  UINT threshold = 100000
+) SYNTAX V1 {
+
+    /*
+    First Author: xuanlei.lin@tigergraph.com
+    First Commit Date: 2024-07-18
+
+    Recent Author: xuanlei.lin@tigergraph.com
+    Recent Commit Date: 2024-07-18
+
+    Repository:
+        https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
+
+    Maturity:
+        Production
+
+    Description:
+        This query computes the total number of triangles in the graph.
+        It is optimized for small-world graphs to save memory.
+
+    Publications:
+        NA
+
+    TigerGraph Documentation:
+        https://docs.tigergraph.com/graph-ml/current/community-algorithms/triangle-counting
+
+    Parameters:
+        v_type_set:
+            The set of vertex types to traverse.
+        e_type_set:
+            The set of edge types to traverse.
+        supernode_min_degree:
+            The minimum degree for a vertex to be considered a supernode.
+            The default value is 100000.
+        threshold:
+            The threshold for choosing initial pivot vertices. Only vertices whose product of indegree
+            and outdegree exceeds this threshold will be considered candidates for the pivot vertex.
+            The default value is 100000.
+    */
+
+  SumAccum<INT> @sum_outdegree; // Accumulator for the outdegree
+  SumAccum<INT> @sum_indegree; // Accumulator for the indegree
+  SumAccum<INT> @sum_degree_product; // Accumulator for the product of outdegree and indegree
+  OrAccum @or_in_frontier; // Flag to check if the vertex is in the frontier
+  OrAccum @or_tri_counted; // Flag to check if all triangles that contain the vertex have been counted
+  OrAccum @or_is_neighbor; // Flag to check if the vertex is a neighbor of nodes in the frontier
+  SetAccum<VERTEX> @set_nodes_in_frontier; // Set of nodes in the frontier
+  SumAccum<INT> @@sum_tri_count; // The count of triangles
+
+  // -------------------- 1. Initialization --------------------
+  // Calculate the product of indegree and outdegree,
+  // and filter vertices with a product no less than the threshold
+  AllNodes = {v_type_set};
+  PivotCandidates = SELECT s
+                    FROM AllNodes:s-(e_type_set)-v_type_set:t
+                    WHERE s != t
+                    ACCUM s.@sum_outdegree += 1,
+                          s.@sum_indegree += 1
+                    POST-ACCUM (s)
+                          s.@sum_degree_product = s.@sum_indegree * s.@sum_outdegree
+                    HAVING s.@sum_degree_product >= threshold;
+
+  // -------------------- 2. Handle the supernodes --------------------
+  // Count the number of triangles for supernodes
+  SuperNodes = SELECT s
+               FROM PivotCandidates:s
+               WHERE s.@sum_outdegree >= supernode_min_degree;
+  WHILE SuperNodes.size() > 0 DO
+    // Select some supernodes and set them as frontier
+    Nodes = SELECT s
+            FROM SuperNodes:s
+            LIMIT 10;
+    Nodes = SELECT s
+            FROM Nodes:s
+            POST-ACCUM (s)
+              s.@or_in_frontier += TRUE;
+
+    // Find neighbors of nodes in the frontier
+    Neighbors = SELECT t
+                FROM Nodes:s-(e_type_set)-v_type_set:t
+                WHERE s != t
+                      AND t.@or_tri_counted == FALSE // Don't visit nodes whose all triangles have been counted
+                      AND (t.@or_in_frontier == FALSE // Neighbor not in the frontier
+                          OR getvid(s) > getvid(t)) // If neighbor is in the frontier, only consider one direction
+                ACCUM t.@set_nodes_in_frontier += s
+                POST-ACCUM (t)
+                  t.@or_is_neighbor += TRUE;
+
+    // Calculate the number of triangles involving nodes in the frontier
+    Tmp = SELECT s
+          FROM Neighbors:s-(e_type_set)-v_type_set:t
+          WHERE getvid(s) > getvid(t) // Traverse only one direction of the undirected edge
+                AND t.@or_is_neighbor == TRUE
+          ACCUM @@sum_tri_count += COUNT(s.@set_nodes_in_frontier INTERSECT t.@set_nodes_in_frontier);
+
+    // Reset variables for nodes in the frontier
+    Nodes = SELECT s
+            FROM Nodes:s
+            POST-ACCUM (s)
+              s.@or_in_frontier = FALSE,
+              s.@or_tri_counted = TRUE;
+
+    // Reset variables for the next iteration
+    Neighbors = SELECT s
+                FROM Neighbors:s
+                POST-ACCUM (s)
+                  s.@or_is_neighbor = FALSE,
+                  s.@set_nodes_in_frontier.clear();
+
+    // Remove visited vertices from the SuperNodes set
+    SuperNodes = SuperNodes MINUS Nodes;
+    PivotCandidates = PivotCandidates MINUS Nodes;
+  END;
+
+  // -------------------- 3. Handle nodes in large WCCs --------------------
+  // Count the number of triangles for nodes in large WCCs
+  WHILE PivotCandidates.size() > 0 DO
+    // Select the initial pivot vertex with the largest product of indegree and outdegree
+    Nodes = SELECT s
+            FROM PivotCandidates:s
+            ORDER BY s.@sum_degree_product DESC
+            LIMIT 1;
+    Nodes = SELECT s
+            FROM Nodes:s
+            POST-ACCUM (s)
+              s.@or_in_frontier += TRUE;
+
+    // Use BFS to find all elements in its connected component
+    WHILE Nodes.size() > 0 DO
+      // Find neighbors of nodes in the frontier
+      Neighbors = SELECT t
+                  FROM Nodes:s-(e_type_set)-v_type_set:t
+                  WHERE s != t
+                        AND t.@or_tri_counted == FALSE // Don't visit nodes whose all triangles have been counted
+                        AND (t.@or_in_frontier == FALSE // Neighbor not in the frontier
+                            OR getvid(s) > getvid(t)) // If neighbor is in the frontier, only consider one direction
+                  ACCUM t.@set_nodes_in_frontier += s
+                  POST-ACCUM (t)
+                    t.@or_is_neighbor += TRUE;
+
+      // Calculate the number of triangles involving nodes in the frontier
+      Tmp = SELECT s
+            FROM Neighbors:s-(e_type_set)-v_type_set:t
+            WHERE getvid(s) > getvid(t) // Traverse only one direction of the undirected edge
+                  AND t.@or_is_neighbor == TRUE
+            ACCUM @@sum_tri_count += COUNT(s.@set_nodes_in_frontier INTERSECT t.@set_nodes_in_frontier);
+
+      // Reset variables for nodes in the frontier
+      Nodes = SELECT s
+              FROM Nodes:s
+              POST-ACCUM (s)
+                s.@or_in_frontier = FALSE,
+                s.@or_tri_counted = TRUE;
+
+      // Reset variables for the next iteration
+      Neighbors = SELECT s
+                  FROM Neighbors:s
+                  POST-ACCUM (s)
+                    s.@or_is_neighbor = FALSE,
+                    s.@set_nodes_in_frontier.clear();
+
+      // Use BFS to visit the next frontier
+      Nodes = SELECT t
+              FROM Nodes:s-(e_type_set:e)-v_type_set:t
+              WHERE t.@or_tri_counted == FALSE
+              POST-ACCUM t.@or_in_frontier += TRUE;
+    END;
+
+    // Remove visited vertices from the PivotCandidates set
+    PivotCandidates = SELECT s
+                      FROM PivotCandidates:s
+                      WHERE s.@or_tri_counted == FALSE;
+  END;
+
+  // -------------------- 4. Handle nodes in small WCCs --------------------
+  // For remaining vertices in small WCCs
+  Nodes = SELECT s
+          FROM AllNodes:s
+          WHERE s.@or_tri_counted == FALSE;
+
+  // Build neighbor sets manually, only for vertices with smaller IDs in the triangle.
+  // This ensures that only two of the three vertices in a triangle will build neighbor sets.
+  Tmp = SELECT t
+        FROM Nodes:s-(e_type_set)-v_type_set:t
+        WHERE t.@or_tri_counted == FALSE
+              AND getvid(s) > getvid(t)
+        ACCUM t.@set_nodes_in_frontier += s
+        POST-ACCUM
+              t.@or_is_neighbor = TRUE;
+
+  // Compute the intersection of neighbor sets to count triangles.
+  // This step ensures that each triangle is counted only once.
+  Tmp = SELECT t
+        FROM Nodes:s-(e_type_set)-:t
+        WHERE getvid(s) > getvid(t)
+              AND t.@or_is_neighbor == TRUE
+        ACCUM @@sum_tri_count += COUNT(s.@set_nodes_in_frontier INTERSECT t.@set_nodes_in_frontier);
+
+  // -------------------- 5. Output --------------------
+  // Output the results
+  PRINT @@sum_tri_count AS num_triangles;
+}

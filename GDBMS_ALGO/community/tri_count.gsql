@@ -1,12 +1,14 @@
-CREATE TEMPLATE QUERY GDBMS_ALGO.community.tri_count(STRING v_type, STRING e_type)  SYNTAX V1 {
+CREATE TEMPLATE QUERY GDBMS_ALGO.community.tri_count(
+  SET<STRING> v_type_set,
+  SET<STRING> e_type_set
+) SYNTAX V1 {
 
-/*
-    First Author: <First Author Name>
-    First Commit Date:  <First Commit Date>
+    /*
+    First Author: xuanlei.lin@tigergraph.com
+    First Commit Date: 2024-07-17
 
-    Recent Author: <Recent Commit Author Name>
-    Recent Commit Date: <Recent Commit Date>
-
+    Recent Author: xuanlei.lin@tigergraph.com
+    Recent Commit Date: 2024-07-17
 
     Repository:
         https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
@@ -15,7 +17,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.tri_count(STRING v_type, STRING e_typ
         Production
 
     Description: 
-        This algorithm uses the classic edge-iterator method to count triangles. It is slower than the fast version, but uses less memory.
+        This query computes the total number of triangles in the graph.
 
     Publications:
         NA
@@ -24,31 +26,30 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.tri_count(STRING v_type, STRING e_typ
         https://docs.tigergraph.com/graph-ml/current/community-algorithms/triangle-counting
 
     Parameters:
-        v_type:
-            Vertex type to count
-        e_type:
-            Edge type to traverse
+        v_type_set:
+            The set of vertex types to traverse.
+        e_type_set:
+            The set of edge types to traverse.
     */
 
-# Compute the total number of triangles in the GRAPH. No input parameters are needed.
-SumAccum<INT> @@sum_cnt;
-SetAccum<VERTEX> @self_set;
+  SumAccum<INT> @@sum_tri_count;
+  SetAccum<VERTEX> @set_neighbors;
+  Nodes = {v_type_set};
 
-all = {v_type};
-all = SELECT s
-      FROM all:s 
-      ACCUM s.@self_set += s;
+  // Build neighbor sets manually, only for vertices with smaller IDs in the triangle.
+  // This ensures that only two of the three vertices in a triangle will build neighbor sets.
+  Tmp = SELECT t
+        FROM Nodes:s-(e_type_set)- v_type_set:t
+        WHERE getvid(s) > getvid(t)
+        ACCUM t.@set_neighbors += s;
 
-# For each edge e, the number of triangles that contain e is equivalent
-# to the number of common neighbors between vertices s and t 
-        
-tmp = SELECT t
-      FROM all:s -(e_type:e) -:t
-      WHERE getvid(s) > getvid(t)
-      ACCUM INT c1 = COUNT(s.neighbors(e_type) MINUS s.@self_set),
-            INT c2 = COUNT((s.neighbors(e_type) MINUS s.@self_set) MINUS (t.neighbors(e_type) MINUS t.@self_set)),
-            @@sum_cnt += c1-c2;
-                            
-# Each triangle is counted 3 times for each edge, so final result is divided by 3
-PRINT @@sum_cnt/3 AS num_triangles;
+  // Compute the intersection of neighbor sets to count triangles.
+  // This step ensures that each triangle is counted only once.
+  Tmp = SELECT t
+        FROM Nodes:s-(e_type_set)- :t
+        WHERE getvid(s) > getvid(t)
+        ACCUM @@sum_tri_count += COUNT(s.@set_neighbors INTERSECT t.@set_neighbors);
+
+  // Output the results
+  PRINT @@sum_tri_count AS num_triangles;
 }
