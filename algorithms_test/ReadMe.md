@@ -354,7 +354,8 @@ The configuration file `config/3_run.json` should have the following structure:
       }
     ]
   }
-}```
+}
+```
 
 ## Usage
 
