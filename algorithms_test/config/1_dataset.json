@@ -3,9 +3,9 @@
     "default_directory": "~/data/public"
   },
   "datasets": {
-    "LiveJournal": {
-      "download_link": "https://snap.stanford.edu/data/soc-LiveJournal1.txt.gz",
-      "top_level_dir": "livejournal"
+    "Skitter": {
+      "download_link": "https://snap.stanford.edu/data/as-skitter.txt.gz",
+      "top_level_dir": "skitter"
     },
     "Facebook": {
       "download_link": "https://snap.stanford.edu/data/facebook_combined.txt.gz",

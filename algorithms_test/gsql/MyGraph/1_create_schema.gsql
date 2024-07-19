@@ -7,7 +7,7 @@ CREATE SCHEMA_CHANGE JOB change_schema_of_MyGraph FOR GRAPH MyGraph {
   ADD VERTEX MyNode (PRIMARY_ID id STRING, community STRING) WITH PRIMARY_ID_AS_ATTRIBUTE="true";
 
   # 2.2 Create edges
-  ADD DIRECTED EDGE MyEdge (FROM MyNode, TO MyNode, weight DOUBLE) WITH REVERSE_EDGE="rev_MyEdge";
+  ADD UNDIRECTED EDGE MyEdge (FROM MyNode, TO MyNode, weight DOUBLE);
 }
 
 # 3. Run schema_change job

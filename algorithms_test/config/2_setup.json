@@ -5,7 +5,7 @@
   },
   "graphs": {
     "MyGraph": {
-      "file_path": "/home/tigergraph/data/public/livejournal/soc-LiveJournal1.txt",
+      "file_path": "/home/tigergraph/data/public/skitter/as-skitter.txt",
       "execution_steps": {
         "drop_graph": true,
         "create_schema": true,

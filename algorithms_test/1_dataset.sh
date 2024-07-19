@@ -46,10 +46,11 @@ main() {
     # Check if the folder exists before downloading the dataset
     dataset_folder="$directory/$top_level_dir"
     if [ ! -d "$dataset_folder" ]; then
+      echo "Created directory: $dataset_folder"
+      mkdir -p "$dataset_folder"
+
       # Download the dataset if it doesn't exist
       if [ ! -f "$directory/$file_name" ]; then
-        mkdir -p "$dataset_folder"
-        echo "Created directory: $dataset_folder"
         echo "Downloading $file_name..."
         if ! wget -O "$directory/$file_name" "$download_link"; then
           echo "Failed to download $file_name"
