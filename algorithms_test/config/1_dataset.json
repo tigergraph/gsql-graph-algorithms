@@ -3,14 +3,14 @@
     "default_directory": "~/data/public"
   },
   "datasets": {
-    "Zhishi": {
-      "download_link": "http://konect.cc/files/download.tsv.zhishi-all.tar.bz2",
-      "top_level_dir": "zhishi-all"
+    "LiveJournal": {
+      "download_link": "https://snap.stanford.edu/data/soc-LiveJournal1.txt.gz",
+      "top_level_dir": "livejournal"
     },
-    "Northeast USA": {
-      "download_link": "http://konect.cc/files/download.tsv.dimacs9-NE.tar.bz2",
-      "directory": "~/mydata",
-      "top_level_dir": "northeast_usa"
+    "Facebook": {
+      "download_link": "https://snap.stanford.edu/data/facebook_combined.txt.gz",
+      "directory": "~/data/tmp",
+      "top_level_dir": "facebook"
     }
   }
 }

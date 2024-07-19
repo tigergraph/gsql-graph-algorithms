@@ -9,7 +9,7 @@ main() {
   fi
 
   # Read the JSON configuration file
-  dir=$(cd "$(dirname "$0")"; pwd) 
+  dir=$(cd "$(dirname "$0")"; pwd)
   config_file="${dir}/config/1_dataset.json"
 
   # Check if the configuration file exists
@@ -48,6 +48,8 @@ main() {
     if [ ! -d "$dataset_folder" ]; then
       # Download the dataset if it doesn't exist
       if [ ! -f "$directory/$file_name" ]; then
+        mkdir -p "$dataset_folder"
+        echo "Created directory: $dataset_folder"
         echo "Downloading $file_name..."
         if ! wget -O "$directory/$file_name" "$download_link"; then
           echo "Failed to download $file_name"
@@ -55,13 +57,27 @@ main() {
         fi
       fi
 
-      # Unzip the dataset
+      # Determine the file extension and unzip accordingly
       echo "Unzipping $file_name into $directory..."
-      if tar -xvjf "$directory/$file_name" -C "$directory" --strip-components=1 --one-top-level="$top_level_dir"; then
-        echo "Finished unzipping $file_name."
-      else
-        echo "Failed to unzip $file_name"
-      fi
+      case "$file_name" in
+        *.tar.bz2)
+          if tar -xvjf "$directory/$file_name" -C "$directory" --strip-components=1 --one-top-level="$top_level_dir"; then
+            echo "Finished unzipping $file_name."
+          else
+            echo "Failed to unzip $file_name"
+          fi
+          ;;
+        *.gz)
+          if gunzip -c "$directory/$file_name" > "$directory/$top_level_dir/${file_name%.gz}"; then
+            echo "Finished unzipping $file_name."
+          else
+            echo "Failed to unzip $file_name"
+          fi
+          ;;
+        *)
+          echo "Unsupported file format: $file_name"
+          ;;
+      esac
     else
       echo "Directory $dataset_folder already exists, skipping unzipping."
     fi

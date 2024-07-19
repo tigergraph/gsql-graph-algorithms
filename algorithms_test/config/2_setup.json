@@ -3,16 +3,16 @@
     "user_name": "tigergraph",
     "password": "tigergraph"
   },
-  "execution_steps": {
-    "drop_graph": true,
-    "create_schema": true,
-    "create_loading_job": true,
-    "run_loading_job": true,
-    "install_queries":true 
-  },
   "graphs": {
     "MyGraph": {
-      "file_path": "~/data/public/zhishi-all/out.zhishi-all",
+      "file_path": "/home/tigergraph/data/public/livejournal/soc-LiveJournal1.txt",
+      "execution_steps": {
+        "drop_graph": true,
+        "create_schema": true,
+        "create_loading_job": true,
+        "run_loading_job": true,
+        "install_queries":true
+      },
       "queries_to_install": [
         "algorithms/Similarity/jaccard/all_pairs/tg_jaccard_nbor_ap_batch.gsql",
         "algorithms/Similarity/jaccard/single_source/tg_jaccard_nbor_ss.gsql",
@@ -86,7 +86,17 @@
       ]
     },
     "MyGraph2": {
-      "file_path": "~/mydata/northeast_usa/out.dimacs9-NE"
+      "file_path": "/home/tigergraph/data/tmp/facebook/facebook_combined.txt",
+      "execution_steps": {
+        "drop_graph": false,
+        "create_schema": false,
+        "create_loading_job": false,
+        "run_loading_job": false,
+        "install_queries":false
+      },
+      "queries_to_install": [
+        "algorithms/Community/louvain/tg_louvain.gsql"
+      ]
     }
   }
 }

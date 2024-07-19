@@ -272,7 +272,7 @@
           "weight_attribute": "weight",
           "maximum_iteration": 10,
           "result_attribute": "",
-          "file_path": "/home/tigergraph/data/algos/community/tg_lcc/result.csv",
+          "file_path": "/home/tigergraph/data/algos/community/tg_louvain/result.csv",
           "print_stats": false
         }
       }

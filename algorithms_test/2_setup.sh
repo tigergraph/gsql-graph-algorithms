@@ -99,18 +99,6 @@ main() {
     exit 1
   fi
 
-  # Extract execution steps and set default values if not provided
-  to_drop_graph=$(jq -r '.execution_steps.drop_graph // empty' "$config_file")
-  to_drop_graph=${to_drop_graph:-false}
-  to_create_schema=$(jq -r '.execution_steps.create_schema // empty' "$config_file")
-  to_create_schema=${to_create_schema:-false}
-  to_create_loading_job=$(jq -r '.execution_steps.create_loading_job // empty' "$config_file")
-  to_create_loading_job=${to_create_loading_job:-false}
-  to_run_loading_job=$(jq -r '.execution_steps.run_loading_job // empty' "$config_file")
-  to_run_loading_job=${to_run_loading_job:-false}
-  to_install_queries=$(jq -r '.execution_steps.install_queries // empty' "$config_file")
-  to_install_queries=${to_install_queries:-false}
-
   # Iterate over each graph and get its file_path
   graphs=$(jq -r '.graphs | to_entries[] | @base64' "$config_file")
 
@@ -120,6 +108,13 @@ main() {
     file_path=$(echo "$graph" | jq -r '.value.file_path')
     file_path=${file_path/#\~/$HOME}
     queries_to_install=$(echo "$graph" | jq -r '.value.queries_to_install // empty')
+
+    # Extract execution steps and set default values if not provided
+    to_drop_graph=$(echo "$graph" | jq -r '.value.execution_steps.drop_graph // false')
+    to_create_schema=$(echo "$graph" | jq -r '.value.execution_steps.create_schema // false')
+    to_create_loading_job=$(echo "$graph" | jq -r '.value.execution_steps.create_loading_job // false')
+    to_run_loading_job=$(echo "$graph" | jq -r '.value.execution_steps.run_loading_job // false')
+    to_install_queries=$(echo "$graph" | jq -r '.value.execution_steps.install_queries // false')
 
     echo "======================================== ${graph_name} ========================================"
 
