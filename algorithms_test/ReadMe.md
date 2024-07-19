@@ -136,36 +136,35 @@ Place a JSON configuration file at `config/1_dataset.json`:
 ======================================== LiveJournal ========================================
 Created directory: /home/tigergraph/data/public/livejournal
 Downloading soc-LiveJournal1.txt.gz...
---2024-07-19 06:49:47--  https://snap.stanford.edu/data/soc-LiveJournal1.txt.gz
+--2024-07-19 08:54:43--  https://snap.stanford.edu/data/soc-LiveJournal1.txt.gz
 Resolving snap.stanford.edu (snap.stanford.edu)... 171.64.75.80
 Connecting to snap.stanford.edu (snap.stanford.edu)|171.64.75.80|:443... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 259619239 (248M) [application/x-gzip]
 Saving to: ‘/home/tigergraph/data/public/soc-LiveJournal1.txt.gz’
 
-/home/tigergraph/data/public/soc-LiveJournal1.txt 100%[=============================================================================================================>] 247.59M  28.9MB/s    in 9.2s
+/home/tigergraph/data/public/soc-LiveJournal1.txt 100%[=============================================================================================================>] 247.59M  16.4MB/s    in 12s
 
-2024-07-19 06:49:56 (26.8 MB/s) - ‘/home/tigergraph/data/public/soc-LiveJournal1.txt.gz’ saved [259619239/259619239]
+2024-07-19 08:54:54 (21.2 MB/s) - ‘/home/tigergraph/data/public/soc-LiveJournal1.txt.gz’ saved [259619239/259619239]
 
 Unzipping soc-LiveJournal1.txt.gz into /home/tigergraph/data/public...
 Finished unzipping soc-LiveJournal1.txt.gz.
 ======================================== Facebook ========================================
 Created directory: /home/tigergraph/data/tmp/facebook
 Downloading facebook_combined.txt.gz...
---2024-07-19 06:50:03--  https://snap.stanford.edu/data/facebook_combined.txt.gz
+--2024-07-19 08:55:01--  https://snap.stanford.edu/data/facebook_combined.txt.gz
 Resolving snap.stanford.edu (snap.stanford.edu)... 171.64.75.80
 Connecting to snap.stanford.edu (snap.stanford.edu)|171.64.75.80|:443... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 218576 (213K) [application/x-gzip]
 Saving to: ‘/home/tigergraph/data/tmp/facebook_combined.txt.gz’
 
-/home/tigergraph/data/tmp/facebook_combined.txt.g 100%[=============================================================================================================>] 213.45K   539KB/s    in 0.4s
+/home/tigergraph/data/tmp/facebook_combined.txt.g 100%[=============================================================================================================>] 213.45K   635KB/s    in 0.3s
 
-2024-07-19 06:50:04 (539 KB/s) - ‘/home/tigergraph/data/tmp/facebook_combined.txt.gz’ saved [218576/218576]
+2024-07-19 08:55:02 (635 KB/s) - ‘/home/tigergraph/data/tmp/facebook_combined.txt.gz’ saved [218576/218576]
 
 Unzipping facebook_combined.txt.gz into /home/tigergraph/data/tmp...
-Finished unzipping facebook_combined.txt.gz.
-```
+Finished unzipping facebook_combined.txt.gz.```
 
 # TigerGraph Setup Script
 
@@ -257,9 +256,9 @@ Finished dropping graph MyGraph.
 --------------------------------------------------------------------------------
 Running: Creating schema /home/tigergraph/gsql-graph-algorithms/algorithms_test/gsql/MyGraph/1_create_schema.gsql
 Stopping GPE GSE RESTPP
-Successfully stopped GPE GSE RESTPP in 16.598 seconds
+Successfully stopped GPE GSE RESTPP in 16.168 seconds
 Starting GPE GSE RESTPP
-Successfully started GPE GSE RESTPP in 0.068 seconds
+Successfully started GPE GSE RESTPP in 0.065 seconds
 The graph MyGraph is created.
 Successfully created schema change jobs: [change_schema_of_MyGraph].
 WARNING: When modifying the graph schema, reinstalling all affected queries is required, and the duration of this process may vary based on the number and complexity of the queries. To skip query reinstallation, you can run with the '-N' option, but manual reinstallation of queries will be necessary afterwards.
@@ -269,7 +268,7 @@ Trying to add local vertex 'MyNode' to the graph 'MyGraph'.
 Trying to add local edge 'MyEdge' and its reverse edge 'rev_MyEdge' to the graph 'MyGraph'.
 
 Graph MyGraph updated to new version 1
-The job change_schema_of_MyGraph completes in 0.643 seconds!
+The job change_schema_of_MyGraph completes in 1.433 seconds!
 Local schema change succeeded.
 Successfully dropped jobs on the graph 'MyGraph': [change_schema_of_MyGraph].
 --------------------------------------------------------------------------------
@@ -282,24 +281,24 @@ Running loading job for /home/tigergraph/data/public/livejournal/soc-LiveJournal
 [Tip: Manage loading jobs with "ABORT/RESUME LOADING JOB <jobid>"]
 Running the following loading job:
   Job name: loading_job
-  Jobid: MyGraph.loading_job.file.m1.1721373808522
-  Log directory: /home/tigergraph/tigergraph/log/fileLoader/MyGraph.loading_job.file.m1.1721373808522
-Job "MyGraph.loading_job.file.m1.1721373808522" loading status
-Current timestamp is 2024-07-19 07:23:34.03
-Loading status was last updated at 2024-07-19 07:23:30.272.
+  Jobid: MyGraph.loading_job.file.m1.1721379381684
+  Log directory: /home/tigergraph/tigergraph/log/fileLoader/MyGraph.loading_job.file.m1.1721379381684
+Job "MyGraph.loading_job.file.m1.1721379381684" loading status
+Current timestamp is 2024-07-19 08:57:22.611
+Loading status was last updated at 2024-07-19 08:57:19.988.
 [FINISHED] m1 ( Finished: 1 / Total: 1 )
-  +-----------------------------------------------------------------------------------------------+
-  |            FILENAME |   LINES |   OBJECTS |   ERRORS |   AVG SPEED |   DURATION |   PERCENTAGE|
-  |soc-LiveJournal1.txt |       3 |         6 | 68993776 |      <1 l/s |     1.58 s |        100 %|
-  +-----------------------------------------------------------------------------------------------+
-[WARNING] bad data in m1 /home/tigergraph/data/public/livejournal/soc-LiveJournal1.txt: 68993773 line(s) do not have enough number of tokens.
-[WARNING] bad data in m1 /home/tigergraph/data/public/livejournal/soc-LiveJournal1.txt:MyEdge: 3 object(s) have invalid attributes.
-Sampling error data can be viewed by executing the 'SHOW LOADING ERROR MyGraph.loading_job.file.m1.1721373808522'.
-LOAD SUCCESSFUL for loading jobid: MyGraph.loading_job.file.m1.1721373808522
-  Job ID: MyGraph.loading_job.file.m1.1721373808522
-  Elapsed time: 2 sec
-  Log directory: /home/tigergraph/tigergraph/log/fileLoader/MyGraph.loading_job.file.m1.1721373808522
-  Summary: /home/tigergraph/tigergraph/log/fileLoader/MyGraph.loading_job.file.m1.1721373808522/summary
+  +------------------------------------------------------------------------------------------------+
+  |            FILENAME |    LINES |   OBJECTS |   ERRORS |   AVG SPEED |   DURATION |   PERCENTAGE|
+  |soc-LiveJournal1.txt | 68993774 | 206981321 |        4 |   1186 kl/s |    58.14 s |        100 %|
+  +------------------------------------------------------------------------------------------------+
+[WARNING] bad data in m1 /home/tigergraph/data/public/livejournal/soc-LiveJournal1.txt: 3 line(s) do not have enough number of tokens.
+[WARNING] bad data in m1 /home/tigergraph/data/public/livejournal/soc-LiveJournal1.txt:MyEdge: 1 object(s) have invalid attributes.
+Sampling error data can be viewed by executing the 'SHOW LOADING ERROR MyGraph.loading_job.file.m1.1721379381684'.
+LOAD SUCCESSFUL for loading jobid: MyGraph.loading_job.file.m1.1721379381684
+  Job ID: MyGraph.loading_job.file.m1.1721379381684'SHOW LOADING ERROR MyGraph.loading_job.file.m1.1721379381684'.
+  Elapsed time: 58 sec
+  Log directory: /home/tigergraph/tigergraph/log/fileLoader/MyGraph.loading_job.file.m1.1721379381684
+  Summary: /home/tigergraph/tigergraph/log/fileLoader/MyGraph.loading_job.file.m1.1721379381684/summary
 
 Finished running loading job for /home/tigergraph/data/public/livejournal/soc-LiveJournal1.txt.
 --------------------------------------------------------------------------------
