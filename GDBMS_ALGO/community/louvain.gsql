@@ -377,7 +377,8 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.louvain(
             END,
             IF file_path != "" THEN
               IF v_type_set.size() == 1 THEN
-                f.println(s.id, s.@community_id)
+                VERTEX node = s.@community_id,
+                f.println(s, node)
               ELSE
                 VERTEX node = s.@community_id,
                 f.println(s.type, s, node.type, node)
