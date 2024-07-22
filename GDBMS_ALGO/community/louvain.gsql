@@ -78,23 +78,24 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.louvain(
   // -------------------- 1. First pass --------------------
   // Initialization
   All_Nodes = {v_type_set};
-  Pass_Nodes = SELECT s
-               FROM   All_Nodes:s -(e_type_set:e)- :t
-               ACCUM  @@m += e.getAttr(weight_attribute, "DOUBLE") / 2,
-                      s.@k += e.getAttr(weight_attribute, "DOUBLE"),
-                      IF s == t THEN // Self-loop link
-                        s.@k_self_loop += e.getAttr(weight_attribute, "DOUBLE")
-                      END
-               POST-ACCUM
-                      s.@community_id = s,
-                      s.@vid = getvid(s),
-                      s.@batch_id = s.@vid % total_batch_count;
+  All_Nodes = SELECT s
+              FROM   All_Nodes:s -(e_type_set:e)- :t
+              ACCUM  @@m += e.getAttr(weight_attribute, "DOUBLE") / 2,
+                     s.@k += e.getAttr(weight_attribute, "DOUBLE"),
+                     IF s == t THEN // Self-loop link
+                       s.@k_self_loop += e.getAttr(weight_attribute, "DOUBLE")
+                     END
+              POST-ACCUM
+                     s.@community_id = s,
+                     s.@vid = getvid(s),
+                     s.@batch_id = s.@vid % total_batch_count;
   IF @@m < 0.00000000001 THEN
     RETURN;
   END;
 
   // Local moving
   INT hop = 0;
+  Pass_Nodes = All_Nodes;
   Candidates (ANY) = Pass_Nodes;
   WHILE Candidates.size() > 0 AND hop < maximum_iteration DO
     hop = hop + 1;
@@ -376,11 +377,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.louvain(
                 s.setAttr(result_attribute, getvid(s.@community_id))
             END,
             IF file_path != "" THEN
-              IF v_type_set.size() == 1 THEN
-                f.println(s.id, s.@community_id)
-              ELSE
-                VERTEX node = s.@community_id,
-                f.println(s.type, s, node.type, node)
-              END
+              VERTEX node = s.@community_id,
+              f.println(s.type, s, node.type, node)
             END;
 }
