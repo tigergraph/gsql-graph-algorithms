@@ -376,12 +376,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.louvain(
                 s.setAttr(result_attribute, getvid(s.@community_id))
             END,
             IF file_path != "" THEN
-              IF v_type_set.size() == 1 THEN
-                VERTEX node = s.@community_id,
-                f.println(s, node)
-              ELSE
-                VERTEX node = s.@community_id,
-                f.println(s.type, s, node.type, node)
-              END
+              VERTEX node = s.@community_id,
+              f.println(s.type, s, node.type, node)
             END;
 }
