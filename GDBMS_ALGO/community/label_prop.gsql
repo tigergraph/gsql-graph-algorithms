@@ -170,13 +170,8 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop(
               @@comm_sizes_map += (s.@community_id -> 1)
             END,
             IF file_path != "" THEN
-              IF v_type_set.size() == 1 THEN
-                VERTEX node = s.@community_id,
-                f.println(s, node)
-              ELSE
-                VERTEX node = s.@community_id,
-                f.println(s.type, s, node.type, node)
-              END
+              VERTEX node = s.@community_id,
+              f.println(s.type, s, node.type, node)
             END
           LIMIT print_limit;
 
