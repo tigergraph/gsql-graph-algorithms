@@ -8,7 +8,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop(
   BOOL print_results = TRUE,
   STRING result_attribute = "",
   STRING file_path=""
-) FOR GRAPH MyGraph SYNTAX V1 {
+) SYNTAX V1 {
 
     /*
     First Author: xuanlei.lin@tigergraph.com
@@ -171,7 +171,8 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop(
             END,
             IF file_path != "" THEN
               IF v_type_set.size() == 1 THEN
-                f.println(s.id, s.@community_id)
+                VERTEX node = s.@community_id,
+                f.println(s, node)
               ELSE
                 VERTEX node = s.@community_id,
                 f.println(s.type, s, node.type, node)
