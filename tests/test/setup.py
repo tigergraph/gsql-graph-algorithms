@@ -91,10 +91,12 @@ if __name__ == "__main__":
             if q not in installed_queries:
                 feat.installAlgorithm(q, pth)
 
-    print(conn.gsql("DROP FUNCTION GDBMS_ALGO.*"))
+    print(conn.gsql("drop package GDBMS_ALGO"))
     packages, queries = get_template_queries()
     for p in packages:
-        print(conn.gsql(f"CREATE PACKAGE {p}"))
+        print(p)
+        # print(conn.gsql(f"CREATE PACKAGE {p}"))
+    exit(0)
 
     t = tqdm(queries, desc="installing Template queries")
     for q, pth in t:
