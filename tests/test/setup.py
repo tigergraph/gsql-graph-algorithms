@@ -32,7 +32,25 @@ def get_query_path(q_name):
     return pth[0]
 
 
+def get_template_queries() -> list[str]:
+    paths = []
+    packages = []
+    for p in glob(f"../GDBMS_ALGO/**/*.gsql", recursive=True):
+        name = p.replace("../", "").split(".")[0].split("/")
+        pkg = ".".join(x for x in name[:-1])
+        name = ".".join(x for x in name)
+        if ".degree_cent" not in name:
+            continue
+        paths.append((name, p))
+        packages.append(pkg)
+
+    packages = set(packages)
+    return packages, paths
+
+
 if __name__ == "__main__":
+    # print(get_template_queries())
+    # exit(0)
     host_name = os.environ["HOST_NAME"]
     user_name = os.environ["USER_NAME"]
     password = os.environ["PASS"]
@@ -42,11 +60,11 @@ if __name__ == "__main__":
         password=password,
         graphname=graph_name,
     )
-    print("checking ping")
     res = conn.ping()
-    print(res)
+    print(f"ping -1 {res}")
     if res["error"]:
         exit(1)
+
     # load the data
     # dataset = Datasets("Cora")
     # add_reverse_edge(dataset)
@@ -59,18 +77,33 @@ if __name__ == "__main__":
     conn.graphname = graph_name
     # install the queries
     feat = conn.gds.featurizer()  # type: ignore
-    installed_queries = util.get_installed_queries(conn)
-    algos = json.dumps(feat.algo_dict, indent=1)
-    queries = [
-        m.split(": ")[1].replace('"', "").strip() for m in pattern.findall(algos)
-    ]
+    if False:
+        installed_queries = util.get_installed_queries(conn)
+        algos = json.dumps(feat.algo_dict, indent=1)
+        queries = [
+            m.split(": ")[1].replace('"', "").strip() for m in pattern.findall(algos)
+        ]
 
-    t = tqdm(queries, desc="installing GDS queries")
-    for q in t:
+        t = tqdm(queries, desc="installing GDS queries")
+        for q in t:
+            t.set_postfix({"query": q})
+            pth = get_query_path(q)
+            if q not in installed_queries:
+                feat.installAlgorithm(q, pth)
+
+    print(conn.gsql("DROP FUNCTION GDBMS_ALGO.*"))
+    packages, queries = get_template_queries()
+    for p in packages:
+        print(conn.gsql(f"CREATE PACKAGE {p}"))
+
+    t = tqdm(queries, desc="installing Template queries")
+    for q, pth in t:
         t.set_postfix({"query": q})
-        pth = get_query_path(q)
-        if q not in installed_queries:
-            feat.installAlgorithm(q, pth)
+        with open(pth) as f:
+            query = f.read()
+        print(query)
+        print(conn.gsql(f"{query}"))
+        # feat.installAlgorithm(q, pth)
 
     # for _ in trange(30, desc="Sleeping while data loads"):
-        # time.sleep(1)
+    # time.sleep(1)
