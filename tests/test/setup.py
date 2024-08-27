@@ -39,8 +39,8 @@ def get_template_queries() -> list[str]:
         name = p.replace("../", "").split(".")[0].split("/")
         pkg = ".".join(x for x in name[:-1])
         name = ".".join(x for x in name)
-        if ".degree_cent" not in name:
-            continue
+        # if ".degree_cent" not in name:
+        #     continue
         paths.append((name, p))
         packages.append(pkg)
 
@@ -91,21 +91,26 @@ if __name__ == "__main__":
             if q not in installed_queries:
                 feat.installAlgorithm(q, pth)
 
-    print(conn.gsql("drop package GDBMS_ALGO"))
+    # install template queries
+    print(conn.gsql("DROP PACKAGE GDBMS_ALGO"))
+    print(conn.gsql("CREATE PACKAGE GDBMS_ALGO"))
     packages, queries = get_template_queries()
     for p in packages:
-        print(p)
-        # print(conn.gsql(f"CREATE PACKAGE {p}"))
-    exit(0)
+        print(conn.gsql(f"CREATE PACKAGE {p}"))
 
+    print(conn.gsql("SHOW PACKAGE"))
     t = tqdm(queries, desc="installing Template queries")
     for q, pth in t:
         t.set_postfix({"query": q})
         with open(pth) as f:
             query = f.read()
-        print(query)
-        print(conn.gsql(f"{query}"))
-        # feat.installAlgorithm(q, pth)
+        conn.gsql(f"{query}")
+
+    #TODO:
+    # check that all the template queries were installed
+    reg = re.compile(r'()')
+    for p in packages:
+        print(conn.gsql(f"SHOW PACKAGE {p}"))
 
     # for _ in trange(30, desc="Sleeping while data loads"):
     # time.sleep(1)
