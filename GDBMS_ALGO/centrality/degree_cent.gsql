@@ -57,10 +57,14 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.degree_cent(SET<STRING> v_type_set, 
         FROM all:s
         ACCUM 
             IF in_degree THEN
-                s.@sum_degree_score += s.outdegree(reverse_e_type_set)
+                FOREACH e_type IN reverse_e_type_set DO
+                    s.@sum_degree_score += s.outdegree(e_type)
+                END
             END,
             IF out_degree THEN
-                s.@sum_degree_score += s.outdegree(e_type_set)
+                FOREACH e_type IN e_type_set DO
+                    s.@sum_degree_score += s.outdegree(e_type)
+                END
             END
         POST-ACCUM 
             IF normalize THEN
