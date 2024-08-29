@@ -1,2 +1,3 @@
-from .degree_cent import *
-from .fastrp import fastrp_wrapper as fastrp
+from .degree_centrality import *
+from .fastrp import FastRPBaseline
+from .pagerank import PagerankBaseline

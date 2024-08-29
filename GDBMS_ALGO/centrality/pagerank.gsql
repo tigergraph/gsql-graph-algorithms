@@ -4,11 +4,11 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.pagerank (STRING v_type, STRING e_ty
  BOOL display_edges = FALSE) SYNTAX V1 {
 
     /*
-    First Author: <First Author Name>
-    First Commit Date:  <First Commit Date>
+    First Author: unk
+    First Commit Date: unk
 
-    Recent Author: <Recent Commit Author Name>
-    Recent Commit Date: <Recent Commit Date>
+    Recent Author: Rob Rossmiller
+    Recent Commit Date: Rob Rossmiller
 
 
     Repository:

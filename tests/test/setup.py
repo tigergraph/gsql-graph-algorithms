@@ -10,13 +10,14 @@ from pyTigerGraph.datasets import Datasets
 from tqdm import tqdm, trange
 
 import util
+from baseline import create_baselines
 
 load_dotenv()
 graph_name = "graph_algorithms_testing"
 pattern = re.compile(r'"name":\s*"tg_.*"')
 
 
-# def add_reverse_edge(ds: Datasets):
+# def add_reverse_edge_to_schema(ds: Datasets):
 #     with open(f"{dataset.tmp_dir}/{ds.name}/create_schema.gsql") as f:
 #         schema: str = f.read()
 #     with open(f"{dataset.tmp_dir}/{ds.name}/create_schema.gsql", "w") as f:
@@ -40,7 +41,8 @@ def get_template_queries() -> list[str]:
         pkg = ".".join(x for x in name[:-1])
         name = ".".join(x for x in name)
         # if ".degree_cent" not in name:
-        #     continue
+        # if "louvain" not in name:
+        # continue
         paths.append((name, p))
         packages.append(pkg)
 
@@ -50,7 +52,8 @@ def get_template_queries() -> list[str]:
 
 if __name__ == "__main__":
     # print(get_template_queries())
-    # exit(0)
+    create_baselines.run()
+    exit(0)
     host_name = os.environ["HOST_NAME"]
     user_name = os.environ["USER_NAME"]
     password = os.environ["PASS"]
@@ -61,35 +64,34 @@ if __name__ == "__main__":
         graphname=graph_name,
     )
     res = conn.ping()
-    print(f"ping -1 {res}")
+    print(f"ping: {res}")
     if res["error"]:
         exit(1)
 
     # load the data
-    # dataset = Datasets("Cora")
+    dataset = Datasets("CoraV2")
     # add_reverse_edge(dataset)
-    # conn.ingestDataset(dataset, getToken=True)
+    conn.ingestDataset(dataset, getToken=True)
 
-    # dataset = Datasets("graph_algorithms_testing")
-    # conn.ingestDataset(dataset, getToken=True)
+    dataset = Datasets("graph_algorithms_testing")
+    conn.ingestDataset(dataset, getToken=True)
     conn.getToken()
 
     conn.graphname = graph_name
     # install the queries
     feat = conn.gds.featurizer()  # type: ignore
-    if False:
-        installed_queries = util.get_installed_queries(conn)
-        algos = json.dumps(feat.algo_dict, indent=1)
-        queries = [
-            m.split(": ")[1].replace('"', "").strip() for m in pattern.findall(algos)
-        ]
+    installed_queries = util.get_installed_queries(conn)
+    algos = json.dumps(feat.algo_dict, indent=1)
+    queries = [
+        m.split(": ")[1].replace('"', "").strip() for m in pattern.findall(algos)
+    ]
 
-        t = tqdm(queries, desc="installing GDS queries")
-        for q in t:
-            t.set_postfix({"query": q})
-            pth = get_query_path(q)
-            if q not in installed_queries:
-                feat.installAlgorithm(q, pth)
+    t = tqdm(queries, desc="installing GDS queries")
+    for q in t:
+        t.set_postfix({"query": q})
+        pth = get_query_path(q)
+        if q not in installed_queries:
+            feat.installAlgorithm(q, pth)
 
     # install template queries
     print(conn.gsql("DROP PACKAGE GDBMS_ALGO"))
@@ -98,7 +100,6 @@ if __name__ == "__main__":
     for p in packages:
         print(conn.gsql(f"CREATE PACKAGE {p}"))
 
-    print(conn.gsql("SHOW PACKAGE"))
     t = tqdm(queries, desc="installing Template queries")
     for q, pth in t:
         t.set_postfix({"query": q})
@@ -106,11 +107,18 @@ if __name__ == "__main__":
             query = f.read()
         conn.gsql(f"{query}")
 
-    #TODO:
-    # check that all the template queries were installed
-    reg = re.compile(r'()')
-    for p in packages:
-        print(conn.gsql(f"SHOW PACKAGE {p}"))
+    pkg_queries = []
+    queries = [q[0] for q in queries]
+    reg = re.compile(r"- (.*)\(.*\)")  # find insatlled pacakge query names
+    for pkg in packages:
+        r = conn.gsql(f"SHOW PACKAGE {pkg}")
+        for p in reg.findall(r):
+            p = f"{pkg}.{p}"
+            pkg_queries.append(p)
 
-    # for _ in trange(30, desc="Sleeping while data loads"):
-    # time.sleep(1)
+    # TODO:
+    # check that all the template queries were installed
+    # for q in queries:
+    #     print(q, q in pkg_queries)
+
+    create_baselines.run()

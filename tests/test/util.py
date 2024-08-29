@@ -18,7 +18,8 @@ def get_featurizer(graph_name="graph_algorithms_testing"):
     )
     if os.environ.get("USE_TKN", "true").lower() == "true":
         conn.getToken()
-    return conn.gds.featurizer()
+    f = conn.gds.featurizer()
+    return f
 
 
 def get_installed_queries(conn: tg.TigerGraphConnection):

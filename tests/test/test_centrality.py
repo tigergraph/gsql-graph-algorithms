@@ -37,9 +37,11 @@ class TestCentrality:
         "Complete",
     ]
 
-    def check_result(self, baseline: dict, result: dict, template_flag: bool):
+    def check_result(
+        self, baseline: dict, result: dict, template_flag: bool, key="top_scores"
+    ):
         # test generic and template query
-        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        result = sorted(result[0][key], key=lambda x: x["Vertex_ID"])
 
         for b in baseline:
             for r in result:
@@ -344,27 +346,27 @@ class TestCentrality:
     #         )
     #         self.check_result(baseline, result, template_flag)
     #
-    # # @pytest.mark.parametrize("test_name", undirected_graphs + directed_graphs)
-    # # def test_pagerank(self, test_name):
-    # #     params = {
-    # #         "v_type": "V20",
-    # #         "e_type": test_name,
-    # #         "max_change": 0.001,
-    # #         "maximum_iteration": 10,
-    # #         "damping": 0.85,
-    # #         "top_k": 100,
-    # #         "print_results": True,
-    # #         "result_attribute": "",
-    # #         "file_path": "",
-    # #         "display_edges": False,
-    # #     }
-    # #     with open(f"data/baseline/centrality/pagerank/{test_name}.json") as f:
-    # #         baseline = json.load(f)
-    # #     baseline = sorted(
-    # #         baseline[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"]
-    # #     )
-    # #     for template_flag in [False, True]:
-    # #         result = self.feat.runAlgorithm(
-    # #             "tg_pagerank", params=params, templateQuery=template_flag
-    # #         )
-    # #         self.check_result(baseline, result, template_flag)
+    @pytest.mark.parametrize("test_name", undirected_graphs + directed_graphs)
+    def test_pagerank(self, test_name):
+        params = {
+            "v_type": "V20",
+            "e_type": test_name,
+            "max_change": 0.001,
+            "maximum_iteration": 10,
+            "damping": 0.85,
+            "top_k": 100,
+            "print_results": True,
+            "result_attribute": "",
+            "file_path": "",
+            "display_edges": False,
+        }
+        with open(f"data/baseline/centrality/pagerank/{test_name}.json") as f:
+            baseline = json.load(f)
+        baseline = sorted(
+            baseline[0]["@@top_scores_heap"], key=lambda x: x["Vertex_ID"]
+        )
+        for template_flag in [False, True]:
+            result = self.feat.runAlgorithm(
+                "tg_pagerank", params=params, templateQuery=template_flag
+            )
+            self.check_result(baseline, result, template_flag, key="@@top_scores_heap")

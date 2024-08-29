@@ -1,14 +1,10 @@
-CREATE QUERY tg_pagerank (STRING v_type, STRING e_type,
- FLOAT max_change=0.001, INT maximum_iteration=25, FLOAT damping=0.85, INT top_k = 100,
- BOOL print_results = TRUE, STRING result_attribute =  "", STRING file_path = "",
- BOOL display_edges = FALSE) SYNTAX V1 {
-
+CREATE QUERY tg_pagerank (STRING v_type, STRING e_type, FLOAT max_change=0.001, INT maximum_iteration=25, FLOAT damping=0.85, INT top_k = 100, BOOL print_results = TRUE, STRING result_attribute =  "", STRING file_path = "", BOOL display_edges = FALSE) SYNTAX V1 {
     /*
-    First Author: <First Author Name>
-    First Commit Date:  <First Commit Date>
+    First Author: unk
+    First Commit Date: unk
 
-    Recent Author: <Recent Commit Author Name>
-    Recent Commit Date: <Recent Commit Date>
+    Recent Author: Rob Rossmiller
+    Recent Commit Date: Rob Rossmiller
 
 
     Repository:
