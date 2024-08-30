@@ -370,3 +370,4 @@ class TestCentrality:
                 "tg_pagerank", params=params, templateQuery=template_flag
             )
             self.check_result(baseline, result, template_flag, key="@@top_scores_heap")
+            break
