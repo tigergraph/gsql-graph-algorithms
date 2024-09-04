@@ -1,14 +1,10 @@
-import csv
-import json
 from collections import Counter
 from functools import partial
 
 import networkx as nx
-import numpy as np
-from .common import create_graph
-from tqdm import tqdm
 
 from .base import Baseline
+from .common import create_baseline
 
 
 def run_degree_baseline_complete(g: nx.Graph, _):
@@ -58,27 +54,6 @@ class DegreeCentralityBaseline(Baseline):
     def __init__(self, data_path_root, baseline_path_root):
         self.data_path_root = data_path_root
         self.baseline_path_root = baseline_path_root
-
-    def create_baseline(self, paths):
-        t = tqdm(paths, desc="Creating degree centrality baselines")
-        for p, out_path, fn, m in t:
-            t.set_postfix_str(out_path.split("/")[-1].split(".")[0])
-            with open(p) as f:
-                edges = np.array(list(csv.reader(f)))
-
-            directed = True if "Directed" in out_path else False
-            weights = True if "Weighted" in out_path else False
-            g = create_graph(edges, weights, directed)
-
-            # from matplotlib import pyplot as plt
-            # pos = nx.drawing.layout.kamada_kawai_layout(g)
-            # nx.draw(g, pos)
-            # nx.draw_networkx_labels(g, pos, {n: n for n in g.nodes})
-            # plt.savefig(f"{out_path.split('/')[-1]}.png")
-
-            res = fn(g, m)
-            with open(out_path, "w") as f:
-                json.dump(res, f)  # , indent=2)
 
     def run(self):
         # (data, output_path, fun, metric)
@@ -258,4 +233,4 @@ class DegreeCentralityBaseline(Baseline):
                 partial(weighted_deg_cent, dir="out"),
             ),
         ]
-        self.create_baseline(paths)
+        create_baseline(paths, "degree centrality")
