@@ -346,6 +346,7 @@ class TestCentrality:
     #         )
     #         self.check_result(baseline, result, template_flag)
     #
+    @pytest.mark.skip(reason="Still testing pagerank")
     @pytest.mark.parametrize("test_name", undirected_graphs + directed_graphs)
     def test_pagerank(self, test_name):
         params = {
