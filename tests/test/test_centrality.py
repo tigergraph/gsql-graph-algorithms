@@ -49,7 +49,6 @@ class TestCentrality:
                     b["score"]
                 ):
                     q_type = "Template Query" if template_flag else "Generic Query"
-                    pytest.exit(f'{q_type}: {r["score"]} != {b["score"]}')
                     pytest.fail(f'{q_type}: {r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", undirected_graphs)
