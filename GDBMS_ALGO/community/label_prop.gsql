@@ -1,14 +1,21 @@
-CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop (SET<STRING> v_type_set, SET<STRING> e_type_set, INT maximum_iteration, INT print_limit, 
-  BOOL print_results = TRUE, STRING file_path = "", STRING result_attribute = "")  SYNTAX V1 {
-
+CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop(
+  SET<STRING> v_type_set,
+  SET<STRING> e_type_set,
+  UINT maximum_iteration = 10,
+  UINT sample_edge_num = 1000,
+  UINT batch_num = 12,
+  INT print_limit,
+  BOOL print_results = TRUE,
+  STRING result_attribute = "",
+  STRING file_path=""
+) SYNTAX V1 {
 
     /*
-    First Author: <First Author Name>
-    First Commit Date:  <First Commit Date>
+    First Author: xuanlei.lin@tigergraph.com
+    First Commit Date: 2024-07-15
 
-    Recent Author: <Recent Commit Author Name>
-    Recent Commit Date: <Recent Commit Date>
-
+    Recent Author: xuanlei.lin@tigergraph.com
+    Recent Commit Date: 2024-07-16
 
     Repository:
         https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Community
@@ -17,89 +24,160 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.community.label_prop (SET<STRING> v_type_set, S
         Production
 
     Description: 
-        Partition the vertices into communities, according to the Label Propagation method.
-        Indicate community membership by assigning each vertex a community ID.
-
-    Publications:
-        NA
+        This query partitions vertices into communities using the Label Propagation method.
+        It assigns a community ID to each vertex based on its neighbors' community IDs.
 
     TigerGraph Documentation:
         https://docs.tigergraph.com/graph-ml/current/community-algorithms/label-propagation
 
     Parameters:
         v_type_set:
-            Names of vertex types to use
+            The set of vertex types to traverse.
         e_type_set:
-            Names of edge types to use
+            The set of edge types to traverse.
         maximum_iteration:
-            Number of maximum iteration of the algorithm
+            The maximum number of iterations for the algorithm.
+        sample_edge_num:
+            The number of edges to sample for super nodes.
+        batch_num:
+            The number of batches. Using batches reduces memory consumption.
         print_limit:
-            If >=0, max number of vertices to output to JSON.
+            If >= 0, the maximum number of vertices to output to JSON.
         print_results:
-            If True, output JSON to standard output
+            If True, output JSON to standard output. WARNING: Avoid printing results for large datasets.
         result_attribute:
-            If not empty, store community id values (INT) to this attribute
+            If not empty, store community ID values (INT) in this attribute.
         file_path:
-            If not empty, write output to this file.
+            File to write CSV output to.
     */
 
-OrAccum @@or_changed = true;
-MapAccum<INT, INT> @map;     # <communityId, numNeighbors>
-MapAccum<INT, INT> @@comm_sizes_map;   # <communityId, members>
-SumAccum<INT> @sum_label, @sum_num;  
-FILE f (file_path);
-Start = {v_type_set};
+  TYPEDEF TUPLE <DOUBLE score, VERTEX community> MoveScore;
+  MinAccum<VERTEX> @community_id; // Community ID of the node
+  SumAccum<INT> @vid; // Vertex's internal ID
+  SumAccum<INT> @batch_id; // Batch ID for the node
+  SumAccum<INT> @degree; // Outdegree of the node
+  SumAccum<INT> @@vertex_num; // Total number of vertices
+  MapAccum<VERTEX, SumAccum<DOUBLE>> @community_k_in_map; // Number of neighbors belonging to each community
+  MaxAccum<MoveScore> @best_move; // Best move for the node with the highest score
+  MaxAccum<DOUBLE> @@min_double; // Used to reset the @best_move
+  OrAccum @to_change_community; // Flag to check if the node needs to change community
+  MapAccum<VERTEX, INT> @@comm_sizes_map; // Map: community ID -> size of the community
+  FILE f(file_path); // File to write results to
 
-# Assign unique labels to each vertex
-Start = SELECT s 
-        FROM Start:s 
-        ACCUM s.@sum_label = getvid(s);
+  // Initialization
+  All_Nodes = {v_type_set};
+  Tmp = SELECT s
+        FROM   All_Nodes:s -(e_type_set:e)- :t
+        POST-ACCUM
+               s.@community_id = s,
+               s.@vid = getvid(s),
+               s.@batch_id = s.@vid % batch_num,
+               s.@degree = s.outdegree(e_type_set);
+  @@vertex_num = All_Nodes.size();
+  @@vertex_num = @@vertex_num / batch_num;
 
-# Propagate labels to neighbors until labels converge or the max iterations is reached
-WHILE @@or_changed == true LIMIT maximum_iteration DO
-    @@or_changed = false;
-    Start = SELECT s 
-            FROM Start:s -(e_type_set:e)- :t
-            ACCUM t.@map += (s.@sum_label -> 1)  # count the occurrences of neighbor's labels
-            POST-ACCUM
-                INT max_v = 0,
-                INT label = 0,
-                # Iterate over the map to get the neighbor label that occurs most often
-                FOREACH (k,v) IN t.@map DO
-                    CASE WHEN v > max_v THEN
-                        max_v = v,
-                        label = k
-                    END
-                END,
-                # When the neighbor search finds a label AND it is a new label
-                # AND the label's count has increased, update the label.
-                CASE WHEN label != 0 AND t.@sum_label != label AND max_v > t.@sum_num THEN
-                    @@or_changed += true,
-                    t.@sum_label = label,
-                    t.@sum_num = max_v
-                END,
-                t.@map.clear();
-END;
+  // Label propagation
+  INT hop = 0;
+  Candidates = All_Nodes;
+  WHILE Candidates.size() > 0 AND hop < maximum_iteration DO
+    hop = hop + 1;
+    // Find the best move
+    IF hop == 1 THEN // First iteration
+      ChangedNodes = SELECT s
+                     FROM   Candidates:s -(e_type_set:e)- :t
+                     WHERE  s.@degree < t.@degree
+                     ACCUM  s.@best_move += MoveScore(t.@degree, t.@community_id)
+                     POST-ACCUM
+                            IF s.@best_move.community != s.@community_id THEN
+                              s.@to_change_community = TRUE
+                            END
+                     HAVING s.@to_change_community == TRUE;
+    ELSE // Remaining iterations
+      IF Candidates.size() < @@vertex_num OR batch_num == 1 THEN // No batch processing
+        ChangedNodes = SELECT s
+                       FROM   Candidates:s -(e_type_set:e)- :t
+                       SAMPLE sample_edge_num EDGE WHEN s.outdegree(e_type_set) > sample_edge_num
+                       ACCUM  s.@community_k_in_map += (t.@community_id -> 1)
+                       POST-ACCUM
+                              s.@best_move = MoveScore(@@min_double, s), // Reset best move
+                              FOREACH (community_id, k_in) IN s.@community_k_in_map DO
+                                s.@best_move += MoveScore(k_in, community_id)
+                              END,
+                              IF s.@best_move.community != s.@community_id THEN
+                                s.@to_change_community = TRUE
+                              END,
+                              s.@community_k_in_map.clear()
+                       HAVING s.@to_change_community == TRUE;
+      ELSE // Use batch processing
+        ChangedNodes = {};
+        FOREACH batch_id IN RANGE[0, batch_num-1] DO
+          Nodes = SELECT s
+                  FROM   Candidates:s
+                  WHERE  s.@batch_id == batch_id;
+          Nodes = SELECT s
+                  FROM   Nodes:s -(e_type_set:e)- :t
+                  SAMPLE sample_edge_num EDGE WHEN s.outdegree(e_type_set) > sample_edge_num
+                  ACCUM  s.@community_k_in_map += (t.@community_id -> 1)
+                  POST-ACCUM
+                         s.@best_move = MoveScore(@@min_double, s), // Reset best move
+                         FOREACH (community_id, k_in) IN s.@community_k_in_map DO
+                           s.@best_move += MoveScore(k_in, community_id)
+                         END,
+                         IF s.@best_move.community != s.@community_id THEN
+                           s.@to_change_community = TRUE
+                         END,
+                         s.@community_k_in_map.clear()
+                  HAVING s.@to_change_community == TRUE;
+          ChangedNodes = ChangedNodes UNION Nodes;
+        END;
+      END;
+    END;
 
-Start = {v_type_set};
-Start =  SELECT s 
-         FROM Start:s
-         POST-ACCUM 
-             IF result_attribute != "" THEN 
-                 s.setAttr(result_attribute, s.@sum_label) 
-             END,
-               
-             IF file_path != "" THEN 
-                 f.println(s, s.@sum_label) 
-             END,
-               
-             IF print_results THEN 
-                 @@comm_sizes_map += (s.@sum_label -> 1) 
-             END
-         LIMIT print_limit;
+    // Handle nodes that swap communities
+    SwapNodes = SELECT s
+                FROM   ChangedNodes:s -(e_type_set:e)- :t
+                WHERE  s.@best_move.community == t.@community_id
+                       AND t.@to_change_community == TRUE
+                       AND t.@best_move.community == s.@community_id
+                       AND (s.@best_move.score < t.@best_move.score
+                            OR (abs(s.@best_move.score - t.@best_move.score) < 0.00000000001
+                                AND s.@vid > t.@vid))
+                POST-ACCUM
+                       s.@to_change_community = FALSE;
+    ChangedNodes = ChangedNodes MINUS SwapNodes;
 
-IF print_results THEN 
+    // Update community IDs
+    ChangedNodes = SELECT s
+                   FROM   ChangedNodes:s
+                   POST-ACCUM
+                          s.@community_id = s.@best_move.community,
+                          s.@to_change_community = FALSE;
+
+    // Find candidates for the next iteration
+    Candidates = SELECT t
+                 FROM   ChangedNodes:s -(e_type_set:e)- :t
+                 WHERE  t.@community_id != s.@community_id;
+  END;
+
+  // Output results
+  Nodes = SELECT s
+          FROM All_Nodes:s
+          POST-ACCUM
+            IF result_attribute != "" THEN
+                s.setAttr(result_attribute, getvid(s.@community_id))
+            END,
+            IF print_results THEN
+              @@comm_sizes_map += (s.@community_id -> 1)
+            END,
+            IF file_path != "" THEN
+              VERTEX node = s.@community_id,
+              f.println(s.type, s, node.type, node)
+            END
+          LIMIT print_limit;
+
+  // Print results if print_results is True
+  IF print_results THEN
     PRINT @@comm_sizes_map;
-    PRINT Start[Start.@sum_label];
-END;
+    PRINT Nodes[Nodes.@community_id];
+  END;
 }

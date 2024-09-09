@@ -66,3 +66,5 @@ if __name__ == "__main__":
         local=".",
         bucket="tigergraph-public-data",
     )
+
+    # os.system("mv graph_algorithms_baselines/* .")
