@@ -38,6 +38,7 @@
 #include <random>
 #include <fstream>
 #include <sstream>
+#include <curl/curl.h>
 
 namespace tg {
 
