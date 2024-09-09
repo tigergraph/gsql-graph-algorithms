@@ -14,3 +14,5 @@ __pycache__
 .env
 *.xml
 pyrightconfig.json
+l
+*.ipynb

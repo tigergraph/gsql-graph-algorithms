@@ -1,11 +1,18 @@
-# source: https://github.com/GTmac/FastRP/blob/master/fastrp.py
+import gzip
+import json
 
+import networkx as nx
 import numpy as np
+import pandas as pd
+from pyTigerGraph.datasets import Datasets
 from scipy.sparse import csc_matrix, csr_matrix, spdiags
 from sklearn import random_projection
 from sklearn.preprocessing import normalize, scale
 
+from .base import Baseline
 
+
+# source: https://github.com/GTmac/FastRP/blob/master/fastrp.py
 # projection method: choose from Gaussian and Sparse
 # input matrix: choose from adjacency and transition matrix
 # alpha adjusts the weighting of nodes according to their degree
@@ -69,7 +76,7 @@ def fastrp_merge(U_list, weights, normalization=False):
 
 # A is always the adjacency matrix
 # the choice between adj matrix and trans matrix is decided in the conf
-def fastrp_wrapper(A, conf):
+def fastrp(A, conf):
     U_list = fastrp_projection(
         A,
         q=len(conf["weights"]),
@@ -105,3 +112,40 @@ def get_emb_filename(prefix, conf):
         + (str(conf["C"]) if "alpha" in conf else "1.0")
         + ".mat"
     )
+
+
+class FastRPBaseline(Baseline):
+    def __init__(self, data_path_root, baseline_path_root):
+        self.data_path_root = data_path_root
+        self.baseline_path_root = baseline_path_root
+
+    def run(self, ds_name="CoraV2"):
+        print("Creating FastRP Baseline")
+        dataset = Datasets(ds_name)
+        edges = pd.read_csv(dataset.tmp_dir + f"/{ds_name}/edges.csv", header=None)
+        edges.columns = ["src", "tgt"]
+
+        g = nx.Graph()
+        g.add_edges_from(edges.to_numpy())
+        node_ids = sorted(list(g.nodes))
+        A = nx.adjacency_matrix(g, nodelist=node_ids)
+        conf = {
+            "weights": [1, 2, 4],
+            "dim": 8,
+            # "projection_method": "sparse",
+            "projection_method": "gaussian",
+            "input_matrix": "trans",
+            "alpha": -0.628,
+            "normalization": False,
+        }
+
+        vecs = fastrp(A, conf)
+
+        assert len(vecs) == len(node_ids)
+
+        res = {str(k): list(v) for k, v in zip(node_ids, vecs)}
+        with gzip.open(f"{self.baseline_path_root}/ml/fastRP.json.gz", "wb") as f:
+            f.write(json.dumps(res).encode())
+
+        # with gzip.open(f"{baseline_path_root}/ml/fastRP.json.gz", "rb") as f:
+        #     d = json.load(f)

@@ -10,6 +10,7 @@ from util import get_featurizer
 load_dotenv()
 data_path_root = "data"
 baseline_path_root = f"{data_path_root}/baseline"
+graph_name = "CoraV2"
 
 
 def cos_sim(x, y):
@@ -20,8 +21,9 @@ def cos_sim(x, y):
 
 
 class TestML:
-    feat = get_featurizer("Cora")
+    feat = get_featurizer(graph_name)
 
+    @pytest.mark.skip(reason="Relies on udf that comes with DB, but was overridden. Must make new testing db")
     def test_fastRP(self):
         params = {
             "v_type_set": ["Paper"],
@@ -40,6 +42,9 @@ class TestML:
         with gzip.open(f"{baseline_path_root}/ml/fastRP.json.gz", "rb") as f:
             baseline = json.load(f)
 
+        self.feat.installAlgorithm(
+            "tg_fastRP", "../algorithms/GraphML/Embeddings/FastRP/tg_fastRP.gsql"
+        )
         result = self.feat.runAlgorithm(
             "tg_fastRP",
             params=params,
