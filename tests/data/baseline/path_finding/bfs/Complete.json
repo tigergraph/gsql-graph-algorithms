@@ -1,0 +1,129 @@
+[
+    {
+        "Start": [
+            {
+                "v_id": "F",
+                "v_type": "V8",
+                "attributes": {
+                    "Start.@sum_step": 1
+                }
+            },
+            {
+                "v_id": "G",
+                "v_type": "V8",
+                "attributes": {
+                    "Start.@sum_step": 1
+                }
+            },
+            {
+                "v_id": "H",
+                "v_type": "V8",
+                "attributes": {
+                    "Start.@sum_step": 1
+                }
+            },
+            {
+                "v_id": "C",
+                "v_type": "V8",
+                "attributes": {
+                    "Start.@sum_step": 1
+                }
+            },
+            {
+                "v_id": "B",
+                "v_type": "V8",
+                "attributes": {
+                    "Start.@sum_step": 1
+                }
+            },
+            {
+                "v_id": "E",
+                "v_type": "V8",
+                "attributes": {
+                    "Start.@sum_step": 1
+                }
+            },
+            {
+                "v_id": "D",
+                "v_type": "V8",
+                "attributes": {
+                    "Start.@sum_step": 1
+                }
+            },
+            {
+                "v_id": "A",
+                "v_type": "V8",
+                "attributes": {
+                    "Start.@sum_step": 0
+                }
+            }
+        ]
+    },
+    {
+        "@@edge_set": [
+            {
+                "e_type": "Complete",
+                "from_id": "A",
+                "from_type": "V8",
+                "to_id": "H",
+                "to_type": "V8",
+                "directed": false,
+                "attributes": {}
+            },
+            {
+                "e_type": "Complete",
+                "from_id": "A",
+                "from_type": "V8",
+                "to_id": "E",
+                "to_type": "V8",
+                "directed": false,
+                "attributes": {}
+            },
+            {
+                "e_type": "Complete",
+                "from_id": "A",
+                "from_type": "V8",
+                "to_id": "D",
+                "to_type": "V8",
+                "directed": false,
+                "attributes": {}
+            },
+            {
+                "e_type": "Complete",
+                "from_id": "A",
+                "from_type": "V8",
+                "to_id": "B",
+                "to_type": "V8",
+                "directed": false,
+                "attributes": {}
+            },
+            {
+                "e_type": "Complete",
+                "from_id": "A",
+                "from_type": "V8",
+                "to_id": "G",
+                "to_type": "V8",
+                "directed": false,
+                "attributes": {}
+            },
+            {
+                "e_type": "Complete",
+                "from_id": "A",
+                "from_type": "V8",
+                "to_id": "F",
+                "to_type": "V8",
+                "directed": false,
+                "attributes": {}
+            },
+            {
+                "e_type": "Complete",
+                "from_id": "A",
+                "from_type": "V8",
+                "to_id": "C",
+                "to_type": "V8",
+                "directed": false,
+                "attributes": {}
+            }
+        ]
+    }
+]

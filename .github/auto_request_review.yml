@@ -4,30 +4,25 @@
 reviewers:
   # The default reviewers if not assigned specifically 
   defaults:
+    - primary
     - secondary
     - tertiary
   # Reviewer groups each of which has a list of GitHub usernames
   groups:
-    group1:
-      - yimingpantg
-      - TannerW
-      - wyattjoynertg
-      - parkererickson-tg
-      - alexthomasTG
-    secondary:
-      - yimingpantg
-      - wyattjoynertg
-      - TannerW
-    tertiary:
-      - xinyuchtg
-      - victorleeTG
-      - TannerW
+    primary:
+      - RobRossmiller-TG
+      - billshitg
+      - parkererickson-tg  
+      - luzhoutg
+    #   - wyattjoynertg
+    #   - victorleeTG
 
 files:
   # All review request will be sent to the following groups/people.
   '**':
-    - secondary
-    - tertiary
+    - primary
+    # - secondary
+    # - tertiary
 
 options:
   # ignore draft PRs
@@ -35,5 +30,6 @@ options:
   # ignore PRs with title contains specific keywords
   ignored_keywords:
     - DO NOT REVIEW
+    - DNR
   # request reviews to all other members in the same group
   enable_group_assignment: true
