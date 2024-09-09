@@ -11,13 +11,10 @@ reviewers:
   groups:
     primary:
       - RobRossmiller-TG
-      - wyattjoynertg
-      - parkererickson-tg
-      - victorleeTG
-    # secondary:
-    #   - RobRossmiller-TG
+      - billshitg
+      - parkererickson-tg  
+      - luzhoutg
     #   - wyattjoynertg
-    # tertiary:
     #   - victorleeTG
 
 files:
@@ -33,5 +30,6 @@ options:
   # ignore PRs with title contains specific keywords
   ignored_keywords:
     - DO NOT REVIEW
+    - DNR
   # request reviews to all other members in the same group
   enable_group_assignment: true
