@@ -260,8 +260,7 @@ CREATE QUERY tg_fastRP(
     POST-ACCUM
     FOREACH i IN RANGE[0, embedding_dimension-1] DO
       s.@final_embedding_list += s.@final_embedding_arr.get(i) / @@weights.size() // Average by # of iterations
-    END,
-    s.@final_embedding_arr.clear();
+    END;
 
   IF print_results THEN
     res = SELECT a FROM verts:a;
@@ -273,4 +272,8 @@ CREATE QUERY tg_fastRP(
   IF result_attribute != "" THEN
     storeEmbeddings = SELECT s FROM verts:s POST-ACCUM s.setAttr(result_attribute, s.@final_embedding_list);
   END;
+
+  sample_verts =
+    SELECT s FROM verts:s LIMIT choose_k;
+  PRINT sample_verts;
 }
