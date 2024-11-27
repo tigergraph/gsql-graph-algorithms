@@ -1,0 +1,58 @@
+CREATE FUNCTION gds.vector.ip_distance(list<double> list1, list<double> list2) RETURNS(float) {
+
+  /*
+  First Author: Jue Yuan
+  First Commit Date:  Nov 27, 2024 
+
+  Recent Author: Jue Yuan
+  Recent Commit Date: Nov 27, 2024 
+
+  Maturity:
+      alpha
+
+  Description:
+      Calculates the inner product (dot product) between two vectors represented as lists of double values.
+      The inner product is a key measure in linear algebra, indicating the magnitude of the projection of one vector onto another.
+      This function provides a similarity measure commonly used in machine learning and data analysis.
+
+  Parameters:
+      list<double> list1:
+          The first vector as a list of double values.
+      list<double> list2:
+          The second vector as a list of double values.
+
+  Returns:
+      float:
+          The inner product (dot product) of the two input vectors.
+
+  Exceptions:
+      list_size_mismatch (90000):
+          Raised when the input vectors are not of equal size.
+
+  Logic Overview:
+      Input Validation:
+          Ensures both vectors have the same length.
+      Inner Product Calculation:
+          Computes the sum of the element-wise products of the two vectors.
+
+  Formula:
+      Inner Product = (x1 x y1) + (x2 x y2) + ... + (xn x yn)
+      Where xi and yi are elements of list1 and list2, respectively.
+
+  Use Case:
+      This function is widely used in:
+          Calculating similarity in machine learning models (e.g., recommendation systems).
+          Performing vector projections in linear algebra.
+          Evaluating similarity between embeddings in natural language processing (NLP).
+  */
+
+  EXCEPTION list_size_mismatch (90000);
+  ListAccum<double> @@myList1 = list1;
+  ListAccum<double> @@myList2 = list2;
+
+  IF (@@myList1.size() != @@myList2.size()) THEN
+    RAISE list_size_mismatch ("Two lists provided for gds.vector.euclidean_distance have different sizes.");
+  END;
+
+  RETURN inner_product(@@myList1, @@myList2);
+}

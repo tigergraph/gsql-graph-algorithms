@@ -1,0 +1,37 @@
+CREATE FUNCTION gds.vector.dimension_count(list<double> list1) RETURNS(int) {
+
+  /*
+  First Author: Jue Yuan
+  First Commit Date:  Nov 27, 2024 
+
+  Recent Author: Jue Yuan
+  Recent Commit Date: Nov 27, 2024 
+
+  Maturity:
+      alpha
+
+  Description:
+      Returns the number of dimensions (elements) in a given vector, represented as a list of double values.
+      This function is useful for determining the size or dimensionality of input vectors in mathematical
+      and data processing operations.
+
+  Parameters:
+      list<double> list1:
+          The input vector as a list of double values.
+
+  Returns:
+      int:
+          The number of elements (dimensions) in the input vector.
+
+  Logic Overview:
+      Accepts a list of double values as input.
+      Calculates the size of the list, which corresponds to the number of dimensions.
+      Returns the size as an integer.
+  Use Case:
+      This function is valuable in vector-based computations, such as machine learning or data analysis tasks,
+      where understanding the dimensionality of vectors is crucial for validation, preprocessing, or compatibility checks.
+  */
+
+  ListAccum<double> @@myList1 = list1;
+  RETURN @@myList1.size();
+}

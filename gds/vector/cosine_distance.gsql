@@ -1,0 +1,56 @@
+CREATE FUNCTION gds.vector.cosine_distance(list<double> list1, list<double> list2) RETURNS(float) {
+
+  /*
+  First Author: Jue Yuan
+  First Commit Date:  Nov 27, 2024 
+
+  Recent Author: Jue Yuan
+  Recent Commit Date: Nov 27, 2024 
+
+  Maturity:
+      alpha
+
+  Description:
+      Calculates the cosine distance between two vectors represented as lists of doubles.
+      The cosine distance is derived from the cosine similarity and provides a measure of the angle
+      between two non-zero vectors in a multi-dimensional space. A distance of 0 indicates identical
+      vectors, while a distance of 1 indicates orthogonal (maximally dissimilar) vectors.
+
+  Parameters:
+      list<double> list1:
+          The first vector as a list of double values.
+      list<double> list2:
+          The second vector as a list of double values.
+
+  Returns:
+      float:
+          The cosine distance between the two input vectors.
+  Exceptions:
+      list_size_mismatch (90000):
+          Raised when the input lists are not of equal size.
+
+  Logic Overview:
+      Validates that both input vectors have the same length.
+      Computes the inner (dot) product of the two vectors.
+      Calculates the magnitudes (Euclidean norms) of both vectors.
+      Returns the cosine distance as 1 - (inner product) / (product of magnitudes).
+
+  Use Case:
+      This function is commonly used in machine learning, natural language processing,
+      and information retrieval tasks to quantify the similarity between vector representations,
+      such as word embeddings or document feature vectors.
+  */
+
+  EXCEPTION list_size_mismatch (90000);
+  ListAccum<double> @@myList1 = list1;
+  ListAccum<double> @@myList2 = list2;
+
+  IF (@@myList1.size() != @@myList2.size()) THEN
+    RAISE list_size_mismatch ("Two lists provided for gds.vector.cosine_distance have different sizes.");
+  END;
+
+  double innerP = inner_product(@@myList1, @@myList2);
+  double v1_magn = sqrt(inner_product(@@myList1, @@myList1));
+  double v2_magn = sqrt(inner_product(@@myList2, @@myList2));
+  RETURN (1 - innerP / (v1_magn * v2_magn));
+}

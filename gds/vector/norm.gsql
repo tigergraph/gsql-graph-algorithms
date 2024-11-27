@@ -1,0 +1,79 @@
+CREATE FUNCTION gds.vector.norm(list<double> list1, string metric) RETURNS(float) {
+
+  /*
+  First Author: Jue Yuan
+  First Commit Date:  Nov 27, 2024 
+
+  Recent Author: Jue Yuan
+  Recent Commit Date: Nov 27, 2024 
+
+  Maturity:
+      alpha
+
+  Description:
+      Computes the norm (magnitude) of a vector based on a specified metric.
+      The norm is a measure of a vector's length in a mathematical space and is commonly used
+      in data normalization and vector calculations.
+
+  Parameters:
+      list<double> list1:
+          The input vector as a list of double values.
+      string metric:
+          The norm metric to apply. Supported metrics are:
+              "euclidean": Euclidean norm (L2 norm).
+              "ip": Inner product norm (dot product with the zero vector).
+
+  Returns:
+      float:
+          The computed norm of the vector based on the selected metric.
+
+  Exceptions:
+      invalid_metric_type (90001):
+          Raised when the specified metric is not supported.
+
+  Logic Overview:
+      Metric Handling:
+          Euclidean Norm (L2 norm):
+              Creates a zero vector of the same size as the input.
+              Computes the square root of the sum of squared differences between the input vector and the zero vector.
+              Formula:
+                  ||v||2 = sqrt(x1^2 + x2^2 + ... + xn^2)​
+          Inner Product Norm (IP norm):
+              Computes the inner product of the input vector with the zero vector, resulting in a value of 0
+              (the norm of any vector with the zero vector is trivially 0).
+      Error Handling:
+          Raises an exception if an unsupported metric is provided.
+
+  Use Case:
+      This function is helpful in scenarios such as:
+          Data preprocessing (e.g., normalizing vector magnitudes).
+          Calculating distances and similarities in machine learning algorithms.
+          Evaluating vector lengths for mathematical or physics-related computations.
+  */
+
+  EXCEPTION invalid_metric_type (90001);
+  ListAccum<double> @@myList1 = list1;
+  ListAccum<double> @@myList2;
+
+  FOREACH i IN [0, @@myList1.size() - 1] DO
+    @@myList2 += 0;
+  end;
+
+  SumAccum<float> @@myResult;
+  SumAccum<float> @@sqrSum;
+
+  CASE lower(metric)
+    WHEN "euclidean" THEN
+      FOREACH i IN [0, @@myList1.size() - 1 ] DO
+        @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));
+      END;
+      @@myResult = sqrt(@@sqrSum);
+    WHEN "ip" THEN
+      @@myResult = inner_product(@@myList1, @@myList2);
+    ELSE
+      RAISE invalid_metric_type ("Invalid metric algorithm provided, currently supported: euclidean and ip.");
+    END
+  ;
+
+  RETURN @@myResult;
+}

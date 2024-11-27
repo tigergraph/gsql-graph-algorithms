@@ -1,0 +1,62 @@
+CREATE FUNCTION gds.vector.euclidean_distance(list<double> list1, list<double> list2) RETURNS(float) {
+
+  /*
+  First Author: Jue Yuan
+  First Commit Date:  Nov 27, 2024 
+
+  Recent Author: Jue Yuan
+  Recent Commit Date: Nov 27, 2024 
+
+  Maturity:
+      alpha
+
+  Description:
+      Calculates the Euclidean distance between two vectors represented as lists of double values.
+      Euclidean distance measures the straight-line distance between two points in multi-dimensional space,
+      making it a fundamental metric in various computational and analytical applications.
+
+  Parameters:
+      list<double> list1:
+          The first vector as a list of double values.
+      list<double> list2:
+          The second vector as a list of double values.
+
+  Returns:
+      float:
+          The Euclidean distance between the two input vectors.
+
+  Exceptions:
+      list_size_mismatch (90000): Raised when the input vectors are not of equal size.
+
+  Logic Overview:
+      Input Validation:
+          Ensures both vectors have the same length.
+      Distance Calculation:
+          Iterates through corresponding elements of both vectors.
+          Computes the sum of the squared differences between each pair of elements.
+          Returns the square root of the accumulated sum, representing the Euclidean distance.
+
+  Formula:
+      Distance = sqrt((x1 - y1)^2 + (x2 - y2)^2 + ... + (xn - yn)^2)
+      Where xi and yi are elements of list1 and list2, respectively.
+
+  Use Case:
+      This function is widely used in machine learning (e.g., k-nearest neighbors), data science,
+      and pattern recognition tasks to measure the similarity or dissimilarity between data points.
+  */
+
+  EXCEPTION list_size_mismatch (90000);
+  ListAccum<double> @@myList1 = list1;
+  ListAccum<double> @@myList2 = list2;
+
+  IF (@@myList1.size() != @@myList2.size()) THEN
+    RAISE list_size_mismatch ("Two lists provided for gds.vector.euclidean_distance have different sizes.");
+  END;
+
+  SumAccum<float> @@sqrSum;
+  FOREACH i IN [0, @@myList1.size() - 1 ] DO
+    @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));
+  END;
+
+  RETURN sqrt(@@sqrSum);
+}
