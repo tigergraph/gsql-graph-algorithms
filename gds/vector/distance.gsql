@@ -70,7 +70,7 @@ CREATE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, stri
     WHEN "cosine" THEN
       @@myResult = 1 - inner_product(@@myList1, @@myList2) / (sqrt(inner_product(@@myList1, @@myList1)) * sqrt(inner_product(@@myList2, @@myList2)));
     WHEN "l2" THEN
-      FOREACH i IN [0, @@myList1.size() - 1 ] DO
+      FOREACH i IN RANGE [0, @@myList1.size() - 1 ] DO
         @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));
       END;
       @@myResult = sqrt(@@sqrSum);

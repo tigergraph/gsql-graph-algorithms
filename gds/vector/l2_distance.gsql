@@ -54,7 +54,7 @@ CREATE FUNCTION gds.vector.l2_distance(list<double> list1, list<double> list2) R
   END;
 
   SumAccum<float> @@sqrSum;
-  FOREACH i IN [0, @@myList1.size() - 1 ] DO
+  FOREACH i IN RANGE [0, @@myList1.size() - 1 ] DO
     @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));
   END;
 

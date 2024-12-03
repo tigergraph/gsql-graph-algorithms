@@ -55,7 +55,7 @@ CREATE FUNCTION gds.vector.norm(list<double> list1, string metric) RETURNS(float
   ListAccum<double> @@myList1 = list1;
   ListAccum<double> @@myList2;
 
-  FOREACH i IN [0, @@myList1.size() - 1] DO
+  FOREACH i IN RANGE [0, @@myList1.size() - 1] DO
     @@myList2 += 0;
   end;
 
@@ -64,7 +64,7 @@ CREATE FUNCTION gds.vector.norm(list<double> list1, string metric) RETURNS(float
 
   CASE lower(metric)
     WHEN "l2" THEN
-      FOREACH i IN [0, @@myList1.size() - 1 ] DO
+      FOREACH i IN RANGE [0, @@myList1.size() - 1 ] DO
         @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));
       END;
       @@myResult = sqrt(@@sqrSum);
