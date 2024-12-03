@@ -51,7 +51,7 @@ CREATE FUNCTION gds.vector.ip_distance(list<double> list1, list<double> list2) R
   ListAccum<double> @@myList2 = list2;
 
   IF (@@myList1.size() != @@myList2.size()) THEN
-    RAISE list_size_mismatch ("Two lists provided for gds.vector.euclidean_distance have different sizes.");
+    RAISE list_size_mismatch ("Two lists provided for gds.vector.ip_distance have different sizes.");
   END;
 
   RETURN inner_product(@@myList1, @@myList2);

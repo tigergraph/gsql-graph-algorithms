@@ -20,7 +20,7 @@ CREATE FUNCTION gds.vector.norm(list<double> list1, string metric) RETURNS(float
           The input vector as a list of double values.
       string metric:
           The norm metric to apply. Supported metrics are:
-              "euclidean": Euclidean norm (L2 norm).
+              "l2": Euclidean norm (L2 norm).
               "ip": Inner product norm (dot product with the zero vector).
 
   Returns:
@@ -63,7 +63,7 @@ CREATE FUNCTION gds.vector.norm(list<double> list1, string metric) RETURNS(float
   SumAccum<float> @@sqrSum;
 
   CASE lower(metric)
-    WHEN "euclidean" THEN
+    WHEN "l2" THEN
       FOREACH i IN [0, @@myList1.size() - 1 ] DO
         @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));
       END;
@@ -71,7 +71,7 @@ CREATE FUNCTION gds.vector.norm(list<double> list1, string metric) RETURNS(float
     WHEN "ip" THEN
       @@myResult = inner_product(@@myList1, @@myList2);
     ELSE
-      RAISE invalid_metric_type ("Invalid metric algorithm provided, currently supported: euclidean and ip.");
+      RAISE invalid_metric_type ("Invalid metric algorithm provided, currently supported: l2 and ip.");
     END
   ;
 

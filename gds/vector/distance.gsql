@@ -23,7 +23,7 @@ CREATE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, stri
       string metric:
           The distance metric to use. Supported metrics are:
               "cosine": Cosine distance
-              "euclidean": Euclidean distance
+              "l2": Euclidean distance
               "ip": Inner product (dot product)
   Returns:
       float:
@@ -41,7 +41,7 @@ CREATE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, stri
   Metric Handling:
       Cosine Distance:
           Calculated as 1 - (inner product of vectors) / (product of magnitudes).
-      Euclidean Distance:
+      L2 Distance:
           Computes the square root of the sum of squared differences between corresponding elements.
       Inner Product:
           Directly computes the dot product of the two vectors.
@@ -69,7 +69,7 @@ CREATE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, stri
   CASE lower(metric)
     WHEN "cosine" THEN
       @@myResult = 1 - inner_product(@@myList1, @@myList2) / (sqrt(inner_product(@@myList1, @@myList1)) * sqrt(inner_product(@@myList2, @@myList2)));
-    WHEN "euclidean" THEN
+    WHEN "l2" THEN
       FOREACH i IN [0, @@myList1.size() - 1 ] DO
         @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));
       END;
@@ -77,7 +77,7 @@ CREATE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, stri
     WHEN "ip" THEN
       @@myResult = inner_product(@@myList1, @@myList2);
     ELSE
-      RAISE invalid_metric_type ("Invalid metric algorithm provided, currently supported: cosine, euclidean and ip.");
+      RAISE invalid_metric_type ("Invalid metric algorithm provided, currently supported: cosine, l2 and ip.");
     END
   ;
 

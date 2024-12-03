@@ -1,4 +1,4 @@
-CREATE FUNCTION gds.vector.euclidean_distance(list<double> list1, list<double> list2) RETURNS(float) {
+CREATE FUNCTION gds.vector.l2_distance(list<double> list1, list<double> list2) RETURNS(float) {
 
   /*
   First Author: Jue Yuan
@@ -50,7 +50,7 @@ CREATE FUNCTION gds.vector.euclidean_distance(list<double> list1, list<double> l
   ListAccum<double> @@myList2 = list2;
 
   IF (@@myList1.size() != @@myList2.size()) THEN
-    RAISE list_size_mismatch ("Two lists provided for gds.vector.euclidean_distance have different sizes.");
+    RAISE list_size_mismatch ("Two lists provided for gds.vector.l2_distance have different sizes.");
   END;
 
   SumAccum<float> @@sqrSum;
