@@ -28,6 +28,8 @@ CREATE FUNCTION gds.vector.cosine_distance(list<double> list1, list<double> list
   Exceptions:
       list_size_mismatch (90000):
           Raised when the input lists are not of equal size.
+      zero_divisor(90001);
+          Raised either list is all zero to avoid zero-divisor issue.
 
   Logic Overview:
       Validates that both input vectors have the same length.
@@ -42,6 +44,7 @@ CREATE FUNCTION gds.vector.cosine_distance(list<double> list1, list<double> list
   */
 
   EXCEPTION list_size_mismatch (90000);
+  EXCEPTION zero_divisor(90001);
   ListAccum<double> @@myList1 = list1;
   ListAccum<double> @@myList2 = list2;
 
@@ -49,8 +52,16 @@ CREATE FUNCTION gds.vector.cosine_distance(list<double> list1, list<double> list
     RAISE list_size_mismatch ("Two lists provided for gds.vector.cosine_distance have different sizes.");
   END;
 
-  double innerP = inner_product(@@myList1, @@myList2);
+  double inner_p = inner_product(@@myList1, @@myList2);
   double v1_magn = sqrt(inner_product(@@myList1, @@myList1));
   double v2_magn = sqrt(inner_product(@@myList2, @@myList2));
-  RETURN (1 - innerP / (v1_magn * v2_magn));
+  IF (abs(v1_magn) < 0.0000001) THEN
+    // use a small positive float to avoid numeric comparison error
+    RAISE zero_divisor ("The elements in the first list are all zero. It will introduce a zero divisor.");
+  END;
+  IF (abs(v1_magn) < 0.0000001) THEN
+    // use a small positive float to avoid numeric comparison error
+    RAISE zero_divisor ("The elements in the second list are all zero. It will introduce a zero divisor.");
+  END;
+  RETURN (1 - inner_p / (v1_magn * v2_magn));
 }

@@ -32,7 +32,9 @@ CREATE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, stri
   Exceptions:
       list_size_mismatch (90000):
           Raised when the input vectors are not of equal size.
-      invalid_metric_type (90001):
+      zero_divisor(90001);
+          Raised either list is all zero to avoid zero-divisor issue.
+      invalid_metric_type (90002):
           Raised when an unsupported distance metric is provided.
 
   Logic Overview:
@@ -55,7 +57,8 @@ CREATE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, stri
   */
 
   EXCEPTION list_size_mismatch (90000);
-  EXCEPTION invalid_metric_type (90001);
+  EXCEPTION zero_divisor(90001);
+  EXCEPTION invalid_metric_type (90002);
   ListAccum<double> @@myList1 = list1;
   ListAccum<double> @@myList2 = list2;
 
@@ -68,7 +71,18 @@ CREATE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, stri
 
   CASE lower(metric)
     WHEN "cosine" THEN
-      @@myResult = 1 - inner_product(@@myList1, @@myList2) / (sqrt(inner_product(@@myList1, @@myList1)) * sqrt(inner_product(@@myList2, @@myList2)));
+      double inner_p = inner_product(@@myList1, @@myList2);
+      double v1_magn = sqrt(inner_product(@@myList1, @@myList1));
+      double v2_magn = sqrt(inner_product(@@myList2, @@myList2));
+      IF (abs(v1_magn) < 0.0000001) THEN
+      // use a small positive float to avoid numeric comparison error
+        RAISE zero_divisor ("The elements in the first list are all zero. It will introduce a zero divisor.");
+      END;
+      IF (abs(v2_magn) < 0.0000001) THEN
+      // use a small positive float to avoid numeric comparison error
+        RAISE zero_divisor ("The elements in the second list are all zero. It will introduce a zero divisor.");
+      END;
+      @@myResult = 1 - inner_p / (v1_magn * v2_magn);
     WHEN "l2" THEN
       FOREACH i IN RANGE [0, @@myList1.size() - 1 ] DO
         @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));

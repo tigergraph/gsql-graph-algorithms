@@ -53,23 +53,16 @@ CREATE FUNCTION gds.vector.norm(list<double> list1, string metric) RETURNS(float
 
   EXCEPTION invalid_metric_type (90001);
   ListAccum<double> @@myList1 = list1;
-  ListAccum<double> @@myList2;
-
-  FOREACH i IN RANGE [0, @@myList1.size() - 1] DO
-    @@myList2 += 0;
-  end;
 
   SumAccum<float> @@myResult;
   SumAccum<float> @@sqrSum;
 
   CASE lower(metric)
     WHEN "l2" THEN
-      FOREACH i IN RANGE [0, @@myList1.size() - 1 ] DO
-        @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));
-      END;
-      @@myResult = sqrt(@@sqrSum);
+      @@myResult = sqrt(inner_product(@@myList1, @@myList1));
     WHEN "ip" THEN
-      @@myResult = inner_product(@@myList1, @@myList2);
+      // the result of inner product between any vector and all-zero vector should always be 0
+      @@myResult = 0;
     ELSE
       RAISE invalid_metric_type ("Invalid metric algorithm provided, currently supported: l2 and ip.");
     END
