@@ -1,4 +1,4 @@
-CREATE FUNCTION gds.vector.norm(list<double> list1, string metric) RETURNS(float) {
+CREATE OR REPLACE FUNCTION gds.vector.norm(list<double> list1, string metric) RETURNS(float) {
 
   /*
   First Author: Jue Yuan

@@ -1,4 +1,4 @@
-CREATE FUNCTION gds.vector.kth_element(list<double> list1, int kth_index) RETURNS(float) {
+CREATE OR REPLACE FUNCTION gds.vector.kth_element(list<double> list1, int kth_index) RETURNS(float) {
 
   /*
   First Author: Jue Yuan

@@ -1,4 +1,4 @@
-CREATE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, string metric) RETURNS(float) {
+CREATE OR REPLACE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, string metric) RETURNS(float) {
 
   /*
   First Author: Jue Yuan

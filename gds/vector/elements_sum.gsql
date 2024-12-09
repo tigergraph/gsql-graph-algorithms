@@ -1,4 +1,4 @@
-CREATE FUNCTION gds.vector.elements_sum(list<double> list1) RETURNS(float) {
+CREATE OR REPLACE FUNCTION gds.vector.elements_sum(list<double> list1) RETURNS(float) {
 
   /*
   First Author: Jue Yuan

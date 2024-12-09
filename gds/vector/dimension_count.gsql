@@ -1,4 +1,4 @@
-CREATE FUNCTION gds.vector.dimension_count(list<double> list1) RETURNS(int) {
+CREATE OR REPLACE FUNCTION gds.vector.dimension_count(list<double> list1) RETURNS(int) {
 
   /*
   First Author: Jue Yuan
