@@ -1,0 +1,41 @@
+CREATE OR REPLACE FUNCTION gds.vector.elements_sum(list<double> list1) RETURNS(float) {
+
+  /*
+  First Author: Jue Yuan
+  First Commit Date:  Nov 27, 2024 
+
+  Recent Author: Jue Yuan
+  Recent Commit Date: Nov 27, 2024 
+
+  Maturity:
+      alpha
+
+  Description:
+      Calculates the sum of all elements in a vector, represented as a list of double values.
+      This function is useful for aggregating vector components in mathematical and statistical operations.
+
+  Parameters:
+      list<double> list1:
+          The input vector as a list of double values.
+
+  Returns:
+      float:
+          The sum of all elements in the input vector.
+
+  Logic Overview:
+      Iterates through each element in the input list.
+      Accumulates the sum of all elements.
+      Returns the final sum as a floating-point value.
+
+  Use Case:
+      This function is valuable in various data processing tasks, such as computing vector norms,
+      validating data integrity, or performing aggregations in machine learning and statistical analysis.
+  */
+
+  SumAccum<float> @@mySum;
+
+  FOREACH i IN list1 DO
+    @@mySum += i;
+  END;
+  RETURN @@mySum;
+}
