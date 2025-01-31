@@ -1,0 +1,54 @@
+CREATE OR REPLACE FUNCTION gds.vector.kth_element(list<double> list1, int kth_index) RETURNS(float) {
+
+  /*
+  First Author: Jue Yuan
+  First Commit Date:  Nov 27, 2024 
+
+  Recent Author: Jue Yuan
+  Recent Commit Date: Nov 27, 2024 
+
+  Maturity:
+      alpha
+
+  Description:
+      Retrieves the k-th element from a vector, represented as a list of double values.
+      This function ensures safe access by validating the index against the vector's size,
+      preventing out-of-range errors.
+
+  Parameters:
+      list<double> list1:
+          The input vector as a list of double values.
+      int kth_index:
+          The zero-based index of the element to retrieve.
+
+  Returns:
+      float:
+          The value of the element at the specified k-th index in the input vector.
+
+  Exceptions:
+      out_of_range (90000):
+          Raised when the specified index is either negative or exceeds the size of the input vector.
+
+  Logic Overview:
+      Input Validation:
+          Checks if the provided index is within the valid range (0 to list size - 1).
+          Raises an exception if the index is out of range.
+      Element Retrieval:
+          Returns the element at the specified index.
+
+  Use Case:
+      This function is useful in scenarios where specific elements of a vector need to be accessed programmatically, such as:
+          Extracting features from a dataset.
+          Implementing custom vector operations in data processing pipelines.
+          Accessing indexed components in mathematical computations.
+  */
+
+  EXCEPTION out_of_range (90000);
+
+  ListAccum<double> @@myList1 = list1;
+  IF (kth_index >= @@myList1.size() OR kth_index < 0) THEN
+    RAISE out_of_range("Kth index provided for gds.vector.kth_element is out of the range of this list.");
+  END;
+
+  RETURN @@myList1.get(kth_index);
+}

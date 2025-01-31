@@ -1,0 +1,99 @@
+CREATE OR REPLACE FUNCTION gds.vector.distance(list<double> list1, list<double> list2, string metric) RETURNS(float) {
+
+  /*
+  First Author: Jue Yuan
+  First Commit Date:  Nov 27, 2024 
+
+  Recent Author: Jue Yuan
+  Recent Commit Date: Nov 27, 2024 
+
+  Maturity:
+      alpha
+
+  Description:
+      Calculates the distance between two vectors represented as lists of double values,
+      based on a specified distance metric. This function supports multiple metrics,
+      allowing for flexible similarity or dissimilarity measurements in various computational tasks.
+
+  Parameters:
+      list<double> list1:
+          The first vector as a list of double values.
+      list<double> list2:
+          The second vector as a list of double values.
+      string metric:
+          The distance metric to use. Supported metrics are:
+              "cosine": Cosine distance
+              "l2": Euclidean distance
+              "ip": Inner product (dot product)
+  Returns:
+      float:
+          The computed distance between the two input vectors based on the specified metric.
+
+  Exceptions:
+      list_size_mismatch (90000):
+          Raised when the input vectors are not of equal size.
+      zero_divisor(90001);
+          Raised either list is all zero to avoid zero-divisor issue.
+      invalid_metric_type (90002):
+          Raised when an unsupported distance metric is provided.
+
+  Logic Overview:
+      Input Validation:
+          Ensures both vectors have the same size.
+  Metric Handling:
+      Cosine Distance:
+          Calculated as 1 - (inner product of vectors) / (product of magnitudes).
+      L2 Distance:
+          Computes the square root of the sum of squared differences between corresponding elements.
+      Inner Product:
+          Directly computes the dot product of the two vectors.
+
+  Error Handling:
+      Raises an exception if the provided metric is invalid.
+
+  Use Case:
+      This function is essential for machine learning, data science, and information retrieval applications,
+      where distance or similarity calculations between vector representations (such as embeddings or feature vectors) are required.
+  */
+
+  EXCEPTION list_size_mismatch (90000);
+  EXCEPTION zero_divisor(90001);
+  EXCEPTION invalid_metric_type (90002);
+  ListAccum<double> @@myList1 = list1;
+  ListAccum<double> @@myList2 = list2;
+
+  IF (@@myList1.size() != @@myList2.size()) THEN
+    RAISE list_size_mismatch ("Two lists provided for gds.vector.distance have different sizes.");
+  END;
+
+  SumAccum<float> @@myResult;
+  SumAccum<float> @@sqrSum;
+
+  CASE lower(metric)
+    WHEN "cosine" THEN
+      double inner_p = inner_product(@@myList1, @@myList2);
+      double v1_magn = sqrt(inner_product(@@myList1, @@myList1));
+      double v2_magn = sqrt(inner_product(@@myList2, @@myList2));
+      IF (abs(v1_magn) < 0.0000001) THEN
+      // use a small positive float to avoid numeric comparison error
+        RAISE zero_divisor ("The elements in the first list are all zero. It will introduce a zero divisor.");
+      END;
+      IF (abs(v2_magn) < 0.0000001) THEN
+      // use a small positive float to avoid numeric comparison error
+        RAISE zero_divisor ("The elements in the second list are all zero. It will introduce a zero divisor.");
+      END;
+      @@myResult = 1 - inner_p / (v1_magn * v2_magn);
+    WHEN "l2" THEN
+      FOREACH i IN RANGE [0, @@myList1.size() - 1 ] DO
+        @@sqrSum += (@@myList1.get(i) - @@myList2.get(i)) * (@@myList1.get(i) - @@myList2.get(i));
+      END;
+      @@myResult = sqrt(@@sqrSum);
+    WHEN "ip" THEN
+      @@myResult = inner_product(@@myList1, @@myList2);
+    ELSE
+      RAISE invalid_metric_type ("Invalid metric algorithm provided, currently supported: cosine, l2 and ip.");
+    END
+  ;
+
+  RETURN @@myResult;
+}
