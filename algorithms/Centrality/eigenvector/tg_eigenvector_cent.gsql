@@ -68,8 +68,11 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type_set, SET<STRING> e_type_set,
        
         V = SELECT s 
             FROM V:s
-            POST-ACCUM s.@sum_eigen_value = s.@sum_eigen_value / sqrt(@@sum_squares_eigen_values),
-                       @@sum_cur_norm_values += s.@sum_eigen_value;
+            POST-ACCUM 
+                IF @@sum_squares_eigen_values > 0 THEN 
+                    s.@sum_eigen_value = s.@sum_eigen_value / sqrt(@@sum_squares_eigen_values)
+                END,
+                    @@sum_cur_norm_values += s.@sum_eigen_value;
         
         conv_value = abs(@@sum_cur_norm_values - @@sum_prev_norm_values);
         @@sum_prev_norm_values = @@sum_cur_norm_values;
@@ -77,7 +80,7 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type_set, SET<STRING> e_type_set,
     END;
     #Output
     IF file_path != "" THEN
-        f.println("Vertex_ID", "egien vector");
+        f.println("Vertex_ID", "eigen vector");
     END;
     Start = SELECT s 
             FROM Start:s
