@@ -70,9 +70,9 @@ CREATE QUERY tg_eigenvector_cent(SET<STRING> v_type_set, SET<STRING> e_type_set,
             FROM V:s
             POST-ACCUM 
                 IF @@sum_squares_eigen_values > 0 THEN 
-                    s.@sum_eigen_value = s.@sum_eigen_value / sqrt(@@sum_squares_eigen_values)
-                END,
-                    @@sum_cur_norm_values += s.@sum_eigen_value;
+                    s.@sum_eigen_value = s.@sum_eigen_value / sqrt(@@sum_squares_eigen_values),
+                    @@sum_cur_norm_values += s.@sum_eigen_value
+                END;
         
         conv_value = abs(@@sum_cur_norm_values - @@sum_prev_norm_values);
         @@sum_prev_norm_values = @@sum_cur_norm_values;
