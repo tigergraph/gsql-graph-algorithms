@@ -61,6 +61,7 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type_set, SET<STRING> e_type_set,
     SumAccum<FLOAT> @sum_delta = 0;
     MapAccum<INT,BitwiseOrAccum> @times_map;
     MapAccum<INT,SumAccum<INT>> @sigma_map;
+    OrAccum @visited;
 
     INT empty=0;
     FILE f (file_path);
@@ -80,10 +81,11 @@ CREATE QUERY tg_betweenness_cent(SET<STRING> v_type_set, SET<STRING> e_type_set,
     FOREACH i IN RANGE[0, batch_number-1] DO
         Current = SELECT s 
             FROM all:s
-            WHERE getvid(s)%batch_number == i
+            WHERE getvid(s)%batch_number == i and s.@visited == false
             POST-ACCUM 
                 @@map+=(getvid(s)->0),
-                @@batch_set+=getvid(s);
+                @@batch_set+=getvid(s),
+                s.@visited=true;
 
         FOREACH ver in @@batch_set DO 
             @@map += (ver->@@sum_count); @@sum_count += 1;
