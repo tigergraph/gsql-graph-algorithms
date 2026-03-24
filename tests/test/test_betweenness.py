@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+QUERY_NAME = "tg_betweenness_centrality"
+
 
 @dataclass(frozen=True, slots=True)
 class Case:
@@ -87,7 +89,7 @@ def _query_params(case: Case) -> dict[str, object]:
         "e_type_set": [case.edge_type],
         "reverse_e_type": _reverse_e_type(case.edge_type, case.directed),
         "max_hops": 100,
-        "top_k": 100,
+        "top_k": 1000,
         "print_results": True,
         "result_attribute": "",
         "file_path": "",
@@ -112,19 +114,19 @@ class TestBetweenness:
         baseline = _score_map(_load_json(baseline_path))
 
         params = _query_params(case)
-        result_json = self.conn.runInstalledQuery("brandes_betweenness", params=params)
+        result_json = self.conn.runInstalledQuery(QUERY_NAME, params=params)
         result = _score_map(result_json)
 
         assert result.keys() == baseline.keys(), (
             f"{case.name}: key mismatch.\n"
             f"Missing: {sorted(baseline.keys() - result.keys())}\n"
             f"Extra: {sorted(result.keys() - baseline.keys())}\n"
-            f"reverse_e_type={params['reverse_e_type']!r}"
+            f"query={QUERY_NAME!r}, reverse_e_type={params['reverse_e_type']!r}"
         )
 
         for vertex_id, expected in baseline.items():
             got = result[vertex_id]
             assert got == pytest.approx(expected, rel=1e-12, abs=1e-12), (
                 f"{case.name}: {vertex_id}: got={got} expected={expected} "
-                f"(reverse_e_type={params['reverse_e_type']!r})"
+                f"(query={QUERY_NAME!r}, reverse_e_type={params['reverse_e_type']!r})"
             )
