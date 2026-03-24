@@ -2,7 +2,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.betweenness_cent(SET<STRING> v_type_
     INT top_k = 100, BOOL print_results = True, STRING result_attribute = "",
     STRING file_path = "", BOOL display_edges = FALSE) SYNTAX V1 { 
 
-    /*
+ /*
     Repository:
         https://github.com/tigergraph/gsql-graph-algorithms/tree/master/algorithms/Centrality
 
@@ -92,18 +92,20 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.betweenness_cent(SET<STRING> v_type_
             @@batch_id += 1;
         END;
 
+        /*  OPTIMIZATION 1: Merged two init SELECTs into one.
+            Original needed two because the second SELECT read s.@bit
+            which was written in the first (snapshot issue).
+            Fix: use local variables my_bit / my_mask instead. */
         Start = SELECT s
             FROM Current:s
             POST-ACCUM
-                s.@bit = @@id_map.get(getvid(s));
-
-        Start = SELECT s
-            FROM Current:s
-            POST-ACCUM
-                s.@seen     = 1 << s.@bit,
-                s.@frontier = s.@seen,
-                s.@sigma   += (1 << s.@bit -> 1),
-                s.@S       += (0 -> s.@frontier);
+                INT my_bit  = @@id_map.get(getvid(s)),
+                INT my_mask = 1 << my_bit,
+                s.@bit      = my_bit,
+                s.@seen     = my_mask,
+                s.@frontier = my_mask,
+                s.@sigma   += (my_mask -> 1),
+                s.@S       += (0 -> my_mask);
 
         @@batch_set.clear();
         @@id_map.clear();
@@ -112,13 +114,11 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.betweenness_cent(SET<STRING> v_type_
 
         /* ═══════════════════════════════════════════
            Forward BFS
-           
+
            Phase 1: expand frontier.
              Reads @sigma (on s), writes @sigma_next (on t).
-             @sigma is ONLY read — no warning.
-           
            Phase 2: apply staged sigma.
-             @sigma is ONLY written — no warning.
+             Moves @sigma_next into @sigma.
            ═══════════════════════════════════════════ */
         WHILE Start.size() > 0 LIMIT max_hops DO
             @@d += 1;
@@ -152,18 +152,17 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.betweenness_cent(SET<STRING> v_type_
                     s.@sigma_next.clear();
         END;
 
-        @@d += -1;
-
         /* ═══════════════════════════════════════════
            Backward accumulation — Brandes Theorem 6
 
            Phase 1: compute dependencies.
              Reads @delta (on s), writes @delta_next (on t).
-             @delta is ONLY read — no warning.
-
-           Phase 2: apply staged delta.
-             @delta is ONLY written — no warning.
+           Phase 2 (OPTIMIZATION 2): apply staged delta
+             AND re-select next frontier in one SELECT.
+             Original had a separate SELECT for each.
            ═══════════════════════════════════════════ */
+        @@d += -1;
+
         Start = SELECT s
             FROM all:s
             WHERE s.@S.get(@@d) != 0;
@@ -171,7 +170,7 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.betweenness_cent(SET<STRING> v_type_
         WHILE Start.size() > 0 LIMIT max_hops DO
             @@d += -1;
 
-            Start = SELECT t
+            tmp = SELECT t
                 FROM Start:s -(reverse_e_type:e)- v_type_set:t
                 WHERE (t.@S.get(@@d) & s.@S.get(@@d + 1)) != 0
                 ACCUM
@@ -188,17 +187,22 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.betweenness_cent(SET<STRING> v_type_
                         shared = shared & (shared - 1)
                     END;
 
-            tmp = SELECT s
-                FROM Start:s
+            /*  OPTIMIZATION 2: Merged two SELECTs into one.
+                Original:
+                    tmp   = SELECT s FROM Start:s POST-ACCUM <apply delta_next>
+                    Start = SELECT s FROM all:s WHERE s.@S.get(@@d) != 0;
+                Merged: every vertex with delta_next is at depth @@d
+                (by construction), so selecting FROM all WHERE @S.get(@@d)!=0
+                covers them. Vertices with empty delta_next just iterate
+                an empty map — harmless no-op. */
+            Start = SELECT s
+                FROM all:s
+                WHERE s.@S.get(@@d) != 0
                 POST-ACCUM
                     FOREACH (b, val) IN s.@delta_next DO
                         s.@delta += (b -> val)
                     END,
                     s.@delta_next.clear();
-
-            Start = SELECT s
-                FROM all:s
-                WHERE s.@S.get(@@d) != 0;
         END;
 
         /* C_B(v) += Σ_{s≠v} δ_s•(v) */
@@ -224,13 +228,13 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.betweenness_cent(SET<STRING> v_type_
                 v.@delta_next.clear(),
                 v.@S.clear();
     END;
+
     IF is_undirected THEN
         Start = SELECT v
             FROM all:v
             POST-ACCUM
                 v.@C_B = v.@C_B / 2.0;
     END;
-
 
     IF file_path != "" THEN
         f.println("Vertex_ID", "Betweenness");
@@ -260,4 +264,3 @@ CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.betweenness_cent(SET<STRING> v_type_
         END;
     END;
 }
-
