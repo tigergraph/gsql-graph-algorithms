@@ -1,4 +1,4 @@
-CREATE OR REPLACE QUERY tg_eigenvector_cent(SET<STRING> v_type_set, SET<STRING> e_type_set, INT maximum_iteration = 100, FLOAT conv_limit = 0.000001,
+CREATE TEMPLATE QUERY GDBMS_ALGO.centrality.eigenvector (SET<STRING> v_type_set, SET<STRING> e_type_set, INT maximum_iteration = 100, FLOAT conv_limit = 0.000001,
     INT top_k = 100, BOOL print_results = True, STRING result_attribute = "",STRING file_path = ""
     ) SYNTAX V1 {
 
@@ -68,7 +68,7 @@ CREATE OR REPLACE QUERY tg_eigenvector_cent(SET<STRING> v_type_set, SET<STRING> 
        
         V = SELECT s 
             FROM V:s
-            POST-ACCUM s.@sum_eigen_value = s.@sum_eigen_value / (sqrt(@@sum_squares_eigen_values)+ 0.000001),
+            POST-ACCUM s.@sum_eigen_value = s.@sum_eigen_value / sqrt(@@sum_squares_eigen_values),
                        @@sum_cur_norm_values += s.@sum_eigen_value;
         
         conv_value = abs(@@sum_cur_norm_values - @@sum_prev_norm_values);
@@ -82,8 +82,8 @@ CREATE OR REPLACE QUERY tg_eigenvector_cent(SET<STRING> v_type_set, SET<STRING> 
     Start = SELECT s 
             FROM Start:s
             ACCUM 
-                IF abs(s.@sum_eigen_value - 1.0) < 0.000001 THEN 
-                    s.@sum_eigen_value += -1 
+                IF s.@sum_eigen_value==1.0 THEN 
+                    s.@sum_eigen_value+=-1 
                 END
       POST-ACCUM 
           IF result_attribute != "" THEN 

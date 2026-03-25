@@ -7,7 +7,7 @@ import util
 class TestPathFinding:
     pass
     feat = util.get_featurizer()
-    base_path = "data/baseline/graph_algorithms_baselines/path_finding"
+    base_path = "data/baseline/path_finding" #graph_algorithms_baselines
 
     # includes unweighted directed and undirected graphs, as well as one weighted graph (Line_Weighted)
     test_graphs1 = [

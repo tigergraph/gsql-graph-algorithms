@@ -7,12 +7,33 @@ import pyTigerGraph as tg
 from dotenv import load_dotenv
 from pyTigerGraph.datasets import Datasets
 from tqdm import tqdm, trange
+from pathlib import Path
 
 import util
 
 load_dotenv()
 graph_name = "graph_algorithms_testing"
 pattern = re.compile(r'"name":\s*"tg_.*"')
+
+
+def install_brandes_betweenness_query(conn: tg.TigerGraphConnection) -> None:
+    query_path = (
+        Path(__file__).resolve().parents[1]
+        / "algorithms"
+        / "Centrality"
+        / "betweenness"
+        / "brandes_betweenness.gsql"
+    )
+
+    query_text = query_path.read_text(encoding="utf-8")
+
+    conn.gsql(
+        f"""
+USE GRAPH {graph_name}
+{query_text}
+INSTALL QUERY brandes_betweenness
+"""
+    )
 
 
 def add_reverse_edge(ds: Datasets):
@@ -61,6 +82,7 @@ if __name__ == "__main__":
         if q not in installed_queries:
             print(q)
             feat.installAlgorithm(q)
+    install_brandes_betweenness_query(conn)
 
     for _ in trange(30, desc="Sleeping while data loads"):
         time.sleep(1)
