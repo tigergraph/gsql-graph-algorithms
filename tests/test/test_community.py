@@ -6,7 +6,7 @@ import util
 
 class TestCommunity:
     feat = util.get_featurizer()
-    base_path = "data/baseline/graph_algorithms_baselines/community"
+    base_path = "data/baseline/community" #"data/baseline/graph_algorithms_baselines/community"
     graph_types1 = [
         "Empty",
         "Empty_Directed",

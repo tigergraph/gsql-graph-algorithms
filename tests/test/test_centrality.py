@@ -296,6 +296,34 @@ class TestCentrality:
                     pytest.fail(f'{r["score"]} != {b["score"]}')
 
     @pytest.mark.parametrize("test_name", undirected_graphs)
+    def test_eigenvector_centrality(self, test_name):
+        params = {
+            "v_type_set": ["V20"],
+            "e_type_set": [test_name],
+            "maximum_iteration": 100,
+            "conv_limit": 0.000001,
+            "top_k": 100,
+            "print_results": True,
+            "result_attribute": "",
+            "file_path": ""
+        }
+        with open(
+            f"data/baseline/centrality/eigenvector/{test_name}.json"
+        ) as f:
+            baseline = json.load(f)
+        result = self.feat.runAlgorithm("tg_eigenvector_cent", params=params)
+        result = sorted(result[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+        baseline = sorted(baseline[0]["top_scores"], key=lambda x: x["Vertex_ID"])
+
+        for b in baseline:
+            for r in result:
+                if r["Vertex_ID"] == b["Vertex_ID"] and r["score"] != pytest.approx(
+                    b["score"]
+                ):
+                    pytest.fail(f'{r["score"]} != {b["score"]}')
+    
+
+    @pytest.mark.parametrize("test_name", undirected_graphs)
     def test_harmonic_centrality(self, test_name):
         params = {
             "v_type_set": ["V20"],

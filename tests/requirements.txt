@@ -35,7 +35,7 @@ pytest==8.2.1
 pytest-xdist==3.5.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
-pyTigerGraph==1.5.2
+pyTigerGraph==1.5.2 # use updated version when available on PyPI inorder to fix any issues
 pytz==2024.1
 requests==2.31.0
 s3transfer==0.7.0

@@ -1,0 +1,139 @@
+[
+ {
+    "start": [
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 2
+        },
+        "v_id": "P",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "G",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "H",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "B",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 2
+        },
+        "v_id": "F",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "J",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "R",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "I",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 2
+        },
+        "v_id": "M",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 2
+        },
+        "v_id": "K",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "N",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "Q",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "L",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 2
+        },
+        "v_id": "D",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "E",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "T",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 2
+        },
+        "v_id": "S",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "O",
+        "v_type": "V20"
+      },
+      {
+        "attributes": {
+          "start.@sum_color_vertex": 1
+        },
+        "v_id": "C",
+        "v_type": "V20"
+      }
+    ]
+  }
+]
