@@ -35,7 +35,7 @@ CREATE QUERY tg_betweenness_cent(
         e_type_set:
             edge types to traverse
         result_attribute:
-            INT attribute to store results to
+            name of attribute of type FLOAT / DOUBLE to store results to
         reverse_e_type:
             reverse edge type in directed graph, in undirected graph set reverse_e_type=e_type_set
         max_hops:
