@@ -73,3 +73,31 @@ class TestCommunity:
                     found = True
             if not found:
                 pytest.fail()
+
+    def run_wcc(self, print_limit):
+        params = {
+            "v_type_set": ["V20"],
+            "e_type_set": ["Empty"],
+            "print_limit": print_limit,
+            "print_results": True,
+            "result_attribute": "",
+            "file_path": "",
+        }
+        result = self.feat.runAlgorithm("tg_wcc", params=params)
+        sizes = [r for r in result if "sizes" in r][0]["sizes"]
+        vertices = [r for r in result if "Start" in r][0]["Start"]
+        return sizes, vertices
+
+    @pytest.mark.parametrize("print_limit", [0, 1, 5])
+    def test_wcc_print_limit(self, print_limit):
+        # Empty has no edges, so each of the 20 V20 vertices is its own
+        # component: print_limit has to bound the component maps too, or the
+        # response keeps growing with the component count
+        sizes, vertices = self.run_wcc(print_limit)
+        assert len(sizes) <= print_limit
+        assert len(vertices) <= print_limit
+
+    def test_wcc_print_limit_all(self):
+        sizes, vertices = self.run_wcc(-1)
+        assert len(sizes) == 20
+        assert len(vertices) == 20

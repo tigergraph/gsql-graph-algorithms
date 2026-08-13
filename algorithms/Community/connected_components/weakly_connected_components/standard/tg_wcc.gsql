@@ -39,7 +39,7 @@ CREATE QUERY tg_wcc (SET<STRING> v_type_set, SET<STRING> e_type_set, INT print_l
         display_edges:
             output edges for visualization
         print_limit:
-            maximum number of vertices to output (-1 = all)
+            maximum number of vertices and of components to output (-1 = all)
     */
 
 /*
@@ -48,12 +48,14 @@ CREATE QUERY tg_wcc (SET<STRING> v_type_set, SET<STRING> e_type_set, INT print_l
   v_type_set: vertex types to traverse          print_results: print JSON output
   e_type_set: edge types to traverse            result_attribute: INT attribute to store results to
   file_path: file to write CSV output to    display_edges: output edges for visualization
-  print_limit: max #vertices to output (-1 = all)  
+  print_limit: max #vertices and #components to output (-1 = all)
 */
 
 MinAccum<INT> @min_cc_id = 0;       //each vertex's tentative component id
 MapAccum<INT, INT> @@comp_sizes_map;
+MapAccum<INT, INT> @@print_comp_sizes_map;   //@@comp_sizes_map truncated to print_limit
 MapAccum<INT, ListAccum<INT>> @@comp_group_by_size_map;
+SumAccum<INT> @@printed_comp_count;
 FILE f(file_path); 
 
 Start = {v_type_set};
@@ -95,11 +97,17 @@ IF print_results THEN
                 FROM Start:s 
                 LIMIT print_limit;
     END;
+    # print_limit also bounds the per-component maps: they grow with the number
+    # of components, so leaving them uncapped can exceed the response size limit
     FOREACH (compId,size) IN @@comp_sizes_map DO
-        @@comp_group_by_size_map += (size -> compId);
+        IF print_limit < 0 OR @@printed_comp_count < print_limit THEN
+            @@print_comp_sizes_map += (compId -> size);
+            @@comp_group_by_size_map += (size -> compId);
+            @@printed_comp_count += 1;
+        END;
     END;
     PRINT @@comp_group_by_size_map;
-    PRINT @@comp_sizes_map as sizes;
+    PRINT @@print_comp_sizes_map as sizes;
     PRINT Start[Start.@min_cc_id];
 END;
 }
